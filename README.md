@@ -1,2 +1,2 @@
-# ShuttleX.Contractor.v2
-ShuttleX - React Native app for the Contractor
+# ShuttleX.FE.Contractor.v2
+ShuttleX - FE - React Native app for the Contractor
