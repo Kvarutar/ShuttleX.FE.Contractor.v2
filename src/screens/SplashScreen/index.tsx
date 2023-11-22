@@ -2,7 +2,9 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Button, GroupedBrandIcon, sizes, Text, useTheme } from 'shuttlex-integration';
 
-const AuthScreen = (): JSX.Element => {
+import { SplashScreenProps } from './props';
+
+const SplashScreen = ({ navigation }: SplashScreenProps): JSX.Element => {
   const { colors } = useTheme();
 
   const computedStyles = StyleSheet.create({
@@ -11,16 +13,20 @@ const AuthScreen = (): JSX.Element => {
     },
   });
 
+  const navigateToScreen = () => {
+    navigation.navigate('SignIn');
+  };
+
   return (
     <View style={[styles.container, computedStyles.container]}>
       <View style={styles.groupedBrandIconContainer}>
         <GroupedBrandIcon />
         <Text style={styles.titleApp}>Driver App</Text>
       </View>
-
       <View style={styles.buttonsContainer}>
         <Button
           text="Get started" //TODO: Adjust after implementing https://www.notion.so/shuttlex/i18n-install-library-to-support-i18n-77e236ccfc344d67b9d370e400d45557
+          onPress={navigateToScreen}
         />
         <Pressable style={styles.alreadyHaveAccountContainer} onPress={() => {}} hitSlop={20}>
           {/* //TODO: Adjust after implementing https://www.notion.so/shuttlex/i18n-install-library-to-support-i18n-77e236ccfc344d67b9d370e400d45557 */}
@@ -43,10 +49,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 32,
   },
-  titleApp: {
-    textTransform: 'uppercase',
-    fontFamily: 'Inter SemiBold',
-  },
   buttonsContainer: {
     gap: 28,
   },
@@ -56,6 +58,10 @@ const styles = StyleSheet.create({
   alreadyHaveAccountText: {
     fontFamily: 'Inter Medium',
   },
+  titleApp: {
+    textTransform: 'uppercase',
+    fontFamily: 'Inter SemiBold',
+  },
 });
 
-export default AuthScreen;
+export default SplashScreen;
