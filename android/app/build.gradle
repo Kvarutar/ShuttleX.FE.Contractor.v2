@@ -73,13 +73,14 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.shuttlex_contractor"
+    namespace "com.shuttlex.contractor"
     defaultConfig {
-        applicationId "com.shuttlex_contractor"
+        applicationId "com.shuttlex.contractor"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "0.0.1"
+        setProperty("archivesBaseName", "ShuttleX_Contractor-$versionName")
     }
     signingConfigs {
         debug {
@@ -121,3 +122,7 @@ dependencies {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+task printVersionName {
+  println android.defaultConfig.versionName
+}

@@ -1,4 +1,4 @@
-package com.shuttlex_contractor;
+package com.shuttlex.contractor;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
