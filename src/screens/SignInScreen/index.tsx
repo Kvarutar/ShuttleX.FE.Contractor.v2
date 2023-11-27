@@ -5,7 +5,7 @@ import { GroupedButtonsProps } from 'shuttlex-integration/lib/typescript/src/sha
 
 import { SignInScreenProps } from './props';
 
-const SignInScreen = ({}: SignInScreenProps): JSX.Element => {
+const SignInScreen = ({ navigation }: SignInScreenProps): JSX.Element => {
   const [selectedGroupedButton, setSelectedGroupedButton] =
     useState<GroupedButtonsProps['isFirstSelectedButton']>(true);
 
@@ -22,6 +22,10 @@ const SignInScreen = ({}: SignInScreenProps): JSX.Element => {
       color: colors.textSecondaryColor,
     },
   });
+
+  const navigateToScreen = () => {
+    navigation.navigate('Ride');
+  };
 
   return (
     <View style={[styles.container, computedStyles.container]}>
@@ -46,7 +50,7 @@ const SignInScreen = ({}: SignInScreenProps): JSX.Element => {
       </View>
 
       <View style={styles.buttonsContainer}>
-        <Button text="Next" />
+        <Button text="Next" onPress={navigateToScreen} />
         <Pressable style={styles.alreadyHaveAccountContainer} onPress={() => {}} hitSlop={20}>
           {/* //TODO: Adjust after implementing https://www.notion.so/shuttlex/i18n-install-library-to-support-i18n-77e236ccfc344d67b9d370e400d45557 */}
           <Text style={styles.alreadyHaveAccountText}>

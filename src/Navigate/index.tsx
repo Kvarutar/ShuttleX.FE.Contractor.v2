@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
+import RideScreen from '../screens/RideScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SplashScreen from '../screens/SplashScreen';
 import { RootStackParamList } from './props';
@@ -13,6 +14,7 @@ const Navigate = (): JSX.Element => (
     <Stack.Navigator initialRouteName="Splash">
       <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Ride" component={RideScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   </NavigationContainer>
 );

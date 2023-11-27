@@ -16,6 +16,7 @@
     "build:android:release": "cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
+    "@react-native-community/blur": "^4.3.2",
     "@react-native-community/datetimepicker": "^7.6.1",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.16",
