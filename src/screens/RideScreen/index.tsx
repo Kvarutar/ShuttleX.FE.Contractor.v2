@@ -1,37 +1,88 @@
 import { BlurView } from '@react-native-community/blur';
 import React, { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Bar, BottomWindow, Button, RoundButton, sizes, useTheme } from 'shuttlex-integration';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
+import {
+  Bar,
+  BottomWindow,
+  Button,
+  ButtonModes,
+  RoundButton,
+  sizes,
+  SwipeButton,
+  SwipeButtonModes,
+  Text,
+  useTheme,
+} from 'shuttlex-integration';
 
 import ClockIcon from '../../assets/icons/ClockIcon';
-import CloseIcon from '../../assets/icons/CloseIcon';
 import MenuIcon from '../../assets/icons/MenuIcon';
 import NotificationIcon from '../../assets/icons/NotificationIcon';
 import PreferencesIcon from '../../assets/icons/PreferencesIcon';
 import StatisticsIcon from '../../assets/icons/StatitsticsIcon';
+import Popup from '../../shared/Popup';
 import { type RideScreenProps } from './props';
+
+type lineStates = 'online' | 'offline';
+
+type lineStateTypes = {
+  popupTitle: string;
+  toLineState: lineStates;
+  bottomTitle: string;
+  buttonText: string;
+  buttonMode: ButtonModes;
+  swipeMode: SwipeButtonModes;
+};
+
+const rideBuilderRecord: Record<lineStates, lineStateTypes> = {
+  online: {
+    popupTitle: 'Confirm to stop',
+    toLineState: 'offline',
+    bottomTitle: 'You`re online',
+    buttonText: 'Stop',
+    buttonMode: ButtonModes.Mode1,
+    swipeMode: SwipeButtonModes.Decline,
+  },
+  offline: {
+    popupTitle: 'Confirm to go online',
+    toLineState: 'online',
+    bottomTitle: 'You`re offline',
+    buttonText: "Let's go",
+    buttonMode: ButtonModes.Mode3,
+    swipeMode: SwipeButtonModes.Confirm,
+  },
+};
 
 const RideScreen = ({}: RideScreenProps): JSX.Element => {
   const { colors } = useTheme();
-  const [isPopup, setPopup] = useState<boolean>(false);
+  const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
+  const [lineState, setLineState] = useState<lineStateTypes>(rideBuilderRecord.offline);
+
+  const { textPrimaryColor, textSecondaryColor, backgroundPrimaryColor } = colors;
 
   const computedStyles = StyleSheet.create({
     title: {
-      color: colors.textPrimaryColor,
-      fontSize: 18,
-      fontFamily: 'Inter Medium',
-      letterSpacing: 0.72,
+      color: textPrimaryColor,
     },
-    date: {
-      fontSize: 12,
-      letterSpacing: 0.48,
-      marginLeft: 4,
+    dateText: {
+      color: textSecondaryColor,
+    },
+    map: {
+      backgroundColor: backgroundPrimaryColor,
     },
   });
 
+  const swipeHandler = (mode: lineStates) => {
+    setLineState(rideBuilderRecord[mode]);
+    setIsPopupVisible(false);
+  };
+
+  const { popupTitle, toLineState, bottomTitle, buttonText, buttonMode, swipeMode } = lineState;
   return (
     <View style={styles.wrapper}>
-      <View style={[styles.container]}>
+      <View style={[styles.map, computedStyles.map]}>
+        <Text>Карта</Text>
+      </View>
+      <View style={styles.headerButtonsContainer}>
         <RoundButton>
           <MenuIcon />
         </RoundButton>
@@ -39,57 +90,61 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
           <NotificationIcon />
         </RoundButton>
       </View>
-      {isPopup ? (
-        <BlurView style={styles.absolute} blurType="light" blurAmount={7} reducedTransparencyFallbackColor="white" />
-      ) : null}
-      <View style={styles.bottom}>
-        {isPopup ? (
-          <RoundButton style={styles.close} onPress={() => setPopup(false)}>
-            <CloseIcon />
-          </RoundButton>
-        ) : null}
-        <BottomWindow>
+      {isPopupVisible ? (
+        <>
+          <BlurView
+            style={StyleSheet.absoluteFill}
+            blurType="light"
+            blurAmount={7}
+            reducedTransparencyFallbackColor="white"
+          />
+          <Popup setIsPopupVisible={() => setIsPopupVisible(false)}>
+            <Text style={[computedStyles.title, styles.confirmTitle, styles.title]}>{popupTitle}</Text>
+            <SwipeButton mode={swipeMode} onSwipeEnd={() => swipeHandler(toLineState)} />
+          </Popup>
+        </>
+      ) : (
+        <BottomWindow style={styles.bottom}>
           <View style={styles.infoWrapper}>
             <Pressable>
               <PreferencesIcon />
             </Pressable>
-            <Text style={computedStyles.title}>You`re offline</Text>
+            <Text style={[computedStyles.title, styles.title]}>{bottomTitle}</Text>
             <Pressable>
               <StatisticsIcon />
             </Pressable>
           </View>
-          <Bar style={styles.card}>
+          <Bar style={styles.card} isActive>
             <Image source={require('../../assets/img/BasicX.png')} style={styles.img} />
             <View style={styles.textWrapper}>
               <Text style={computedStyles.title}>BasicX</Text>
               <View style={styles.dateWrapper}>
                 <ClockIcon />
-                <Text style={computedStyles.date}>24/08/22</Text>
+                <Text style={[styles.date, computedStyles.dateText]}>24/08/22</Text>
               </View>
             </View>
-            <Button mode="mode1" text="Let's go" onPress={() => setPopup(true)} />
+            <Button mode={buttonMode} text={buttonText} onPress={() => setIsPopupVisible(true)} />
           </Bar>
         </BottomWindow>
-      </View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  headerButtonsContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: sizes.paddingVertical,
     justifyContent: 'space-between',
     flexDirection: 'row',
     paddingHorizontal: sizes.paddingHorizontal,
-    position: 'absolute',
-    width: '100%',
-    top: sizes.paddingVertical,
   },
   wrapper: {
     flex: 1,
   },
   card: {
-    flex: 1,
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
@@ -100,9 +155,9 @@ const styles = StyleSheet.create({
   },
   textWrapper: {
     marginRight: 20,
+    marginLeft: 2,
   },
   dateWrapper: {
-    flex: 0,
     alignItems: 'center',
     flexDirection: 'row',
   },
@@ -112,23 +167,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 28,
   },
-  absolute: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-  },
   bottom: {
     position: 'absolute',
     bottom: 0,
     left: 0,
   },
-  close: {
-    flex: 0,
-    alignSelf: 'flex-end',
-    marginBottom: 26,
-    marginRight: sizes.paddingHorizontal,
+  date: {
+    fontSize: 12,
+    marginLeft: 4,
+  },
+  confirmTitle: {
+    marginBottom: 62,
+  },
+  title: {
+    fontSize: 18,
+    fontFamily: 'Inter Medium',
+    textAlign: 'center',
+  },
+  map: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
