@@ -1,5 +1,5 @@
 export type RootStackParamList = {
   Splash: undefined;
-  SignIn: undefined;
+  Auth: { state: 'SignIn' | 'SignUp' };
   Ride: undefined;
 };

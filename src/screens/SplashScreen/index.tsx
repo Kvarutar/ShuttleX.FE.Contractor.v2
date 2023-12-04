@@ -13,9 +13,9 @@ const SplashScreen = ({ navigation }: SplashScreenProps): JSX.Element => {
     },
   });
 
-  const navigateToScreen = () => {
-    navigation.navigate('SignIn');
-  };
+  const navigationToSignUp = () => navigation.navigate('Auth', { state: 'SignUp' });
+
+  const navigationToSignIn = () => navigation.navigate('Auth', { state: 'SignIn' });
 
   return (
     <View style={[styles.container, computedStyles.container]}>
@@ -26,9 +26,9 @@ const SplashScreen = ({ navigation }: SplashScreenProps): JSX.Element => {
       <View style={styles.buttonsContainer}>
         <Button
           text="Get started" //TODO: Adjust after implementing https://www.notion.so/shuttlex/i18n-install-library-to-support-i18n-77e236ccfc344d67b9d370e400d45557
-          onPress={navigateToScreen}
+          onPress={navigationToSignUp}
         />
-        <Pressable style={styles.alreadyHaveAccountContainer} onPress={() => {}} hitSlop={20}>
+        <Pressable style={styles.alreadyHaveAccountContainer} onPress={navigationToSignIn} hitSlop={20}>
           {/* //TODO: Adjust after implementing https://www.notion.so/shuttlex/i18n-install-library-to-support-i18n-77e236ccfc344d67b9d370e400d45557 */}
           <Text style={styles.alreadyHaveAccountText}>I already have an account</Text>
         </Pressable>
