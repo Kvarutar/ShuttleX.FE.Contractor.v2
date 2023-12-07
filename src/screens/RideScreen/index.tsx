@@ -1,25 +1,25 @@
-import { BlurView } from '@react-native-community/blur';
 import React, { useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import {
   Bar,
+  Blur,
   BottomWindow,
   Button,
   ButtonModes,
+  ClockIcon,
+  MenuIcon,
+  NotificationIcon,
+  Popup,
+  PreferencesIcon,
   RoundButton,
   sizes,
+  StatisticsIcon,
   SwipeButton,
   SwipeButtonModes,
   Text,
   useTheme,
 } from 'shuttlex-integration';
 
-import ClockIcon from '../../assets/icons/ClockIcon';
-import MenuIcon from '../../assets/icons/MenuIcon';
-import NotificationIcon from '../../assets/icons/NotificationIcon';
-import PreferencesIcon from '../../assets/icons/PreferencesIcon';
-import StatisticsIcon from '../../assets/icons/StatitsticsIcon';
-import Popup from '../../shared/Popup';
 import { type RideScreenProps } from './props';
 
 type lineStates = 'online' | 'offline';
@@ -90,42 +90,36 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
           <NotificationIcon />
         </RoundButton>
       </View>
-      {isPopupVisible ? (
+      <BottomWindow style={styles.bottom}>
+        <View style={styles.infoWrapper}>
+          <Pressable>
+            <PreferencesIcon />
+          </Pressable>
+          <Text style={[computedStyles.title, styles.title]}>{bottomTitle}</Text>
+          <Pressable>
+            <StatisticsIcon />
+          </Pressable>
+        </View>
+        <Bar style={styles.card} isActive>
+          <Image source={require('shuttlex-integration/src/assets/img/BasicX.png')} style={styles.img} />
+          <View style={styles.textWrapper}>
+            <Text style={computedStyles.title}>BasicX</Text>
+            <View style={styles.dateWrapper}>
+              <ClockIcon />
+              <Text style={[styles.date, computedStyles.dateText]}>24/08/22</Text>
+            </View>
+          </View>
+          <Button mode={buttonMode} text={buttonText} onPress={() => setIsPopupVisible(true)} />
+        </Bar>
+      </BottomWindow>
+      {isPopupVisible && (
         <>
-          <BlurView
-            style={StyleSheet.absoluteFill}
-            blurType="light"
-            blurAmount={7}
-            reducedTransparencyFallbackColor="white"
-          />
-          <Popup setIsPopupVisible={() => setIsPopupVisible(false)}>
+          <Blur />
+          <Popup closePopupHandler={() => setIsPopupVisible(false)} withClose>
             <Text style={[computedStyles.title, styles.confirmTitle, styles.title]}>{popupTitle}</Text>
             <SwipeButton mode={swipeMode} onSwipeEnd={() => swipeHandler(toLineState)} />
           </Popup>
         </>
-      ) : (
-        <BottomWindow style={styles.bottom}>
-          <View style={styles.infoWrapper}>
-            <Pressable>
-              <PreferencesIcon />
-            </Pressable>
-            <Text style={[computedStyles.title, styles.title]}>{bottomTitle}</Text>
-            <Pressable>
-              <StatisticsIcon />
-            </Pressable>
-          </View>
-          <Bar style={styles.card} isActive>
-            <Image source={require('../../assets/img/BasicX.png')} style={styles.img} />
-            <View style={styles.textWrapper}>
-              <Text style={computedStyles.title}>BasicX</Text>
-              <View style={styles.dateWrapper}>
-                <ClockIcon />
-                <Text style={[styles.date, computedStyles.dateText]}>24/08/22</Text>
-              </View>
-            </View>
-            <Button mode={buttonMode} text={buttonText} onPress={() => setIsPopupVisible(true)} />
-          </Bar>
-        </BottomWindow>
       )}
     </View>
   );
