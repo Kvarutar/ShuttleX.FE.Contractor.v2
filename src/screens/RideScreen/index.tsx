@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import {
   Bar,
@@ -33,26 +34,27 @@ type lineStateTypes = {
   swipeMode: SwipeButtonModes;
 };
 
-const rideBuilderRecord: Record<lineStates, lineStateTypes> = {
-  online: {
-    popupTitle: 'Confirm to stop',
-    toLineState: 'offline',
-    bottomTitle: 'You`re online',
-    buttonText: 'Stop',
-    buttonMode: ButtonModes.Mode1,
-    swipeMode: SwipeButtonModes.Decline,
-  },
-  offline: {
-    popupTitle: 'Confirm to go online',
-    toLineState: 'online',
-    bottomTitle: 'You`re offline',
-    buttonText: "Let's go",
-    buttonMode: ButtonModes.Mode3,
-    swipeMode: SwipeButtonModes.Confirm,
-  },
-};
-
 const RideScreen = ({}: RideScreenProps): JSX.Element => {
+  const { t } = useTranslation();
+  const rideBuilderRecord: Record<lineStates, lineStateTypes> = {
+    online: {
+      popupTitle: t('ride_Ride_Popup_onlineTitle'),
+      toLineState: 'offline',
+      bottomTitle: t('ride_Ride_BottomWindow_onlineTitle'),
+      buttonText: t('ride_Ride_Bar_onlineTitle'),
+      buttonMode: ButtonModes.Mode3,
+      swipeMode: SwipeButtonModes.Decline,
+    },
+    offline: {
+      popupTitle: t('ride_Ride_Popup_offlineTitle'),
+      toLineState: 'online',
+      bottomTitle: t('ride_Ride_BottomWindow_offlineTitle'),
+      buttonText: t('ride_Ride_Bar_offlineTitle'),
+      buttonMode: ButtonModes.Mode1,
+      swipeMode: SwipeButtonModes.Confirm,
+    },
+  };
+
   const { colors } = useTheme();
   const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
   const [lineState, setLineState] = useState<lineStateTypes>(rideBuilderRecord.offline);
@@ -115,7 +117,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
       {isPopupVisible && (
         <>
           <Blur />
-          <Popup closePopupHandler={() => setIsPopupVisible(false)} withClose>
+          <Popup onCloseButtonPress={() => setIsPopupVisible(false)} withCloseButton>
             <Text style={[computedStyles.title, styles.confirmTitle, styles.title]}>{popupTitle}</Text>
             <SwipeButton mode={swipeMode} onSwipeEnd={() => swipeHandler(toLineState)} />
           </Popup>

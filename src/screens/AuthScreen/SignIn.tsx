@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Button, PhoneInput, Text, TextInput, useTheme } from 'shuttlex-integration';
 
@@ -6,6 +7,7 @@ import { AuthProps } from './props';
 
 const SignIn = ({ onPress }: AuthProps): JSX.Element => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const computedStyles = StyleSheet.create({
     signUpLabel: {
@@ -19,18 +21,20 @@ const SignIn = ({ onPress }: AuthProps): JSX.Element => {
   return (
     <>
       <View style={styles.phoneNumberContainer}>
-        <Text style={styles.title}>Enter your phone number{'\n'}to recieve code</Text>
+        <Text style={styles.title}>{t('auth_Auth_SignIn_title')}</Text>
         <PhoneInput />
-        <Text style={[styles.dividerInputsLabel, computedStyles.dividerInputsLabel]}>or sign in via email</Text>
+        <Text style={[styles.dividerInputsLabel, computedStyles.dividerInputsLabel]}>
+          {t('auth_Auth_SignIn_signViaEmail')}
+        </Text>
         <TextInput placeholder="Email" />
       </View>
 
       <View style={styles.bottomButtonsContainer}>
-        <Button text="Next" />
+        <Button text={t('auth_Auth_SignIn_nextButton')} />
         <Pressable style={styles.dontHaveAccountContainer} onPress={onPress} hitSlop={20}>
-          {/* //TODO: Adjust after implementing https://www.notion.so/shuttlex/i18n-install-library-to-support-i18n-77e236ccfc344d67b9d370e400d45557 */}
           <Text style={styles.dontHaveAccountText}>
-            Don’t have an account? <Text style={[styles.signUpLabel, computedStyles.signUpLabel]}>Sign up</Text>
+            {t('auth_Auth_SignIn_dontHaveAccount')}{' '}
+            <Text style={[styles.signUpLabel, computedStyles.signUpLabel]}>{t('auth_Auth_SignIn_signUpButton')}</Text>
           </Text>
         </Pressable>
       </View>

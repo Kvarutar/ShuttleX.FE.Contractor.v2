@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, DatePicker, PhoneInput, Text, TextInput, useTheme } from 'shuttlex-integration';
 
@@ -6,6 +7,7 @@ import { AuthProps } from './props';
 
 const SignUp = ({ onPress }: AuthProps): JSX.Element => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const computedStyles = StyleSheet.create({
     signInLabel: {
@@ -15,17 +17,18 @@ const SignUp = ({ onPress }: AuthProps): JSX.Element => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <TextInput placeholder="Name" />
-      <TextInput placeholder="Last name" />
+      <TextInput placeholder={t('auth_Auth_SignUp_nameInputPlaceholder')} />
+      <TextInput placeholder={t('auth_Auth_SignUp_lastNameInputPlaceholder')} />
       <DatePicker />
       <TextInput placeholder="Email" />
       <PhoneInput />
 
       <View style={styles.buttonsContainer}>
-        <Button text="Create an account" />
+        <Button text={t('auth_Auth_SignUp_createAccountButton')} />
         <Pressable style={styles.alreadyHaveAccountContainer} onPress={onPress} hitSlop={20}>
           <Text style={styles.alreadyHaveAccountText}>
-            Already have an account? <Text style={[styles.signInLabel, computedStyles.signInLabel]}>Sign in</Text>
+            {t('auth_Auth_SignUp_haveAccount')}{' '}
+            <Text style={[styles.signInLabel, computedStyles.signInLabel]}>{t('auth_Auth_SignUp_signInButton')}</Text>
           </Text>
         </Pressable>
       </View>
