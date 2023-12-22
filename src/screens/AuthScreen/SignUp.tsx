@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { Button, DatePicker, PhoneInput, Text, TextInput, useTheme } from 'shuttlex-integration';
 
 import { AuthProps } from './props';
@@ -16,12 +16,14 @@ const SignUp = ({ onPress }: AuthProps): JSX.Element => {
   });
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <TextInput placeholder={t('auth_Auth_SignUp_nameInputPlaceholder')} />
-      <TextInput placeholder={t('auth_Auth_SignUp_lastNameInputPlaceholder')} />
-      <DatePicker />
-      <TextInput placeholder="Email" />
-      <PhoneInput />
+    <>
+      <View style={styles.formSignUpContainer}>
+        <TextInput placeholder={t('auth_Auth_SignUp_nameInputPlaceholder')} />
+        <TextInput placeholder={t('auth_Auth_SignUp_lastNameInputPlaceholder')} />
+        <DatePicker />
+        <TextInput placeholder="Email" />
+        <PhoneInput />
+      </View>
 
       <View style={styles.buttonsContainer}>
         <Button text={t('auth_Auth_SignUp_createAccountButton')} />
@@ -32,16 +34,16 @@ const SignUp = ({ onPress }: AuthProps): JSX.Element => {
           </Text>
         </Pressable>
       </View>
-    </ScrollView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  formSignUpContainer: {
+    flex: 1,
     gap: 24,
   },
   buttonsContainer: {
-    marginTop: 40,
     gap: 32,
   },
   alreadyHaveAccountContainer: {

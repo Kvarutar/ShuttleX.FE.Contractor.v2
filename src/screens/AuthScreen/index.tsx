@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { GroupedButtons, sizes, useTheme } from 'shuttlex-integration';
 import { GroupedButtonsProps } from 'shuttlex-integration/lib/typescript/src/shared/Widgets/GroupedButtons/props';
 
@@ -26,7 +26,7 @@ const AuthScreen = ({ route }: AuthScreenProps): JSX.Element => {
   });
 
   return (
-    <View style={[styles.container, computedStyles.container]}>
+    <SafeAreaView style={[styles.container, computedStyles.container]}>
       <GroupedButtons
         style={styles.groupedButtons}
         firstTextButton={t('auth_Auth_GroupedButton_firstButton')}
@@ -39,7 +39,7 @@ const AuthScreen = ({ route }: AuthScreenProps): JSX.Element => {
       ) : (
         <SignIn onPress={() => setIsFirstSelectedButton(true)} />
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
