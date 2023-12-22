@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import { getLocales } from 'react-native-localize';
 import {
   Bar,
-  Blur,
   BottomWindow,
   Button,
   ButtonModes,
@@ -22,6 +22,7 @@ import {
 } from 'shuttlex-integration';
 
 import { type RideScreenProps } from './props';
+import RidePreferences from './RidePreferences';
 
 type lineStates = 'online' | 'offline';
 
@@ -32,6 +33,12 @@ type lineStateTypes = {
   buttonText: string;
   buttonMode: ButtonModes;
   swipeMode: SwipeButtonModes;
+};
+
+const dateOptions: Intl.DateTimeFormatOptions = {
+  year: '2-digit',
+  month: '2-digit',
+  day: 'numeric',
 };
 
 const RideScreen = ({}: RideScreenProps): JSX.Element => {
@@ -56,8 +63,10 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
   };
 
   const { colors } = useTheme();
-  const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
+  const [isConfirmationPopupVisible, setIsConfirmationPopupVisible] = useState<boolean>(false);
+  const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
   const [lineState, setLineState] = useState<lineStateTypes>(rideBuilderRecord.offline);
+  const currentDate = new Intl.DateTimeFormat(getLocales()[0].languageTag, dateOptions).format(new Date());
 
   const { textPrimaryColor, textSecondaryColor, backgroundPrimaryColor } = colors;
 
@@ -75,12 +84,12 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
 
   const swipeHandler = (mode: lineStates) => {
     setLineState(rideBuilderRecord[mode]);
-    setIsPopupVisible(false);
+    setIsConfirmationPopupVisible(false);
   };
 
   const { popupTitle, toLineState, bottomTitle, buttonText, buttonMode, swipeMode } = lineState;
   return (
-    <View style={styles.wrapper}>
+    <SafeAreaView style={styles.wrapper}>
       <View style={[styles.map, computedStyles.map]}>
         <Text>Карта</Text>
       </View>
@@ -94,7 +103,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
       </View>
       <BottomWindow style={styles.bottom}>
         <View style={styles.infoWrapper}>
-          <Pressable>
+          <Pressable onPress={() => setIsPreferencesPopupVisible(true)}>
             <PreferencesIcon />
           </Pressable>
           <Text style={[computedStyles.title, styles.title]}>{bottomTitle}</Text>
@@ -108,22 +117,27 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
             <Text style={computedStyles.title}>BasicX</Text>
             <View style={styles.dateWrapper}>
               <ClockIcon />
-              <Text style={[styles.date, computedStyles.dateText]}>24/08/22</Text>
+              <Text style={[styles.date, computedStyles.dateText]}>{currentDate}</Text>
             </View>
           </View>
-          <Button mode={buttonMode} text={buttonText} onPress={() => setIsPopupVisible(true)} />
+          <Button mode={buttonMode} text={buttonText} onPress={() => setIsConfirmationPopupVisible(true)} />
         </Bar>
       </BottomWindow>
-      {isPopupVisible && (
-        <>
-          <Blur />
-          <Popup onCloseButtonPress={() => setIsPopupVisible(false)} withCloseButton>
-            <Text style={[computedStyles.title, styles.confirmTitle, styles.title]}>{popupTitle}</Text>
-            <SwipeButton mode={swipeMode} onSwipeEnd={() => swipeHandler(toLineState)} />
-          </Popup>
-        </>
+      {isConfirmationPopupVisible && (
+        <Popup onCloseButtonPress={() => setIsConfirmationPopupVisible(false)}>
+          <Text style={[computedStyles.title, styles.confirmTitle, styles.title]}>{popupTitle}</Text>
+          <SwipeButton mode={swipeMode} onSwipeEnd={() => swipeHandler(toLineState)} />
+        </Popup>
       )}
-    </View>
+      {isPreferencesPopupVisible && (
+        <Popup
+          onCloseButtonPress={() => setIsPreferencesPopupVisible(false)}
+          bottomWindowStyle={styles.preferencesPopup}
+        >
+          <RidePreferences tarifs={['BasicX', 'BasicXL', 'ComfortX']} />
+        </Popup>
+      )}
+    </SafeAreaView>
   );
 };
 
@@ -139,6 +153,7 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     flex: 1,
+    position: 'relative',
   },
   card: {
     justifyContent: 'space-between',
@@ -184,6 +199,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  preferencesPopup: {
+    paddingHorizontal: 0,
+    paddingVertical: 0,
   },
 });
 

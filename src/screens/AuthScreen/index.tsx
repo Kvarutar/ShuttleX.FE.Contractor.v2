@@ -9,7 +9,7 @@ import SignIn from './SignIn';
 import SignUp from './SignUp';
 
 const AuthScreen = ({ route }: AuthScreenProps): JSX.Element => {
-  const [isFirstSelectedButton, setIsFirstSelectedButton] = useState<GroupedButtonsProps['isFirstSelectedButton']>(
+  const [isFirstSelectedButton, setIsFirstSelectedButton] = useState<GroupedButtonsProps['isFirstButtonSelected']>(
     route.params.state === 'SignUp',
   );
 
@@ -31,8 +31,8 @@ const AuthScreen = ({ route }: AuthScreenProps): JSX.Element => {
         style={styles.groupedButtons}
         firstTextButton={t('auth_Auth_GroupedButton_firstButton')}
         secondTextButton={t('auth_Auth_GroupedButton_secondButton')}
-        isFirstSelectedButton={isFirstSelectedButton}
-        setIsFirstSelectedButton={setIsFirstSelectedButton}
+        isFirstButtonSelected={isFirstSelectedButton}
+        setIsFirstButtonSelected={setIsFirstSelectedButton}
       />
       {isFirstSelectedButton ? (
         <SignUp onPress={() => setIsFirstSelectedButton(false)} />
