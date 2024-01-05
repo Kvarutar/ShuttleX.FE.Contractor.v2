@@ -54,7 +54,7 @@ const RidePreferences = ({ tarifs }: { tarifs: string[] }) => {
 const styles = StyleSheet.create({
   preference: {
     paddingHorizontal: sizes.paddingHorizontal,
-    paddingBottom: 15,
+    paddingBottom: 16,
   },
   preferenceContent: {
     flexDirection: 'row',

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
 import { getLocales } from 'react-native-localize';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import {
   Bar,
   BottomWindow,
@@ -18,9 +19,12 @@ import {
   SwipeButton,
   SwipeButtonModes,
   Text,
+  Timer,
+  TimerModes,
   useTheme,
 } from 'shuttlex-integration';
 
+import Offer from './Offer';
 import { type RideScreenProps } from './props';
 import RidePreferences from './RidePreferences';
 
@@ -38,7 +42,7 @@ type lineStateTypes = {
 const dateOptions: Intl.DateTimeFormatOptions = {
   year: '2-digit',
   month: '2-digit',
-  day: 'numeric',
+  day: '2-digit',
 };
 
 const RideScreen = ({}: RideScreenProps): JSX.Element => {
@@ -65,10 +69,16 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
   const { colors } = useTheme();
   const [isConfirmationPopupVisible, setIsConfirmationPopupVisible] = useState<boolean>(false);
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
+
+  const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
+  const [offerStartPoint, setOfferStartPoint] = useState<string>('');
+  const [offerPoints, setOfferPoints] = useState<string[]>([]);
+
   const [lineState, setLineState] = useState<lineStateTypes>(rideBuilderRecord.offline);
   const currentDate = new Intl.DateTimeFormat(getLocales()[0].languageTag, dateOptions).format(new Date());
 
-  const { textPrimaryColor, textSecondaryColor, backgroundPrimaryColor } = colors;
+  const { textPrimaryColor, textSecondaryColor, backgroundPrimaryColor, primaryGradientStartColor, primaryColor } =
+    colors;
 
   const computedStyles = StyleSheet.create({
     title: {
@@ -82,9 +92,32 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
     },
   });
 
+  useEffect(() => {
+    setOfferStartPoint('John F. Kennedy Blvd, Jersey City, NJ');
+    setOfferPoints([
+      'John F. Kennedy Blvd, Jersey City, NJ',
+      'John F. Kennedy Blvd, Jersey City, NJ',
+      'John F. Kennedy Blvd, Jersey City, NJ',
+    ]);
+  }, []);
+
   const swipeHandler = (mode: lineStates) => {
     setLineState(rideBuilderRecord[mode]);
     setIsConfirmationPopupVisible(false);
+  };
+
+  const onOfferPopupClose = () => {
+    setOfferPoints([]);
+    setOfferStartPoint('');
+    setIsOfferPopupVisible(false);
+  };
+
+  const onOfferDecline = () => {
+    onOfferPopupClose();
+  };
+
+  const onOfferAccept = () => {
+    onOfferPopupClose();
   };
 
   const { popupTitle, toLineState, bottomTitle, buttonText, buttonMode, swipeMode } = lineState;
@@ -107,7 +140,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
             <PreferencesIcon />
           </Pressable>
           <Text style={[computedStyles.title, styles.title]}>{bottomTitle}</Text>
-          <Pressable>
+          <Pressable onPress={() => setIsOfferPopupVisible(true)}>
             <StatisticsIcon />
           </Pressable>
         </View>
@@ -136,6 +169,26 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
         >
           <RidePreferences tarifs={['BasicX', 'BasicXL', 'ComfortX']} />
         </Popup>
+      )}
+      {isOfferPopupVisible && (
+        <>
+          <Popup>
+            <Offer
+              offerPoints={[offerStartPoint, ...offerPoints]}
+              onOfferAccept={onOfferAccept}
+              onOfferDecline={onOfferDecline}
+            />
+          </Popup>
+          <Animated.View style={styles.timer} exiting={FadeOut.duration(300)} entering={FadeIn.duration(300)}>
+            <Timer
+              initialDate={new Date(new Date().getTime() + 20000)} //20000 - for test
+              onAfterCountdownEnds={onOfferPopupClose}
+              startColor={primaryGradientStartColor}
+              endColor={primaryColor}
+              mode={TimerModes.Normal}
+            />
+          </Animated.View>
+        </>
       )}
     </SafeAreaView>
   );
@@ -203,6 +256,11 @@ const styles = StyleSheet.create({
   preferencesPopup: {
     paddingHorizontal: 0,
     paddingVertical: 0,
+  },
+  timer: {
+    position: 'absolute',
+    top: sizes.paddingVertical,
+    right: sizes.paddingHorizontal,
   },
 });
 
