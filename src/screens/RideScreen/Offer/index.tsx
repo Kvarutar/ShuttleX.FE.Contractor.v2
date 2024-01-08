@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LayoutChangeEvent, ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
+import { ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
 import {
   Button,
   ButtonModes,
@@ -10,6 +10,7 @@ import {
   FlatListWithCustomScroll,
   LocationIcon,
   PickUpIcon,
+  ScrollViewWithCustomScroll,
   Text,
   useTheme,
 } from 'shuttlex-integration';
@@ -26,7 +27,6 @@ const Offer = ({
   onOfferDecline: () => void;
 }) => {
   const [isShowMorePoints, setIsShowMorePoints] = useState<boolean>(false);
-  const [itemHeight, setItemHeight] = useState<number>(0);
 
   const { t } = useTranslation();
 
@@ -59,14 +59,7 @@ const Offer = ({
     }
 
     return (
-      <OfferItem
-        address={item}
-        pointName={pointName}
-        isDropOff={isDropOff}
-        style={computedStyles.offerItemTitle}
-        setItemHeight={setItemHeight}
-        index={index}
-      />
+      <OfferItem address={item} pointName={pointName} isDropOff={isDropOff} style={computedStyles.offerItemTitle} />
     );
   };
 
@@ -74,15 +67,9 @@ const Offer = ({
     <>
       <View style={styles.offerItemsWrapper}>
         {isShowMorePoints ? (
-          <FlatListWithCustomScroll
-            itemHeight={itemHeight}
-            renderItems={renderTarifs}
-            items={offerPoints}
-            barStyle={styles.bar}
-            withScroll
-          />
+          <FlatListWithCustomScroll renderItems={renderTarifs} items={offerPoints} withScroll />
         ) : (
-          <>
+          <ScrollViewWithCustomScroll>
             <OfferItem
               address={offerPoints[0]}
               pointName={t('ride_Ride_Offer_pickUpTitle')}
@@ -97,7 +84,7 @@ const Offer = ({
               isDropOff
               style={computedStyles.offerItemTitle}
             />
-          </>
+          </ScrollViewWithCustomScroll>
         )}
       </View>
       <View style={[styles.lastHorizontalSeparator, computedStyles.separator]} />
@@ -133,8 +120,6 @@ const OfferItem = ({
   pointName,
   isDropOff,
   style,
-  setItemHeight,
-  index,
   setIsShowMorePoints,
   numberOfAdditionalPoints,
 }: OfferProps) => {
@@ -148,14 +133,8 @@ const OfferItem = ({
     },
   });
 
-  const onLayout = (e: LayoutChangeEvent, i?: number) => {
-    if (setItemHeight && i === 0) {
-      setItemHeight(e.nativeEvent.layout.height);
-    }
-  };
-
   return (
-    <View onLayout={e => onLayout(e, index)} style={[styles.offerWrapper, isDropOff ? styles.dropOffWrapper : {}]}>
+    <View style={[styles.offerWrapper, isDropOff ? styles.dropOffWrapper : {}]}>
       <View style={styles.offerItemTop}>
         {isDropOff ? <DropOffIcon /> : <PickUpIcon />}
         <View
@@ -253,10 +232,6 @@ const styles = StyleSheet.create({
   offerAdditionalPointsText: {
     fontSize: 14,
     paddingHorizontal: 8,
-  },
-  bar: {
-    top: 10,
-    right: 0,
   },
   dropOffWrapper: {
     paddingBottom: 20,

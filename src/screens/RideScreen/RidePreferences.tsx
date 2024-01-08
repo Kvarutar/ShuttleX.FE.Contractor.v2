@@ -4,7 +4,6 @@ import { Bar, BlueCheck1, FlatListWithCustomScroll, sizes, Text } from 'shuttlex
 
 const RidePreferences = ({ tarifs }: { tarifs: string[] }) => {
   const [modes, setModes] = useState<boolean[]>(new Array(tarifs.length).fill(false));
-  const [itemHeight, setItemHeight] = useState(0);
 
   useEffect(() => {}, [modes, tarifs]);
 
@@ -27,12 +26,7 @@ const RidePreferences = ({ tarifs }: { tarifs: string[] }) => {
       };
     }
     return (
-      <Pressable
-        key={index}
-        style={[styles.preference, listItemComputedStyles]}
-        onPress={() => onPressHandler(index)}
-        onLayout={e => (index === 0 ? setItemHeight(e.nativeEvent.layout.height) : {})}
-      >
+      <Pressable key={index} style={[styles.preference, listItemComputedStyles]} onPress={() => onPressHandler(index)}>
         <Bar isActive={modes[index]} style={styles.bar}>
           <View style={styles.preferenceContent}>
             <Image source={require('shuttlex-integration/src/assets/img/BasicX.png')} style={styles.img} />
@@ -46,7 +40,12 @@ const RidePreferences = ({ tarifs }: { tarifs: string[] }) => {
 
   return (
     <View style={styles.preferenceWrapper}>
-      <FlatListWithCustomScroll renderItems={renderTarifs} items={tarifs} itemHeight={itemHeight} />
+      <FlatListWithCustomScroll
+        renderItems={renderTarifs}
+        items={tarifs}
+        visibleBarOffset={sizes.paddingHorizontal}
+        barStyle={styles.scrollBar}
+      />
     </View>
   );
 };
@@ -68,6 +67,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  scrollBar: {
+    right: 10,
+    top: 25,
   },
   img: {
     width: 90,

@@ -5,8 +5,6 @@ export type OfferProps = {
   pointName: string;
   isDropOff: boolean;
   style: StyleProp<TextStyle>;
-  setItemHeight?: (height: number) => void;
-  index?: number;
   setIsShowMorePoints?: (isShowMorePoints: boolean) => void;
   numberOfAdditionalPoints?: number;
 };
