@@ -16,6 +16,7 @@ import {
   RoundButton,
   sizes,
   StatisticsIcon,
+  StopWatch,
   SwipeButton,
   SwipeButtonModes,
   Text,
@@ -194,6 +195,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
         <RoundButton>
           <MenuIcon />
         </RoundButton>
+        <StopWatch initialDate={new Date()} mask="{h}h {m}m" />
         <View style={styles.headerRightButtons}>
           <RoundButton>
             <NotificationIcon />
