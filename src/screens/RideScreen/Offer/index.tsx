@@ -91,11 +91,11 @@ const Offer = ({
       <View style={styles.offerInfoWrapper}>
         <View style={styles.offerInfoItem}>
           <ClockIcon style={styles.offerInfoIcon} />
-          <Text style={computedStyles.offerInfoText}>2 {t('ride_Ride_Offer_time')}</Text>
+          <Text style={computedStyles.offerInfoText}>{t('ride_Ride_Offer_minutes', { count: 2 })}</Text>
         </View>
         <View style={styles.offerInfoItem}>
           <LocationIcon style={styles.offerInfoIcon} />
-          <Text style={computedStyles.offerInfoText}>0.4 {t('ride_Ride_Offer_distance')}</Text>
+          <Text style={computedStyles.offerInfoText}>{t('ride_Ride_Offer_kilometers', { count: 0.4 })}</Text>
         </View>
         <View style={styles.offerInfoItem}>
           <CurrencyIcon style={styles.offerInfoIcon} />
