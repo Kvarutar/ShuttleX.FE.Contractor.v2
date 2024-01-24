@@ -116,7 +116,7 @@ const AddressWithMeta = ({ offer }: { offer: offerType }) => {
 
   return (
     <>
-      <View>
+      <View style={styles.visibleTextWrapper}>
         <View style={styles.visibleHeader}>
           <DropOffIcon />
           <Text numberOfLines={1} style={styles.address}>
@@ -152,7 +152,7 @@ const AddressWithPassengerInfo = ({ offer, withStopPoint = false }: { offer: off
 
   return (
     <>
-      <View>
+      <View style={styles.visibleTextWrapper}>
         <View style={styles.visibleHeader}>
           <PickUpIcon />
           <Text numberOfLines={1} style={styles.address}>
@@ -202,7 +202,7 @@ const AddressWithExtendedPassengerInfo = ({
         <RoundButton roundButtonStyle={styles.passengerAvatarWrapper}>
           <Image style={styles.passengerAvatar} source={require('../../../../assets/img/Man.png')} />
         </RoundButton>
-        <View>
+        <View style={styles.visibleTextWrapper}>
           <Text style={styles.passangerInfoWithAvatarText}>
             {offer.passenger.name} {offer.passenger.lastName}
           </Text>
@@ -251,12 +251,12 @@ const styles = StyleSheet.create({
   },
   address: {
     fontFamily: 'Inter Medium',
-    maxWidth: 284,
+    flexShrink: 1,
   },
   addressMini: {
     fontFamily: 'Inter Medium',
-    maxWidth: 220,
     fontSize: 12,
+    flexShrink: 1,
   },
   addressMiniWrapper: {
     flexDirection: 'row',
@@ -293,6 +293,9 @@ const styles = StyleSheet.create({
     height: 52,
     width: 52,
   },
+  visibleTextWrapper: {
+    flexShrink: 1,
+  },
   passengerAvatarWrapper: {
     width: 61,
     height: 61,
@@ -306,10 +309,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',
+    flexShrink: 1,
   },
   passangerInfoWithAvatarText: {
     fontFamily: 'Inter Medium',
-    maxWidth: 220,
   },
   secondPoint: {
     marginTop: 6,

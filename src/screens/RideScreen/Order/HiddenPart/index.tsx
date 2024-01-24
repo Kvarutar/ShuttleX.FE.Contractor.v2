@@ -67,7 +67,9 @@ const ExtendedContactInfo = ({ offer }: { offer: offerType }) => {
     <Bar isActive style={styles.hiddenExtendedContactInfo}>
       <View style={styles.hiddenPassengerInfo}>
         <PassengerIcon style={styles.passengerBigIcon} color={colors.iconPrimaryColor} />
-        <Text style={styles.hiddenPassengerInfoName}>{offer.passenger.name + ' ' + offer.passenger.lastName}</Text>
+        <Text style={styles.hiddenPassengerInfoName}>
+          {offer.passenger.name} {offer.passenger.lastName}
+        </Text>
       </View>
       <View style={styles.hiddenContactButtons}>
         <Button buttonStyle={styles.hiddenContactButtonStyle} style={styles.hiddenContactButtonsItem}>
@@ -102,8 +104,6 @@ const ShortContactInfo = ({ offer }: { offer: offerType }) => {
     </Pressable>
   );
 };
-
-export default HiddenPart;
 
 const styles = StyleSheet.create({
   hiddenPassengerInfo: {
@@ -194,3 +194,5 @@ const styles = StyleSheet.create({
     height: 16,
   },
 });
+
+export default HiddenPart;

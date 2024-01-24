@@ -61,7 +61,7 @@ const SignUp = ({ onPress, navigation }: AuthProps): JSX.Element => {
             })
           }
         />
-        <PhoneInput />
+        <PhoneInput getPhoneNumber={() => {}} />
 
         <CheckBox getCheckValue={() => {}} style={styles.checkBoxContainer} text="I agree with the">
           <Pressable onPress={navigationToSignUpPhoneCodeScreen} hitSlop={20}>
