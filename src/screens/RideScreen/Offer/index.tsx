@@ -15,14 +15,15 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { OfferType } from '../../../core/ride/redux/trip/types';
 import { OfferProps } from './props';
 
 const Offer = ({
-  offerPoints,
+  offer,
   onOfferAccept,
   onOfferDecline,
 }: {
-  offerPoints: string[];
+  offer: OfferType;
   onOfferAccept: () => void;
   onOfferDecline: () => void;
 }) => {
@@ -31,6 +32,8 @@ const Offer = ({
   const { t } = useTranslation();
 
   const { colors } = useTheme();
+
+  const offerPoints = [offer.startPosition, ...offer.targetPointsPosition];
 
   const computedStyles = StyleSheet.create({
     offerInfoText: {
@@ -91,15 +94,17 @@ const Offer = ({
       <View style={styles.offerInfoWrapper}>
         <View style={styles.offerInfoItem}>
           <ClockIcon style={styles.offerInfoIcon} />
-          <Text style={computedStyles.offerInfoText}>{t('ride_Ride_Offer_minutes', { count: 2 })}</Text>
+          <Text style={computedStyles.offerInfoText}>{t('ride_Ride_Offer_minutes', { count: offer.fullTime })}</Text>
         </View>
         <View style={styles.offerInfoItem}>
           <LocationIcon style={styles.offerInfoIcon} />
-          <Text style={computedStyles.offerInfoText}>{t('ride_Ride_Offer_kilometers', { count: 0.4 })}</Text>
+          <Text style={computedStyles.offerInfoText}>
+            {t('ride_Ride_Offer_kilometers', { count: offer.fullDistance })}
+          </Text>
         </View>
         <View style={styles.offerInfoItem}>
           <CurrencyIcon style={styles.offerInfoIcon} />
-          <Text style={computedStyles.offerInfoText}>$856</Text>
+          <Text style={computedStyles.offerInfoText}>{offer.total}</Text>
         </View>
       </View>
       <View style={styles.offerButtons}>

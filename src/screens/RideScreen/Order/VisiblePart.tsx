@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 import {
   Button,
   ButtonModes,
@@ -19,26 +20,31 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { offerType, RideStatus } from '../../props';
-import { VisiblePartProps } from './props';
+import { useAppDispatch } from '../../../core/redux/hooks';
+import { endTrip, setTripStatus } from '../../../core/ride/redux/trip';
+import { orderSelector, tripStatusSelector } from '../../../core/ride/redux/trip/selectors';
+import { OrderType, TripStatus } from '../../../core/ride/redux/trip/types';
 
-const VisiblePart = ({ offer, rideStatus, setRideStatus, endRide }: VisiblePartProps) => {
+const VisiblePart = () => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const order = useSelector(orderSelector);
+  const tripStatus = useSelector(tripStatusSelector);
 
   useEffect(() => {
     setTimeout(() => {
-      setRideStatus(RideStatus.Arriving); //for test
+      dispatch(setTripStatus(TripStatus.Arriving)); //for test
     }, 10000);
-  }, [setRideStatus]);
+  }, [dispatch]);
 
-  const mainContent = {
-    idle: <AddressWithMeta offer={offer} />,
-    arriving: <AddressWithPassengerInfo offer={offer} />,
-    arrivingAtStopPoint: <AddressWithPassengerInfo withStopPoint offer={offer} />,
-    arrived: <AddressWithExtendedPassengerInfo offer={offer} />,
-    arrivedAtStopPoint: <AddressWithExtendedPassengerInfo withStopPoint offer={offer} />,
-    ride: <AddressWithMeta offer={offer} />,
-    ending: <AddressWithExtendedPassengerInfo offer={offer} />,
+  const mainContent = order && {
+    idle: <AddressWithMeta order={order} />,
+    arriving: <AddressWithPassengerInfo order={order} />,
+    arrivingAtStopPoint: <AddressWithPassengerInfo withStopPoint order={order} />,
+    arrived: <AddressWithExtendedPassengerInfo order={order} />,
+    arrivedAtStopPoint: <AddressWithExtendedPassengerInfo withStopPoint order={order} />,
+    ride: <AddressWithMeta order={order} />,
+    ending: <AddressWithExtendedPassengerInfo order={order} />,
   };
 
   const statusSwitchers = {
@@ -48,7 +54,7 @@ const VisiblePart = ({ offer, rideStatus, setRideStatus, endRide }: VisiblePartP
         <Button
           mode={ButtonModes.Mode1}
           text={t('ride_Ride_Order_arrivedButton')}
-          onPress={() => setRideStatus(RideStatus.Arrived)}
+          onPress={() => dispatch(setTripStatus(TripStatus.Arrived))}
         />
       </StatusSwitcher>
     ),
@@ -57,7 +63,7 @@ const VisiblePart = ({ offer, rideStatus, setRideStatus, endRide }: VisiblePartP
         <Button
           mode={ButtonModes.Mode1}
           text={t('ride_Ride_Order_arrivedToStopButton')}
-          onPress={() => setRideStatus(RideStatus.ArrivedAtStopPoint)}
+          onPress={() => dispatch(setTripStatus(TripStatus.ArrivedAtStopPoint))}
         />
       </StatusSwitcher>
     ),
@@ -65,7 +71,7 @@ const VisiblePart = ({ offer, rideStatus, setRideStatus, endRide }: VisiblePartP
       <StatusSwitcher>
         <SwipeButton
           mode={SwipeButtonModes.Confirm}
-          onSwipeEnd={() => setRideStatus(RideStatus.Ride)}
+          onSwipeEnd={() => dispatch(setTripStatus(TripStatus.Ride))}
           text={t('ride_Ride_Order_pickUpButton')}
         />
       </StatusSwitcher>
@@ -74,7 +80,7 @@ const VisiblePart = ({ offer, rideStatus, setRideStatus, endRide }: VisiblePartP
       <StatusSwitcher>
         <SwipeButton
           mode={SwipeButtonModes.Confirm}
-          onSwipeEnd={() => setRideStatus(RideStatus.Ride)}
+          onSwipeEnd={() => dispatch(setTripStatus(TripStatus.Ride))}
           text={t('ride_Ride_Order_pickUpButton')}
         />
       </StatusSwitcher>
@@ -84,7 +90,7 @@ const VisiblePart = ({ offer, rideStatus, setRideStatus, endRide }: VisiblePartP
       <StatusSwitcher>
         <SwipeButton
           mode={SwipeButtonModes.Confirm}
-          onSwipeEnd={endRide}
+          onSwipeEnd={() => dispatch(endTrip())}
           text={t('ride_Ride_Order_finishRideButton')}
         />
       </StatusSwitcher>
@@ -92,19 +98,23 @@ const VisiblePart = ({ offer, rideStatus, setRideStatus, endRide }: VisiblePartP
   };
 
   let wrapperStyle;
-  if (rideStatus === RideStatus.ArrivedAtStopPoint || rideStatus === RideStatus.ArrivingAtStopPoint) {
+  if (tripStatus === TripStatus.ArrivedAtStopPoint || tripStatus === TripStatus.ArrivingAtStopPoint) {
     wrapperStyle = styles.alignFlexStart;
   }
 
-  return (
-    <>
-      <View style={[styles.visible, wrapperStyle]}>{mainContent[rideStatus]}</View>
-      {statusSwitchers[rideStatus]}
-    </>
-  );
+  if (mainContent) {
+    return (
+      <>
+        <View style={[styles.visible, wrapperStyle]}>{mainContent[tripStatus]}</View>
+        {statusSwitchers[tripStatus]}
+      </>
+    );
+  }
+
+  return <></>;
 };
 
-const AddressWithMeta = ({ offer }: { offer: offerType }) => {
+const AddressWithMeta = ({ order }: { order: OrderType }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -120,7 +130,7 @@ const AddressWithMeta = ({ offer }: { offer: offerType }) => {
         <View style={styles.visibleHeader}>
           <DropOffIcon />
           <Text numberOfLines={1} style={styles.address}>
-            {offer.startPosition}
+            {order.startPosition}
           </Text>
         </View>
         <View style={styles.visibleContent}>
@@ -141,7 +151,7 @@ const AddressWithMeta = ({ offer }: { offer: offerType }) => {
   );
 };
 
-const AddressWithPassengerInfo = ({ offer, withStopPoint = false }: { offer: offerType; withStopPoint?: boolean }) => {
+const AddressWithPassengerInfo = ({ order, withStopPoint = false }: { order: OrderType; withStopPoint?: boolean }) => {
   const { colors } = useTheme();
 
   const computedStyles = StyleSheet.create({
@@ -156,21 +166,21 @@ const AddressWithPassengerInfo = ({ offer, withStopPoint = false }: { offer: off
         <View style={styles.visibleHeader}>
           <PickUpIcon />
           <Text numberOfLines={1} style={styles.address}>
-            {offer.startPosition}
+            {order.startPosition}
           </Text>
         </View>
         {withStopPoint && (
           <View style={[styles.visibleHeader, styles.secondPoint]}>
             <DropOffIcon />
             <Text numberOfLines={1} style={styles.address}>
-              {offer.startPosition}
+              {order.startPosition}
             </Text>
           </View>
         )}
         <View style={styles.visibleContentWithoutGap}>
           <PassengerIcon />
           <Text style={[computedStyles.passengerName, styles.visibleMiniPassengerName]}>
-            {offer.passenger.name} {offer.passenger.lastName}
+            {order.passenger.name} {order.passenger.lastName}
           </Text>
         </View>
       </View>
@@ -182,10 +192,10 @@ const AddressWithPassengerInfo = ({ offer, withStopPoint = false }: { offer: off
 };
 
 const AddressWithExtendedPassengerInfo = ({
-  offer,
+  order,
   withStopPoint = false,
 }: {
-  offer: offerType;
+  order: OrderType;
   withStopPoint?: boolean;
 }) => {
   const { colors } = useTheme();
@@ -200,23 +210,23 @@ const AddressWithExtendedPassengerInfo = ({
     <>
       <View style={styles.passangerInfoWithAvatar}>
         <RoundButton roundButtonStyle={styles.passengerAvatarWrapper}>
-          <Image style={styles.passengerAvatar} source={require('../../../../assets/img/Man.png')} />
+          <Image style={styles.passengerAvatar} source={require('../../../assets/img/Man.png')} />
         </RoundButton>
         <View style={styles.visibleTextWrapper}>
           <Text style={styles.passangerInfoWithAvatarText}>
-            {offer.passenger.name} {offer.passenger.lastName}
+            {order.passenger.name} {order.passenger.lastName}
           </Text>
           <View style={styles.addressMiniWrapper}>
             {withStopPoint ? <PickUpIcon /> : <DropOffIcon />}
             <Text numberOfLines={1} style={[styles.addressMini, computedStyles.addressMini]}>
-              {offer.startPosition}
+              {order.startPosition}
             </Text>
           </View>
           {withStopPoint && (
             <View style={[styles.addressMiniWrapper, styles.withoutMarginTop]}>
               <DropOffIcon />
               <Text numberOfLines={1} style={[styles.addressMini, computedStyles.addressMini]}>
-                {offer.startPosition}
+                {order.startPosition}
               </Text>
             </View>
           )}

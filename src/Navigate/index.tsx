@@ -15,7 +15,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const Navigate = (): JSX.Element => (
   <NavigationContainer>
     <Stack.Navigator
-      initialRouteName="Splash"
+      initialRouteName="Ride"
       screenOptions={{
         headerShown: false,
       }}

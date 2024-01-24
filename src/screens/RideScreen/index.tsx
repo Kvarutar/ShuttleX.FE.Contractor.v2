@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 import {
   Bar,
   BottomWindow,
@@ -23,9 +24,13 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { useAppDispatch } from '../../core/redux/hooks';
+import { setOrder } from '../../core/ride/redux/trip';
+import { orderSelector, tripStatusSelector } from '../../core/ride/redux/trip/selectors';
+import { OfferType, TripStatus } from '../../core/ride/redux/trip/types';
 import Offer from './Offer';
 import Order from './Order';
-import { offerType, type RideScreenProps, RideStatus } from './props';
+import { type RideScreenProps } from './props';
 import RidePreferences from './RidePreferences';
 import TarifsCarousel from './TarifsCarousel';
 
@@ -68,12 +73,11 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
 
   const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
-  const [offer, setOffer] = useState<offerType>();
-  const [isOfferAccepted, setIsOfferAccepted] = useState<boolean>(false);
+  const [offer, setOffer] = useState<OfferType>();
 
-  const [isRideContinues, setIsRideContinues] = useState<boolean>(false);
-
-  const [rideStatus, setRideStatus] = useState<RideStatus>(RideStatus.Idle);
+  const order = useSelector(orderSelector);
+  const tripStatus = useSelector(tripStatusSelector);
+  const dispatch = useAppDispatch();
 
   const [isPassangerLate, setIsPassangerLate] = useState<boolean>(false);
 
@@ -118,6 +122,10 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
         lastName: 'Skorodumov',
         phone: '89990622720',
       },
+      tripTariff: 'BasicX',
+      total: '20.45',
+      fullDistance: 20.4,
+      fullTime: 25,
     });
   }, []);
 
@@ -137,12 +145,13 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
 
   const onOfferAccept = () => {
     setIsOfferPopupVisible(false);
-    setIsOfferAccepted(true);
-    setIsRideContinues(true);
+    if (offer) {
+      dispatch(setOrder(offer));
+    }
   };
 
   const headerTimer = () => {
-    if (rideStatus === RideStatus.Arrived) {
+    if (tripStatus === TripStatus.Arrived) {
       if (isPassangerLate) {
         return (
           <Animated.View
@@ -195,13 +204,8 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
           {headerTimer()}
         </View>
       </View>
-      {offer && isOfferAccepted && isRideContinues ? (
-        <Order
-          offer={offer}
-          rideStatus={rideStatus}
-          setRideStatus={setRideStatus}
-          endRide={() => setIsRideContinues(false)}
-        />
+      {order ? (
+        <Order />
       ) : (
         <BottomWindow style={styles.bottom}>
           <View style={styles.infoWrapper}>
@@ -236,11 +240,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
       {offer && isOfferPopupVisible && (
         <>
           <Popup>
-            <Offer
-              offerPoints={[offer.startPosition, ...offer.targetPointsPosition]}
-              onOfferAccept={onOfferAccept}
-              onOfferDecline={onOfferDecline}
-            />
+            <Offer offer={offer} onOfferAccept={onOfferAccept} onOfferDecline={onOfferDecline} />
           </Popup>
           <Animated.View
             style={styles.timer}
