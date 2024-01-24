@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
-import { getLocales } from 'react-native-localize';
+import { Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import {
   Bar,
   BottomWindow,
   Button,
   ButtonModes,
-  ClockIcon,
   MenuIcon,
   NotificationIcon,
   Popup,
@@ -29,6 +27,7 @@ import Offer from './Offer';
 import Order from './Order';
 import { offerType, type RideScreenProps, RideStatus } from './props';
 import RidePreferences from './RidePreferences';
+import TarifsCarousel from './TarifsCarousel';
 
 type lineStates = 'online' | 'offline';
 
@@ -39,12 +38,6 @@ type lineStateTypes = {
   buttonText: string;
   buttonMode: ButtonModes;
   swipeMode: SwipeButtonModes;
-};
-
-const dateOptions: Intl.DateTimeFormatOptions = {
-  year: '2-digit',
-  month: '2-digit',
-  day: '2-digit',
 };
 
 const timerAnimationDuration = 300;
@@ -85,7 +78,6 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
   const [isPassangerLate, setIsPassangerLate] = useState<boolean>(false);
 
   const [lineState, setLineState] = useState<lineStateTypes>(rideBuilderRecord.offline);
-  const currentDate = new Intl.DateTimeFormat(getLocales()[0].languageTag, dateOptions).format(new Date());
 
   const {
     textPrimaryColor,
@@ -222,14 +214,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
             </Pressable>
           </View>
           <Bar style={styles.card} isActive>
-            <Image source={require('shuttlex-integration/src/assets/img/BasicX.png')} style={styles.img} />
-            <View style={styles.textWrapper}>
-              <Text style={computedStyles.title}>BasicX</Text>
-              <View style={styles.dateWrapper}>
-                <ClockIcon />
-                <Text style={[styles.date, computedStyles.dateText]}>{currentDate}</Text>
-              </View>
-            </View>
+            <TarifsCarousel selectedTarifs={['BasicX', 'PremiumXL', 'BasicXL']} />
             <Button mode={buttonMode} text={buttonText} onPress={() => setIsConfirmationPopupVisible(true)} />
           </Bar>
         </BottomWindow>
@@ -298,18 +283,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  img: {
-    width: 90,
-    height: 57,
-  },
-  textWrapper: {
-    marginRight: 20,
-    marginLeft: 2,
-  },
-  dateWrapper: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
   infoWrapper: {
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -321,10 +294,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-  },
-  date: {
-    fontSize: 12,
-    marginLeft: 4,
   },
   confirmTitle: {
     marginBottom: 62,
@@ -347,46 +316,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: sizes.paddingVertical,
     right: sizes.paddingHorizontal,
-  },
-  orderWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  orderInfoWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-  },
-  orderMetaWrapper: {
-    flexDirection: 'row',
-    gap: 15,
-  },
-  orderMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  orderMetaText: {
-    fontSize: 12,
-  },
-  orderPassangerName: {
-    fontFamily: 'Inter Medium',
-    fontSize: 18,
-    marginBottom: 6,
-  },
-  orderPassangerAvatar: {
-    width: 73,
-    height: 73,
-    borderRadius: 100,
-  },
-  orderPassangerAvatarImage: {
-    width: 62,
-    height: 62,
-  },
-  phoneButton: {
-    height: 52,
-    width: 52,
-    borderRadius: 22,
   },
   additionalHeaderButtons: {
     marginTop: 30,
