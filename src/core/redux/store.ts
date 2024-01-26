@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 import tripReducer from '../ride/redux/trip';
+import contractorReducer from './contractor';
 
 const rootReducer = combineReducers({
   trip: tripReducer,
+  contractor: contractorReducer,
 });
 
 export const store = configureStore({

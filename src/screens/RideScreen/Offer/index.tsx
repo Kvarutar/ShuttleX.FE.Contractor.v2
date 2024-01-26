@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
+import { Dimensions, ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
 import {
   Button,
   ButtonModes,
@@ -17,6 +17,8 @@ import {
 
 import { OfferType } from '../../../core/ride/redux/trip/types';
 import { OfferProps } from './props';
+
+const windowHeight = Dimensions.get('window').height;
 
 const Offer = ({
   offer,
@@ -51,7 +53,7 @@ const Offer = ({
   });
 
   const renderTarifs: ListRenderItem<string> = ({ item, index }) => {
-    let pointName = t('ride_Ride_Offer_stopTitle');
+    let pointName = `${t('ride_Ride_Offer_stopTitle')}  ${index}`;
     let isDropOff = false;
 
     if (index === 0) {
@@ -70,7 +72,7 @@ const Offer = ({
     <>
       <View style={styles.offerItemsWrapper}>
         {isShowMorePoints ? (
-          <FlatListWithCustomScroll renderItems={renderTarifs} items={offerPoints} withScroll />
+          <FlatListWithCustomScroll renderItem={renderTarifs} items={offerPoints} withScroll />
         ) : (
           <ScrollViewWithCustomScroll>
             <OfferItem
@@ -146,7 +148,7 @@ const OfferItem = ({
           style={[styles.verticalSeparator, computedStyles.separator, isDropOff ? styles.verticalDropOffSeparator : {}]}
         />
       </View>
-      <View>
+      <View style={styles.offerItemBottom}>
         <Text style={[style, styles.offerItemTitle]}>{pointName}</Text>
         <View style={styles.offerAddressWrapper}>
           <Text style={styles.offerItemAddress}>{address}</Text>
@@ -182,6 +184,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderStyle: 'dashed',
     borderBottomWidth: 1,
+    marginTop: 10,
     marginBottom: 20,
   },
   verticalSeparator: {
@@ -196,7 +199,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   offerItemsWrapper: {
-    maxHeight: 220,
+    maxHeight: windowHeight * 0.5,
   },
   offerInfoWrapper: {
     flexDirection: 'row',
@@ -215,6 +218,7 @@ const styles = StyleSheet.create({
   },
   offerItemAddress: {
     fontSize: 20,
+    width: '100%',
   },
   offerAddressWrapper: {
     paddingLeft: 6,
@@ -222,6 +226,9 @@ const styles = StyleSheet.create({
   },
   offerItemTop: {
     alignItems: 'center',
+  },
+  offerItemBottom: {
+    flexShrink: 1,
   },
   offerButtons: {
     flexDirection: 'row',
@@ -239,7 +246,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   dropOffWrapper: {
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
 });
 

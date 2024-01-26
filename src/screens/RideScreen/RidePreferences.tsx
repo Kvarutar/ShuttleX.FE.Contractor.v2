@@ -1,66 +1,119 @@
-import React, { useEffect, useState } from 'react';
-import { Image, ListRenderItem, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { Bar, BlueCheck1, FlatListWithCustomScroll, sizes, Text } from 'shuttlex-integration';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Dimensions, ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
+import {
+  Bar,
+  BarModes,
+  BlueCheck1,
+  Button,
+  FlatListWithCustomScroll,
+  TariffsCarImage,
+  TariffType,
+  Text,
+} from 'shuttlex-integration';
 
-const RidePreferences = ({ tarifs }: { tarifs: string[] }) => {
-  const [modes, setModes] = useState<boolean[]>(new Array(tarifs.length).fill(false));
+import { setPreferredTariffs } from '../../core/redux/contractor';
+import { preferredTariffsSelector, unavailableTariffsSelector } from '../../core/redux/contractor/selectors';
+import { useAppDispatch } from '../../core/redux/hooks';
 
-  useEffect(() => {}, [modes, tarifs]);
+const windowHeight = Dimensions.get('window').height;
 
-  const onPressHandler = (i: number) => {
-    const newModes = [...modes];
-    newModes[i] = !newModes[i];
-    setModes(newModes);
+type TariffModeType = {
+  barMode: BarModes;
+  onPressHandler?: (tariff: TariffType) => void;
+};
+
+const RidePreferences = ({ tarifs, onConfirm }: { tarifs: TariffType[]; onConfirm: () => void }) => {
+  const dispatch = useAppDispatch();
+  const unavailableTariffs = useSelector(unavailableTariffsSelector);
+  const { t } = useTranslation();
+
+  const [selectedPrefferedTariffs, setSelectedPrefferedTariffs] = useState<TariffType[]>([
+    ...useSelector(preferredTariffsSelector),
+  ]);
+
+  const onPressHandler = (tariff: TariffType) => {
+    setSelectedPrefferedTariffs(prev => {
+      let temp = [...prev];
+
+      if (temp.indexOf(tariff) === -1) {
+        temp.push(tariff);
+      } else {
+        temp = temp.filter(el => el !== tariff);
+      }
+
+      return temp;
+    });
   };
 
-  const renderTarifs: ListRenderItem<string> = ({ item, index }) => {
-    let listItemComputedStyles: StyleProp<ViewStyle> = StyleSheet.create({});
+  const renderTarifs: ListRenderItem<TariffType> = ({ item, index }: { item: TariffType; index: number }) => {
+    const tariffModes: Record<any, TariffModeType> = {
+      preffered: {
+        barMode: BarModes.Active,
+        onPressHandler: onPressHandler,
+      },
+      unavailable: {
+        barMode: BarModes.Disabled,
+      },
+      default: {
+        barMode: BarModes.Default,
+        onPressHandler: onPressHandler,
+      },
+    };
 
-    if (index === 0) {
-      listItemComputedStyles = {
-        paddingTop: sizes.paddingHorizontal,
-      };
-    } else if (index === tarifs.length - 1) {
-      listItemComputedStyles = {
-        paddingBottom: sizes.paddingHorizontal,
-      };
+    const isPrefferedTariff = selectedPrefferedTariffs.includes(item);
+    const isUnavailableTariff = unavailableTariffs.includes(item);
+
+    let tariffMode = tariffModes.default;
+
+    if (isPrefferedTariff) {
+      tariffMode = tariffModes.preffered;
+    } else if (isUnavailableTariff) {
+      tariffMode = tariffModes.unavailable;
     }
+
     return (
-      <Pressable key={index} style={[styles.preference, listItemComputedStyles]} onPress={() => onPressHandler(index)}>
-        <Bar isActive={modes[index]} style={styles.bar}>
+      <Pressable key={index} onPress={() => tariffMode.onPressHandler?.(item)}>
+        <Bar mode={tariffMode.barMode} style={styles.bar}>
           <View style={styles.preferenceContent}>
-            <Image source={require('shuttlex-integration/src/assets/img/BasicX.png')} style={styles.img} />
+            <TariffsCarImage tariff={item} style={styles.img} />
             <Text>{item}</Text>
           </View>
-          {modes[index] && <BlueCheck1 />}
+          {isPrefferedTariff && <BlueCheck1 />}
         </Bar>
       </Pressable>
     );
   };
 
+  const onConfirmHandler = () => {
+    dispatch(setPreferredTariffs(selectedPrefferedTariffs));
+    onConfirm();
+  };
+
   return (
     <View style={styles.preferenceWrapper}>
       <FlatListWithCustomScroll
-        renderItems={renderTarifs}
+        renderItem={renderTarifs}
         items={tarifs}
-        visibleBarOffset={sizes.paddingHorizontal}
-        barStyle={styles.scrollBar}
+        contentContainerStyle={styles.contentContainerStyle}
+        barStyle={styles.barStyle}
       />
+      <Button text={t('ride_Ride_RidePreferences_confirmButton')} onPress={onConfirmHandler} style={styles.button} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  preference: {
-    paddingHorizontal: sizes.paddingHorizontal,
-    paddingBottom: 16,
-  },
   preferenceContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+  barStyle: {
+    top: 0,
+  },
   preferenceWrapper: {
-    maxHeight: 380,
+    maxHeight: windowHeight * 0.6,
     position: 'relative',
   },
   bar: {
@@ -68,14 +121,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  scrollBar: {
-    right: 10,
-    top: 25,
-  },
   img: {
-    width: 90,
-    height: 57,
     marginRight: 24,
+  },
+  contentContainerStyle: {
+    gap: 16,
+  },
+  button: {
+    marginTop: 30,
   },
 });
 

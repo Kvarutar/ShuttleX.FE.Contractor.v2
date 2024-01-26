@@ -42,19 +42,19 @@ const HiddenPart = () => {
           <Text style={styles.hiddenTripTypeTitle}>{t('ride_Ride_Order_tripType')}</Text>
           <Text style={styles.hiddenTripTypeContent}>{order.tripTariff}</Text>
         </View>
-        <Bar isActive style={styles.hiddenTotal}>
+        <Bar style={styles.hiddenTotal}>
           <Text style={styles.hiddenTotalTitle}>{t('ride_Ride_Order_totalForRide')}</Text>
           <Text style={styles.hiddenTotalContent}>{order.total}</Text>
         </Bar>
         <View style={styles.hiddenSafety}>
           <Pressable style={styles.hiddenSafetyItem} onPress={() => Linking.openURL('tel:911')}>
-            <Bar style={styles.hiddenSafetyItemIcon} isActive>
+            <Bar style={styles.hiddenSafetyItemIcon}>
               <EmergencyServiceIcon />
             </Bar>
             <Text style={styles.hiddenSafetyItemText}>{t('ride_Ride_Order_contactEmergency')}</Text>
           </Pressable>
           <Pressable style={styles.hiddenSafetyItem}>
-            <Bar style={styles.hiddenSafetyItemIcon} isActive>
+            <Bar style={styles.hiddenSafetyItemIcon}>
               <ReportIcon />
             </Bar>
             <Text style={styles.hiddenSafetyItemText}>{t('ride_Ride_Order_reportIssue')}</Text>
@@ -71,7 +71,7 @@ const ExtendedContactInfo = ({ order }: { order: OrderType }) => {
   const { colors } = useTheme();
 
   return (
-    <Bar isActive>
+    <Bar>
       <View style={styles.hiddenPassengerInfo}>
         <PassengerIcon style={styles.passengerBigIcon} color={colors.iconPrimaryColor} />
         <Text style={styles.hiddenPassengerInfoName}>
@@ -100,7 +100,7 @@ const ShortContactInfo = ({ order }: { order: OrderType }) => {
 
   return (
     <Pressable onPress={() => Linking.openURL(`tel:${order.passenger.phone}`)}>
-      <Bar isActive style={styles.hiddenShortContactInfo}>
+      <Bar style={styles.hiddenShortContactInfo}>
         <Text style={styles.hiddenShortContactInfoText}>
           {t('ride_Ride_Order_callButton')} {order.passenger.name}
         </Text>

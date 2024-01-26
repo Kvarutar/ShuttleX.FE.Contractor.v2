@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   interpolate,
   interpolateColor,
@@ -8,19 +8,22 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import Carousel from 'react-native-reanimated-carousel';
-import { Text, useTheme } from 'shuttlex-integration';
+import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
+import { useSelector } from 'react-redux';
+import { TariffsCarImage, TariffType, Text, useTheme } from 'shuttlex-integration';
+
+import { preferredTariffsSelector } from '../../core/redux/contractor/selectors';
 
 const carouselAnimationDurations = {
   scroll: 500,
   opacity: 200,
 };
 
-const imgHeight = 51;
-
-const TarifsCarousel = ({ selectedTarifs }: { selectedTarifs: string[] }) => {
+const TarifsCarousel = () => {
   const { colors } = useTheme();
   const [activeSlide, setActiveSlide] = useState(0);
+  const prefferedTariffs = useSelector(preferredTariffsSelector);
+  const carouselRef = useRef<ICarouselInstance>(null);
 
   const computedStyles = StyleSheet.create({
     paginationActiveItem: {
@@ -34,32 +37,48 @@ const TarifsCarousel = ({ selectedTarifs }: { selectedTarifs: string[] }) => {
     },
   });
 
-  const paginationItem = selectedTarifs.map((_, i) => (
+  useEffect(() => {
+    carouselRef.current?.scrollTo({ count: -carouselRef.current?.getCurrentIndex() });
+    setActiveSlide(0);
+  }, [prefferedTariffs]);
+
+  const paginationItem = prefferedTariffs.map((_, i) => (
     <PaginationItem key={i} internalIndex={i} activeSlideIndex={activeSlide} />
   ));
 
-  return selectedTarifs.length > 1 ? (
+  return prefferedTariffs.length > 1 ? (
     <View>
       <View style={styles.carouselWrapper}>
         <Carousel
           loop
           width={180}
-          height={imgHeight}
-          data={selectedTarifs}
+          height={64}
+          data={prefferedTariffs}
           scrollAnimationDuration={carouselAnimationDurations.scroll}
           onSnapToItem={index => setActiveSlide(index)}
-          renderItem={({ item, animationValue }) => <SliderItem item={item} animationValue={animationValue} />}
+          ref={carouselRef}
+          renderItem={({ item, animationValue }) => (
+            <SliderItem item={item} animationValue={animationValue} smallText />
+          )}
         />
         <View style={[styles.separator, computedStyles.separator]} />
       </View>
       <View style={styles.carouselPagination}>{paginationItem}</View>
     </View>
   ) : (
-    <SliderItem item={selectedTarifs[0]} />
+    <SliderItem item={prefferedTariffs[0]} />
   );
 };
 
-const SliderItem = ({ item, animationValue }: { item: string; animationValue?: SharedValue<number> }) => {
+const SliderItem = ({
+  item,
+  animationValue,
+  smallText,
+}: {
+  item: TariffType;
+  animationValue?: SharedValue<number>;
+  smallText?: boolean;
+}) => {
   const { colors } = useTheme();
 
   const computedStyles = StyleSheet.create({
@@ -76,9 +95,9 @@ const SliderItem = ({ item, animationValue }: { item: string; animationValue?: S
 
   return (
     <Animated.View style={[styles.carouselItemWrapper, animationValue && carouselItemWrapper]}>
-      <Image source={require('shuttlex-integration/src/assets/img/BasicX.png')} style={styles.img} />
+      <TariffsCarImage tariff={item} />
       <View style={styles.textWrapper}>
-        <Text style={[computedStyles.title, styles.title]}>{item}</Text>
+        <Text style={[computedStyles.title, styles.title, smallText ? styles.smallTitle : {}]}>{item}</Text>
       </View>
     </Animated.View>
   );
@@ -110,12 +129,11 @@ const PaginationItem = ({ internalIndex, activeSlideIndex }: { internalIndex: nu
 };
 
 const styles = StyleSheet.create({
-  img: {
-    width: 80,
-    height: imgHeight,
-  },
   title: {
     fontFamily: 'Inter Medium',
+  },
+  smallTitle: {
+    fontSize: 14,
   },
   textWrapper: {
     marginRight: 20,
@@ -132,6 +150,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 13,
     justifyContent: 'center',
+    marginTop: 4,
   },
   carouselPaginationItem: {
     width: 17,

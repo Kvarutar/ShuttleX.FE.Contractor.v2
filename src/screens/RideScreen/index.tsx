@@ -110,7 +110,8 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
 
   useEffect(() => {
     setOffer({
-      startPosition: 'John F. Kennedy Blvd, Jersey City, NJ',
+      startPosition:
+        'John F. Kennedy Blvd, Jersey City, NJJohn F. Kennedy Blvd, Jersey City, NJJohn F. Kennedy Blvd, Jersey City, NJJohn F. Kennedy Blvd, Jersey City, NJJohn F. Kennedy Blvd, Jersey City, NJ',
       targetPointsPosition: [
         'John F. Kennedy Blvd, Jersey City, NJ',
         'John F. Kennedy Blvd, Jersey City, NJ',
@@ -136,7 +137,6 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
 
   const onOfferPopupClose = () => {
     setIsOfferPopupVisible(false);
-    setOffer(undefined);
   };
 
   const onOfferDecline = () => {
@@ -217,8 +217,8 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
               <StatisticsIcon />
             </Pressable>
           </View>
-          <Bar style={styles.card} isActive>
-            <TarifsCarousel selectedTarifs={['BasicX', 'PremiumXL', 'BasicXL']} />
+          <Bar style={styles.card}>
+            <TarifsCarousel />
             <Button mode={buttonMode} text={buttonText} onPress={() => setIsConfirmationPopupVisible(true)} />
           </Bar>
         </BottomWindow>
@@ -230,11 +230,11 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
         </Popup>
       )}
       {isPreferencesPopupVisible && (
-        <Popup
-          onCloseButtonPress={() => setIsPreferencesPopupVisible(false)}
-          bottomWindowStyle={styles.preferencesPopup}
-        >
-          <RidePreferences tarifs={['BasicX', 'BasicXL', 'ComfortX']} />
+        <Popup onCloseButtonPress={() => setIsPreferencesPopupVisible(false)}>
+          <RidePreferences
+            tarifs={['BasicX', 'BasicXL', 'ComfortX', 'PremiumX', 'PremiumXL', 'TeslaX']}
+            onConfirm={() => setIsPreferencesPopupVisible(false)}
+          />
         </Popup>
       )}
       {offer && isOfferPopupVisible && (
@@ -248,7 +248,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
             entering={FadeIn.duration(timerAnimationDuration)}
           >
             <Timer
-              initialDate={new Date(new Date().getTime() + 20000)} //20000 - for test
+              initialDate={new Date(new Date().getTime() + 20000000)} //20000 - for test
               onAfterCountdownEnds={onOfferPopupClose}
               startColor={primaryGradientStartColor}
               endColor={primaryColor}
@@ -307,10 +307,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  preferencesPopup: {
-    paddingHorizontal: 0,
-    paddingVertical: 0,
   },
   timer: {
     position: 'absolute',
