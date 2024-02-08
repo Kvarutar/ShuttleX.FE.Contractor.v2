@@ -15,7 +15,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { OfferType } from '../../../core/ride/redux/trip/types';
+import { OfferType } from '../../../../core/ride/redux/trip/types';
 import { OfferProps } from './props';
 
 const windowHeight = Dimensions.get('window').height;

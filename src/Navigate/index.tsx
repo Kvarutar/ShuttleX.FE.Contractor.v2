@@ -2,12 +2,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
-import AuthScreen from '../screens/AuthScreen';
-import RideScreen from '../screens/RideScreen';
-import SignInEmailCodeScreen from '../screens/SignInEmailCodeScreen';
-import SignInPhoneCodeScreen from '../screens/SignInPhoneCodeScreen';
-import SignUpPhoneCodeScreen from '../screens/SignUpPhoneCodeScreen';
-import SplashScreen from '../screens/SplashScreen';
+import AuthScreen from '../screens/auth/AuthScreen';
+import SignInEmailCodeScreen from '../screens/auth/SignInEmailCodeScreen';
+import SignInPhoneCodeScreen from '../screens/auth/SignInPhoneCodeScreen';
+import SignUpPhoneCodeScreen from '../screens/auth/SignUpPhoneCodeScreen';
+import SplashScreen from '../screens/auth/SplashScreen';
+import RideScreen from '../screens/ride/RideScreen';
 import { RootStackParamList } from './props';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

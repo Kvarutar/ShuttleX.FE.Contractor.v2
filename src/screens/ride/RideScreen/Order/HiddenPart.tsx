@@ -16,8 +16,8 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { orderSelector, tripStatusSelector } from '../../../core/ride/redux/trip/selectors';
-import { OrderType } from '../../../core/ride/redux/trip/types';
+import { orderSelector, tripStatusSelector } from '../../../../core/ride/redux/trip/selectors';
+import { OrderType } from '../../../../core/ride/redux/trip/types';
 
 const HiddenPart = () => {
   const { t } = useTranslation();

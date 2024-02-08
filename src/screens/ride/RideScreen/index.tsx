@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import { NativeModules, Platform, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import { openSettings } from 'react-native-permissions';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
@@ -8,6 +9,8 @@ import {
   BottomWindow,
   Button,
   ButtonModes,
+  LocationUnavailable,
+  LocationUnavailableProps,
   MenuIcon,
   NotificationIcon,
   Popup,
@@ -24,10 +27,21 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { useAppDispatch } from '../../core/redux/hooks';
-import { setOrder } from '../../core/ride/redux/trip';
-import { orderSelector, tripStatusSelector } from '../../core/ride/redux/trip/selectors';
-import { OfferType, TripStatus } from '../../core/ride/redux/trip/types';
+import { useAppDispatch } from '../../../core/redux/hooks';
+import { useGeolocationStartWatch } from '../../../core/ride/hooks';
+import {
+  setGeolocationAccuracy,
+  setGeolocationIsLocationEnabled,
+  setGeolocationIsPermissionGranted,
+} from '../../../core/ride/redux/geolocation';
+import {
+  geolocationAccuracySelector,
+  geolocationIsLocationEnabledSelector,
+  geolocationIsPermissionGrantedSelector,
+} from '../../../core/ride/redux/geolocation/selectors';
+import { setOrder } from '../../../core/ride/redux/trip';
+import { orderSelector, tripStatusSelector } from '../../../core/ride/redux/trip/selectors';
+import { OfferType, TripStatus } from '../../../core/ride/redux/trip/types';
 import Offer from './Offer';
 import Order from './Order';
 import { type RideScreenProps } from './props';
@@ -45,43 +59,49 @@ type lineStateTypes = {
   swipeMode: SwipeButtonModes;
 };
 
+const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record<lineStates, lineStateTypes> => ({
+  online: {
+    popupTitle: t('ride_Ride_Popup_onlineTitle'),
+    toLineState: 'offline',
+    bottomTitle: t('ride_Ride_BottomWindow_onlineTitle'),
+    buttonText: t('ride_Ride_Bar_onlineTitle'),
+    buttonMode: ButtonModes.Mode3,
+    swipeMode: SwipeButtonModes.Decline,
+  },
+  offline: {
+    popupTitle: t('ride_Ride_Popup_offlineTitle'),
+    toLineState: 'online',
+    bottomTitle: t('ride_Ride_BottomWindow_offlineTitle'),
+    buttonText: t('ride_Ride_Bar_offlineTitle'),
+    buttonMode: ButtonModes.Mode1,
+    swipeMode: SwipeButtonModes.Confirm,
+  },
+});
+
 const timerAnimationDuration = 300;
 
 const RideScreen = ({}: RideScreenProps): JSX.Element => {
-  const { t } = useTranslation();
-  const rideBuilderRecord: Record<lineStates, lineStateTypes> = {
-    online: {
-      popupTitle: t('ride_Ride_Popup_onlineTitle'),
-      toLineState: 'offline',
-      bottomTitle: t('ride_Ride_BottomWindow_onlineTitle'),
-      buttonText: t('ride_Ride_Bar_onlineTitle'),
-      buttonMode: ButtonModes.Mode3,
-      swipeMode: SwipeButtonModes.Decline,
-    },
-    offline: {
-      popupTitle: t('ride_Ride_Popup_offlineTitle'),
-      toLineState: 'online',
-      bottomTitle: t('ride_Ride_BottomWindow_offlineTitle'),
-      buttonText: t('ride_Ride_Bar_offlineTitle'),
-      buttonMode: ButtonModes.Mode1,
-      swipeMode: SwipeButtonModes.Confirm,
-    },
-  };
-
   const { colors } = useTheme();
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  useGeolocationStartWatch();
+
+  const order = useSelector(orderSelector);
+  const tripStatus = useSelector(tripStatusSelector);
+  const isPermissionGranted = useSelector(geolocationIsPermissionGrantedSelector);
+  const isLocationEnabled = useSelector(geolocationIsLocationEnabledSelector);
+  const geolocationAccuracy = useSelector(geolocationAccuracySelector);
+
   const [isConfirmationPopupVisible, setIsConfirmationPopupVisible] = useState<boolean>(false);
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
 
   const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
   const [offer, setOffer] = useState<OfferType>();
 
-  const order = useSelector(orderSelector);
-  const tripStatus = useSelector(tripStatusSelector);
-  const dispatch = useAppDispatch();
-
   const [isPassangerLate, setIsPassangerLate] = useState<boolean>(false);
 
-  const [lineState, setLineState] = useState<lineStateTypes>(rideBuilderRecord.offline);
+  const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t).offline);
 
   const {
     textPrimaryColor,
@@ -131,7 +151,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
   }, []);
 
   const swipeHandler = (mode: lineStates) => {
-    setLineState(rideBuilderRecord[mode]);
+    setLineState(getRideBuilderRecord(t)[mode]);
     setIsConfirmationPopupVisible(false);
   };
 
@@ -186,7 +206,39 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
     }
   };
 
+  let locationUnavailableProps: LocationUnavailableProps | null = null;
+  if (!isPermissionGranted) {
+    locationUnavailableProps = {
+      reason: 'permission_denied',
+      onButtonPress: () => {
+        openSettings();
+        dispatch(setGeolocationIsPermissionGranted(true));
+      },
+    };
+  } else if (!isLocationEnabled) {
+    locationUnavailableProps = {
+      reason: 'location_disabled',
+      onButtonPress: () => {
+        if (Platform.OS === 'ios') {
+          openSettings();
+        } else {
+          NativeModules.CustomModule.navigateToLocationSettings(); // only for android
+        }
+        dispatch(setGeolocationIsLocationEnabled(true));
+      },
+    };
+  } else if (geolocationAccuracy !== 'full') {
+    locationUnavailableProps = {
+      reason: 'accuracy_reduced',
+      onButtonPress: () => {
+        openSettings();
+        dispatch(setGeolocationAccuracy('full'));
+      },
+    };
+  }
+
   const { popupTitle, toLineState, bottomTitle, buttonText, buttonMode, swipeMode } = lineState;
+
   return (
     <SafeAreaView style={styles.wrapper}>
       <View style={[styles.map, computedStyles.map]}>
@@ -257,6 +309,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
           </Animated.View>
         </>
       )}
+      {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
     </SafeAreaView>
   );
 };

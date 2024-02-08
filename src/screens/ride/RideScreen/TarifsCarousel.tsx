@@ -12,7 +12,7 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSelector } from 'react-redux';
 import { TariffsCarImage, TariffType, Text, useTheme } from 'shuttlex-integration';
 
-import { preferredTariffsSelector } from '../../core/redux/contractor/selectors';
+import { preferredTariffsSelector } from '../../../core/redux/contractor/selectors';
 
 const carouselAnimationDurations = {
   scroll: 500,

@@ -20,10 +20,10 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { useAppDispatch } from '../../../core/redux/hooks';
-import { endTrip, setTripStatus } from '../../../core/ride/redux/trip';
-import { orderSelector, tripStatusSelector } from '../../../core/ride/redux/trip/selectors';
-import { OrderType, TripStatus } from '../../../core/ride/redux/trip/types';
+import { useAppDispatch } from '../../../../core/redux/hooks';
+import { endTrip, setTripStatus } from '../../../../core/ride/redux/trip';
+import { orderSelector, tripStatusSelector } from '../../../../core/ride/redux/trip/selectors';
+import { OrderType, TripStatus } from '../../../../core/ride/redux/trip/types';
 
 const VisiblePart = () => {
   const { t } = useTranslation();
@@ -210,7 +210,7 @@ const AddressWithExtendedPassengerInfo = ({
     <>
       <View style={styles.passangerInfoWithAvatar}>
         <RoundButton roundButtonStyle={styles.passengerAvatarWrapper}>
-          <Image style={styles.passengerAvatar} source={require('../../../assets/img/Man.png')} />
+          <Image style={styles.passengerAvatar} source={require('../../../../assets/img/Man.png')} />
         </RoundButton>
         <View style={styles.visibleTextWrapper}>
           <Text style={styles.passangerInfoWithAvatarText}>

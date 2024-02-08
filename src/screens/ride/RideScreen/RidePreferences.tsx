@@ -13,9 +13,9 @@ import {
   Text,
 } from 'shuttlex-integration';
 
-import { setPreferredTariffs } from '../../core/redux/contractor';
-import { preferredTariffsSelector, unavailableTariffsSelector } from '../../core/redux/contractor/selectors';
-import { useAppDispatch } from '../../core/redux/hooks';
+import { setPreferredTariffs } from '../../../core/redux/contractor';
+import { preferredTariffsSelector, unavailableTariffsSelector } from '../../../core/redux/contractor/selectors';
+import { useAppDispatch } from '../../../core/redux/hooks';
 
 const windowHeight = Dimensions.get('window').height;
 
