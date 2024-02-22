@@ -68,30 +68,34 @@ const Offer = ({
     );
   };
 
+  let content = null;
+
+  if (isShowMorePoints) {
+    content = <FlatListWithCustomScroll renderItem={renderTarifs} items={offerPoints} withScroll />;
+  } else {
+    content = (
+      <ScrollViewWithCustomScroll>
+        <OfferItem
+          address={offerPoints[0]}
+          pointName={t('ride_Ride_Offer_pickUpTitle')}
+          isDropOff={false}
+          style={computedStyles.offerItemTitle}
+          numberOfAdditionalPoints={offerPoints.length - 2}
+          setIsShowMorePoints={setIsShowMorePoints}
+        />
+        <OfferItem
+          address={offerPoints[offerPoints.length - 1]}
+          pointName={t('ride_Ride_Offer_dropOffTitle')}
+          isDropOff
+          style={computedStyles.offerItemTitle}
+        />
+      </ScrollViewWithCustomScroll>
+    );
+  }
+
   return (
     <>
-      <View style={styles.offerItemsWrapper}>
-        {isShowMorePoints ? (
-          <FlatListWithCustomScroll renderItem={renderTarifs} items={offerPoints} withScroll />
-        ) : (
-          <ScrollViewWithCustomScroll>
-            <OfferItem
-              address={offerPoints[0]}
-              pointName={t('ride_Ride_Offer_pickUpTitle')}
-              isDropOff={false}
-              style={computedStyles.offerItemTitle}
-              numberOfAdditionalPoints={offerPoints.length - 2}
-              setIsShowMorePoints={setIsShowMorePoints}
-            />
-            <OfferItem
-              address={offerPoints[1]}
-              pointName={t('ride_Ride_Offer_dropOffTitle')}
-              isDropOff
-              style={computedStyles.offerItemTitle}
-            />
-          </ScrollViewWithCustomScroll>
-        )}
-      </View>
+      <View style={styles.offerItemsWrapper}>{content}</View>
       <View style={[styles.lastHorizontalSeparator, computedStyles.separator]} />
       <View style={styles.offerInfoWrapper}>
         <View style={styles.offerInfoItem}>
@@ -158,7 +162,7 @@ const OfferItem = ({
                 <View style={[styles.horizontalSeparator, computedStyles.separator]} />
                 <Pressable onPress={() => setIsShowMorePoints?.(true)}>
                   <Text style={[styles.offerAdditionalPointsText, style]}>
-                    {numberOfAdditionalPoints} {t('ride_Ride_Offer_moreButton')}
+                    {t('ride_Ride_Offer_moreButton', { numberOfPoints: numberOfAdditionalPoints })}
                   </Text>
                 </Pressable>
                 <View style={[styles.horizontalSeparator, computedStyles.separator]} />

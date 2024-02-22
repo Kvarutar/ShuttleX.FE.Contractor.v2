@@ -21,6 +21,7 @@ export type TripState = {
   order: OrderType | null;
   secondOrder: OrderType | null;
   tripStatus: TripStatus;
+  tripPoints: string[] | null;
 };
 
 export enum TripStatus {

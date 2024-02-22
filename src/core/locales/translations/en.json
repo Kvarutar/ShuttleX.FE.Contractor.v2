@@ -5,7 +5,7 @@
   "ride_Ride_BottomWindow_offlineTitle": "You`re offline",
   "ride_Ride_Bar_onlineTitle": "Stop",
   "ride_Ride_Bar_offlineTitle": "Let's go",
-  "ride_Ride_Offer_moreButton": "more",
+  "ride_Ride_Offer_moreButton": "{{numberOfPoints}} more",
   "ride_Ride_Offer_dropOffTitle": "Drop-off",
   "ride_Ride_Offer_stopTitle": "Stop point",
   "ride_Ride_Offer_pickUpTitle": "Pick Up",

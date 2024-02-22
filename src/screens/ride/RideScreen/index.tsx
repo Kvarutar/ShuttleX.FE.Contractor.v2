@@ -129,13 +129,18 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
   });
 
   useEffect(() => {
+    if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Idle) {
+      setIsPassangerLate(false);
+    }
+  }, [tripStatus]);
+
+  useEffect(() => {
     setOffer({
-      startPosition:
-        'John F. Kennedy Blvd, Jersey City, NJJohn F. Kennedy Blvd, Jersey City, NJJohn F. Kennedy Blvd, Jersey City, NJJohn F. Kennedy Blvd, Jersey City, NJJohn F. Kennedy Blvd, Jersey City, NJ',
+      startPosition: '123 Queen St W, Toronto, ON M5H 2M9',
       targetPointsPosition: [
-        'John F. Kennedy Blvd, Jersey City, NJ',
-        'John F. Kennedy Blvd, Jersey City, NJ',
-        'John F. Kennedy Blvd, Jersey City, NJ',
+        '241 Harvie Ave, York, ON M6E 4K9',
+        '450 Blythwood Rd, North York, ON M4N 1A9',
+        '12 Bushbury Dr, North York, ON M3A 2Z7',
       ],
       passengerId: '0',
       passenger: {
@@ -171,7 +176,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
   };
 
   const headerTimer = () => {
-    if (tripStatus === TripStatus.Arrived) {
+    if (tripStatus === TripStatus.Arrived || tripStatus === TripStatus.ArrivedAtStopPoint) {
       if (isPassangerLate) {
         return (
           <Animated.View

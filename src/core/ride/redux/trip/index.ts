@@ -6,6 +6,7 @@ const initialState: TripState = {
   order: null,
   secondOrder: null,
   tripStatus: TripStatus.Idle,
+  tripPoints: null,
 };
 
 const slice = createSlice({
@@ -14,47 +15,49 @@ const slice = createSlice({
   reducers: {
     setOrder(state, action: PayloadAction<OfferType>) {
       const { startPosition, targetPointsPosition, passengerId, passenger, tripTariff, total } = action.payload;
-      state.order = {
-        startPosition,
-        targetPointsPosition,
-        passengerId,
-        passenger,
-        tripTariff,
-        total,
-      };
-    },
-    setSecondOrder(state, action: PayloadAction<OfferType>) {
-      const { startPosition, targetPointsPosition, passengerId, passenger, tripTariff, total } = action.payload;
-      state.secondOrder = {
-        startPosition,
-        targetPointsPosition,
-        passengerId,
-        passenger,
-        tripTariff,
-        total,
-      };
-    },
-    cleanOrder(state) {
-      state.order = null;
-    },
-    cleanSecondOrder(state) {
-      state.secondOrder = null;
+      if (state.order && !state.secondOrder) {
+        state.secondOrder = {
+          startPosition,
+          targetPointsPosition,
+          passengerId,
+          passenger,
+          tripTariff,
+          total,
+        };
+      } else if (!state.order) {
+        state.order = {
+          startPosition,
+          targetPointsPosition,
+          passengerId,
+          passenger,
+          tripTariff,
+          total,
+        };
+        state.tripPoints = [startPosition, ...targetPointsPosition];
+      }
     },
     setTripStatus(state, action: PayloadAction<TripStatus>) {
       state.tripStatus = action.payload;
     },
     endTrip(state) {
       if (state.secondOrder) {
+        state.tripPoints = [state.secondOrder.startPosition, ...state.secondOrder.targetPointsPosition];
         state.order = state.secondOrder;
         state.secondOrder = null;
       } else {
         state.order = null;
+        state.tripPoints = null;
       }
       state.tripStatus = TripStatus.Idle;
+    },
+    toNextTripPoint(state) {
+      if (state.tripPoints) {
+        state.tripPoints.shift();
+      }
     },
   },
 });
 
-export const { setOrder, setSecondOrder, cleanOrder, cleanSecondOrder, setTripStatus, endTrip } = slice.actions;
+export const { setOrder, setTripStatus, endTrip, toNextTripPoint } = slice.actions;
 
 export default slice.reducer;

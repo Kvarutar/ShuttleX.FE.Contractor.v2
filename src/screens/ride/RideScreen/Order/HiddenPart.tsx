@@ -16,28 +16,17 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { orderSelector, tripStatusSelector } from '../../../../core/ride/redux/trip/selectors';
+import { orderSelector } from '../../../../core/ride/redux/trip/selectors';
 import { OrderType } from '../../../../core/ride/redux/trip/types';
 
 const HiddenPart = () => {
   const { t } = useTranslation();
   const order = useSelector(orderSelector);
-  const tripStatus = useSelector(tripStatusSelector);
 
-  const hiddenContactContent = order && {
-    idle: <ExtendedContactInfo order={order} />,
-    arriving: <ShortContactInfo order={order} />,
-    arrivingAtStopPoint: <ShortContactInfo order={order} />,
-    arrived: <ShortContactInfo order={order} />,
-    arrivedAtStopPoint: <ShortContactInfo order={order} />,
-    ride: <ExtendedContactInfo order={order} />,
-    ending: <ShortContactInfo order={order} />,
-  };
-
-  if (hiddenContactContent) {
+  if (order) {
     return (
       <>
-        {hiddenContactContent[tripStatus]}
+        <ContactInfo order={order} />
         <View style={styles.hiddenTripType}>
           <Text style={styles.hiddenTripTypeTitle}>{t('ride_Ride_Order_tripType')}</Text>
           <Text style={styles.hiddenTripTypeContent}>{order.tripTariff}</Text>
@@ -67,7 +56,7 @@ const HiddenPart = () => {
   return <></>;
 };
 
-const ExtendedContactInfo = ({ order }: { order: OrderType }) => {
+const ContactInfo = ({ order }: { order: OrderType }) => {
   const { colors } = useTheme();
 
   return (
@@ -92,23 +81,6 @@ const ExtendedContactInfo = ({ order }: { order: OrderType }) => {
         </Button>
       </View>
     </Bar>
-  );
-};
-
-const ShortContactInfo = ({ order }: { order: OrderType }) => {
-  const { t } = useTranslation();
-
-  return (
-    <Pressable onPress={() => Linking.openURL(`tel:${order.passenger.phone}`)}>
-      <Bar style={styles.hiddenShortContactInfo}>
-        <Text style={styles.hiddenShortContactInfoText}>
-          {t('ride_Ride_Order_callButton')} {order.passenger.name}
-        </Text>
-        <Button mode={ButtonModes.Mode3} buttonStyle={styles.smallPhoneButton}>
-          <PhoneIcon style={styles.smallPhoneButtonIcon} />
-        </Button>
-      </Bar>
-    </Pressable>
   );
 };
 
@@ -172,14 +144,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter Medium',
     fontSize: 12,
     marginTop: 6,
-  },
-  hiddenShortContactInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  hiddenShortContactInfoText: {
-    fontFamily: 'Inter Medium',
   },
   hiddenContactButtonStyle: {
     height: 48,
