@@ -1,9 +1,22 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { getLocales } from 'react-native-localize';
 import { Button, CheckBox, DatePicker, PhoneInput, Text, TextInput, useTheme } from 'shuttlex-integration';
 
 import { AuthProps } from './props';
+
+const maximumDate = new Date();
+maximumDate.setFullYear(maximumDate.getFullYear() - 18);
+
+const formatDate = (date: Date): string =>
+  new Intl.DateTimeFormat(getLocales()[0].languageTag, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+    .format(date)
+    .replace(/[^+\d]/g, '-');
 
 const SignUp = ({ onPress, navigation }: AuthProps): JSX.Element => {
   const { colors } = useTheme();
@@ -51,7 +64,12 @@ const SignUp = ({ onPress, navigation }: AuthProps): JSX.Element => {
             })
           }
         />
-        <DatePicker getDate={() => {}} />
+        <DatePicker
+          onDateSelect={() => {}}
+          placeholder={t('auth_Auth_SignUp_datePickerPlaceholder')}
+          maximumDate={maximumDate}
+          formatDate={formatDate}
+        />
         <TextInput
           placeholder="Email"
           onChangeText={value =>

@@ -40,6 +40,7 @@
   "auth_Auth_SignUp_nameInputPlaceholder": "Name",
   "auth_Auth_SignUp_lastNameInputPlaceholder": "Last name",
   "auth_Auth_SignUp_createAccountButton": "Create an account",
+  "auth_Auth_SignUp_datePickerPlaceholder": "Date of birth",
   "auth_Splash_title": "Driver App",
   "auth_Splash_haveAccount": "I already have an account",
   "auth_Splash_startButton": "Get started",
