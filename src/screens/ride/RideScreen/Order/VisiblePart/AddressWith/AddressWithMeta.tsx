@@ -49,7 +49,7 @@ const AddressWithMeta = ({ tripPoints }: { tripPoints: string[] }) => {
         entering={FadeIn.duration(buttonFadeAnimationDuration)}
         exiting={FadeOut.duration(buttonFadeAnimationDuration)}
       >
-        <Button mode={ButtonModes.Mode3} buttonStyle={styles.visibleButton}>
+        <Button mode={ButtonModes.Mode3} style={styles.visibleButton}>
           <ExternalMapIcon />
         </Button>
       </Animated.View>

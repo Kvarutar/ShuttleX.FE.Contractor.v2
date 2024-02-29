@@ -117,10 +117,14 @@ const Offer = ({
         <Button
           text={t('ride_Ride_Offer_declineButton')}
           mode={ButtonModes.Mode3}
-          style={styles.offerButtonsItem}
+          containerStyle={styles.offerButtonsItem}
           onPress={onOfferDecline}
         />
-        <Button text={t('ride_Ride_Offer_acceptButton')} style={styles.offerButtonsItem} onPress={onOfferAccept} />
+        <Button
+          text={t('ride_Ride_Offer_acceptButton')}
+          containerStyle={styles.offerButtonsItem}
+          onPress={onOfferAccept}
+        />
       </View>
     </>
   );

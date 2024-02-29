@@ -68,7 +68,7 @@ const AddressWithExtendedPassengerInfo = ({
           entering={FadeIn.duration(buttonFadeAnimationDuration)}
           exiting={FadeOut.duration(buttonFadeAnimationDuration)}
         >
-          <Button mode={ButtonModes.Mode3} buttonStyle={styles.visibleButton}>
+          <Button mode={ButtonModes.Mode3} style={styles.visibleButton}>
             <ChatIcon />
           </Button>
         </Animated.View>

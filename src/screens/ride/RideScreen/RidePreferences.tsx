@@ -99,7 +99,11 @@ const RidePreferences = ({ tarifs, onConfirm }: { tarifs: TariffType[]; onConfir
         contentContainerStyle={styles.contentContainerStyle}
         barStyle={styles.barStyle}
       />
-      <Button text={t('ride_Ride_RidePreferences_confirmButton')} onPress={onConfirmHandler} style={styles.button} />
+      <Button
+        text={t('ride_Ride_RidePreferences_confirmButton')}
+        containerStyle={styles.button}
+        onPress={onConfirmHandler}
+      />
     </View>
   );
 };

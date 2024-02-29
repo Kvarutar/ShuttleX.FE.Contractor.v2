@@ -106,7 +106,6 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
   const {
     textPrimaryColor,
     textSecondaryColor,
-    backgroundPrimaryColor,
     primaryGradientStartColor,
     primaryColor,
     secondaryGradientEndColor,
@@ -114,14 +113,14 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
   } = colors;
 
   const computedStyles = StyleSheet.create({
+    topButtonsContainer: {
+      paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : 0,
+    },
     title: {
       color: textPrimaryColor,
     },
     dateText: {
       color: textSecondaryColor,
-    },
-    map: {
-      backgroundColor: backgroundPrimaryColor,
     },
     orderMetaText: {
       color: textSecondaryColor,
@@ -246,10 +245,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
 
   return (
     <SafeAreaView style={styles.wrapper}>
-      <View style={[styles.map, computedStyles.map]}>
-        <Text>Карта</Text>
-      </View>
-      <View style={styles.headerButtonsContainer}>
+      <View style={[styles.topButtonsContainer, computedStyles.topButtonsContainer]}>
         <RoundButton>
           <MenuIcon />
         </RoundButton>
@@ -320,11 +316,7 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
 };
 
 const styles = StyleSheet.create({
-  headerButtonsContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: sizes.paddingVertical,
+  topButtonsContainer: {
     justifyContent: 'space-between',
     flexDirection: 'row',
     paddingHorizontal: sizes.paddingHorizontal,
@@ -334,7 +326,6 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     flex: 1,
-    position: 'relative',
   },
   card: {
     justifyContent: 'space-between',
@@ -360,11 +351,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Inter Medium',
     textAlign: 'center',
-  },
-  map: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   timer: {
     position: 'absolute',

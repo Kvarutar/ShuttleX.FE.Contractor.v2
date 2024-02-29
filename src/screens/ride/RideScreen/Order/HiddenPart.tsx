@@ -68,12 +68,12 @@ const ContactInfo = ({ order }: { order: OrderType }) => {
         </Text>
       </View>
       <View style={styles.hiddenContactButtons}>
-        <Button buttonStyle={styles.hiddenContactButtonStyle} style={styles.hiddenContactButtonsItem}>
+        <Button style={styles.hiddenContactButton} containerStyle={styles.hiddenContactButtonContainer}>
           <ChatIcon />
         </Button>
         <Button
-          buttonStyle={styles.hiddenContactButtonStyle}
-          style={styles.hiddenContactButtonsItem}
+          style={styles.hiddenContactButton}
+          containerStyle={styles.hiddenContactButtonContainer}
           mode={ButtonModes.Mode3}
           onPress={() => Linking.openURL(`tel:${order.passenger.phone}`)}
         >
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 18,
   },
-  hiddenContactButtonsItem: {
+  hiddenContactButtonContainer: {
     flex: 1,
   },
   hiddenTripType: {
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 6,
   },
-  hiddenContactButtonStyle: {
+  hiddenContactButton: {
     height: 48,
   },
   passengerBigIcon: {
