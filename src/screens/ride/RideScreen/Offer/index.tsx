@@ -74,7 +74,7 @@ const Offer = ({
     content = <FlatListWithCustomScroll renderItem={renderTarifs} items={offerPoints} withScroll />;
   } else {
     content = (
-      <ScrollViewWithCustomScroll>
+      <ScrollViewWithCustomScroll wrapperStyle={styles.scrollViewWrapper}>
         <OfferItem
           address={offerPoints[0]}
           pointName={t('ride_Ride_Offer_pickUpTitle')}
@@ -202,6 +202,9 @@ const styles = StyleSheet.create({
   },
   verticalDropOffSeparator: {
     borderLeftWidth: 0,
+  },
+  scrollViewWrapper: {
+    flex: 0,
   },
   offerWrapper: {
     flexDirection: 'row',
