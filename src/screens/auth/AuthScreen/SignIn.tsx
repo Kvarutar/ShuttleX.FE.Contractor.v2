@@ -1,18 +1,37 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Button, PhoneInput, Text, TextInput, useTheme } from 'shuttlex-integration';
+import { Button, emailRegex, PhoneInput, Text, TextInput, useTheme } from 'shuttlex-integration';
 
-import { AuthProps, SignInPhoneAndEmailStateProps } from './props';
+import { SignInEmailStateProps, SignInPhoneStateProps, SignProps } from './props';
 
-const SignIn = ({ onPress, navigation }: AuthProps): JSX.Element => {
+const SignIn = ({ onPress, navigation }: SignProps): JSX.Element => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
   const [isPhoneNumberSelected, setIsPhoneNumberSelected] = useState(true);
 
-  const navigationToSignInPhoneCodeScreen = () =>
-    isPhoneNumberSelected ? navigation.navigate('SignInPhoneCode') : navigation.navigate('SignInEmailCode');
+  const [isCorrectPhoneNumber, setIsCorrectPhoneNumber] = useState<boolean>(true);
+  const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
+
+  const [isCorrectEmail, setIsCorrectEmail] = useState<boolean>(true);
+  const [email, setEmail] = useState<string>('');
+
+  const navigationToSignInPhoneCodeScreen = () => {
+    if (isPhoneNumberSelected) {
+      const isCorrectPhoneNumberTemporary = Boolean(phoneNumber);
+      setIsCorrectPhoneNumber(isCorrectPhoneNumberTemporary);
+      if (isCorrectPhoneNumberTemporary) {
+        navigation.navigate('SignInPhoneCode');
+      }
+    } else {
+      const isCorrectEmailTemporary = emailRegex.test(email);
+      setIsCorrectEmail(isCorrectEmailTemporary);
+      if (isCorrectEmailTemporary) {
+        navigation.navigate('SignInEmailCode');
+      }
+    }
+  };
 
   const computedStyles = StyleSheet.create({
     signUpLabel: {
@@ -26,11 +45,24 @@ const SignIn = ({ onPress, navigation }: AuthProps): JSX.Element => {
   return (
     <>
       <View style={styles.phoneNumberContainer}>
-        <Text style={styles.title}>{t('auth_Auth_SignIn_title')}</Text>
         {isPhoneNumberSelected ? (
-          <SignInPhoneNumber onLabelPress={() => setIsPhoneNumberSelected(false)} />
+          <Text style={styles.title}>{t('auth_Auth_SignIn_phoneTitle')}</Text>
         ) : (
-          <SignInEmail onLabelPress={() => setIsPhoneNumberSelected(true)} />
+          <Text style={styles.title}>{t('auth_Auth_SignIn_emailTitle')}</Text>
+        )}
+
+        {isPhoneNumberSelected ? (
+          <SignInPhoneNumber
+            isCorrectPhoneNumber={isCorrectPhoneNumber}
+            changePhoneNumber={value => setPhoneNumber(value)}
+            onLabelPress={() => setIsPhoneNumberSelected(false)}
+          />
+        ) : (
+          <SignInEmail
+            changeEmail={value => setEmail(value)}
+            onLabelPress={() => setIsPhoneNumberSelected(true)}
+            isCorrectEmail={isCorrectEmail}
+          />
         )}
       </View>
 
@@ -47,7 +79,7 @@ const SignIn = ({ onPress, navigation }: AuthProps): JSX.Element => {
   );
 };
 
-const SignInPhoneNumber = ({ onLabelPress }: SignInPhoneAndEmailStateProps) => {
+const SignInPhoneNumber = ({ isCorrectPhoneNumber, onLabelPress, changePhoneNumber }: SignInPhoneStateProps) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -59,7 +91,15 @@ const SignInPhoneNumber = ({ onLabelPress }: SignInPhoneAndEmailStateProps) => {
 
   return (
     <>
-      <PhoneInput getPhoneNumber={() => {}} />
+      <PhoneInput
+        error={{
+          isError: !isCorrectPhoneNumber,
+          message: t('auth_Auth_SignIn_phoneNumberError'),
+        }}
+        getPhoneNumber={(value: string | null) => {
+          changePhoneNumber(value);
+        }}
+      />
       <Pressable onPress={onLabelPress} hitSlop={20}>
         <Text style={[styles.dividerInputsLabel, computedStyles.dividerInputsLabel]}>
           {t('auth_Auth_SignIn_signViaEmail')}
@@ -69,7 +109,7 @@ const SignInPhoneNumber = ({ onLabelPress }: SignInPhoneAndEmailStateProps) => {
   );
 };
 
-const SignInEmail = ({ onLabelPress }: SignInPhoneAndEmailStateProps) => {
+const SignInEmail = ({ isCorrectEmail, onLabelPress, changeEmail }: SignInEmailStateProps) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -81,7 +121,13 @@ const SignInEmail = ({ onLabelPress }: SignInPhoneAndEmailStateProps) => {
 
   return (
     <>
-      <TextInput placeholder={t('auth_Auth_SignIn_email')} />
+      <TextInput
+        error={{ isError: !isCorrectEmail, message: t('auth_Auth_SignIn_incorrectEmail') }}
+        onChangeText={(value: string) => {
+          changeEmail(value);
+        }}
+        placeholder={t('auth_Auth_SignIn_email')}
+      />
       <Pressable onPress={onLabelPress} hitSlop={20}>
         <Text style={[styles.dividerInputsLabel, computedStyles.dividerInputsLabel]}>
           {t('auth_Auth_SignIn_signViaPhoneNumber')}

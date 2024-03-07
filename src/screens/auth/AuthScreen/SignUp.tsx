@@ -2,11 +2,22 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { getLocales } from 'react-native-localize';
-import { Button, CheckBox, DatePicker, PhoneInput, Text, TextInput, useTheme } from 'shuttlex-integration';
+import {
+  Button,
+  CheckBox,
+  DatePicker,
+  emailRegex,
+  PhoneInput,
+  ScrollViewWithCustomScroll,
+  Text,
+  TextInput,
+  useTheme,
+} from 'shuttlex-integration';
 
-import { AuthProps } from './props';
+import { correctValidationUserDataFormProps, SignProps } from './props';
 
 const maximumDate = new Date();
+
 maximumDate.setFullYear(maximumDate.getFullYear() - 18);
 
 const formatDate = (date: Date): string =>
@@ -18,20 +29,64 @@ const formatDate = (date: Date): string =>
     .format(date)
     .replace(/[^+\d]/g, '-');
 
-const SignUp = ({ onPress, navigation }: AuthProps): JSX.Element => {
+const SignUp = ({ onPress, navigation }: SignProps): JSX.Element => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const navigationToSignUpPhoneCodeScreen = () => navigation.navigate('SignUpPhoneCode');
+  type FormProps = {
+    firstName: string;
+    lastName: string;
+    birthDate: null | Date;
+    email: string;
+    phoneNumber: string | null;
+    isFamiliarWithTermsAndConditions: boolean;
+    isAllowedProccessPersonalData: boolean;
+  };
 
-  const [signUpDataCollectionForm, setSignUpDataCollectionForm] = useState({
+  const navigationToSignUpPhoneCodeScreen = () => {
+    navigation.navigate('SignUpPhoneCode');
+  };
+
+  const getInitialForm = (): correctValidationUserDataFormProps => ({
+    correctName: true,
+    correctLastName: true,
+    correctEmail: true,
+    correctDate: true,
+    correctPhoneNumber: true,
+    correctFamiliarWithTermsAndConditions: true,
+    correctAllowedProccessPersonalData: true,
+  });
+
+  const [isFormCorrect, setIsCorrectForm] = useState<correctValidationUserDataFormProps>(getInitialForm);
+
+  const checkLength = (text: string) => text.length <= 30 && text.length >= 2;
+
+  const checkSignUpDataCollectionForm = () => {
+    const isCorrectTemporaryForm = getInitialForm();
+
+    isCorrectTemporaryForm.correctName = checkLength(userDataForm.firstName);
+    isCorrectTemporaryForm.correctLastName = checkLength(userDataForm.lastName);
+    isCorrectTemporaryForm.correctEmail = emailRegex.test(userDataForm.email);
+    isCorrectTemporaryForm.correctDate = Boolean(userDataForm.birthDate);
+    isCorrectTemporaryForm.correctPhoneNumber = Boolean(userDataForm.phoneNumber);
+    isCorrectTemporaryForm.correctFamiliarWithTermsAndConditions = userDataForm.isFamiliarWithTermsAndConditions;
+    isCorrectTemporaryForm.correctAllowedProccessPersonalData = userDataForm.isAllowedProccessPersonalData;
+
+    setIsCorrectForm(isCorrectTemporaryForm);
+
+    if (!Object.values(isCorrectTemporaryForm).includes(false)) {
+      navigationToSignUpPhoneCodeScreen();
+    }
+  };
+
+  const [userDataForm, setUserDataForm] = useState<FormProps>({
     firstName: '',
     lastName: '',
-    dateBirth: null,
+    birthDate: null,
     email: '',
-    phoneNumber: '',
-    isFamiliarWithTermsAndConditions: true,
-    isAllowedProccessPersonalData: true,
+    phoneNumber: null,
+    isFamiliarWithTermsAndConditions: false,
+    isAllowedProccessPersonalData: false,
   });
 
   const computedStyles = StyleSheet.create({
@@ -41,61 +96,130 @@ const SignUp = ({ onPress, navigation }: AuthProps): JSX.Element => {
     checkBoxText: {
       color: colors.textSecondaryColor,
     },
+    errorCheckboxLink: {
+      color: colors.errorColor,
+    },
   });
 
   return (
     <>
-      <View style={styles.formSignUpContainer}>
+      <ScrollViewWithCustomScroll contentContainerStyle={styles.formSignUpContainer}>
         <TextInput
+          error={{ isError: !isFormCorrect.correctName, message: t('auth_Auth_SignUp_incorrectName') }}
           placeholder={t('auth_Auth_SignUp_nameInputPlaceholder')}
-          onChangeText={value =>
-            setSignUpDataCollectionForm({
-              ...signUpDataCollectionForm,
+          onChangeText={(value: string) => {
+            setUserDataForm(prev => ({
+              ...prev,
               firstName: value,
-            })
-          }
+            }));
+          }}
+          value={userDataForm.firstName}
         />
         <TextInput
+          error={{
+            isError: !isFormCorrect.correctLastName,
+            message: t('auth_Auth_SignUp_incorrectLastName'),
+          }}
           placeholder={t('auth_Auth_SignUp_lastNameInputPlaceholder')}
-          onChangeText={value =>
-            setSignUpDataCollectionForm({
-              ...signUpDataCollectionForm,
+          onChangeText={(value: string) =>
+            setUserDataForm(prev => ({
+              ...prev,
               lastName: value,
-            })
+            }))
           }
         />
         <DatePicker
-          onDateSelect={() => {}}
+          error={{
+            isError: !isFormCorrect.correctDate,
+            message: t('auth_Auth_SignUp_requiredDateOfBirth'),
+          }}
+          onDateSelect={(date: Date) => {
+            setUserDataForm(prev => ({
+              ...prev,
+              birthDate: date,
+            }));
+          }}
           placeholder={t('auth_Auth_SignUp_datePickerPlaceholder')}
           maximumDate={maximumDate}
           formatDate={formatDate}
         />
         <TextInput
-          placeholder="Email"
-          onChangeText={value =>
-            setSignUpDataCollectionForm({
-              ...signUpDataCollectionForm,
+          error={{ isError: !isFormCorrect.correctEmail, message: t('auth_Auth_SignUp_incorrectEmail') }}
+          placeholder={t('auth_Auth_SignUp_email')}
+          onChangeText={(value: string) =>
+            setUserDataForm(prev => ({
+              ...prev,
               email: value,
-            })
+            }))
           }
         />
-        <PhoneInput getPhoneNumber={() => {}} />
-
-        <CheckBox getCheckValue={() => {}} style={styles.checkBoxContainer} text="I agree with the">
+        <PhoneInput
+          error={{
+            isError: !isFormCorrect.correctPhoneNumber,
+            message: t('auth_Auth_SignUp_phoneNumberError'),
+          }}
+          getPhoneNumber={(phoneNumber: string | null) => {
+            setUserDataForm(prev => ({
+              ...prev,
+              phoneNumber: phoneNumber,
+            }));
+          }}
+        />
+        <CheckBox
+          error={{
+            isError: !isFormCorrect.correctFamiliarWithTermsAndConditions,
+            message: t('auth_Auth_SignUp_checkBoxError'),
+          }}
+          getCheckValue={(value: boolean) => {
+            setUserDataForm(prev => ({
+              ...prev,
+              isFamiliarWithTermsAndConditions: value,
+            }));
+          }}
+          text={t('auth_Auth_SignUp_agree')}
+        >
           <Pressable onPress={navigationToSignUpPhoneCodeScreen} hitSlop={20}>
-            <Text style={[styles.checkBoxText, computedStyles.checkBoxText]}>Terms & Conditions....</Text>
+            <Text
+              style={[
+                styles.checkBoxText,
+                computedStyles.checkBoxText,
+                !isFormCorrect.correctFamiliarWithTermsAndConditions && computedStyles.errorCheckboxLink,
+              ]}
+            >
+              {t('auth_Auth_SignUp_termsAndConditions')}
+            </Text>
           </Pressable>
         </CheckBox>
 
-        <CheckBox getCheckValue={() => {}} style={styles.checkBoxContainer} text="I allow to process">
+        <CheckBox
+          error={{
+            isError: !isFormCorrect.correctAllowedProccessPersonalData,
+            message: t('auth_Auth_SignUp_checkBoxError'),
+          }}
+          getCheckValue={(value: boolean) => {
+            setUserDataForm(prev => ({
+              ...prev,
+              isAllowedProccessPersonalData: value,
+            }));
+          }}
+          text={t('auth_Auth_SignUp_allowProcess')}
+        >
           <Pressable onPress={navigationToSignUpPhoneCodeScreen} hitSlop={20}>
-            <Text style={[styles.checkBoxText, computedStyles.checkBoxText]}>my personal data</Text>
+            <Text
+              style={[
+                styles.checkBoxText,
+                computedStyles.checkBoxText,
+                !isFormCorrect.correctAllowedProccessPersonalData && computedStyles.errorCheckboxLink,
+              ]}
+            >
+              {t('auth_Auth_SignUp_personalData')}
+            </Text>
           </Pressable>
         </CheckBox>
-      </View>
+      </ScrollViewWithCustomScroll>
 
       <View style={styles.buttonsContainer}>
-        <Button text={t('auth_Auth_SignUp_createAccountButton')} onPress={navigationToSignUpPhoneCodeScreen} />
+        <Button text={t('auth_Auth_SignUp_createAccountButton')} onPress={checkSignUpDataCollectionForm} />
         <Pressable style={styles.alreadyHaveAccountContainer} onPress={onPress} hitSlop={20}>
           <Text style={styles.alreadyHaveAccountText}>
             {t('auth_Auth_SignUp_haveAccount')}{' '}
@@ -109,10 +233,10 @@ const SignUp = ({ onPress, navigation }: AuthProps): JSX.Element => {
 
 const styles = StyleSheet.create({
   formSignUpContainer: {
-    flex: 1,
     gap: 24,
   },
   buttonsContainer: {
+    marginTop: 30,
     gap: 32,
   },
   alreadyHaveAccountContainer: {
@@ -127,9 +251,6 @@ const styles = StyleSheet.create({
   checkBoxText: {
     fontSize: 12,
     textDecorationLine: 'underline',
-  },
-  checkBoxContainer: {
-    marginLeft: 20,
   },
 });
 
