@@ -28,7 +28,8 @@ import {
 } from 'shuttlex-integration';
 
 import { useAppDispatch } from '../../../core/redux/hooks';
-import { useGeolocationStartWatch } from '../../../core/ride/hooks';
+import { useGeolocationStartWatch, useNetworkConnectionStartWatch } from '../../../core/ride/hooks';
+import { twoHighestPriorityAlertsSelector } from '../../../core/ride/redux/alerts/selectors';
 import {
   setGeolocationAccuracy,
   setGeolocationIsLocationEnabled,
@@ -42,6 +43,7 @@ import {
 import { setOrder } from '../../../core/ride/redux/trip';
 import { orderSelector, tripStatusSelector } from '../../../core/ride/redux/trip/selectors';
 import { OfferType, TripStatus } from '../../../core/ride/redux/trip/types';
+import AlertInitializer from '../../../shared/AlertInitializer';
 import Offer from './Offer';
 import Order from './Order';
 import { type RideScreenProps } from './props';
@@ -86,8 +88,10 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
   const dispatch = useAppDispatch();
 
   useGeolocationStartWatch();
+  useNetworkConnectionStartWatch();
 
   const order = useSelector(orderSelector);
+  const alerts = useSelector(twoHighestPriorityAlertsSelector);
   const tripStatus = useSelector(tripStatusSelector);
   const isPermissionGranted = useSelector(geolocationIsPermissionGrantedSelector);
   const isLocationEnabled = useSelector(geolocationIsLocationEnabledSelector);
@@ -260,7 +264,18 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
       {order ? (
         <Order />
       ) : (
-        <BottomWindow style={styles.bottom}>
+        <BottomWindow
+          style={styles.bottom}
+          alerts={alerts.map(alertData => (
+            <AlertInitializer
+              key={alertData.id}
+              id={alertData.id}
+              priority={alertData.priority}
+              type={alertData.type}
+              options={'options' in alertData ? alertData.options : undefined}
+            />
+          ))}
+        >
           <View style={styles.infoWrapper}>
             <Pressable onPress={() => setIsPreferencesPopupVisible(true)} hitSlop={10}>
               <PreferencesIcon />
