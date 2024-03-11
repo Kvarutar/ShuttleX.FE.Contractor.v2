@@ -36,3 +36,37 @@ export const checkGeolocationPermissionAndAccuracy = async (): Promise<{
     return { isGranted, accuracy };
   }
 };
+
+export const requestCameraUsagePermission = async (): Promise<void> => {
+  if (Platform.OS === 'ios') {
+    await request(PERMISSIONS.IOS.CAMERA);
+  } else {
+    await request(PERMISSIONS.ANDROID.CAMERA);
+  }
+};
+
+export const checkCameraUsagePermission = async (): Promise<boolean> => {
+  if (Platform.OS === 'ios') {
+    return (await check(PERMISSIONS.IOS.CAMERA)) === RESULTS.GRANTED;
+  } else {
+    return (await check(PERMISSIONS.ANDROID.CAMERA)) === RESULTS.GRANTED;
+  }
+};
+
+export const requestGalleryUsagePermission = async (): Promise<void> => {
+  if (Platform.OS === 'ios') {
+    await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+  } else {
+    await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES);
+  }
+};
+
+export const checkGalleryUsagePermission = async (): Promise<boolean> => {
+  if (Platform.OS === 'ios') {
+    const result = await check(PERMISSIONS.IOS.PHOTO_LIBRARY);
+    return result === RESULTS.GRANTED || result === RESULTS.LIMITED;
+  } else {
+    const result = await check(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES);
+    return result === RESULTS.GRANTED;
+  }
+};

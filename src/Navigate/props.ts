@@ -6,4 +6,11 @@ export type RootStackParamList = {
   SignInPhoneCode: undefined;
   SignInEmailCode: undefined;
   Rating: undefined;
+  Docs: undefined;
+  BackgroundCheck: undefined;
+  ProfilePhoto: undefined;
+  DriversLicense: undefined;
+  VehicleInsurance: undefined;
+  VehicleRegistration: undefined;
+  VehicleInspection: undefined;
 };
