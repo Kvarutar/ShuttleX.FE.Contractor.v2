@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { getLocales } from 'react-native-localize';
-import i18nIntegration from 'shuttlex-integration/src/core/locales/i18n';
+import { i18nIntegration } from 'shuttlex-integration';
 
 import resources from './i18n.config';
 

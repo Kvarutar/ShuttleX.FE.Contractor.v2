@@ -15,6 +15,7 @@ import ProfilePhotoScreen from '../screens/docs/ProfilePhotoScreen';
 import VehicleInspectionScreen from '../screens/docs/VehicleInspectionScreen';
 import VehicleInsuranceScreen from '../screens/docs/VehicleInsuranceScreen';
 import VehicleRegistrationScreen from '../screens/docs/VehicleRegistrationScreen';
+import NotificationScreen from '../screens/menu/NotificationsScreen';
 import RatingScreen from '../screens/ride/RatingScreen';
 import RideScreen from '../screens/ride/RideScreen';
 import { RootStackParamList } from './props';
@@ -35,6 +36,7 @@ const Navigate = (): JSX.Element => (
       <Stack.Screen name="SignUpPhoneCode" component={SignUpPhoneCodeScreen} />
       <Stack.Screen name="SignInPhoneCode" component={SignInPhoneCodeScreen} />
       <Stack.Screen name="SignInEmailCode" component={SignInEmailCodeScreen} />
+      <Stack.Screen name="Notifications" component={NotificationScreen} />
       <Stack.Screen name="Rating" component={RatingScreen} />
       <Stack.Screen name="Docs" component={DocsScreen} />
       <Stack.Screen name="BackgroundCheck" component={BackgroundCheckScreen} />

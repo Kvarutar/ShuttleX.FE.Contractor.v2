@@ -5,6 +5,7 @@ export type RootStackParamList = {
   SignUpPhoneCode: undefined;
   SignInPhoneCode: undefined;
   SignInEmailCode: undefined;
+  Notifications: undefined;
   Rating: undefined;
   Docs: undefined;
   BackgroundCheck: undefined;

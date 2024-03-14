@@ -12,16 +12,32 @@ import {
   PhoneIcon,
   ReportIcon,
   sizes,
+  SwipeButton,
+  SwipeButtonModes,
   Text,
   useTheme,
 } from 'shuttlex-integration';
 
+import { useAppDispatch } from '../../../../core/redux/hooks';
+import { endTrip } from '../../../../core/ride/redux/trip';
 import { orderSelector } from '../../../../core/ride/redux/trip/selectors';
 import { OrderType } from '../../../../core/ride/redux/trip/types';
 
 const HiddenPart = () => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const order = useSelector(orderSelector);
+  const dispatch = useAppDispatch();
+
+  const computedStyles = StyleSheet.create({
+    separator: {
+      borderColor: colors.strokeColor,
+    },
+  });
+
+  const onCancelTrip = () => {
+    dispatch(endTrip());
+  };
 
   if (order) {
     return (
@@ -49,6 +65,14 @@ const HiddenPart = () => {
             <Text style={styles.hiddenSafetyItemText}>{t('ride_Ride_Order_reportIssue')}</Text>
           </Pressable>
         </View>
+        <View style={styles.horizontalSeparatorWrapper}>
+          <View style={[styles.horizontalSeparator, computedStyles.separator]} />
+        </View>
+        <SwipeButton
+          mode={SwipeButtonModes.Decline}
+          onSwipeEnd={onCancelTrip}
+          text={t('ride_Ride_Order_cancelRideButton')}
+        />
       </>
     );
   }
@@ -160,6 +184,17 @@ const styles = StyleSheet.create({
   smallPhoneButtonIcon: {
     width: 16,
     height: 16,
+  },
+  horizontalSeparatorWrapper: {
+    overflow: 'hidden',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  horizontalSeparator: {
+    flex: 1,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    marginTop: -0.5,
   },
 });
 

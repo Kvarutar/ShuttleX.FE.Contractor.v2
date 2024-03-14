@@ -1,0 +1,57 @@
+import React, { useEffect, useState } from 'react';
+import { Platform, StyleSheet } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Popup, sizes, Timer, TimerModes, useTheme } from 'shuttlex-integration';
+
+import Offer from '../../Offer';
+import { OfferPopupProps } from './props';
+
+const timerAnimationDuration = 300;
+
+const OfferPopup = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferPopupProps) => {
+  const { colors } = useTheme();
+  const [currentTime, setCurrentTime] = useState(0);
+
+  useEffect(() => {
+    setCurrentTime(new Date().getTime() + 120000);
+  }, []);
+
+  const { top } = useSafeAreaInsets();
+
+  const computedStyles = StyleSheet.create({
+    timer: {
+      top: Platform.OS === 'android' ? sizes.paddingVertical : top,
+    },
+  });
+
+  return (
+    <>
+      <Popup>
+        <Offer offer={offer} onOfferAccept={onOfferAccept} onOfferDecline={onOfferDecline} />
+      </Popup>
+      <Animated.View
+        style={[styles.timer, computedStyles.timer]}
+        exiting={FadeOut.duration(timerAnimationDuration)}
+        entering={FadeIn.duration(timerAnimationDuration)}
+      >
+        <Timer
+          initialDate={new Date(currentTime)} //20000 - for test
+          onAfterCountdownEnds={onClose}
+          startColor={colors.primaryGradientStartColor}
+          endColor={colors.primaryColor}
+          mode={TimerModes.Normal}
+        />
+      </Animated.View>
+    </>
+  );
+};
+
+const styles = StyleSheet.create({
+  timer: {
+    position: 'absolute',
+    right: sizes.paddingHorizontal,
+  },
+});
+
+export default OfferPopup;

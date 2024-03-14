@@ -1,35 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { NativeModules, Platform, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import { NativeModules, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
-  Bar,
-  BottomWindow,
-  Button,
-  ButtonModes,
   LocationUnavailable,
   LocationUnavailableProps,
   MenuIcon,
   NotificationIcon,
-  Popup,
-  PreferencesIcon,
+  NotificationType,
   RoundButton,
   sizes,
-  StatisticsIcon,
   StopWatch,
-  SwipeButton,
-  SwipeButtonModes,
   Text,
-  Timer,
-  TimerModes,
   useTheme,
 } from 'shuttlex-integration';
 
+import { setNotificationList } from '../../../core/menu/redux/notifications';
+import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { useGeolocationStartWatch, useNetworkConnectionStartWatch } from '../../../core/ride/hooks';
-import { twoHighestPriorityAlertsSelector } from '../../../core/ride/redux/alerts/selectors';
 import {
   setGeolocationAccuracy,
   setGeolocationIsLocationEnabled,
@@ -40,179 +29,105 @@ import {
   geolocationIsLocationEnabledSelector,
   geolocationIsPermissionGrantedSelector,
 } from '../../../core/ride/redux/geolocation/selectors';
-import { setOrder } from '../../../core/ride/redux/trip';
 import { orderSelector, tripStatusSelector } from '../../../core/ride/redux/trip/selectors';
-import { OfferType, TripStatus } from '../../../core/ride/redux/trip/types';
-import AlertInitializer from '../../../shared/AlertInitializer';
-import Offer from './Offer';
+import { TripStatus } from '../../../core/ride/redux/trip/types';
 import Order from './Order';
+import PassengerTimer from './PassengerTimer';
 import { type RideScreenProps } from './props';
-import RidePreferences from './RidePreferences';
-import TarifsCarousel from './TarifsCarousel';
+import Start from './Start';
 
-type lineStates = 'online' | 'offline';
-
-type lineStateTypes = {
-  popupTitle: string;
-  toLineState: lineStates;
-  bottomTitle: string;
-  buttonText: string;
-  buttonMode: ButtonModes;
-  swipeMode: SwipeButtonModes;
-};
-
-const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record<lineStates, lineStateTypes> => ({
-  online: {
-    popupTitle: t('ride_Ride_Popup_onlineTitle'),
-    toLineState: 'offline',
-    bottomTitle: t('ride_Ride_BottomWindow_onlineTitle'),
-    buttonText: t('ride_Ride_Bar_onlineTitle'),
-    buttonMode: ButtonModes.Mode3,
-    swipeMode: SwipeButtonModes.Decline,
-  },
-  offline: {
-    popupTitle: t('ride_Ride_Popup_offlineTitle'),
-    toLineState: 'online',
-    bottomTitle: t('ride_Ride_BottomWindow_offlineTitle'),
-    buttonText: t('ride_Ride_Bar_offlineTitle'),
-    buttonMode: ButtonModes.Mode1,
-    swipeMode: SwipeButtonModes.Confirm,
-  },
-});
-
-const timerAnimationDuration = 300;
-
-const RideScreen = ({}: RideScreenProps): JSX.Element => {
+const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const { colors } = useTheme();
-  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   useGeolocationStartWatch();
   useNetworkConnectionStartWatch();
 
   const order = useSelector(orderSelector);
-  const alerts = useSelector(twoHighestPriorityAlertsSelector);
   const tripStatus = useSelector(tripStatusSelector);
   const isPermissionGranted = useSelector(geolocationIsPermissionGrantedSelector);
   const isLocationEnabled = useSelector(geolocationIsLocationEnabledSelector);
   const geolocationAccuracy = useSelector(geolocationAccuracySelector);
+  const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
 
-  const [isConfirmationPopupVisible, setIsConfirmationPopupVisible] = useState<boolean>(false);
-  const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
-
-  const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
-  const [offer, setOffer] = useState<OfferType>();
-
-  const [isPassangerLate, setIsPassangerLate] = useState<boolean>(false);
-
-  const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t).offline);
-
-  const {
-    textPrimaryColor,
-    textSecondaryColor,
-    primaryGradientStartColor,
-    primaryColor,
-    secondaryGradientEndColor,
-    secondaryGradientStartColor,
-  } = colors;
+  const [isPassengerLate, setIsPassengerLate] = useState<boolean>(false);
 
   const computedStyles = StyleSheet.create({
     topButtonsContainer: {
       paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : 0,
     },
-    title: {
-      color: textPrimaryColor,
+    unreadNotificationsMarker: {
+      backgroundColor: colors.primaryColor,
     },
-    dateText: {
-      color: textSecondaryColor,
-    },
-    orderMetaText: {
-      color: textSecondaryColor,
+    unreadNotificationsText: {
+      color: colors.backgroundPrimaryColor,
     },
   });
 
   useEffect(() => {
     if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Idle) {
-      setIsPassangerLate(false);
+      setIsPassengerLate(false);
     }
   }, [tripStatus]);
 
   useEffect(() => {
-    setOffer({
-      startPosition: '123 Queen St W, Toronto, ON M5H 2M9',
-      targetPointsPosition: [
-        '241 Harvie Ave, York, ON M6E 4K9',
-        '450 Blythwood Rd, North York, ON M4N 1A9',
-        '12 Bushbury Dr, North York, ON M3A 2Z7',
-      ],
-      passengerId: '0',
-      passenger: {
-        name: 'Michael',
-        lastName: 'Skorodumov',
-        phone: '89990622720',
-      },
-      tripTariff: 'BasicX',
-      total: '20.45',
-      fullDistance: 20.4,
-      fullTime: 25,
-    });
-  }, []);
-
-  const swipeHandler = (mode: lineStates) => {
-    setLineState(getRideBuilderRecord(t)[mode]);
-    setIsConfirmationPopupVisible(false);
-  };
-
-  const onOfferPopupClose = () => {
-    setIsOfferPopupVisible(false);
-  };
-
-  const onOfferDecline = () => {
-    onOfferPopupClose();
-  };
-
-  const onOfferAccept = () => {
-    setIsOfferPopupVisible(false);
-    if (offer) {
-      dispatch(setOrder(offer));
-    }
-  };
-
-  const headerTimer = () => {
-    if (tripStatus === TripStatus.Arrived || tripStatus === TripStatus.ArrivedAtStopPoint) {
-      if (isPassangerLate) {
-        return (
-          <Animated.View
-            exiting={FadeOut.duration(timerAnimationDuration)}
-            entering={FadeIn.duration(timerAnimationDuration)}
-            style={styles.additionalHeaderButtons}
-          >
-            <Timer
-              initialDate={new Date()}
-              startColor={secondaryGradientStartColor}
-              endColor={secondaryGradientEndColor}
-              mode={TimerModes.Mini}
-            />
-          </Animated.View>
-        );
-      }
-      return (
-        <Animated.View
-          exiting={FadeOut.duration(timerAnimationDuration)}
-          entering={FadeIn.duration(timerAnimationDuration)}
-          style={styles.additionalHeaderButtons}
-        >
-          <Timer
-            initialDate={new Date(new Date().getTime() + 20000)} //20000 - for test
-            onAfterCountdownEnds={() => setIsPassangerLate(true)}
-            startColor={primaryGradientStartColor}
-            endColor={primaryColor}
-            mode={TimerModes.Mini}
-          />
-        </Animated.View>
-      );
-    }
-  };
+    dispatch(
+      setNotificationList([
+        {
+          type: NotificationType.TripWasRated,
+          title: 'Jack Johnson',
+          description: 'rated the trip with you',
+          isRead: true,
+          time: '5m ago',
+          image: {
+            uri: 'https://sun9-34.userapi.com/impg/ZGuJiFBAp-93En3yLK7LWZNPxTGmncHrrtVgbg/hd6uHaUv1zE.jpg?size=1200x752&quality=96&sign=e79799e4b75c839d0ddb1a2232fe5d60&type=album',
+          },
+        },
+        {
+          type: NotificationType.RatingIncreased,
+          title: 'Rating increased',
+          description: 'Your rating was increased to 4.6',
+          isRead: false,
+          time: '5m ago',
+        },
+        {
+          type: NotificationType.PlannedTrip,
+          title: 'Booked time',
+          description: 'You have to make booked trip right now',
+          isRead: true,
+          time: '5m ago',
+        },
+        {
+          type: NotificationType.RatingIncreased,
+          title: 'Jack Johnson',
+          description: 'rated the trip with you',
+          isRead: true,
+          time: '5m ago',
+        },
+        {
+          type: NotificationType.RatingIncreased,
+          title: 'Jack Johnson',
+          description: 'rated the trip with you',
+          isRead: false,
+          time: '5m ago',
+        },
+        {
+          type: NotificationType.RatingIncreased,
+          title: 'Jack Johnson',
+          description: 'rated the trip with you',
+          isRead: true,
+          time: '5m ago',
+        },
+        {
+          type: NotificationType.RatingIncreased,
+          title: 'Jack Johnson',
+          description: 'rated the trip with you',
+          isRead: true,
+          time: '5m ago',
+        },
+      ]),
+    );
+  }, [dispatch]);
 
   let locationUnavailableProps: LocationUnavailableProps | null = null;
   if (!isPermissionGranted) {
@@ -245,7 +160,22 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
     };
   }
 
-  const { popupTitle, toLineState, bottomTitle, buttonText, buttonMode, swipeMode } = lineState;
+  let unreadNotificationsMarker = null;
+  if (unreadNotifications > 0) {
+    unreadNotificationsMarker = (
+      <View style={[styles.unreadNotificationsMarker, computedStyles.unreadNotificationsMarker]}>
+        <Text style={[styles.unreadNotificationsText, computedStyles.unreadNotificationsText]}>
+          {unreadNotifications}
+        </Text>
+      </View>
+    );
+  } else if (unreadNotifications > 99) {
+    unreadNotificationsMarker = (
+      <View style={[styles.unreadNotificationsMarker, computedStyles.unreadNotificationsMarker]}>
+        <Text style={[styles.unreadNotificationsText, computedStyles.unreadNotificationsText]}>99+</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.wrapper}>
@@ -255,76 +185,16 @@ const RideScreen = ({}: RideScreenProps): JSX.Element => {
         </RoundButton>
         <StopWatch initialDate={new Date()} mask="{h}h {m}m" />
         <View style={styles.headerRightButtons}>
-          <RoundButton>
+          <RoundButton onPress={() => navigation.navigate('Notifications')}>
             <NotificationIcon />
+            {unreadNotificationsMarker}
           </RoundButton>
-          {headerTimer()}
+          {(tripStatus === TripStatus.Arrived || tripStatus === TripStatus.ArrivedAtStopPoint) && (
+            <PassengerTimer isPassengerLate={isPassengerLate} setIsPassengerLate={() => setIsPassengerLate(true)} />
+          )}
         </View>
       </View>
-      {order ? (
-        <Order />
-      ) : (
-        <BottomWindow
-          style={styles.bottom}
-          alerts={alerts.map(alertData => (
-            <AlertInitializer
-              key={alertData.id}
-              id={alertData.id}
-              priority={alertData.priority}
-              type={alertData.type}
-              options={'options' in alertData ? alertData.options : undefined}
-            />
-          ))}
-        >
-          <View style={styles.infoWrapper}>
-            <Pressable onPress={() => setIsPreferencesPopupVisible(true)} hitSlop={10}>
-              <PreferencesIcon />
-            </Pressable>
-            <Text style={[computedStyles.title, styles.title]}>{bottomTitle}</Text>
-            <Pressable onPress={() => setIsOfferPopupVisible(true)} hitSlop={10}>
-              <StatisticsIcon />
-            </Pressable>
-          </View>
-          <Bar style={styles.card}>
-            <TarifsCarousel />
-            <Button mode={buttonMode} text={buttonText} onPress={() => setIsConfirmationPopupVisible(true)} />
-          </Bar>
-        </BottomWindow>
-      )}
-      {isConfirmationPopupVisible && (
-        <Popup onCloseButtonPress={() => setIsConfirmationPopupVisible(false)}>
-          <Text style={[computedStyles.title, styles.confirmTitle, styles.title]}>{popupTitle}</Text>
-          <SwipeButton mode={swipeMode} onSwipeEnd={() => swipeHandler(toLineState)} />
-        </Popup>
-      )}
-      {isPreferencesPopupVisible && (
-        <Popup onCloseButtonPress={() => setIsPreferencesPopupVisible(false)}>
-          <RidePreferences
-            tarifs={['BasicX', 'BasicXL', 'ComfortX', 'PremiumX', 'PremiumXL', 'TeslaX']}
-            onConfirm={() => setIsPreferencesPopupVisible(false)}
-          />
-        </Popup>
-      )}
-      {offer && isOfferPopupVisible && (
-        <>
-          <Popup>
-            <Offer offer={offer} onOfferAccept={onOfferAccept} onOfferDecline={onOfferDecline} />
-          </Popup>
-          <Animated.View
-            style={styles.timer}
-            exiting={FadeOut.duration(timerAnimationDuration)}
-            entering={FadeIn.duration(timerAnimationDuration)}
-          >
-            <Timer
-              initialDate={new Date(new Date().getTime() + 20000000)} //20000 - for test
-              onAfterCountdownEnds={onOfferPopupClose}
-              startColor={primaryGradientStartColor}
-              endColor={primaryColor}
-              mode={TimerModes.Normal}
-            />
-          </Animated.View>
-        </>
-      )}
+      {order ? <Order /> : <Start />}
       {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
     </SafeAreaView>
   );
@@ -342,38 +212,22 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
   },
-  card: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  infoWrapper: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 28,
-  },
-  bottom: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  confirmTitle: {
-    marginBottom: 62,
-  },
-  title: {
-    fontSize: 18,
-    fontFamily: 'Inter Medium',
-    textAlign: 'center',
-  },
-  timer: {
-    position: 'absolute',
-    top: sizes.paddingVertical,
-    right: sizes.paddingHorizontal,
-  },
   additionalHeaderButtons: {
     marginTop: 30,
+  },
+  unreadNotificationsMarker: {
+    position: 'absolute',
+    right: -4,
+    bottom: -4,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 100,
+  },
+  unreadNotificationsText: {
+    fontFamily: 'Inter Medium',
+    fontSize: 9,
   },
 });
 

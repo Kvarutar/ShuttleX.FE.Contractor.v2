@@ -8,14 +8,16 @@ import {
   BlueCheck1,
   Button,
   FlatListWithCustomScroll,
+  Popup,
   TariffsCarImage,
   TariffType,
   Text,
 } from 'shuttlex-integration';
 
-import { setPreferredTariffs } from '../../../core/redux/contractor';
-import { preferredTariffsSelector, unavailableTariffsSelector } from '../../../core/redux/contractor/selectors';
-import { useAppDispatch } from '../../../core/redux/hooks';
+import { setPreferredTariffs } from '../../../../../core/redux/contractor';
+import { preferredTariffsSelector, unavailableTariffsSelector } from '../../../../../core/redux/contractor/selectors';
+import { useAppDispatch } from '../../../../../core/redux/hooks';
+import { PreferencesPopupProps } from './props';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -24,7 +26,9 @@ type TariffModeType = {
   onPressHandler?: (tariff: TariffType) => void;
 };
 
-const RidePreferences = ({ tarifs, onConfirm }: { tarifs: TariffType[]; onConfirm: () => void }) => {
+const tariffs = ['BasicX', 'BasicXL', 'ComfortX', 'PremiumX', 'PremiumXL', 'TeslaX'];
+
+const TariffPreferencesPopup = ({ onClose }: PreferencesPopupProps) => {
   const dispatch = useAppDispatch();
   const unavailableTariffs = useSelector(unavailableTariffsSelector);
   const { t } = useTranslation();
@@ -88,23 +92,25 @@ const RidePreferences = ({ tarifs, onConfirm }: { tarifs: TariffType[]; onConfir
 
   const onConfirmHandler = () => {
     dispatch(setPreferredTariffs(selectedPrefferedTariffs));
-    onConfirm();
+    onClose();
   };
 
   return (
-    <View style={styles.preferenceWrapper}>
-      <FlatListWithCustomScroll
-        renderItem={renderTarifs}
-        items={tarifs}
-        contentContainerStyle={styles.contentContainerStyle}
-        barStyle={styles.barStyle}
-      />
-      <Button
-        text={t('ride_Ride_RidePreferences_confirmButton')}
-        containerStyle={styles.button}
-        onPress={onConfirmHandler}
-      />
-    </View>
+    <Popup onCloseButtonPress={onClose}>
+      <View style={styles.preferenceWrapper}>
+        <FlatListWithCustomScroll
+          renderItem={renderTarifs}
+          items={tariffs}
+          contentContainerStyle={styles.contentContainerStyle}
+          barStyle={styles.barStyle}
+        />
+        <Button
+          text={t('ride_Ride_RidePreferences_confirmButton')}
+          containerStyle={styles.button}
+          onPress={onConfirmHandler}
+        />
+      </View>
+    </Popup>
   );
 };
 
@@ -136,4 +142,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RidePreferences;
+export default TariffPreferencesPopup;
