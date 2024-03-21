@@ -16,6 +16,9 @@ import VehicleInspectionScreen from '../screens/docs/VehicleInspectionScreen';
 import VehicleInsuranceScreen from '../screens/docs/VehicleInsuranceScreen';
 import VehicleRegistrationScreen from '../screens/docs/VehicleRegistrationScreen';
 import NotificationScreen from '../screens/menu/NotificationsScreen';
+import AddPaymentScreen from '../screens/menu/wallet/AddPaymentScreen';
+import WalletScreen from '../screens/menu/wallet/WalletScreen';
+import WithdrawScreen from '../screens/menu/wallet/WithdrawScreen';
 import RatingScreen from '../screens/ride/RatingScreen';
 import RideScreen from '../screens/ride/RideScreen';
 import { RootStackParamList } from './props';
@@ -45,6 +48,9 @@ const Navigate = (): JSX.Element => (
       <Stack.Screen name="VehicleInsurance" component={VehicleInsuranceScreen} />
       <Stack.Screen name="VehicleRegistration" component={VehicleRegistrationScreen} />
       <Stack.Screen name="VehicleInspection" component={VehicleInspectionScreen} />
+      <Stack.Screen name="Wallet" component={WalletScreen} />
+      <Stack.Screen name="AddPayment" component={AddPaymentScreen} />
+      <Stack.Screen name="Withdraw" component={WithdrawScreen} />
     </Stack.Navigator>
   </NavigationContainer>
 );

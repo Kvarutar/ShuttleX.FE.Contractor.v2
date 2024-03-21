@@ -14,4 +14,7 @@ export type RootStackParamList = {
   VehicleInsurance: undefined;
   VehicleRegistration: undefined;
   VehicleInspection: undefined;
+  Wallet: undefined;
+  AddPayment: undefined;
+  Withdraw: undefined;
 };

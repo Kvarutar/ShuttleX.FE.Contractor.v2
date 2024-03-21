@@ -56,7 +56,6 @@
   "auth_SignInEmailCode_prompt": "Check your email inbox and enter the\ncode or sign in through the link",
   "auth_SignInEmailCode_button": "Sign In",
   "auth_SignInEmailCode_headerTitle": "Sign In",
-  "menu_Notifications_headerTitle": "Notifications",
   "auth_Auth_SignUp_allowProcess": "I allow to process",
   "auth_Auth_SignUp_phoneNumberError": "*Phone number is required",
   "auth_Auth_SignUp_checkBoxError": "*Checkbox has to be selected",
@@ -105,5 +104,18 @@
   "docs_VehicleInspection_explanationTitle": "Get a vehicle inspection",
   "docs_VehicleInspection_explanationDescription": "Your city and ShuttleX require that your vehicle be inspected to help maintain driver and rider safety\n\nIt’s a simple check to make sure everything is on working order",
   "docs_DocsPhotoCore_saveButton": "Save",
-  "docs_DocsPhotoCore_selectButton": "Choose a photo"
+  "docs_DocsPhotoCore_selectButton": "Choose a photo",
+  "menu_Notifications_headerTitle": "Notifications",
+  "menu_Wallet_headerTitle": "Wallet",
+  "menu_Wallet_historyTitle": "Withdrawal history",
+  "menu_Wallet_balance": "Balance",
+  "menu_Wallet_coinBalance": "ShuttleX Coin",
+  "menu_Wallet_trips": "Trips",
+  "menu_Wallet_withdrawButton": "Withdraw",
+  "menu_Withdraw_headerTitle": "Withdraw",
+  "menu_Withdraw_avaliable": "Available to witdraw ${{balance}}",
+  "menu_Withdraw_withdrawButton": "Withdraw",
+  "menu_Withdraw_SuccessPopup_content1": "You have successfully withdrawn",
+  "menu_Withdraw_SuccessPopup_content2": "to your card ending in",
+  "menu_Withdraw_SuccessPopup_continueButton": "Continue"
 }
