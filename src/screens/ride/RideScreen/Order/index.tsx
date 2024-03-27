@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BottomWindowWithGesture } from 'shuttlex-integration';
-import { BottomWindowWithGestureRef } from 'shuttlex-integration/lib/typescript/src/shared/Widgets/BottomWindowWithGesture/props';
+import { BottomWindowWithGestureRef } from 'shuttlex-integration/lib/typescript/src/shared/molecules/BottomWindowWithGesture/props';
 
 import { tripStatusSelector } from '../../../../core/ride/redux/trip/selectors';
 import HiddenPart from './HiddenPart';
