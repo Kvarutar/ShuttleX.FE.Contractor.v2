@@ -199,8 +199,8 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       </View>
       {order ? (
         <>
-          <Order />
           <MapCameraModeButton />
+          <Order />
         </>
       ) : (
         <Start />
