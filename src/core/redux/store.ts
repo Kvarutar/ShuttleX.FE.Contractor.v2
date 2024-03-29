@@ -5,6 +5,7 @@ import notificationsReducer from '../menu/redux/notifications';
 import walletReducer from '../menu/redux/wallet';
 import alertsReducer from '../ride/redux/alerts';
 import geolocationReducer from '../ride/redux/geolocation';
+import mapReducer from '../ride/redux/map';
 import tripReducer from '../ride/redux/trip';
 import contractorReducer from './contractor';
 
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   wallet: walletReducer,
   alerts: alertsReducer,
   geolocation: geolocationReducer,
+  map: mapReducer,
   trip: tripReducer,
   contractor: contractorReducer,
 });

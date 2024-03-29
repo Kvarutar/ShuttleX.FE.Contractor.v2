@@ -31,6 +31,8 @@ import {
 } from '../../../core/ride/redux/geolocation/selectors';
 import { orderSelector, tripStatusSelector } from '../../../core/ride/redux/trip/selectors';
 import { TripStatus } from '../../../core/ride/redux/trip/types';
+import MapCameraModeButton from './MapCameraModeButton';
+import MapView from './MapView';
 import Order from './Order';
 import PassengerTimer from './PassengerTimer';
 import { type RideScreenProps } from './props';
@@ -179,12 +181,13 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
 
   return (
     <SafeAreaView style={styles.wrapper}>
+      <MapView />
       <View style={[styles.topButtonsContainer, computedStyles.topButtonsContainer]}>
         <RoundButton>
           <MenuIcon />
         </RoundButton>
         <StopWatch initialDate={new Date()} mask="{h}h {m}m" />
-        <View style={styles.headerRightButtons}>
+        <View style={styles.topRightButtonContainer}>
           <RoundButton onPress={() => navigation.navigate('Notifications')}>
             <NotificationIcon />
             {unreadNotificationsMarker}
@@ -194,27 +197,20 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
           )}
         </View>
       </View>
-      {order ? <Order /> : <Start />}
+      {order ? (
+        <>
+          <Order />
+          <MapCameraModeButton />
+        </>
+      ) : (
+        <Start />
+      )}
       {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  topButtonsContainer: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    paddingHorizontal: sizes.paddingHorizontal,
-  },
-  headerRightButtons: {
-    alignItems: 'center',
-  },
-  wrapper: {
-    flex: 1,
-  },
-  additionalHeaderButtons: {
-    marginTop: 30,
-  },
   unreadNotificationsMarker: {
     position: 'absolute',
     right: -4,
@@ -228,6 +224,17 @@ const styles = StyleSheet.create({
   unreadNotificationsText: {
     fontFamily: 'Inter Medium',
     fontSize: 9,
+  },
+  wrapper: {
+    flex: 1,
+  },
+  topButtonsContainer: {
+    paddingHorizontal: sizes.paddingHorizontal,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  topRightButtonContainer: {
+    alignItems: 'center',
   },
 });
 

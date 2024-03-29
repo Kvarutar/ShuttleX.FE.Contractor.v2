@@ -15,20 +15,11 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { OfferType } from '../../../../core/ride/redux/trip/types';
-import { OfferProps } from './props';
+import { OfferItemProps, OfferProps } from './props';
 
 const windowHeight = Dimensions.get('window').height;
 
-const Offer = ({
-  offer,
-  onOfferAccept,
-  onOfferDecline,
-}: {
-  offer: OfferType;
-  onOfferAccept: () => void;
-  onOfferDecline: () => void;
-}) => {
+const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
   const [isShowMorePoints, setIsShowMorePoints] = useState<boolean>(false);
 
   const { t } = useTranslation();
@@ -137,7 +128,7 @@ const OfferItem = ({
   style,
   setIsShowMorePoints,
   numberOfAdditionalPoints,
-}: OfferProps) => {
+}: OfferItemProps) => {
   const { t } = useTranslation();
 
   const { colors } = useTheme();
