@@ -17,6 +17,7 @@ import {
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../core/ride/redux/alerts/selectors';
 import { setOrder } from '../../../core/ride/redux/trip';
+import { responseToOffer } from '../../../core/ride/redux/trip/thunks';
 import { OfferType } from '../../../core/ride/redux/trip/types';
 import AlertInitializer from '../../../shared/AlertInitializer';
 import ConfirmationPopup from './popups/ConfirmationPopup';
@@ -106,10 +107,12 @@ const Start = () => {
 
   const onOfferDecline = () => {
     onOfferPopupClose();
+    dispatch(responseToOffer(false));
   };
 
   const onOfferAccept = () => {
     setIsOfferPopupVisible(false);
+    dispatch(responseToOffer(true));
     if (offer) {
       dispatch(setOrder(offer));
     }

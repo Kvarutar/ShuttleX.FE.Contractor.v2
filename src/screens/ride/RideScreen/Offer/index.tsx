@@ -62,7 +62,14 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
   let content = null;
 
   if (isShowMorePoints) {
-    content = <FlatListWithCustomScroll renderItem={renderTarifs} items={offerPoints} withScroll />;
+    content = (
+      <FlatListWithCustomScroll
+        wrapperStyle={styles.flatListWrapper}
+        renderItem={renderTarifs}
+        items={offerPoints}
+        withScroll
+      />
+    );
   } else {
     content = (
       <ScrollViewWithCustomScroll wrapperStyle={styles.scrollViewWrapper}>
@@ -195,6 +202,9 @@ const styles = StyleSheet.create({
     borderLeftWidth: 0,
   },
   scrollViewWrapper: {
+    flex: 0,
+  },
+  flatListWrapper: {
     flex: 0,
   },
   offerWrapper: {

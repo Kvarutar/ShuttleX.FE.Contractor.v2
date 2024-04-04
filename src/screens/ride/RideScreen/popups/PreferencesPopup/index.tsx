@@ -14,8 +14,8 @@ import {
   Text,
 } from 'shuttlex-integration';
 
-import { setPreferredTariffs } from '../../../../../core/redux/contractor';
 import { preferredTariffsSelector, unavailableTariffsSelector } from '../../../../../core/redux/contractor/selectors';
+import { sendSelectedTariffs } from '../../../../../core/redux/contractor/thunks';
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { PreferencesPopupProps } from './props';
 
@@ -90,8 +90,8 @@ const TariffPreferencesPopup = ({ onClose }: PreferencesPopupProps) => {
     );
   };
 
-  const onConfirmHandler = () => {
-    dispatch(setPreferredTariffs(selectedPrefferedTariffs));
+  const onConfirmHandler = async () => {
+    await dispatch(sendSelectedTariffs(selectedPrefferedTariffs));
     onClose();
   };
 
@@ -103,6 +103,7 @@ const TariffPreferencesPopup = ({ onClose }: PreferencesPopupProps) => {
           items={tariffs}
           contentContainerStyle={styles.contentContainerStyle}
           barStyle={styles.barStyle}
+          wrapperStyle={styles.flatListWrapper}
         />
         <Button
           text={t('ride_Ride_RidePreferences_confirmButton')}
@@ -139,6 +140,10 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 30,
+  },
+  flatListWrapper: {
+    flex: 0,
+    flexShrink: 1,
   },
 });
 
