@@ -17,6 +17,7 @@ import {
 
 import { setNotificationList } from '../../../core/menu/redux/notifications';
 import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
+import { setProfile } from '../../../core/redux/contractor';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { useGeolocationStartWatch, useNetworkConnectionStartWatch } from '../../../core/ride/hooks';
 import {
@@ -31,6 +32,7 @@ import {
 } from '../../../core/ride/redux/geolocation/selectors';
 import { orderSelector, tripStatusSelector } from '../../../core/ride/redux/trip/selectors';
 import { TripStatus } from '../../../core/ride/redux/trip/types';
+import Menu from '../Menu';
 import MapCameraModeButton from './MapCameraModeButton';
 import MapView from './MapView';
 import Order from './Order';
@@ -53,6 +55,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
 
   const [isPassengerLate, setIsPassengerLate] = useState<boolean>(false);
+  const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
 
   const computedStyles = StyleSheet.create({
     topButtonsContainer: {
@@ -71,6 +74,17 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       setIsPassengerLate(false);
     }
   }, [tripStatus]);
+
+  useEffect(() => {
+    dispatch(
+      setProfile({
+        name: 'John',
+        surname: 'Johnson',
+        imageUri:
+          'https://sun9-34.userapi.com/impg/ZGuJiFBAp-93En3yLK7LWZNPxTGmncHrrtVgbg/hd6uHaUv1zE.jpg?size=1200x752&quality=96&sign=e79799e4b75c839d0ddb1a2232fe5d60&type=album',
+      }),
+    );
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(
@@ -180,33 +194,36 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   }
 
   return (
-    <SafeAreaView style={styles.wrapper}>
-      <MapView />
-      <View style={[styles.topButtonsContainer, computedStyles.topButtonsContainer]}>
-        <RoundButton>
-          <MenuIcon />
-        </RoundButton>
-        <StopWatch initialDate={new Date()} mask="{h}h {m}m" />
-        <View style={styles.topRightButtonContainer}>
-          <RoundButton onPress={() => navigation.navigate('Notifications')}>
-            <NotificationIcon />
-            {unreadNotificationsMarker}
+    <>
+      <SafeAreaView style={styles.wrapper}>
+        <MapView />
+        <View style={[styles.topButtonsContainer, computedStyles.topButtonsContainer]}>
+          <RoundButton onPress={() => setIsMenuVisible(true)}>
+            <MenuIcon />
           </RoundButton>
-          {(tripStatus === TripStatus.Arrived || tripStatus === TripStatus.ArrivedAtStopPoint) && (
-            <PassengerTimer isPassengerLate={isPassengerLate} setIsPassengerLate={() => setIsPassengerLate(true)} />
-          )}
+          <StopWatch initialDate={new Date()} mask="{h}h {m}m" />
+          <View style={styles.topRightButtonContainer}>
+            <RoundButton onPress={() => navigation.navigate('Notifications')}>
+              <NotificationIcon />
+              {unreadNotificationsMarker}
+            </RoundButton>
+            {(tripStatus === TripStatus.Arrived || tripStatus === TripStatus.ArrivedAtStopPoint) && (
+              <PassengerTimer isPassengerLate={isPassengerLate} setIsPassengerLate={() => setIsPassengerLate(true)} />
+            )}
+          </View>
         </View>
-      </View>
-      {order ? (
-        <>
-          <MapCameraModeButton />
-          <Order />
-        </>
-      ) : (
-        <Start />
-      )}
-      {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
-    </SafeAreaView>
+        {order ? (
+          <>
+            <MapCameraModeButton />
+            <Order />
+          </>
+        ) : (
+          <Start />
+        )}
+        {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
+      </SafeAreaView>
+      {isMenuVisible && <Menu navigation={navigation} onClose={() => setIsMenuVisible(false)} />}
+    </>
   );
 };
 

@@ -2,11 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TariffType } from 'shuttlex-integration';
 
 import { sendSelectedTariffs } from './thunks';
-import { ContractorState } from './types';
+import { ContractorState, Profile } from './types';
 
 const initialState: ContractorState = {
   preferredTariffs: ['BasicX'],
   unavailableTariffs: ['ComfortX'],
+  profile: null,
 };
 
 const slice = createSlice({
@@ -19,6 +20,9 @@ const slice = createSlice({
     setUnavailableTariffs(state, action: PayloadAction<TariffType[]>) {
       state.unavailableTariffs = action.payload;
     },
+    setProfile(state, action: PayloadAction<Profile>) {
+      state.profile = action.payload;
+    },
   },
   extraReducers: builder => {
     builder.addCase(sendSelectedTariffs.fulfilled, (state, action) => {
@@ -30,6 +34,6 @@ const slice = createSlice({
   },
 });
 
-export const { setPreferredTariffs, setUnavailableTariffs } = slice.actions;
+export const { setPreferredTariffs, setUnavailableTariffs, setProfile } = slice.actions;
 
 export default slice.reducer;
