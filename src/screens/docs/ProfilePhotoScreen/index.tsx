@@ -5,6 +5,7 @@ import { Text, useTheme } from 'shuttlex-integration';
 
 import { RequirementDocsType } from '../../../core/auth/redux/docs/types';
 import DocsPhotoCore from '../DocsPhotoCore';
+import { DocumentFileType } from '../DocsPhotoCore/props';
 import { ProfilePhotoScreenProps } from './props';
 
 const ProfilePhotoScreen = ({ navigation }: ProfilePhotoScreenProps): JSX.Element => {
@@ -19,13 +20,14 @@ const ProfilePhotoScreen = ({ navigation }: ProfilePhotoScreenProps): JSX.Elemen
 
   return (
     <DocsPhotoCore
-      imageWidth={374}
-      imageHeight={376}
+      photoWidth={374}
+      photoHeight={376}
       headerTitle={t('docs_ProfilePhoto_headerTitle')}
       explanationTitle={t('docs_ProfilePhoto_explanationTitle')}
       explanationDescription={t('docs_ProfilePhoto_explanationDescription')}
       goBack={navigation.goBack}
       documentType={RequirementDocsType.ProfilePhoto}
+      permittedDocumentFileType={DocumentFileType.Photo}
     >
       <View style={styles.tips}>
         <Text style={[styles.description, computedStyles.description]}>{t('docs_ProfilePhoto_tip1')}</Text>

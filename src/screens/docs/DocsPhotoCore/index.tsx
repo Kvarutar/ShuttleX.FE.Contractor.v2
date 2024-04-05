@@ -1,25 +1,13 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
+import DocumentPicker from 'react-native-document-picker';
 import ImageCropPicker from 'react-native-image-crop-picker';
-import { Asset, ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import {
   Bar,
-  BarModes,
-  BigCameraIcon,
   Button,
   ButtonModes,
-  CloseIcon,
   RoundButton,
   ScrollViewWithCustomScroll,
   ShortArrowIcon,
@@ -36,26 +24,34 @@ import {
   requestCameraUsagePermission,
   requestGalleryUsagePermission,
 } from '../../../core/utils/permissions';
-import { docsConsts, DocsPhotoCoreProps } from './props';
+import FileTypePopup from './FileTypePopup';
+import { docsConsts, DocsPhotoCoreProps, DocumentFileType, SelectedFile } from './props';
+import SelectedFilePresentation from './SelectedFilePresentation';
 
-const photoMaxWidth = Dimensions.get('window').width - sizes.paddingVertical * 2;
+type DocsPhotoCoreContent = {
+  onUploadContent: () => {} | void;
+  uploadButtonText: string;
+};
 
 const DocsPhotoCore = ({
-  imageWidth,
-  imageHeight,
+  photoWidth,
+  photoHeight,
   goBack,
   headerTitle,
   explanationTitle,
   explanationDescription,
   documentType,
   children,
+  permittedDocumentFileType,
 }: DocsPhotoCoreProps): JSX.Element => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const [isImageLoaded, setIsImageLoaded] = useState(true);
-  const [selectedPhoto, setSelectedPhoto] = useState<Asset | null>(null);
+  const [isFileLoaded, setIsFileLoaded] = useState(true);
+  const [selectedFile, setSelectedFile] = useState<SelectedFile | null>(null);
+
+  const [isFileTypePopupVisible, setIsFileTypePopupVisible] = useState(false);
 
   const computedStyles = StyleSheet.create({
     container: {
@@ -63,10 +59,6 @@ const DocsPhotoCore = ({
     },
     description: {
       color: colors.textSecondaryColor,
-    },
-    imageWrapper: {
-      width: Math.min(photoMaxWidth, imageWidth),
-      height: Math.min(300, imageHeight),
     },
   });
 
@@ -77,24 +69,30 @@ const DocsPhotoCore = ({
           const croppedResult = await ImageCropPicker.openCropper({
             path: result.assets[0].uri,
             mediaType: 'photo',
-            width: imageWidth,
-            height: imageHeight,
+            width: photoWidth,
+            height: photoHeight,
           });
-          setSelectedPhoto({
-            ...result.assets[0],
-            uri: croppedResult.path,
-            width: croppedResult.width,
-            height: croppedResult.height,
+          setSelectedFile({
+            type: DocumentFileType.Photo,
+            body: {
+              ...result.assets[0],
+              uri: croppedResult.path,
+              width: croppedResult.width,
+              height: croppedResult.height,
+            },
           });
         }
       } catch {
-        setSelectedPhoto({ ...result.assets[0] });
+        setSelectedFile({
+          type: DocumentFileType.Photo,
+          body: result.assets[0],
+        });
       }
     }
-    setIsImageLoaded(true);
+    setIsFileLoaded(true);
   };
 
-  async function onTakePhoto() {
+  const onTakePhoto = async () => {
     let isGranted = await checkCameraUsagePermission();
 
     if (!isGranted) {
@@ -104,12 +102,12 @@ const DocsPhotoCore = ({
     if (isGranted) {
       const result = await launchCamera({ mediaType: 'photo', cameraType: 'front', maxHeight: 1400, maxWidth: 1400 });
 
-      setIsImageLoaded(false);
+      setIsFileLoaded(false);
       setTimeout(() => cropPhoto(result), docsConsts.cropTimeOut);
     }
-  }
+  };
 
-  async function onSelectPhoto() {
+  const onSelectPhoto = async () => {
     let isGranted = await checkGalleryUsagePermission();
 
     if (!isGranted) {
@@ -120,66 +118,89 @@ const DocsPhotoCore = ({
     if (isGranted) {
       const result = await launchImageLibrary({ mediaType: 'photo' });
 
-      setIsImageLoaded(false);
-      setTimeout(() => cropPhoto(result), docsConsts.cropTimeOut);
+      if (!result.didCancel) {
+        setIsFileLoaded(false);
+        setTimeout(() => {
+          cropPhoto(result);
+          setIsFileTypePopupVisible(false);
+        }, docsConsts.cropTimeOut);
+      }
     }
-  }
+  };
+
+  const onSelectDocument = async () => {
+    try {
+      const result = await DocumentPicker.pickSingle({
+        type: [DocumentPicker.types.allFiles],
+      });
+
+      setIsFileTypePopupVisible(false);
+      setSelectedFile({
+        type: DocumentFileType.Document,
+        body: result,
+      });
+    } catch {
+      //TODO: add error
+    }
+  };
 
   const onSave = () => {
-    if (selectedPhoto && selectedPhoto.fileName && selectedPhoto.uri && selectedPhoto.type) {
+    let body = null;
+
+    if (selectedFile) {
+      const fileName = selectedFile.type === 'photo' ? selectedFile.body.fileName : selectedFile.body.name;
+
+      if (selectedFile.body.uri && selectedFile.body.type && fileName) {
+        body = {
+          name: fileName,
+          type: selectedFile.body.type,
+          uri: Platform.OS === 'ios' ? selectedFile.body.uri.replace('file://', '') : selectedFile.body.uri,
+          //TODO: check if be need this replace
+        };
+      }
+    }
+
+    if (body) {
       dispatch(
         updateRequirementDocuments({
           type: documentType,
-          body: {
-            name: selectedPhoto.fileName,
-            type: selectedPhoto.type,
-            uri: Platform.OS === 'ios' ? selectedPhoto.uri.replace('file://', '') : selectedPhoto.uri,
-          },
+          body,
         }),
       );
       goBack();
     }
   };
 
-  let bottomButton = <Button text={t('docs_DocsPhotoCore_selectButton')} onPress={onSelectPhoto} />;
+  const docsPhotoCoreRecord: Record<DocumentFileType, DocsPhotoCoreContent> = {
+    photo: {
+      onUploadContent: onSelectPhoto,
+      uploadButtonText: t('docs_DocsPhotoCore_selectPhotoButton'),
+    },
+    document: {
+      onUploadContent: onSelectDocument,
+      uploadButtonText: t('docs_DocsPhotoCore_selectDocumentButton'),
+    },
+    all: {
+      onUploadContent: () => setIsFileTypePopupVisible(true),
+      uploadButtonText: t('docs_DocsPhotoCore_selectFileButton'),
+    },
+  };
 
-  if (!isImageLoaded) {
+  let bottomButton = (
+    <Button
+      text={docsPhotoCoreRecord[permittedDocumentFileType].uploadButtonText}
+      onPress={docsPhotoCoreRecord[permittedDocumentFileType].onUploadContent}
+    />
+  );
+
+  if (!isFileLoaded) {
     bottomButton = (
       <Button mode={ButtonModes.Mode4} style={styles.loadingButton}>
         <ActivityIndicator />
       </Button>
     );
-  }
-
-  if (selectedPhoto) {
+  } else if (selectedFile) {
     bottomButton = <Button text={t('docs_DocsPhotoCore_saveButton')} onPress={onSave} />;
-  }
-
-  let image = (
-    <Pressable onPress={onTakePhoto} style={styles.photoContainer}>
-      <Bar mode={BarModes.Default} style={styles.takeImage}>
-        <BigCameraIcon />
-      </Bar>
-    </Pressable>
-  );
-
-  if (selectedPhoto?.uri) {
-    image = (
-      <Animated.View
-        style={styles.photoContainer}
-        entering={FadeIn.duration(docsConsts.fadeAnimationDuration)}
-        exiting={FadeOut.duration(docsConsts.fadeAnimationDuration)}
-      >
-        <Image
-          source={{ uri: Platform.OS === 'ios' ? selectedPhoto.uri.replace('file://', '') : selectedPhoto.uri }}
-          style={styles.userUmage}
-        />
-        {/*TODO: remove uri check on deploy */}
-        <RoundButton style={styles.closePhotoButton} onPress={() => setSelectedPhoto(null)}>
-          <CloseIcon />
-        </RoundButton>
-      </Animated.View>
-    );
   }
 
   return (
@@ -196,12 +217,23 @@ const DocsPhotoCore = ({
           <Text style={styles.title}>{explanationTitle}</Text>
           <Text style={[styles.description, computedStyles.description]}>{explanationDescription}</Text>
         </Bar>
-        <View style={[styles.imageWrapper, selectedPhoto?.uri ? computedStyles.imageWrapper : styles.takeImageWrapper]}>
-          {image}
-        </View>
+        <SelectedFilePresentation
+          selectedFile={selectedFile ?? undefined}
+          onTakePhoto={onTakePhoto}
+          onCloseFile={() => setSelectedFile(null)}
+          photoHeight={photoHeight}
+          photoWidth={photoWidth}
+        />
         {children}
       </ScrollViewWithCustomScroll>
       {bottomButton}
+      {isFileTypePopupVisible && (
+        <FileTypePopup
+          onClose={() => setIsFileTypePopupVisible(false)}
+          onOpenFilePicker={onSelectDocument}
+          onOpenImagePicker={onSelectPhoto}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -236,35 +268,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  takeImage: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-  },
-  imageWrapper: {
-    marginTop: 40,
-    flex: 1,
-    alignSelf: 'center',
-  },
-  takeImageWrapper: {
-    width: photoMaxWidth,
-  },
   tips: {
     gap: 8,
     marginTop: 24,
     marginBottom: 44,
-  },
-  userUmage: {
-    flex: 1,
-    borderRadius: 20,
-  },
-  closePhotoButton: {
-    position: 'absolute',
-    right: 10,
-    top: 10,
-  },
-  photoContainer: {
-    flex: 1,
   },
 });
 

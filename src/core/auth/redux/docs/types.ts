@@ -7,13 +7,13 @@ export enum RequirementDocsType {
   VehicleInspection = 'vehicleInspection',
 }
 
-type DocsPhoto = {
+type DocsFile = {
   name: string;
   type: string;
   uri: string;
 };
 
-export type RequirementDocs = DocsPhoto | string | null;
+export type RequirementDocs = DocsFile | string | null;
 
 export type DocsType = {
   requirements: RequirementDocs[];
