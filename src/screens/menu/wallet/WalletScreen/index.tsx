@@ -235,7 +235,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
             {history}
             {isPaymentsVariantsVisible && (
               <Animated.View
-                style={[styles.paymentVariants]}
+                style={styles.paymentVariants}
                 entering={FadeIn.duration(fadeAnimationDuration)}
                 exiting={FadeOut.duration(fadeAnimationDuration)}
               >

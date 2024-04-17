@@ -14,6 +14,9 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { contractorStatusSelector } from '../../../core/redux/contractor/selectors';
+import { updateContractorStatus } from '../../../core/redux/contractor/thunks';
+import { ContractorStatus } from '../../../core/redux/contractor/types';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../core/ride/redux/alerts/selectors';
 import { setOrder } from '../../../core/ride/redux/trip';
@@ -25,18 +28,16 @@ import OfferPopup from './popups/OfferPopup';
 import TariffPreferencesPopup from './popups/PreferencesPopup';
 import TarifsCarousel from './TarifsCarousel';
 
-type lineStates = 'online' | 'offline';
-
 type lineStateTypes = {
   popupTitle: string;
-  toLineState: lineStates;
+  toLineState: ContractorStatus;
   bottomTitle: string;
   buttonText: string;
   buttonMode: ButtonModes;
   swipeMode: SwipeButtonModes;
 };
 
-const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record<lineStates, lineStateTypes> => ({
+const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record<ContractorStatus, lineStateTypes> => ({
   online: {
     popupTitle: t('ride_Ride_Popup_onlineTitle'),
     toLineState: 'offline',
@@ -63,7 +64,8 @@ const Start = () => {
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
 
   const [offer, setOffer] = useState<OfferType>();
-  const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t).offline);
+  const contractorStatus = useSelector(contractorStatusSelector);
+  const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t)[contractorStatus]);
 
   const [isConfirmationPopupVisible, setIsConfirmationPopupVisible] = useState<boolean>(false);
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
@@ -76,12 +78,32 @@ const Start = () => {
   });
 
   useEffect(() => {
+    setLineState(getRideBuilderRecord(t)[contractorStatus]);
+  }, [contractorStatus, t]);
+
+  useEffect(() => {
     setOffer({
-      startPosition: '123 Queen St W, Toronto, ON M5H 2M9',
+      startPosition: {
+        address: '123 Queen St W, Toronto, ON M5H 2M9',
+        latitude: 12312312,
+        longitude: 123123123,
+      },
       targetPointsPosition: [
-        '241 Harvie Ave, York, ON M6E 4K9',
-        '450 Blythwood Rd, North York, ON M4N 1A9',
-        '12 Bushbury Dr, North York, ON M3A 2Z7',
+        {
+          address: '241 Harvie Ave, York, ON M6E 4K9',
+          latitude: 123123123,
+          longitude: 123123123,
+        },
+        {
+          address: '450 Blythwood Rd, North York, ON M4N 1A9',
+          latitude: 123123123,
+          longitude: 123123123,
+        },
+        {
+          address: '12 Bushbury Dr, North York, ON M3A 2Z7',
+          latitude: 123123123,
+          longitude: 123213123,
+        },
       ],
       passengerId: '0',
       passenger: {
@@ -96,9 +118,9 @@ const Start = () => {
     });
   }, []);
 
-  const swipeHandler = (mode: lineStates) => {
-    setLineState(getRideBuilderRecord(t)[mode]);
+  const swipeHandler = async (mode: ContractorStatus) => {
     setIsConfirmationPopupVisible(false);
+    await dispatch(updateContractorStatus(mode));
   };
 
   const onOfferPopupClose = () => {

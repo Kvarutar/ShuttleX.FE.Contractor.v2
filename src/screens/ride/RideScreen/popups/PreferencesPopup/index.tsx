@@ -71,15 +71,27 @@ const TariffPreferencesPopup = ({ onClose }: PreferencesPopupProps) => {
 
     let tariffMode = tariffModes.default;
 
+    const computedStyles = StyleSheet.create({
+      bar: {
+        marginBottom: 0,
+      },
+    });
+
     if (isPrefferedTariff) {
       tariffMode = tariffModes.preffered;
+      computedStyles.bar = {
+        marginBottom: 2,
+      };
     } else if (isUnavailableTariff) {
       tariffMode = tariffModes.unavailable;
+      computedStyles.bar = {
+        marginBottom: 2,
+      };
     }
 
     return (
       <Pressable key={index} onPress={() => tariffMode.onPressHandler?.(item)}>
-        <Bar mode={tariffMode.barMode} style={styles.bar}>
+        <Bar mode={tariffMode.barMode} style={[styles.bar, computedStyles.bar]}>
           <View style={styles.preferenceContent}>
             <TariffsCarImage tariff={item} style={styles.img} />
             <Text>{item}</Text>
@@ -96,21 +108,18 @@ const TariffPreferencesPopup = ({ onClose }: PreferencesPopupProps) => {
   };
 
   return (
-    <Popup onCloseButtonPress={onClose}>
-      <View style={styles.preferenceWrapper}>
-        <FlatListWithCustomScroll
-          renderItem={renderTarifs}
-          items={tariffs}
-          contentContainerStyle={styles.contentContainerStyle}
-          barStyle={styles.barStyle}
-          wrapperStyle={styles.flatListWrapper}
-        />
-        <Button
-          text={t('ride_Ride_RidePreferences_confirmButton')}
-          containerStyle={styles.button}
-          onPress={onConfirmHandler}
-        />
-      </View>
+    <Popup bottomWindowStyle={styles.popup} onCloseButtonPress={onClose}>
+      <FlatListWithCustomScroll
+        wrapperStyle={styles.flatListWrapper}
+        contentContainerStyle={styles.contentContainerStyle}
+        renderItem={renderTarifs}
+        items={tariffs}
+      />
+      <Button
+        text={t('ride_Ride_RidePreferences_confirmButton')}
+        containerStyle={styles.button}
+        onPress={onConfirmHandler}
+      />
     </Popup>
   );
 };
@@ -120,12 +129,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  popup: {
+    maxHeight: windowHeight * 0.7,
+  },
   barStyle: {
     top: 0,
-  },
-  preferenceWrapper: {
-    maxHeight: windowHeight * 0.6,
-    position: 'relative',
   },
   bar: {
     flexDirection: 'row',

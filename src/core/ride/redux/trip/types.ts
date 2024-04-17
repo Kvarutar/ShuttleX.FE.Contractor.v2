@@ -1,12 +1,16 @@
+import { LatLng } from 'react-native-maps';
+
 export type PassengerInfoType = {
   name: string;
   lastName: string;
   phone: string;
 };
 
+export type TripPoint = { address: string } & LatLng;
+
 export type OfferType = {
-  startPosition: string;
-  targetPointsPosition: string[];
+  startPosition: TripPoint;
+  targetPointsPosition: TripPoint[];
   passengerId: string;
   passenger: PassengerInfoType;
   tripTariff: string;
@@ -21,7 +25,7 @@ export type TripState = {
   order: OrderType | null;
   secondOrder: OrderType | null;
   tripStatus: TripStatus;
-  tripPoints: string[] | null;
+  tripPoints: TripPoint[] | null;
 };
 
 export enum TripStatus {

@@ -12,7 +12,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { OrderType } from '../../../../../../core/ride/redux/trip/types';
+import { OrderType, TripPoint } from '../../../../../../core/ride/redux/trip/types';
 
 const buttonFadeAnimationDuration = 200;
 
@@ -23,7 +23,7 @@ const AddressWithExtendedPassengerInfo = ({
   isOpened,
 }: {
   order: OrderType;
-  tripPoints: string[];
+  tripPoints: TripPoint[];
   withStopPoint?: boolean;
   isOpened: boolean;
 }) => {
@@ -36,6 +36,8 @@ const AddressWithExtendedPassengerInfo = ({
   });
 
   const numberOfLines = isOpened ? 2 : 1;
+
+  const isPickUp = tripPoints.length === order.targetPointsPosition.length + 1;
 
   return (
     <View style={styles.passangerInfoWrapper}>
@@ -50,14 +52,14 @@ const AddressWithExtendedPassengerInfo = ({
           <View style={styles.addressMiniWrapper}>
             {withStopPoint ? <PickUpIcon /> : <DropOffIcon />}
             <Text numberOfLines={numberOfLines} style={[styles.addressMini, computedStyles.addressMini]}>
-              {tripPoints[0]}
+              {tripPoints[0].address}
             </Text>
           </View>
-          {withStopPoint && (
+          {(isPickUp || withStopPoint) && (
             <View style={[styles.addressMiniWrapper, styles.withoutMarginTop]}>
               <DropOffIcon />
               <Text numberOfLines={numberOfLines} style={[styles.addressMini, computedStyles.addressMini]}>
-                {tripPoints[1]}
+                {tripPoints[1].address}
               </Text>
             </View>
           )}

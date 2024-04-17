@@ -13,9 +13,11 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { TripPoint } from '../../../../../../core/ride/redux/trip/types';
+
 const buttonFadeAnimationDuration = 200;
 
-const AddressWithMeta = ({ tripPoints }: { tripPoints: string[] }) => {
+const AddressWithMeta = ({ tripPoints }: { tripPoints: TripPoint[] }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -31,7 +33,7 @@ const AddressWithMeta = ({ tripPoints }: { tripPoints: string[] }) => {
         <View style={styles.visibleHeader}>
           <DropOffIcon />
           <Text numberOfLines={1} style={styles.address}>
-            {tripPoints[0]}
+            {tripPoints[0].address}
           </Text>
         </View>
         <View style={styles.visibleContent}>

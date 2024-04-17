@@ -6,8 +6,11 @@ export type Profile = {
   surname: string;
 };
 
+export type ContractorStatus = 'online' | 'offline';
+
 export type ContractorState = {
   preferredTariffs: TariffType[];
   unavailableTariffs: TariffType[];
   profile: Profile | null;
+  status: ContractorStatus;
 };

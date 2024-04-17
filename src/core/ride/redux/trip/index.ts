@@ -1,5 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import {
+  fetchArrivedToDropOff,
+  fetchArrivedToPickUp,
+  fetchArrivedToStopPoint,
+  fetchPickedUpAtPickUpPoint,
+  fetchPickedUpAtStopPoint,
+} from './thunks';
 import { OfferType, TripState, TripStatus } from './types';
 
 const initialState: TripState = {
@@ -53,8 +60,33 @@ const slice = createSlice({
     toNextTripPoint(state) {
       if (state.tripPoints) {
         state.tripPoints.shift();
+        state.tripStatus = TripStatus.Ride;
       }
     },
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchArrivedToPickUp.fulfilled, state => {
+        slice.caseReducers.setTripStatus(state, {
+          payload: TripStatus.Arrived,
+          type: setTripStatus.type,
+        });
+      })
+      .addCase(fetchArrivedToStopPoint.fulfilled, state => {
+        slice.caseReducers.setTripStatus(state, {
+          payload: TripStatus.ArrivedAtStopPoint,
+          type: setTripStatus.type,
+        });
+      })
+      .addCase(fetchArrivedToDropOff.fulfilled, state => {
+        slice.caseReducers.endTrip(state);
+      })
+      .addCase(fetchPickedUpAtPickUpPoint.fulfilled, state => {
+        slice.caseReducers.toNextTripPoint(state);
+      })
+      .addCase(fetchPickedUpAtStopPoint.fulfilled, state => {
+        slice.caseReducers.toNextTripPoint(state);
+      });
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -6,8 +6,15 @@ import { useSelector } from 'react-redux';
 import { Button, ButtonModes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
 
 import { useAppDispatch } from '../../../../../core/redux/hooks';
-import { endTrip, setTripStatus, toNextTripPoint } from '../../../../../core/ride/redux/trip';
+import { setTripStatus } from '../../../../../core/ride/redux/trip';
 import { orderSelector, tripPointsSelector, tripStatusSelector } from '../../../../../core/ride/redux/trip/selectors';
+import {
+  fetchArrivedToDropOff,
+  fetchArrivedToPickUp,
+  fetchArrivedToStopPoint,
+  fetchPickedUpAtPickUpPoint,
+  fetchPickedUpAtStopPoint,
+} from '../../../../../core/ride/redux/trip/thunks';
 import { TripStatus } from '../../../../../core/ride/redux/trip/types';
 import AddressWithExtendedPassengerInfo from './AddressWith/AddressWithExtendedPassengerInfo';
 import AddressWithMeta from './AddressWith/AddressWithMeta';
@@ -16,34 +23,42 @@ import AddressWithPassengerInfo from './AddressWith/AddressWithPassengerInfo';
 const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+
   const order = useSelector(orderSelector);
   const tripStatus = useSelector(tripStatusSelector);
   const tripPoints = useSelector(tripPointsSelector);
 
-  useEffect(() => {
-    if (order && (TripStatus.Ride || TripStatus.Idle)) {
-      setTimeout(() => {
-        if (tripPoints && order.targetPointsPosition.length > 1 && tripPoints.length > 1) {
-          dispatch(setTripStatus(TripStatus.ArrivingAtStopPoint)); //for test
-        } else if (tripPoints && (tripPoints.length <= 1 || order.targetPointsPosition.length === 1)) {
-          dispatch(setTripStatus(TripStatus.Arriving)); //for test
-        }
-      }, 5000);
-    }
-  }, [dispatch, tripPoints, order]);
+  const updateTripStatus = useCallback(() => {
+    if (order && tripPoints) {
+      const isPickUp = tripPoints.length === order.targetPointsPosition.length + 1;
+      const isLastPoint = tripPoints.length <= 1;
 
-  const onNextTripStage = (status: TripStatus) => {
-    dispatch(toNextTripPoint());
-    dispatch(setTripStatus(status));
-  };
+      if (isPickUp) {
+        dispatch(setTripStatus(TripStatus.Arriving));
+      } else if (isLastPoint) {
+        dispatch(setTripStatus(TripStatus.Ending));
+      } else {
+        dispatch(setTripStatus(TripStatus.ArrivingAtStopPoint));
+      }
+    }
+  }, [order, tripPoints, dispatch]);
+
+  useEffect(() => {
+    // TODO: replace with check is contractor arriving
+    if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Idle) {
+      setTimeout(updateTripStatus, 5000);
+    }
+  }, [updateTripStatus, tripStatus]);
 
   const onArrived = () => {
     if (tripPoints) {
-      if (tripPoints.length > 1) {
-        dispatch(setTripStatus(TripStatus.Arrived));
-      } else {
-        dispatch(setTripStatus(TripStatus.Ending));
-      }
+      dispatch(fetchArrivedToPickUp());
+    }
+  };
+
+  const onArrivedAtStopPoint = () => {
+    if (tripPoints) {
+      dispatch(fetchArrivedToStopPoint());
     }
   };
 
@@ -77,7 +92,7 @@ const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
         <Button
           mode={ButtonModes.Mode1}
           text={t('ride_Ride_Order_arrivedToStopButton')}
-          onPress={() => dispatch(setTripStatus(TripStatus.ArrivedAtStopPoint))}
+          onPress={onArrivedAtStopPoint}
         />
       </StatusSwitcher>
     ),
@@ -85,7 +100,7 @@ const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
       <StatusSwitcher>
         <SwipeButton
           mode={SwipeButtonModes.Confirm}
-          onSwipeEnd={() => onNextTripStage(TripStatus.Ride)}
+          onSwipeEnd={() => dispatch(fetchPickedUpAtPickUpPoint())}
           text={t('ride_Ride_Order_pickUpButton')}
         />
       </StatusSwitcher>
@@ -94,7 +109,7 @@ const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
       <StatusSwitcher>
         <SwipeButton
           mode={SwipeButtonModes.Confirm}
-          onSwipeEnd={() => onNextTripStage(TripStatus.Ride)}
+          onSwipeEnd={() => dispatch(fetchPickedUpAtStopPoint())}
           text={t('ride_Ride_Order_pickUpButton')}
         />
       </StatusSwitcher>
@@ -104,7 +119,7 @@ const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
       <StatusSwitcher>
         <SwipeButton
           mode={SwipeButtonModes.Confirm}
-          onSwipeEnd={() => dispatch(endTrip())}
+          onSwipeEnd={() => dispatch(fetchArrivedToDropOff())}
           text={t('ride_Ride_Order_finishRideButton')}
         />
       </StatusSwitcher>

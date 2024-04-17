@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
+import { ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
 import {
   Button,
   ButtonModes,
@@ -15,9 +15,8 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { TripPoint } from '../../../../core/ride/redux/trip/types';
 import { OfferItemProps, OfferProps } from './props';
-
-const windowHeight = Dimensions.get('window').height;
 
 const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
   const [isShowMorePoints, setIsShowMorePoints] = useState<boolean>(false);
@@ -43,7 +42,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
     },
   });
 
-  const renderTarifs: ListRenderItem<string> = ({ item, index }) => {
+  const renderTarifs: ListRenderItem<TripPoint> = ({ item, index }) => {
     let pointName = `${t('ride_Ride_Offer_stopTitle')}  ${index}`;
     let isDropOff = false;
 
@@ -55,7 +54,12 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
     }
 
     return (
-      <OfferItem address={item} pointName={pointName} isDropOff={isDropOff} style={computedStyles.offerItemTitle} />
+      <OfferItem
+        address={item.address}
+        pointName={pointName}
+        isDropOff={isDropOff}
+        style={computedStyles.offerItemTitle}
+      />
     );
   };
 
@@ -74,7 +78,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
     content = (
       <ScrollViewWithCustomScroll wrapperStyle={styles.scrollViewWrapper}>
         <OfferItem
-          address={offerPoints[0]}
+          address={offerPoints[0].address}
           pointName={t('ride_Ride_Offer_pickUpTitle')}
           isDropOff={false}
           style={computedStyles.offerItemTitle}
@@ -82,7 +86,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
           setIsShowMorePoints={setIsShowMorePoints}
         />
         <OfferItem
-          address={offerPoints[offerPoints.length - 1]}
+          address={offerPoints[offerPoints.length - 1].address}
           pointName={t('ride_Ride_Offer_dropOffTitle')}
           isDropOff
           style={computedStyles.offerItemTitle}
@@ -93,7 +97,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
 
   return (
     <>
-      <View style={styles.offerItemsWrapper}>{content}</View>
+      {content}
       <View style={[styles.lastHorizontalSeparator, computedStyles.separator]} />
       <View style={styles.offerInfoWrapper}>
         <View style={styles.offerInfoItem}>
@@ -203,15 +207,14 @@ const styles = StyleSheet.create({
   },
   scrollViewWrapper: {
     flex: 0,
+    flexShrink: 1,
   },
   flatListWrapper: {
     flex: 0,
+    flexShrink: 1,
   },
   offerWrapper: {
     flexDirection: 'row',
-  },
-  offerItemsWrapper: {
-    maxHeight: windowHeight * 0.5,
   },
   offerInfoWrapper: {
     flexDirection: 'row',

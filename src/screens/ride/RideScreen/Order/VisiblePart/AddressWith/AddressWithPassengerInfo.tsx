@@ -12,7 +12,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { OrderType } from '../../../../../../core/ride/redux/trip/types';
+import { OrderType, TripPoint } from '../../../../../../core/ride/redux/trip/types';
 
 const buttonFadeAnimationDuration = 200;
 
@@ -22,7 +22,7 @@ const AddressWithPassengerInfo = ({
   withStopPoint = false,
   isOpened,
 }: {
-  tripPoints: string[];
+  tripPoints: TripPoint[];
   order: OrderType;
   withStopPoint?: boolean;
   isOpened: boolean;
@@ -43,14 +43,14 @@ const AddressWithPassengerInfo = ({
         <View style={styles.visibleHeader}>
           <PickUpIcon />
           <Text numberOfLines={numberOfLines} style={styles.address}>
-            {tripPoints[0]}
+            {tripPoints[0].address}
           </Text>
         </View>
         {withStopPoint && (
           <View style={[styles.visibleHeader, styles.secondPoint]}>
             <DropOffIcon />
             <Text numberOfLines={numberOfLines} style={styles.address}>
-              {tripPoints[1]}
+              {tripPoints[1].address}
             </Text>
           </View>
         )}

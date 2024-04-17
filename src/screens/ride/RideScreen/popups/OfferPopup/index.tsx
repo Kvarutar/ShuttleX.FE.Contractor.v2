@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Popup, sizes, Timer, TimerModes, useTheme } from 'shuttlex-integration';
@@ -7,6 +7,7 @@ import { Popup, sizes, Timer, TimerModes, useTheme } from 'shuttlex-integration'
 import Offer from '../../Offer';
 import { OfferPopupProps } from './props';
 
+const windowHeight = Dimensions.get('window').height;
 const timerAnimationDuration = 300;
 
 const OfferPopup = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferPopupProps) => {
@@ -27,7 +28,7 @@ const OfferPopup = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferPopu
 
   return (
     <>
-      <Popup>
+      <Popup bottomWindowStyle={styles.popup}>
         <Offer offer={offer} onOfferAccept={onOfferAccept} onOfferDecline={onOfferDecline} />
       </Popup>
       <Animated.View
@@ -48,6 +49,9 @@ const OfferPopup = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferPopu
 };
 
 const styles = StyleSheet.create({
+  popup: {
+    maxHeight: windowHeight * 0.7,
+  },
   timer: {
     position: 'absolute',
     right: sizes.paddingHorizontal,
