@@ -212,7 +212,7 @@ const DocsPhotoCore = ({
         <Text style={[styles.headerTitle]}>{headerTitle}</Text>
         <View style={styles.headerDummy} />
       </View>
-      <ScrollViewWithCustomScroll>
+      <ScrollViewWithCustomScroll withShadow>
         <Bar>
           <Text style={styles.title}>{explanationTitle}</Text>
           <Text style={[styles.description, computedStyles.description]}>{explanationDescription}</Text>

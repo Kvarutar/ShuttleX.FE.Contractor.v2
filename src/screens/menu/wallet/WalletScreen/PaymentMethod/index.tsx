@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { BlueCheck1, getPaymentIcon, Text, useTheme } from 'shuttlex-integration';
+import { BlueCheck1, getPaymentIcon, Separator, Text } from 'shuttlex-integration';
 
 import { PaymentMethodProps } from './props';
 
@@ -11,14 +11,6 @@ const PaymentMethodContent = ({
   onSelectMethod,
   paymentMethods,
 }: PaymentMethodProps) => {
-  const { colors } = useTheme();
-
-  const computedStyles = StyleSheet.create({
-    separator: {
-      borderColor: colors.strokeColor,
-    },
-  });
-
   const isSelected =
     selectedPaymentMethod &&
     paymentMethod.details === selectedPaymentMethod.details &&
@@ -33,11 +25,7 @@ const PaymentMethodContent = ({
         </View>
         {isSelected && <BlueCheck1 />}
       </View>
-      {index !== paymentMethods.length - 1 && (
-        <View style={styles.horizontalSeparatorWrapper}>
-          <View style={[styles.horizontalSeparator, computedStyles.separator]} />
-        </View>
-      )}
+      {index !== paymentMethods.length - 1 && <Separator />}
     </Pressable>
   );
 };
@@ -57,15 +45,6 @@ const styles = StyleSheet.create({
   details: {
     fontFamily: 'Inter Medium',
     fontSize: 18,
-  },
-  horizontalSeparatorWrapper: {
-    overflow: 'hidden',
-  },
-  horizontalSeparator: {
-    flex: 1,
-    borderStyle: 'dashed',
-    borderWidth: 1,
-    marginTop: -1,
   },
 });
 

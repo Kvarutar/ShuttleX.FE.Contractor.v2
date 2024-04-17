@@ -11,6 +11,7 @@ import {
   LocationIcon,
   PickUpIcon,
   ScrollViewWithCustomScroll,
+  Separator,
   Text,
   useTheme,
 } from 'shuttlex-integration';
@@ -36,9 +37,6 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
     },
     offerAdditionalPointsText: {
       color: colors.textSecondaryColor,
-    },
-    separator: {
-      borderColor: colors.strokeColor,
     },
   });
 
@@ -98,7 +96,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
   return (
     <>
       {content}
-      <View style={[styles.lastHorizontalSeparator, computedStyles.separator]} />
+      <Separator style={styles.lastHorizontalSeparator} />
       <View style={styles.offerInfoWrapper}>
         <View style={styles.offerInfoItem}>
           <ClockIcon style={styles.offerInfoIcon} />
@@ -142,21 +140,11 @@ const OfferItem = ({
 }: OfferItemProps) => {
   const { t } = useTranslation();
 
-  const { colors } = useTheme();
-  const { strokeColor } = colors;
-  const computedStyles = StyleSheet.create({
-    separator: {
-      borderColor: strokeColor,
-    },
-  });
-
   return (
     <View style={[styles.offerWrapper, isDropOff ? styles.dropOffWrapper : {}]}>
       <View style={styles.offerItemTop}>
         {isDropOff ? <DropOffIcon /> : <PickUpIcon />}
-        <View
-          style={[styles.verticalSeparator, computedStyles.separator, isDropOff ? styles.verticalDropOffSeparator : {}]}
-        />
+        {!isDropOff && <Separator mode="vertical" />}
       </View>
       <View style={styles.offerItemBottom}>
         <Text style={[style, styles.offerItemTitle]}>{pointName}</Text>
@@ -165,16 +153,16 @@ const OfferItem = ({
           {!isDropOff &&
             (numberOfAdditionalPoints && numberOfAdditionalPoints > 0 ? (
               <View style={styles.offerAdditionalPoints}>
-                <View style={[styles.horizontalSeparator, computedStyles.separator]} />
+                <Separator style={styles.horizontalSeparator} />
                 <Pressable onPress={() => setIsShowMorePoints?.(true)}>
                   <Text style={[styles.offerAdditionalPointsText, style]}>
                     {t('ride_Ride_Offer_moreButton', { numberOfPoints: numberOfAdditionalPoints })}
                   </Text>
                 </Pressable>
-                <View style={[styles.horizontalSeparator, computedStyles.separator]} />
+                <Separator style={styles.horizontalSeparator} />
               </View>
             ) : (
-              <View style={[styles.horizontalSeparator, computedStyles.separator]} />
+              <Separator style={styles.horizontalSeparator} />
             ))}
         </View>
       </View>
@@ -184,26 +172,12 @@ const OfferItem = ({
 
 const styles = StyleSheet.create({
   horizontalSeparator: {
-    flex: 1,
-    borderStyle: 'dashed',
-    borderBottomWidth: 1,
     marginTop: 20,
     marginBottom: 20,
   },
   lastHorizontalSeparator: {
-    flex: 1,
-    borderStyle: 'dashed',
-    borderBottomWidth: 1,
-    marginTop: 10,
     marginBottom: 20,
-  },
-  verticalSeparator: {
-    borderStyle: 'dashed',
-    borderLeftWidth: 1,
-    flex: 1,
-  },
-  verticalDropOffSeparator: {
-    borderLeftWidth: 0,
+    flex: 0,
   },
   scrollViewWrapper: {
     flex: 0,
@@ -261,7 +235,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   dropOffWrapper: {
-    paddingBottom: 10,
+    marginBottom: 20,
   },
 });
 

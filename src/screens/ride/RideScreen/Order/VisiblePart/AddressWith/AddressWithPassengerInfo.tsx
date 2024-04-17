@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import {
   Button,
   ButtonModes,
@@ -14,7 +14,10 @@ import {
 
 import { OrderType, TripPoint } from '../../../../../../core/ride/redux/trip/types';
 
-const buttonFadeAnimationDuration = 200;
+const constants = {
+  buttonFadeAnimationDuration: 200,
+  textLayoutAnimationDuration: 100,
+};
 
 const AddressWithPassengerInfo = ({
   tripPoints,
@@ -39,20 +42,29 @@ const AddressWithPassengerInfo = ({
 
   return (
     <View style={styles.passangerInfoWrapper}>
-      <View style={styles.visibleTextWrapper}>
-        <View style={styles.visibleHeader}>
+      <Animated.View
+        layout={LinearTransition.duration(constants.textLayoutAnimationDuration)}
+        style={styles.visibleTextWrapper}
+      >
+        <Animated.View
+          layout={LinearTransition.duration(constants.textLayoutAnimationDuration)}
+          style={styles.visibleHeader}
+        >
           <PickUpIcon />
           <Text numberOfLines={numberOfLines} style={styles.address}>
             {tripPoints[0].address}
           </Text>
-        </View>
+        </Animated.View>
         {withStopPoint && (
-          <View style={[styles.visibleHeader, styles.secondPoint]}>
+          <Animated.View
+            layout={LinearTransition.duration(constants.textLayoutAnimationDuration)}
+            style={[styles.visibleHeader, styles.secondPoint]}
+          >
             <DropOffIcon />
             <Text numberOfLines={numberOfLines} style={styles.address}>
               {tripPoints[1].address}
             </Text>
-          </View>
+          </Animated.View>
         )}
         <View style={styles.visibleContentWithoutGap}>
           <PassengerIcon />
@@ -60,11 +72,11 @@ const AddressWithPassengerInfo = ({
             {order.passenger.name} {order.passenger.lastName}
           </Text>
         </View>
-      </View>
+      </Animated.View>
       {!isOpened && (
         <Animated.View
-          entering={FadeIn.duration(buttonFadeAnimationDuration)}
-          exiting={FadeOut.duration(buttonFadeAnimationDuration)}
+          entering={FadeIn.duration(constants.buttonFadeAnimationDuration)}
+          exiting={FadeOut.duration(constants.buttonFadeAnimationDuration)}
         >
           <Button mode={ButtonModes.Mode3} style={styles.visibleButton}>
             <ChatIcon />

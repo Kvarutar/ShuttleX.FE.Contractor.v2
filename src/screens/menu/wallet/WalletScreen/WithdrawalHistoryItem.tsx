@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { getLocales } from 'react-native-localize';
-import { Text, useTheme } from 'shuttlex-integration';
+import { Separator, Text, useTheme } from 'shuttlex-integration';
 
 import { WithdrawalHistory } from './props';
 
@@ -16,9 +16,6 @@ const WithdrawalHistoryItem = ({ withdrawalHistoryItem }: { withdrawalHistoryIte
   const { colors } = useTheme();
 
   const computedStyles = StyleSheet.create({
-    separator: {
-      borderColor: colors.strokeColor,
-    },
     historyDate: {
       color: colors.textSecondaryColor,
     },
@@ -32,9 +29,7 @@ const WithdrawalHistoryItem = ({ withdrawalHistoryItem }: { withdrawalHistoryIte
           {formatDate(new Date(withdrawalHistoryItem.date))}
         </Text>
       </View>
-      <View style={styles.horizontalSeparatorWrapper}>
-        <View style={[styles.horizontalSeparator, computedStyles.separator]} />
-      </View>
+      <Separator />
     </View>
   );
 };
@@ -52,15 +47,6 @@ const styles = StyleSheet.create({
   historyDate: {
     fontFamily: 'Inter Medium',
     fontSize: 12,
-  },
-  horizontalSeparatorWrapper: {
-    overflow: 'hidden',
-  },
-  horizontalSeparator: {
-    flex: 1,
-    borderStyle: 'dashed',
-    borderWidth: 1,
-    marginTop: -0.5,
   },
 });
 

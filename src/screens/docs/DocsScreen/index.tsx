@@ -95,7 +95,7 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
       <FlatListWithCustomScroll
         items={Object.entries(requirementDocumentsList)}
         renderItem={renderItem}
-        style={styles.documentsWrapper}
+        wrapperStyle={styles.documentsWrapper}
         contentContainerStyle={styles.flatListContainer}
       />
     </SafeAreaView>

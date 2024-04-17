@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Bar, MenuBase, MenuNavigation, Text, useTheme } from 'shuttlex-integration';
+import { Bar, MenuBase, MenuNavigation, Separator, Text, useTheme } from 'shuttlex-integration';
 
 import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
 import { profileSelector } from '../../../core/redux/contractor/selectors';
@@ -95,9 +95,6 @@ const AdditionalContent = () => {
     balanceTitle: {
       color: colors.textSecondaryColor,
     },
-    separator: {
-      borderColor: colors.strokeColor,
-    },
   };
 
   return (
@@ -106,9 +103,7 @@ const AdditionalContent = () => {
         <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>Earned</Text>
         <Text style={styles.balanceTotal}>$682.40</Text>
       </View>
-      <View style={styles.verticalSeparatorWrapper}>
-        <View style={[styles.verticalSeparator, computedStyles.separator]} />
-      </View>
+      <Separator mode="vertical" style={styles.separator} />
       <View style={styles.textWrapper}>
         <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>Previous</Text>
         <Text style={styles.balanceTotal}>$12.10</Text>
@@ -118,15 +113,6 @@ const AdditionalContent = () => {
 };
 
 const styles = StyleSheet.create({
-  verticalSeparatorWrapper: {
-    overflow: 'hidden',
-  },
-  verticalSeparator: {
-    borderStyle: 'dashed',
-    borderWidth: 1,
-    marginLeft: -0.5,
-    flex: 1,
-  },
   balance: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -138,6 +124,9 @@ const styles = StyleSheet.create({
   },
   balanceTotal: {
     fontFamily: 'Inter Medium',
+  },
+  separator: {
+    flex: 0,
   },
   textWrapper: {
     flexShrink: 1,

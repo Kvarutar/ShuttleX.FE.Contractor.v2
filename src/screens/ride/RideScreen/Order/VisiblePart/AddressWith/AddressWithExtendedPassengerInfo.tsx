@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import {
   Button,
   ButtonModes,
@@ -14,7 +14,10 @@ import {
 
 import { OrderType, TripPoint } from '../../../../../../core/ride/redux/trip/types';
 
-const buttonFadeAnimationDuration = 200;
+const constants = {
+  buttonFadeAnimationDuration: 200,
+  textLayoutAnimationDuration: 100,
+};
 
 const AddressWithExtendedPassengerInfo = ({
   order,
@@ -45,30 +48,39 @@ const AddressWithExtendedPassengerInfo = ({
         <RoundButton roundButtonStyle={styles.passengerAvatarWrapper}>
           <Image style={styles.passengerAvatar} source={require('../../../../../../assets/img/Man.png')} />
         </RoundButton>
-        <View style={styles.visibleTextWrapper}>
+        <Animated.View
+          layout={LinearTransition.duration(constants.textLayoutAnimationDuration)}
+          style={styles.visibleTextWrapper}
+        >
           <Text style={styles.passangerInfoWithAvatarText}>
             {order.passenger.name} {order.passenger.lastName}
           </Text>
-          <View style={styles.addressMiniWrapper}>
+          <Animated.View
+            layout={LinearTransition.duration(constants.textLayoutAnimationDuration)}
+            style={styles.addressMiniWrapper}
+          >
             {withStopPoint ? <PickUpIcon /> : <DropOffIcon />}
             <Text numberOfLines={numberOfLines} style={[styles.addressMini, computedStyles.addressMini]}>
               {tripPoints[0].address}
             </Text>
-          </View>
+          </Animated.View>
           {(isPickUp || withStopPoint) && (
-            <View style={[styles.addressMiniWrapper, styles.withoutMarginTop]}>
+            <Animated.View
+              layout={LinearTransition.duration(constants.textLayoutAnimationDuration)}
+              style={[styles.addressMiniWrapper, styles.withoutMarginTop]}
+            >
               <DropOffIcon />
               <Text numberOfLines={numberOfLines} style={[styles.addressMini, computedStyles.addressMini]}>
                 {tripPoints[1].address}
               </Text>
-            </View>
+            </Animated.View>
           )}
-        </View>
+        </Animated.View>
       </View>
       {!isOpened && (
         <Animated.View
-          entering={FadeIn.duration(buttonFadeAnimationDuration)}
-          exiting={FadeOut.duration(buttonFadeAnimationDuration)}
+          entering={FadeIn.duration(constants.buttonFadeAnimationDuration)}
+          exiting={FadeOut.duration(constants.buttonFadeAnimationDuration)}
         >
           <Button mode={ButtonModes.Mode3} style={styles.visibleButton}>
             <ChatIcon />

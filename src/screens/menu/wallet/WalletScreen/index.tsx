@@ -14,6 +14,7 @@ import {
   PlusIcon,
   RoundButton,
   ScrollViewWithCustomScroll,
+  Separator,
   ShortArrowIcon,
   sizes,
   Text,
@@ -167,7 +168,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
     <View style={[styles.wallet, computedStyles.wallet]}>
       <SafeAreaView style={[styles.wrapper, computedStyles.wrapper]}>
         <View style={[styles.container, computedStyles.container]}>
-          <View style={[styles.header]}>
+          <View style={styles.header}>
             <RoundButton onPress={navigation.goBack}>
               <ShortArrowIcon />
             </RoundButton>
@@ -181,9 +182,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
                   <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_balance')}</Text>
                   <Text style={styles.balanceTotal}>${balance}</Text>
                 </View>
-                <View style={styles.verticalSeparatorWrapper}>
-                  <View style={[styles.verticalSeparator, computedStyles.separator]} />
-                </View>
+                <Separator mode="vertical" style={styles.verticalSeparator} />
                 <View>
                   <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_coinBalance')}</Text>
                   <Text style={styles.balanceTotal}>123</Text>
@@ -229,30 +228,29 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
                 </Pressable>
               )}
             </View>
-            <View style={[styles.horizontalSeparatorWrapper, styles.mainHorizontalSeparator]}>
-              <View style={[styles.horizontalSeparator, computedStyles.separator]} />
+            <View style={styles.paymentVariants}>
+              {isPaymentsVariantsVisible && (
+                <Animated.View
+                  entering={FadeIn.duration(fadeAnimationDuration)}
+                  exiting={FadeOut.duration(fadeAnimationDuration)}
+                >
+                  <Bar style={styles.bar}>
+                    <ScrollViewWithCustomScroll
+                      wrapperStyle={styles.paymentScrollViewWrapper}
+                      style={styles.paymentScrollView}
+                      contentContainerStyle={styles.paymentScrollViewContainer}
+                    >
+                      {paymentMethodsContent}
+                    </ScrollViewWithCustomScroll>
+                    <Button mode={ButtonModes.Mode4} style={styles.button} onPress={onAddCard}>
+                      <PlusIcon />
+                    </Button>
+                  </Bar>
+                </Animated.View>
+              )}
             </View>
+            <Separator style={styles.mainHorizontalSeparator} />
             {history}
-            {isPaymentsVariantsVisible && (
-              <Animated.View
-                style={styles.paymentVariants}
-                entering={FadeIn.duration(fadeAnimationDuration)}
-                exiting={FadeOut.duration(fadeAnimationDuration)}
-              >
-                <Bar style={styles.bar}>
-                  <ScrollViewWithCustomScroll
-                    wrapperStyle={styles.paymentScrollViewWrapper}
-                    style={styles.paymentScrollView}
-                    contentContainerStyle={styles.paymentScrollViewContainer}
-                  >
-                    {paymentMethodsContent}
-                  </ScrollViewWithCustomScroll>
-                  <Button mode={ButtonModes.Mode4} style={styles.button} onPress={onAddCard}>
-                    <PlusIcon />
-                  </Button>
-                </Bar>
-              </Animated.View>
-            )}
           </View>
         </View>
       </SafeAreaView>
@@ -302,15 +300,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 40,
   },
-  verticalSeparatorWrapper: {
-    overflow: 'hidden',
-  },
-  verticalSeparator: {
-    borderStyle: 'dashed',
-    borderWidth: 1,
-    marginLeft: -0.5,
-    flex: 1,
-  },
   balanceWrapper: {
     flex: 2,
   },
@@ -355,18 +344,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter Medium',
     fontSize: 18,
   },
-  horizontalSeparatorWrapper: {
-    overflow: 'hidden',
-  },
   mainHorizontalSeparator: {
     marginTop: 30,
     marginBottom: 40,
-  },
-  horizontalSeparator: {
-    flex: 1,
-    borderStyle: 'dashed',
-    borderWidth: 1,
-    marginTop: -1,
+    flex: 0,
   },
   historyTitle: {
     fontFamily: 'Inter Medium',
@@ -381,6 +362,7 @@ const styles = StyleSheet.create({
   },
   payment: {
     position: 'relative',
+    zIndex: 3,
   },
   paymentVariants: {
     position: 'absolute',
@@ -388,12 +370,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingHorizontal: 10,
+    zIndex: 2,
   },
   button: {
     paddingVertical: 14,
   },
   history: {
     flex: 1,
+    zIndex: 1,
   },
   bottomWindow: {
     position: 'relative',
@@ -407,6 +391,9 @@ const styles = StyleSheet.create({
   },
   paymentScrollViewContainer: {
     paddingVertical: 0,
+  },
+  verticalSeparator: {
+    flex: 0,
   },
 });
 

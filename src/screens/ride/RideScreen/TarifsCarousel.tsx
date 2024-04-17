@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSelector } from 'react-redux';
-import { TariffsCarImage, TariffType, Text, useTheme } from 'shuttlex-integration';
+import { Separator, TariffsCarImage, TariffType, Text, useTheme } from 'shuttlex-integration';
 
 import { preferredTariffsSelector } from '../../../core/redux/contractor/selectors';
 
@@ -20,22 +20,9 @@ const carouselAnimationDurations = {
 };
 
 const TarifsCarousel = () => {
-  const { colors } = useTheme();
   const [activeSlide, setActiveSlide] = useState(0);
   const prefferedTariffs = useSelector(preferredTariffsSelector);
   const carouselRef = useRef<ICarouselInstance>(null);
-
-  const computedStyles = StyleSheet.create({
-    paginationActiveItem: {
-      backgroundColor: colors.primaryColor,
-    },
-    paginationItem: {
-      backgroundColor: colors.borderColor,
-    },
-    separator: {
-      backgroundColor: colors.borderColor,
-    },
-  });
 
   useEffect(() => {
     carouselRef.current?.scrollTo({ count: -carouselRef.current?.getCurrentIndex() });
@@ -61,7 +48,7 @@ const TarifsCarousel = () => {
             <SliderItem item={item} animationValue={animationValue} smallText />
           )}
         />
-        <View style={[styles.separator, computedStyles.separator]} />
+        <Separator mode="vertical" style={styles.separator} />
       </View>
       <View style={styles.carouselPagination}>{paginationItem}</View>
     </View>
@@ -158,9 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   separator: {
-    width: 1,
-    height: '100%',
-    borderRadius: 100,
+    flex: 0,
   },
 });
 

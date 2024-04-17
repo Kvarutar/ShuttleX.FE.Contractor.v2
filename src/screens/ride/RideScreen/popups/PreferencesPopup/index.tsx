@@ -110,6 +110,7 @@ const TariffPreferencesPopup = ({ onClose }: PreferencesPopupProps) => {
   return (
     <Popup bottomWindowStyle={styles.popup} onCloseButtonPress={onClose}>
       <FlatListWithCustomScroll
+        withShadow
         wrapperStyle={styles.flatListWrapper}
         contentContainerStyle={styles.contentContainerStyle}
         renderItem={renderTarifs}
