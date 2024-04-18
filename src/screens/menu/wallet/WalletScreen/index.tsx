@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
@@ -13,10 +13,10 @@ import {
   PaymentMethod,
   PlusIcon,
   RoundButton,
+  SafeAreaView,
   ScrollViewWithCustomScroll,
   Separator,
   ShortArrowIcon,
-  sizes,
   Text,
   useTheme,
 } from 'shuttlex-integration';
@@ -100,12 +100,6 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
   }, [dispatch]);
 
   const computedStyles = StyleSheet.create({
-    wrapper: {
-      backgroundColor: colors.backgroundPrimaryColor,
-    },
-    container: {
-      paddingVertical: Platform.OS === 'android' ? sizes.paddingVertical : 0,
-    },
     separator: {
       borderColor: colors.strokeColor,
     },
@@ -166,92 +160,90 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
 
   return (
     <View style={[styles.wallet, computedStyles.wallet]}>
-      <SafeAreaView style={[styles.wrapper, computedStyles.wrapper]}>
-        <View style={[styles.container, computedStyles.container]}>
-          <View style={styles.header}>
-            <RoundButton onPress={navigation.goBack}>
-              <ShortArrowIcon />
-            </RoundButton>
-            <Text style={[styles.headerTitle]}>{t('menu_Wallet_headerTitle')}</Text>
-            <View style={styles.headerDummy} />
+      <SafeAreaView>
+        <View style={styles.header}>
+          <RoundButton onPress={navigation.goBack}>
+            <ShortArrowIcon />
+          </RoundButton>
+          <Text style={styles.headerTitle}>{t('menu_Wallet_headerTitle')}</Text>
+          <View style={styles.headerDummy} />
+        </View>
+        <View style={styles.totalsWrapper}>
+          <View style={styles.balanceWrapper}>
+            <Bar style={styles.balance}>
+              <View>
+                <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_balance')}</Text>
+                <Text style={styles.balanceTotal}>${balance}</Text>
+              </View>
+              <Separator mode="vertical" style={styles.verticalSeparator} />
+              <View>
+                <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_coinBalance')}</Text>
+                <Text style={styles.balanceTotal}>123</Text>
+              </View>
+            </Bar>
           </View>
-          <View style={styles.totalsWrapper}>
-            <View style={styles.balanceWrapper}>
-              <Bar style={styles.balance}>
-                <View>
-                  <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_balance')}</Text>
-                  <Text style={styles.balanceTotal}>${balance}</Text>
-                </View>
-                <Separator mode="vertical" style={styles.verticalSeparator} />
-                <View>
-                  <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_coinBalance')}</Text>
-                  <Text style={styles.balanceTotal}>123</Text>
-                </View>
-              </Bar>
-            </View>
-            <View style={styles.tripsWrapper}>
-              <Bar style={styles.trips}>
-                <View>
-                  <Text style={[styles.tripsTitle, computedStyles.tripsTitle]}>{t('menu_Wallet_trips')}</Text>
-                  <Text style={styles.tripsTotal}>242</Text>
-                </View>
-              </Bar>
-            </View>
+          <View style={styles.tripsWrapper}>
+            <Bar style={styles.trips}>
+              <View>
+                <Text style={[styles.tripsTitle, computedStyles.tripsTitle]}>{t('menu_Wallet_trips')}</Text>
+                <Text style={styles.tripsTotal}>242</Text>
+              </View>
+            </Bar>
           </View>
-          <View style={styles.mainContent}>
-            <View style={styles.payment}>
-              {selectedPaymentMethod?.method && (
-                <Pressable onPress={() => setIsPaymentsVariantsVisible(prevState => !prevState)}>
-                  <Bar style={styles.selectedMethod}>
-                    <View style={styles.selectedMethodWrapper}>
-                      {getPaymentIcon(selectedPaymentMethod.method)}
-                      <Text style={styles.details}>**** {selectedPaymentMethod.details}</Text>
-                    </View>
-                    {isPaymentsVariantsVisible ? (
-                      <Animated.View
-                        entering={FadeIn.duration(fadeAnimationDuration)}
-                        exiting={FadeOut.duration(fadeAnimationDuration)}
-                        key="active"
-                      >
-                        <DropDownIcon mode="filled" style={{ transform: [{ rotate: '90deg' }] }} />
-                      </Animated.View>
-                    ) : (
-                      <Animated.View
-                        entering={FadeIn.duration(fadeAnimationDuration)}
-                        exiting={FadeOut.duration(fadeAnimationDuration)}
-                        key="default"
-                      >
-                        <DropDownIcon />
-                      </Animated.View>
-                    )}
-                  </Bar>
-                </Pressable>
-              )}
-            </View>
-            <View style={styles.paymentVariants}>
-              {isPaymentsVariantsVisible && (
-                <Animated.View
-                  entering={FadeIn.duration(fadeAnimationDuration)}
-                  exiting={FadeOut.duration(fadeAnimationDuration)}
-                >
-                  <Bar style={styles.bar}>
-                    <ScrollViewWithCustomScroll
-                      wrapperStyle={styles.paymentScrollViewWrapper}
-                      style={styles.paymentScrollView}
-                      contentContainerStyle={styles.paymentScrollViewContainer}
+        </View>
+        <View style={styles.mainContent}>
+          <View style={styles.payment}>
+            {selectedPaymentMethod?.method && (
+              <Pressable onPress={() => setIsPaymentsVariantsVisible(prevState => !prevState)}>
+                <Bar style={styles.selectedMethod}>
+                  <View style={styles.selectedMethodWrapper}>
+                    {getPaymentIcon(selectedPaymentMethod.method)}
+                    <Text style={styles.details}>**** {selectedPaymentMethod.details}</Text>
+                  </View>
+                  {isPaymentsVariantsVisible ? (
+                    <Animated.View
+                      entering={FadeIn.duration(fadeAnimationDuration)}
+                      exiting={FadeOut.duration(fadeAnimationDuration)}
+                      key="active"
                     >
-                      {paymentMethodsContent}
-                    </ScrollViewWithCustomScroll>
-                    <Button mode={ButtonModes.Mode4} style={styles.button} onPress={onAddCard}>
-                      <PlusIcon />
-                    </Button>
-                  </Bar>
-                </Animated.View>
-              )}
-            </View>
-            <Separator style={styles.mainHorizontalSeparator} />
-            {history}
+                      <DropDownIcon mode="filled" style={{ transform: [{ rotate: '90deg' }] }} />
+                    </Animated.View>
+                  ) : (
+                    <Animated.View
+                      entering={FadeIn.duration(fadeAnimationDuration)}
+                      exiting={FadeOut.duration(fadeAnimationDuration)}
+                      key="default"
+                    >
+                      <DropDownIcon />
+                    </Animated.View>
+                  )}
+                </Bar>
+              </Pressable>
+            )}
           </View>
+          <View style={styles.paymentVariants}>
+            {isPaymentsVariantsVisible && (
+              <Animated.View
+                entering={FadeIn.duration(fadeAnimationDuration)}
+                exiting={FadeOut.duration(fadeAnimationDuration)}
+              >
+                <Bar style={styles.bar}>
+                  <ScrollViewWithCustomScroll
+                    wrapperStyle={styles.paymentScrollViewWrapper}
+                    style={styles.paymentScrollView}
+                    contentContainerStyle={styles.paymentScrollViewContainer}
+                  >
+                    {paymentMethodsContent}
+                  </ScrollViewWithCustomScroll>
+                  <Button mode={ButtonModes.Mode4} style={styles.button} onPress={onAddCard}>
+                    <PlusIcon />
+                  </Button>
+                </Bar>
+              </Animated.View>
+            )}
+          </View>
+          <Separator style={styles.mainHorizontalSeparator} />
+          {history}
         </View>
       </SafeAreaView>
       <BottomWindow style={styles.bottomWindow}>
@@ -264,13 +256,6 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
 const styles = StyleSheet.create({
   wallet: {
     flex: 1,
-  },
-  wrapper: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: sizes.paddingHorizontal,
   },
   mainContent: {
     position: 'relative',

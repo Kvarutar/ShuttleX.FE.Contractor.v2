@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ListRenderItem, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import { ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   Bar,
@@ -8,9 +8,9 @@ import {
   BlueCheck1,
   FlatListWithCustomScroll,
   RoundButton,
+  SafeAreaView,
   ShortArrowIcon,
   ShortArrowSmallIcon,
-  sizes,
   Text,
   useTheme,
 } from 'shuttlex-integration';
@@ -52,9 +52,6 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
   };
 
   const computedStyles = StyleSheet.create({
-    container: {
-      backgroundColor: colors.backgroundPrimaryColor,
-    },
     description: {
       color: colors.textSecondaryColor,
     },
@@ -80,12 +77,12 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, computedStyles.container]}>
-      <View style={[styles.header]}>
+    <SafeAreaView>
+      <View style={styles.header}>
         <RoundButton onPress={navigation.goBack}>
           <ShortArrowIcon />
         </RoundButton>
-        <Text style={[styles.headerTitle]}>{t('docs_Docs_headerTitle')}</Text>
+        <Text style={styles.headerTitle}>{t('docs_Docs_headerTitle')}</Text>
         <View style={styles.headerDummy} />
       </View>
       <Bar>
@@ -103,11 +100,6 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: sizes.paddingHorizontal,
-    paddingVertical: sizes.paddingVertical,
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

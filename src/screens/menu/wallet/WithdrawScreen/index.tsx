@@ -1,12 +1,12 @@
 import { t } from 'i18next';
 import React, { useState } from 'react';
-import { Platform, SafeAreaView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   Button,
   RoundButton,
+  SafeAreaView,
   ShortArrowIcon,
-  sizes,
   Text,
   TextInput,
   TextInputInputMode,
@@ -26,12 +26,6 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
   const [isSuccessPopupVisible, setIsSuccessPopupVisible] = useState(false);
 
   const computedStyles = StyleSheet.create({
-    wrapper: {
-      backgroundColor: colors.backgroundPrimaryColor,
-    },
-    container: {
-      paddingVertical: Platform.OS === 'android' ? sizes.paddingVertical : 0,
-    },
     available: {
       color: colors.textSecondaryColor,
     },
@@ -60,8 +54,8 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
   };
 
   return (
-    <SafeAreaView style={[styles.wrapper, computedStyles.wrapper]}>
-      <View style={[styles.container, computedStyles.container]}>
+    <>
+      <SafeAreaView containerStyle={styles.container}>
         <View style={styles.header}>
           <RoundButton onPress={navigation.goBack}>
             <ShortArrowIcon />
@@ -80,16 +74,13 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
           />
         </View>
         <Button text={t('menu_Withdraw_withdrawButton')} onPress={onWithdraw} />
-      </View>
+      </SafeAreaView>
       {isSuccessPopupVisible && <SuccessModal amount={amount} onContinue={onContinue} />}
-    </SafeAreaView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -103,8 +94,6 @@ const styles = StyleSheet.create({
     width: 50,
   },
   container: {
-    flex: 1,
-    paddingHorizontal: sizes.paddingHorizontal,
     justifyContent: 'space-between',
   },
   available: {

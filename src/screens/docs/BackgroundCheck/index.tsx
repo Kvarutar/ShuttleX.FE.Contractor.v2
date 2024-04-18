@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   Bar,
   Button,
   CreditCheckIcon,
   LockIcon,
   RoundButton,
+  SafeAreaView,
+  ScrollViewWithCustomScroll,
   ShortArrowIcon,
-  sizes,
   Text,
   TextInput,
   TextInputInputMode,
@@ -54,53 +55,55 @@ const BackgroundCheckScreen = ({ navigation }: BackgroundCheckScreenProps): JSX.
   };
 
   return (
-    <SafeAreaView style={[styles.container, computedStyles.container]}>
-      <View>
+    <SafeAreaView containerStyle={styles.container}>
+      <View style={styles.wrapper}>
         <View style={[styles.header]}>
-          <RoundButton onPress={() => navigation.goBack()}>
+          <RoundButton onPress={navigation.goBack}>
             <ShortArrowIcon />
           </RoundButton>
           <Text style={[styles.headerTitle]}>{t('docs_BackgroundCheck_headerTitle')}</Text>
           <View style={styles.headerDummy} />
         </View>
-        <Bar>
-          <Text style={styles.title}>{t('docs_BackgroundCheck_explanationTitle')}</Text>
-          <Text style={[styles.description, computedStyles.description]}>
-            {t('docs_BackgroundCheck_explanationDescription')}
-          </Text>
-        </Bar>
-        <View style={styles.wrapper}>
-          <Text style={styles.blockTitle}>{t('docs_BackgroundCheck_blockTitle')}</Text>
-          <TextInput
-            maxLength={11}
-            inputMode={TextInputInputMode.Numeric}
-            value={ssn}
-            placeholder="000-00-0000"
-            onChangeText={onChange}
-          />
-          <View style={styles.agreements}>
-            <View style={styles.agreementsItem}>
-              <LockIcon />
-              <Text style={styles.agreementsDescription}>{t('docs_BackgroundCheck_agreement1')}</Text>
-            </View>
-            <View style={styles.agreementsItem}>
-              <CreditCheckIcon />
-              <Text style={styles.agreementsDescription}>{t('docs_BackgroundCheck_agreement2')}</Text>
+        <ScrollViewWithCustomScroll withShadow>
+          <Bar>
+            <Text style={styles.title}>{t('docs_BackgroundCheck_explanationTitle')}</Text>
+            <Text style={[styles.description, computedStyles.description]}>
+              {t('docs_BackgroundCheck_explanationDescription')}
+            </Text>
+          </Bar>
+          <View style={styles.contentWrapper}>
+            <Text style={styles.blockTitle}>{t('docs_BackgroundCheck_blockTitle')}</Text>
+            <TextInput
+              maxLength={11}
+              inputMode={TextInputInputMode.Numeric}
+              value={ssn}
+              placeholder="000-00-0000"
+              onChangeText={onChange}
+            />
+            <View style={styles.agreements}>
+              <View style={styles.agreementsItem}>
+                <LockIcon />
+                <Text style={styles.agreementsDescription}>{t('docs_BackgroundCheck_agreement1')}</Text>
+              </View>
+              <View style={styles.agreementsItem}>
+                <CreditCheckIcon />
+                <Text style={styles.agreementsDescription}>{t('docs_BackgroundCheck_agreement2')}</Text>
+              </View>
             </View>
           </View>
-        </View>
+        </ScrollViewWithCustomScroll>
+        {ssn !== '' && <Button text={t('docs_BackgroundCheck_agreeButton')} onPress={onAgree} style={styles.button} />}
       </View>
-      {ssn !== '' && <Button text={t('docs_BackgroundCheck_agreeButton')} onPress={onAgree} />}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingHorizontal: sizes.paddingHorizontal,
-    paddingVertical: sizes.paddingVertical,
     justifyContent: 'space-between',
+  },
+  wrapper: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
@@ -124,7 +127,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 16,
   },
-  wrapper: {
+  contentWrapper: {
     marginTop: 40,
   },
   agreements: {
@@ -144,6 +147,9 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 14,
     lineHeight: 20,
+  },
+  button: {
+    marginTop: 20,
   },
 });
 

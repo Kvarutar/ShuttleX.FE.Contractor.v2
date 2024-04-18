@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
@@ -9,9 +9,9 @@ import {
   Button,
   ButtonModes,
   RoundButton,
+  SafeAreaView,
   ScrollViewWithCustomScroll,
   ShortArrowIcon,
-  sizes,
   Text,
   useTheme,
 } from 'shuttlex-integration';
@@ -54,9 +54,6 @@ const DocsPhotoCore = ({
   const [isFileTypePopupVisible, setIsFileTypePopupVisible] = useState(false);
 
   const computedStyles = StyleSheet.create({
-    container: {
-      backgroundColor: colors.backgroundPrimaryColor,
-    },
     description: {
       color: colors.textSecondaryColor,
     },
@@ -204,29 +201,31 @@ const DocsPhotoCore = ({
   }
 
   return (
-    <SafeAreaView style={[styles.container, computedStyles.container]}>
-      <View style={[styles.header]}>
-        <RoundButton onPress={goBack}>
-          <ShortArrowIcon />
-        </RoundButton>
-        <Text style={[styles.headerTitle]}>{headerTitle}</Text>
-        <View style={styles.headerDummy} />
-      </View>
-      <ScrollViewWithCustomScroll withShadow>
-        <Bar>
-          <Text style={styles.title}>{explanationTitle}</Text>
-          <Text style={[styles.description, computedStyles.description]}>{explanationDescription}</Text>
-        </Bar>
-        <SelectedFilePresentation
-          selectedFile={selectedFile ?? undefined}
-          onTakePhoto={onTakePhoto}
-          onCloseFile={() => setSelectedFile(null)}
-          photoHeight={photoHeight}
-          photoWidth={photoWidth}
-        />
-        {children}
-      </ScrollViewWithCustomScroll>
-      {bottomButton}
+    <>
+      <SafeAreaView>
+        <View style={styles.header}>
+          <RoundButton onPress={goBack}>
+            <ShortArrowIcon />
+          </RoundButton>
+          <Text style={[styles.headerTitle]}>{headerTitle}</Text>
+          <View style={styles.headerDummy} />
+        </View>
+        <ScrollViewWithCustomScroll withShadow>
+          <Bar>
+            <Text style={styles.title}>{explanationTitle}</Text>
+            <Text style={[styles.description, computedStyles.description]}>{explanationDescription}</Text>
+          </Bar>
+          <SelectedFilePresentation
+            selectedFile={selectedFile ?? undefined}
+            onTakePhoto={onTakePhoto}
+            onCloseFile={() => setSelectedFile(null)}
+            photoHeight={photoHeight}
+            photoWidth={photoWidth}
+          />
+          {children}
+        </ScrollViewWithCustomScroll>
+        {bottomButton}
+      </SafeAreaView>
       {isFileTypePopupVisible && (
         <FileTypePopup
           onClose={() => setIsFileTypePopupVisible(false)}
@@ -234,16 +233,11 @@ const DocsPhotoCore = ({
           onOpenImagePicker={onSelectPhoto}
         />
       )}
-    </SafeAreaView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: sizes.paddingHorizontal,
-    paddingVertical: sizes.paddingVertical,
-  },
   loadingButton: {
     padding: 12,
   },
