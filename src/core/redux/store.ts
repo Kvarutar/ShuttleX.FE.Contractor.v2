@@ -8,6 +8,8 @@ import geolocationReducer from '../ride/redux/geolocation';
 import mapReducer from '../ride/redux/map';
 import tripReducer from '../ride/redux/trip';
 import contractorReducer from './contractor';
+import signalRReducer from './signalr';
+import { signalRMiddleware } from './signalr/middleware';
 
 const rootReducer = combineReducers({
   docs: docsReducer,
@@ -18,10 +20,12 @@ const rootReducer = combineReducers({
   map: mapReducer,
   trip: tripReducer,
   contractor: contractorReducer,
+  signalR: signalRReducer,
 });
 
 export const store = configureStore({
   reducer: rootReducer,
+  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(signalRMiddleware()),
 });
 
 export type AppState = ReturnType<typeof store.getState>;
