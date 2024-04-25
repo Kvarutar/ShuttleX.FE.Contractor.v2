@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   Button,
+  KeyboardAvoidingView,
   RoundButton,
   SafeAreaView,
   ShortArrowIcon,
@@ -49,12 +50,8 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
     }
   };
 
-  const onContinue = () => {
-    navigation.goBack();
-  };
-
   return (
-    <>
+    <KeyboardAvoidingView>
       <SafeAreaView containerStyle={styles.container}>
         <View style={styles.header}>
           <RoundButton onPress={navigation.goBack}>
@@ -75,8 +72,8 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
         </View>
         <Button text={t('menu_Withdraw_withdrawButton')} onPress={onWithdraw} />
       </SafeAreaView>
-      {isSuccessPopupVisible && <SuccessModal amount={amount} onContinue={onContinue} />}
-    </>
+      {isSuccessPopupVisible && <SuccessModal amount={amount} onContinue={navigation.goBack} />}
+    </KeyboardAvoidingView>
   );
 };
 

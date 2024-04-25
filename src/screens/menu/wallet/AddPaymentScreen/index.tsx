@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { AddCardScreen, Card, SafeAreaView } from 'shuttlex-integration';
+import { AddCardScreen, Card, KeyboardAvoidingView, SafeAreaView } from 'shuttlex-integration';
 
 import { addAvaliablePaymentMethod, setSelectedPaymentMethod } from '../../../../core/menu/redux/wallet';
 import { useAppDispatch } from '../../../../core/redux/hooks';
@@ -21,9 +21,11 @@ const AddPaymentScreen = ({ navigation }: AddPaymentScreenProps): JSX.Element =>
   };
 
   return (
-    <SafeAreaView containerStyle={styles.container}>
-      <AddCardScreen onCardSave={onCardSave} onBackButtonPress={navigation.goBack} />
-    </SafeAreaView>
+    <KeyboardAvoidingView>
+      <SafeAreaView containerStyle={styles.container}>
+        <AddCardScreen onCardSave={onCardSave} onBackButtonPress={navigation.goBack} />
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

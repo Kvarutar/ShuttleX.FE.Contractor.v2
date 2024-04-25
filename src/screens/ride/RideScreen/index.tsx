@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { NativeModules, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import {
+  IntegrationModule,
   LocationUnavailable,
   LocationUnavailableProps,
   MenuIcon,
@@ -161,7 +162,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
         if (Platform.OS === 'ios') {
           openSettings();
         } else {
-          NativeModules.CustomModule.navigateToLocationSettings(); // only for android
+          IntegrationModule.navigateToLocationSettings();
         }
         dispatch(setGeolocationIsLocationEnabled(true));
       },
