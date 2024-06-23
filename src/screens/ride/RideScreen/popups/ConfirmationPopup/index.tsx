@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Popup, SwipeButton, Text, useTheme } from 'shuttlex-integration';
 

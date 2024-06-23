@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { BlueCheck1, getPaymentIcon, Separator, Text } from 'shuttlex-integration';
 

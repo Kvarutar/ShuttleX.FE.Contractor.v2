@@ -1,4 +1,3 @@
-import React from 'react';
 import { AlertRunsOn, FreeTimeAlert, InternetDisconnectedAlert, PaidTimeAlert } from 'shuttlex-integration';
 
 import { useAppDispatch } from '../core/redux/hooks';

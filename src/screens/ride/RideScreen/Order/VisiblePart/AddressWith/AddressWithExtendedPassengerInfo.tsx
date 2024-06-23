@@ -1,4 +1,3 @@
-import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import {

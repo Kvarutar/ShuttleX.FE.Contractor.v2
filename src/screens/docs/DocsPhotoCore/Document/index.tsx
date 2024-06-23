@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Bar, CloseIconMini, DocumentIcon, RoundButton, Text } from 'shuttlex-integration';

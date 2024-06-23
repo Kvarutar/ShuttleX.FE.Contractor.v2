@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { getLocales } from 'react-native-localize';
 import { Separator, Text, useTheme } from 'shuttlex-integration';

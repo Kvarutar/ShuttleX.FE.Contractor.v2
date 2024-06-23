@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { RequirementDocsType } from '../../../core/auth/redux/docs/types';
