@@ -44,10 +44,6 @@ const SignUp = ({ onPress, navigation }: SignProps): JSX.Element => {
     isAllowedProccessPersonalData: boolean;
   };
 
-  const navigationToSignUpPhoneCodeScreen = () => {
-    navigation.navigate('SignUpPhoneCode');
-  };
-
   const getInitialForm = (): correctValidationUserDataFormProps => ({
     correctName: true,
     correctLastName: true,
@@ -77,7 +73,7 @@ const SignUp = ({ onPress, navigation }: SignProps): JSX.Element => {
     setIsCorrectForm(isCorrectTemporaryForm);
 
     if (!Object.values(isCorrectTemporaryForm).includes(false)) {
-      navigationToSignUpPhoneCodeScreen();
+      navigation.navigate('Zone');
     }
   };
 

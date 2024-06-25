@@ -9,6 +9,7 @@ export type RootStackParamList = {
   SignInEmailCode: undefined;
   Notifications: undefined;
   Rating: undefined;
+  Zone: undefined;
   Docs: undefined;
   BackgroundCheck: undefined;
   ProfilePhoto: undefined;
