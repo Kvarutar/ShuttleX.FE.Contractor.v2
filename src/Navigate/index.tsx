@@ -3,10 +3,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import BootSplash from 'react-native-bootsplash';
 
 import AuthScreen from '../screens/auth/AuthScreen';
+import PhoneSelectScreen from '../screens/auth/PhoneSelectScreen';
 import SignInEmailCodeScreen from '../screens/auth/SignInEmailCodeScreen';
 import SignInPhoneCodeScreen from '../screens/auth/SignInPhoneCodeScreen';
 import SignUpPhoneCodeScreen from '../screens/auth/SignUpPhoneCodeScreen';
 import SplashScreen from '../screens/auth/SplashScreen';
+import TermsScreen from '../screens/auth/TermsScreen';
 import BackgroundCheckScreen from '../screens/docs/BackgroundCheck';
 import DocsScreen from '../screens/docs/DocsScreen';
 import DriversLicenseScreen from '../screens/docs/DriversLicenseScreen';
@@ -27,7 +29,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const Navigate = (): JSX.Element => (
   <NavigationContainer onReady={() => BootSplash.hide({ fade: true })}>
     <Stack.Navigator
-      initialRouteName="Ride"
+      initialRouteName="Splash"
       screenOptions={{
         headerShown: false,
       }}
@@ -50,6 +52,8 @@ const Navigate = (): JSX.Element => (
       <Stack.Screen name="Wallet" component={WalletScreen} />
       <Stack.Screen name="AddPayment" component={AddPaymentScreen} />
       <Stack.Screen name="Withdraw" component={WithdrawScreen} />
+      <Stack.Screen name="PhoneSelect" component={PhoneSelectScreen} />
+      <Stack.Screen name="Terms" component={TermsScreen} />
     </Stack.Navigator>
   </NavigationContainer>
 );

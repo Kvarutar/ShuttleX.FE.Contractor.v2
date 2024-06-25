@@ -1,3 +1,5 @@
+import { countryDtosProps } from 'shuttlex-integration/lib/typescript/src/core/countries/props';
+
 export type RootStackParamList = {
   Splash: undefined;
   Auth: { state: 'SignIn' | 'SignUp' };
@@ -17,4 +19,6 @@ export type RootStackParamList = {
   Wallet: undefined;
   AddPayment: undefined;
   Withdraw: undefined;
+  PhoneSelect: { initialFlag: countryDtosProps; onFlagSelect: (flag: countryDtosProps) => void };
+  Terms: undefined;
 };
