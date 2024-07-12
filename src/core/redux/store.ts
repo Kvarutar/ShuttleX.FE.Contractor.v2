@@ -10,6 +10,7 @@ import tripReducer from '../ride/redux/trip';
 import contractorReducer from './contractor';
 import signalRReducer from './signalr';
 import { signalRMiddleware } from './signalr/middleware';
+import reactotron from '../../../ReactotronConfig';
 
 const rootReducer = combineReducers({
   docs: docsReducer,
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
 export const store = configureStore({
   reducer: rootReducer,
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(signalRMiddleware()),
+  enhancers: __DEV__ ? [reactotron.createEnhancer!()] : [],
 });
 
 export type AppState = ReturnType<typeof store.getState>;
