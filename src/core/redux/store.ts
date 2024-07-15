@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
+import reactotron from '../../../ReactotronConfig';
 import docsReducer from '../auth/redux/docs';
 import notificationsReducer from '../menu/redux/notifications';
 import walletReducer from '../menu/redux/wallet';
@@ -10,7 +11,6 @@ import tripReducer from '../ride/redux/trip';
 import contractorReducer from './contractor';
 import signalRReducer from './signalr';
 import { signalRMiddleware } from './signalr/middleware';
-import reactotron from '../../../ReactotronConfig';
 
 const rootReducer = combineReducers({
   docs: docsReducer,

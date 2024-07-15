@@ -7,7 +7,7 @@ import { store } from './core/redux/store';
 import Navigate from './Navigate';
 
 if (__DEV__) {
-  require("../ReactotronConfig");
+  require('../ReactotronConfig');
 }
 
 const App = (): JSX.Element => (
