@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
   },
   offerInfoItem: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   offerInfoIcon: {
     marginRight: 4,

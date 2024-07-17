@@ -1,16 +1,16 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Platform, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
 import {
   Bar,
   BarModes,
   Button,
+  FlatListWithCustomScroll,
   RoundButton,
   ShortArrowIcon,
   ShortArrowSmallIcon,
   sizes,
   Text,
-  TextInput,
   useTheme,
 } from 'shuttlex-integration';
 
@@ -38,53 +38,59 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
     signUpLabel: {
       color: colors.primaryColor,
     },
+    placeholderZone: {
+      color: colors.textSecondaryColor,
+    },
   });
+
+  const isZoneEmpty = useCallback(() => zone === '', [zone]);
+
+  const renderItem = ({ item }) => (
+    <Pressable style={styles.zoneList} key={item.id}>
+      <Bar mode={BarModes.Active} style={styles.zoneListBar}>
+        <Text style={styles.zoneBodyText}>{item.name}</Text>
+
+        <RoundButton
+          onPress={() => {
+            setData(item.next);
+            setZone(item.name);
+          }}
+          roundButtonStyle={styles.zoneRoundButton}
+        >
+          <ShortArrowSmallIcon />
+        </RoundButton>
+      </Bar>
+    </Pressable>
+  );
 
   return (
     <SafeAreaView style={[styles.wrapper, computedStyles.wrapper]}>
       <View style={[styles.container, computedStyles.container]}>
-        <View>
+        <View style={styles.zoneWrapper}>
           <View style={styles.zoneHeader}>
-            <RoundButton onPress={() => navigation.goBack}>
+            <RoundButton onPress={navigation.goBack}>
               <ShortArrowIcon />
             </RoundButton>
             <Text style={styles.zoneHeaderTitleText}>{t('auth_Zone_headerTitle')}</Text>
           </View>
           <View style={styles.zoneBody}>
             <Text style={styles.zoneBodyText}>{t('auth_Zone_selectAreaDescription')}</Text>
-
-            <TextInput
-              style={styles.zoneBodyTextInput}
-              placeholder={t('auth_Zone_textInputPlaceholder')}
-              value={zone}
-            />
+            <Bar style={styles.zoneBodyTextInput}>
+              <Text style={isZoneEmpty() ? computedStyles.placeholderZone : {}}>
+                {isZoneEmpty() ? t('auth_Zone_textInputPlaceholder') : zone}
+              </Text>
+            </Bar>
 
             <Text style={styles.zoneBodyText}>{t('auth_Zone_zoneListDescription')}</Text>
 
-            <FlatList
-              data={data}
-              renderItem={({ item }) => (
-                <Pressable style={styles.zoneList}>
-                  <Bar mode={BarModes.Active} style={styles.zoneListBar}>
-                    <Text style={styles.zoneBodyText}>{item.name}</Text>
-
-                    <RoundButton
-                      onPress={() => {
-                        setData(item.next);
-                        setZone(item.name);
-                      }}
-                      roundButtonStyle={styles.zoneRoundButton}
-                    >
-                      <ShortArrowSmallIcon />
-                    </RoundButton>
-                  </Bar>
-                </Pressable>
-              )}
-              keyExtractor={item => item.id}
-            />
+            <FlatListWithCustomScroll items={data} renderItem={renderItem} withShadow />
           </View>
         </View>
-        <Button text={t('auth_Zone_buttonNext')} onPress={() => navigation.navigate('SignUpPhoneCode')} />
+        <Button
+          text={t('auth_Zone_buttonNext')}
+          style={styles.zoneButton}
+          onPress={() => navigation.navigate('SignUpPhoneCode')}
+        />
       </View>
     </SafeAreaView>
   );
@@ -99,6 +105,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: sizes.paddingHorizontal,
     justifyContent: 'space-between',
   },
+  zoneWrapper: {
+    flex: 1,
+  },
   zoneHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -110,6 +119,7 @@ const styles = StyleSheet.create({
   },
   zoneBody: {
     marginTop: 30,
+    flex: 1,
   },
   zoneBodyText: {
     fontFamily: 'Inter Medium',
@@ -132,6 +142,9 @@ const styles = StyleSheet.create({
   zoneRoundButton: {
     height: 28,
     width: 28,
+  },
+  zoneButton: {
+    marginTop: 20,
   },
 });
 
