@@ -43,6 +43,7 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
     },
   });
 
+  // @ts-expect-error Parameter 'item' implicitly has an 'any' type.ts(7006)
   const renderItem = ({ item }) => (
     <Pressable style={styles.zoneList} key={item.id}>
       <Bar mode={BarModes.Active} style={styles.zoneListBar}>
