@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
 import {
@@ -43,8 +43,6 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
     },
   });
 
-  const isZoneEmpty = useCallback(() => zone === '', [zone]);
-
   const renderItem = ({ item }) => (
     <Pressable style={styles.zoneList} key={item.id}>
       <Bar mode={BarModes.Active} style={styles.zoneListBar}>
@@ -76,8 +74,8 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
           <View style={styles.zoneBody}>
             <Text style={styles.zoneBodyText}>{t('auth_Zone_selectAreaDescription')}</Text>
             <Bar style={styles.zoneBodyTextInput}>
-              <Text style={isZoneEmpty() ? computedStyles.placeholderZone : {}}>
-                {isZoneEmpty() ? t('auth_Zone_textInputPlaceholder') : zone}
+              <Text style={zone === '' ? computedStyles.placeholderZone : {}}>
+                {zone ?? t('auth_Zone_textInputPlaceholder')}
               </Text>
             </Bar>
 
