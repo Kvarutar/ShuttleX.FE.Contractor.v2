@@ -1,6 +1,6 @@
-import Config from 'react-native-config';
-import { TariffType } from 'shuttlex-integration';
+import { getAxiosErrorInfo, TariffType } from 'shuttlex-integration';
 
+import shuttlexContractorInstance from '../../client';
 import { createAppAsyncThunk } from '../hooks';
 import { ContractorStatus } from './types';
 
@@ -8,22 +8,15 @@ export const sendSelectedTariffs = createAppAsyncThunk<void, TariffType[]>(
   'contractor/sendSelectedTariffs',
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${Config.API_URL_HTTPS}/tariff/update-contractor-selected-tariffs`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tariffNames: payload,
-        }),
+      await shuttlexContractorInstance.post('/contractor/tariff/update-contractor-selected-tariffs', {
+        tariffNames: payload,
       });
-
-      if (!response.ok) {
-        throw 'Error occured during fetching seleted tariffs';
-      }
     } catch (error) {
-      return rejectWithValue(error);
+      const { code, message } = getAxiosErrorInfo(error);
+      return rejectWithValue({
+        code,
+        message,
+      });
     }
   },
 );
@@ -34,16 +27,13 @@ export const updateContractorStatus = createAppAsyncThunk<void, ContractorStatus
     const urlPath = payload === 'online' ? 'make-contractor-state-waiting-order' : 'make-contractor-state-out-of-work';
 
     try {
-      const response = await fetch(`${Config.API_URL_HTTPS}/contractor/${urlPath}`, { method: 'POST' });
-
-      if (!response.ok) {
-        if (response.status === 400) {
-          return rejectWithValue(response.json());
-        }
-        throw 'Error occured during updating contractor state';
-      }
+      await shuttlexContractorInstance.post(`/contractor/${urlPath}`);
     } catch (error) {
-      return rejectWithValue(error);
+      const { code, message } = getAxiosErrorInfo(error);
+      return rejectWithValue({
+        code,
+        message,
+      });
     }
   },
 );

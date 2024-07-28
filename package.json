@@ -25,6 +25,8 @@
     "@react-navigation/native-stack": "^6.9.16",
     "@reduxjs/toolkit": "^1.9.7",
     "@types/uuid": "^9.0.8",
+    "axios": "^1.7.2",
+    "axios-retry": "^4.4.2",
     "credit-card-type": "^10.0.0",
     "i18next": "^23.6.0",
     "react": "18.2.0",
