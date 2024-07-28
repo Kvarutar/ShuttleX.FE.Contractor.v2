@@ -1,6 +1,8 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useEffect } from 'react';
 import BootSplash from 'react-native-bootsplash';
+import { useTheme } from 'shuttlex-integration';
 
 import AuthScreen from '../screens/auth/AuthScreen';
 import PhoneSelectScreen from '../screens/auth/PhoneSelectScreen';
@@ -27,37 +29,45 @@ import { RootStackParamList } from './props';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const Navigate = (): JSX.Element => (
-  <NavigationContainer onReady={() => BootSplash.hide({ fade: true })}>
-    <Stack.Navigator
-      initialRouteName="Splash"
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen name="Splash" component={SplashScreen} />
-      <Stack.Screen name="Auth" component={AuthScreen} />
-      <Stack.Screen name="Ride" component={RideScreen} />
-      <Stack.Screen name="SignUpPhoneCode" component={SignUpPhoneCodeScreen} />
-      <Stack.Screen name="SignInPhoneCode" component={SignInPhoneCodeScreen} />
-      <Stack.Screen name="SignInEmailCode" component={SignInEmailCodeScreen} />
-      <Stack.Screen name="Notifications" component={NotificationScreen} />
-      <Stack.Screen name="Rating" component={RatingScreen} />
-      <Stack.Screen name="Zone" component={ZoneScreen} />
-      <Stack.Screen name="Docs" component={DocsScreen} />
-      <Stack.Screen name="BackgroundCheck" component={BackgroundCheckScreen} />
-      <Stack.Screen name="ProfilePhoto" component={ProfilePhotoScreen} />
-      <Stack.Screen name="DriversLicense" component={DriversLicenseScreen} />
-      <Stack.Screen name="VehicleInsurance" component={VehicleInsuranceScreen} />
-      <Stack.Screen name="VehicleRegistration" component={VehicleRegistrationScreen} />
-      <Stack.Screen name="VehicleInspection" component={VehicleInspectionScreen} />
-      <Stack.Screen name="Wallet" component={WalletScreen} />
-      <Stack.Screen name="AddPayment" component={AddPaymentScreen} />
-      <Stack.Screen name="Withdraw" component={WithdrawScreen} />
-      <Stack.Screen name="PhoneSelect" component={PhoneSelectScreen} />
-      <Stack.Screen name="Terms" component={TermsScreen} />
-    </Stack.Navigator>
-  </NavigationContainer>
-);
+const Navigate = (): JSX.Element => {
+  const { setThemeMode } = useTheme();
+
+  useEffect(() => {
+    setThemeMode('dark');
+  }, [setThemeMode]);
+
+  return (
+    <NavigationContainer onReady={() => BootSplash.hide({ fade: true })}>
+      <Stack.Navigator
+        initialRouteName="Splash"
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="Auth" component={AuthScreen} />
+        <Stack.Screen name="Ride" component={RideScreen} />
+        <Stack.Screen name="SignUpPhoneCode" component={SignUpPhoneCodeScreen} />
+        <Stack.Screen name="SignInPhoneCode" component={SignInPhoneCodeScreen} />
+        <Stack.Screen name="SignInEmailCode" component={SignInEmailCodeScreen} />
+        <Stack.Screen name="Notifications" component={NotificationScreen} />
+        <Stack.Screen name="Rating" component={RatingScreen} />
+        <Stack.Screen name="Zone" component={ZoneScreen} />
+        <Stack.Screen name="Docs" component={DocsScreen} />
+        <Stack.Screen name="BackgroundCheck" component={BackgroundCheckScreen} />
+        <Stack.Screen name="ProfilePhoto" component={ProfilePhotoScreen} />
+        <Stack.Screen name="DriversLicense" component={DriversLicenseScreen} />
+        <Stack.Screen name="VehicleInsurance" component={VehicleInsuranceScreen} />
+        <Stack.Screen name="VehicleRegistration" component={VehicleRegistrationScreen} />
+        <Stack.Screen name="VehicleInspection" component={VehicleInspectionScreen} />
+        <Stack.Screen name="Wallet" component={WalletScreen} />
+        <Stack.Screen name="AddPayment" component={AddPaymentScreen} />
+        <Stack.Screen name="Withdraw" component={WithdrawScreen} />
+        <Stack.Screen name="PhoneSelect" component={PhoneSelectScreen} />
+        <Stack.Screen name="Terms" component={TermsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
 
 export default Navigate;
