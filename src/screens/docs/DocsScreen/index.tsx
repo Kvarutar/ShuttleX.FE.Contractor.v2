@@ -1,10 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
   Bar,
   BarModes,
   BlueCheck1,
+  Button,
   FlatListWithCustomScroll,
   RoundButton,
   SafeAreaView,
@@ -75,6 +77,8 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
     );
   };
 
+  const isDocumentsCompleted = !Object.values(requirementDocumentsList).includes(null);
+
   return (
     <SafeAreaView>
       <View style={styles.header}>
@@ -93,7 +97,17 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
         renderItem={renderItem}
         wrapperStyle={styles.documentsWrapper}
         contentContainerStyle={styles.flatListContainer}
+        withShadow
       />
+      {isDocumentsCompleted && (
+        <Animated.View entering={FadeIn.duration(200)}>
+          <Button
+            text={t('docs_Docs_buttonNext')}
+            style={styles.nextButton}
+            onPress={() => navigation.navigate('Ride')}
+          />
+        </Animated.View>
+      )}
     </SafeAreaView>
   );
 };
@@ -134,6 +148,9 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     gap: 16,
+  },
+  nextButton: {
+    marginTop: 20,
   },
 });
 

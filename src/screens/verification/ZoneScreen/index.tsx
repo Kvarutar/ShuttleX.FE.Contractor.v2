@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import {
   Bar,
   BarModes,
@@ -14,6 +15,8 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { setContractorZone } from '../../../core/contractor/redux';
+import { useAppDispatch } from '../../../core/redux/hooks';
 import { zones } from './mockData';
 import { ZoneScreenProps } from './props';
 
@@ -24,6 +27,7 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
   const { colors } = useTheme();
 
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
   const [data, setData] = useState(zones);
   const [zone, setZone] = useState('');
@@ -42,6 +46,13 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
       color: colors.textSecondaryColor,
     },
   });
+
+  const isLastZone = data.length === 0;
+
+  const onSubmit = () => {
+    dispatch(setContractorZone(zone));
+    navigation.navigate('Verification');
+  };
 
   //TODO: add type to zone items
   // @ts-expect-error Parameter 'item' implicitly has an 'any' type.ts(7006)
@@ -71,26 +82,26 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
             <RoundButton onPress={navigation.goBack}>
               <ShortArrowIcon />
             </RoundButton>
-            <Text style={styles.zoneHeaderTitleText}>{t('auth_Zone_headerTitle')}</Text>
+            <Text style={styles.headerTitle}>{t('verification_Zone_headerTitle')}</Text>
           </View>
           <View style={styles.zoneBody}>
-            <Text style={styles.zoneBodyText}>{t('auth_Zone_selectAreaDescription')}</Text>
+            <Text style={styles.zoneBodyText}>{t('verification_Zone_selectAreaDescription')}</Text>
             <Bar style={styles.zoneBodyTextInput}>
               <Text style={zone === '' ? computedStyles.placeholderZone : {}}>
                 {zone ?? t('auth_Zone_textInputPlaceholder')}
               </Text>
             </Bar>
 
-            <Text style={styles.zoneBodyText}>{t('auth_Zone_zoneListDescription')}</Text>
+            <Text style={styles.zoneBodyText}>{t('verification_Zone_zoneListDescription')}</Text>
 
             <FlatListWithCustomScroll items={data} renderItem={renderItem} withShadow />
           </View>
         </View>
-        <Button
-          text={t('auth_Zone_buttonNext')}
-          style={styles.zoneButton}
-          onPress={() => navigation.navigate('SignUpPhoneCode')}
-        />
+        {isLastZone && (
+          <Animated.View entering={FadeIn.duration(200)}>
+            <Button text={t('verification_Zone_buttonNext')} style={styles.zoneButton} onPress={onSubmit} />
+          </Animated.View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -114,8 +125,9 @@ const styles = StyleSheet.create({
     gap: 80,
     marginBottom: 32,
   },
-  zoneHeaderTitleText: {
+  headerTitle: {
     fontFamily: 'Inter Medium',
+    fontSize: 18,
   },
   zoneBody: {
     marginTop: 30,

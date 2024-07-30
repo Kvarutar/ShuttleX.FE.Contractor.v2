@@ -2,10 +2,21 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { Button, CodeInput, RoundButton, SafeAreaView, ShortArrowIcon, Text } from 'shuttlex-integration';
 
+import { setProfile } from '../../../core/contractor/redux';
+import { useAppDispatch } from '../../../core/redux/hooks';
 import { SignUpPhoneCodeScreenProps } from './props';
 
-const SignUpPhoneCodeScreen = ({ navigation }: SignUpPhoneCodeScreenProps): JSX.Element => {
+const SignUpPhoneCodeScreen = ({ navigation, route }: SignUpPhoneCodeScreenProps): JSX.Element => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const { profile } = route.params;
+
+  const onPress = () => {
+    //TODO: send profile to backend
+    dispatch(setProfile(profile));
+    navigation.replace('Verification');
+  };
 
   return (
     <SafeAreaView>
@@ -21,7 +32,7 @@ const SignUpPhoneCodeScreen = ({ navigation }: SignUpPhoneCodeScreenProps): JSX.
 
       <CodeInput style={styles.codeInput} onCodeChange={() => {}} />
 
-      <Button text={t('auth_SignUpPhoneCode_button')} onPress={() => navigation.replace('Docs')} />
+      <Button text={t('auth_SignUpPhoneCode_button')} onPress={onPress} />
     </SafeAreaView>
   );
 };

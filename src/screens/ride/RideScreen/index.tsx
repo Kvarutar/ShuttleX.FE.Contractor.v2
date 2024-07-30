@@ -16,9 +16,10 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { setProfile, setProfileImage } from '../../../core/contractor/redux';
+import { profileSelector } from '../../../core/contractor/redux/selectors';
 import { setNotificationList } from '../../../core/menu/redux/notifications';
 import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
-import { setProfile } from '../../../core/redux/contractor';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { useGeolocationStartWatch, useNetworkConnectionStartWatch } from '../../../core/ride/hooks';
 import {
@@ -54,6 +55,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const isLocationEnabled = useSelector(geolocationIsLocationEnabledSelector);
   const geolocationAccuracy = useSelector(geolocationAccuracySelector);
   const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
+  const profile = useSelector(profileSelector);
 
   const [isPassengerLate, setIsPassengerLate] = useState<boolean>(false);
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
@@ -77,15 +79,23 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   }, [tripStatus]);
 
   useEffect(() => {
+    if (!profile) {
+      dispatch(
+        setProfile({
+          name: 'John',
+          surname: 'Smith',
+          email: 'mail@mail.ru',
+          dateOfBirth: new Date().getTime(),
+          phone: '+79990622720',
+        }),
+      );
+    }
     dispatch(
-      setProfile({
-        name: 'John',
-        surname: 'Johnson',
-        imageUri:
-          'https://sun9-34.userapi.com/impg/ZGuJiFBAp-93En3yLK7LWZNPxTGmncHrrtVgbg/hd6uHaUv1zE.jpg?size=1200x752&quality=96&sign=e79799e4b75c839d0ddb1a2232fe5d60&type=album',
-      }),
+      setProfileImage(
+        'https://sun9-34.userapi.com/impg/ZGuJiFBAp-93En3yLK7LWZNPxTGmncHrrtVgbg/hd6uHaUv1zE.jpg?size=1200x752&quality=96&sign=e79799e4b75c839d0ddb1a2232fe5d60&type=album',
+      ),
     );
-  }, [dispatch]);
+  }, [dispatch, profile]);
 
   useEffect(() => {
     dispatch(

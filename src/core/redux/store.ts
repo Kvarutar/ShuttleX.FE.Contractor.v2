@@ -2,15 +2,15 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 import reactotron from '../../../ReactotronConfig';
 import docsReducer from '../auth/redux/docs';
+import contractorReducer from '../contractor/redux';
 import notificationsReducer from '../menu/redux/notifications';
 import walletReducer from '../menu/redux/wallet';
 import alertsReducer from '../ride/redux/alerts';
 import geolocationReducer from '../ride/redux/geolocation';
 import mapReducer from '../ride/redux/map';
 import tripReducer from '../ride/redux/trip';
-import contractorReducer from './contractor';
-import signalRReducer from './signalr';
-import { signalRMiddleware } from './signalr/middleware';
+import signalRReducer from '../signalr';
+import { signalRMiddleware } from '../signalr/middleware';
 
 const rootReducer = combineReducers({
   docs: docsReducer,

@@ -2,7 +2,7 @@ import { Middleware } from '@reduxjs/toolkit';
 import Config from 'react-native-config';
 import { SignalR } from 'shuttlex-integration';
 
-import { type AppDispatch, type AppState } from '../store';
+import { type AppDispatch, type AppState } from '../redux/store';
 import { connectSignalR, sendGeolocationToServer, updateSignalRAccessToken } from '.';
 
 export const signalRMiddleware = (): Middleware => {

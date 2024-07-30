@@ -14,9 +14,9 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { contractorStatusSelector } from '../../../core/redux/contractor/selectors';
-import { updateContractorStatus } from '../../../core/redux/contractor/thunks';
-import { ContractorStatus } from '../../../core/redux/contractor/types';
+import { contractorStatusSelector } from '../../../core/contractor/redux/selectors';
+import { updateContractorStatus } from '../../../core/contractor/redux/thunks';
+import { ContractorStatus } from '../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../core/ride/redux/alerts/selectors';
 import { setOrder } from '../../../core/ride/redux/trip';

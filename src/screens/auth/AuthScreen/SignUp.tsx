@@ -73,7 +73,15 @@ const SignUp = ({ onPress, navigation }: SignProps): JSX.Element => {
     setIsCorrectForm(isCorrectTemporaryForm);
 
     if (!Object.values(isCorrectTemporaryForm).includes(false)) {
-      navigation.navigate('Zone');
+      navigation.navigate('SignUpPhoneCode', {
+        profile: {
+          name: userDataForm.firstName,
+          surname: userDataForm.lastName,
+          email: userDataForm.email,
+          dateOfBirth: userDataForm.birthDate!.getTime(),
+          phone: userDataForm.phoneNumber!,
+        },
+      });
     }
   };
 

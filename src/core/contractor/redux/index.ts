@@ -8,6 +8,8 @@ const initialState: ContractorState = {
   preferredTariffs: ['BasicX'],
   unavailableTariffs: ['ComfortX'],
   profile: null,
+  zone: null,
+  profileImageUri: null,
   status: 'offline',
 };
 
@@ -21,11 +23,17 @@ const slice = createSlice({
     setUnavailableTariffs(state, action: PayloadAction<TariffType[]>) {
       state.unavailableTariffs = action.payload;
     },
+    setContractorState(state, action: PayloadAction<ContractorStatus>) {
+      state.status = action.payload;
+    },
     setProfile(state, action: PayloadAction<Profile>) {
       state.profile = action.payload;
     },
-    setContractorState(state, action: PayloadAction<ContractorStatus>) {
-      state.status = action.payload;
+    setContractorZone(state, action: PayloadAction<string>) {
+      state.zone = action.payload;
+    },
+    setProfileImage(state, action: PayloadAction<string>) {
+      state.profileImageUri = action.payload;
     },
   },
   extraReducers: builder => {
@@ -48,6 +56,13 @@ const slice = createSlice({
   },
 });
 
-export const { setPreferredTariffs, setUnavailableTariffs, setProfile, setContractorState } = slice.actions;
+export const {
+  setPreferredTariffs,
+  setUnavailableTariffs,
+  setProfile,
+  setContractorState,
+  setContractorZone,
+  setProfileImage,
+} = slice.actions;
 
 export default slice.reducer;

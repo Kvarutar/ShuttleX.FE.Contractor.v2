@@ -11,7 +11,6 @@ import SignInPhoneCodeScreen from '../screens/auth/SignInPhoneCodeScreen';
 import SignUpPhoneCodeScreen from '../screens/auth/SignUpPhoneCodeScreen';
 import SplashScreen from '../screens/auth/SplashScreen';
 import TermsScreen from '../screens/auth/TermsScreen';
-import ZoneScreen from '../screens/auth/ZoneScreen';
 import BackgroundCheckScreen from '../screens/docs/BackgroundCheck';
 import DocsScreen from '../screens/docs/DocsScreen';
 import DriversLicenseScreen from '../screens/docs/DriversLicenseScreen';
@@ -25,6 +24,8 @@ import WalletScreen from '../screens/menu/wallet/WalletScreen';
 import WithdrawScreen from '../screens/menu/wallet/WithdrawScreen';
 import RatingScreen from '../screens/ride/RatingScreen';
 import RideScreen from '../screens/ride/RideScreen';
+import VerificationScreen from '../screens/verification/VerificationScreen';
+import ZoneScreen from '../screens/verification/ZoneScreen';
 import { RootStackParamList } from './props';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -65,6 +66,7 @@ const Navigate = (): JSX.Element => {
         <Stack.Screen name="Withdraw" component={WithdrawScreen} />
         <Stack.Screen name="PhoneSelect" component={PhoneSelectScreen} />
         <Stack.Screen name="Terms" component={TermsScreen} />
+        <Stack.Screen name="Verification" component={VerificationScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

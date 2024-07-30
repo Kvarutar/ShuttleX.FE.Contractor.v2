@@ -14,8 +14,8 @@ import {
   Text,
 } from 'shuttlex-integration';
 
-import { preferredTariffsSelector, unavailableTariffsSelector } from '../../../../../core/redux/contractor/selectors';
-import { sendSelectedTariffs } from '../../../../../core/redux/contractor/thunks';
+import { preferredTariffsSelector, unavailableTariffsSelector } from '../../../../../core/contractor/redux/selectors';
+import { sendSelectedTariffs } from '../../../../../core/contractor/redux/thunks';
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { PreferencesPopupProps } from './props';
 

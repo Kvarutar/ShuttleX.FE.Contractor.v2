@@ -3,14 +3,14 @@ import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Bar, MenuBase, MenuNavigation, Separator, Text, useTheme } from 'shuttlex-integration';
 
+import { extendedProfileSelector } from '../../../core/contractor/redux/selectors';
 import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
-import { profileSelector } from '../../../core/redux/contractor/selectors';
 import { MenuProps } from './props';
 
 const Menu = ({ onClose, navigation }: MenuProps) => {
   const { t } = useTranslation();
 
-  const profile = useSelector(profileSelector);
+  const profile = useSelector(extendedProfileSelector);
 
   const menuNavigation: MenuNavigation = {
     subscription: {
@@ -48,7 +48,7 @@ const Menu = ({ onClose, navigation }: MenuProps) => {
     <MenuBase
       onClose={onClose}
       additionalContent={<AdditionalContent />}
-      userImageUri={profile?.imageUri}
+      userImageUri={profile?.profileImageUri ?? 'placeholder'}
       userName={profile?.name}
       userSurname={profile?.surname}
       menuNavigation={menuNavigation}
