@@ -6,8 +6,10 @@ import { BottomWindowWithGesture, SwipeButton, SwipeButtonModes } from 'shuttlex
 import { BottomWindowWithGestureRef } from 'shuttlex-integration/lib/typescript/src/shared/molecules/BottomWindowWithGesture/props';
 
 import { useAppDispatch } from '../../../../core/redux/hooks';
+import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { endTrip } from '../../../../core/ride/redux/trip';
 import { tripStatusSelector } from '../../../../core/ride/redux/trip/selectors';
+import AlertInitializer from '../../../../shared/AlertInitializer';
 import HiddenPart from './HiddenPart';
 import VisiblePart from './VisiblePart';
 
@@ -18,6 +20,7 @@ const Order = () => {
   const [isOpened, setIsOpened] = useState(false);
   const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
   const tripStatus = useSelector(tripStatusSelector);
+  const alerts = useSelector(twoHighestPriorityAlertsSelector);
 
   useEffect(() => {
     bottomWindowRef.current?.closeWindow();
@@ -29,6 +32,15 @@ const Order = () => {
 
   return (
     <BottomWindowWithGesture
+      alerts={alerts.map(alertData => (
+        <AlertInitializer
+          key={alertData.id}
+          id={alertData.id}
+          priority={alertData.priority}
+          type={alertData.type}
+          options={'options' in alertData ? alertData.options : undefined}
+        />
+      ))}
       visiblePart={<VisiblePart isOpened={isOpened} />}
       hiddenPart={<HiddenPart />}
       hiddenPartContainerStyles={styles.bottomWindowHiddenContainer}
