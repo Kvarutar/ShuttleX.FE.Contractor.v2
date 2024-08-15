@@ -25,4 +25,5 @@ export type RootStackParamList = {
   PhoneSelect: { initialFlag: countryDtosProps; onFlagSelect: (flag: countryDtosProps) => void };
   Terms: undefined;
   Verification: undefined;
+  LockOut: undefined;
 };
