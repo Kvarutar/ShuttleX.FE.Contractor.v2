@@ -5,9 +5,9 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import {
   Bar,
   BarModes,
-  Button,
+  ButtonV1,
+  ButtonV1Shapes,
   FlatListWithCustomScroll,
-  RoundButton,
   ShortArrowIcon,
   ShortArrowSmallIcon,
   sizes,
@@ -61,15 +61,16 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
       <Bar mode={BarModes.Active} style={styles.zoneListBar}>
         <Text style={styles.zoneBodyText}>{item.name}</Text>
 
-        <RoundButton
+        <ButtonV1
           onPress={() => {
             setData(item.next);
             setZone(item.name);
           }}
-          roundButtonStyle={styles.zoneRoundButton}
+          containerStyle={styles.zoneRoundButton}
+          shape={ButtonV1Shapes.Circle}
         >
           <ShortArrowSmallIcon />
-        </RoundButton>
+        </ButtonV1>
       </Bar>
     </Pressable>
   );
@@ -79,9 +80,9 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
       <View style={[styles.container, computedStyles.container]}>
         <View style={styles.zoneWrapper}>
           <View style={styles.zoneHeader}>
-            <RoundButton onPress={navigation.goBack}>
+            <ButtonV1 onPress={navigation.goBack} shape={ButtonV1Shapes.Circle}>
               <ShortArrowIcon />
-            </RoundButton>
+            </ButtonV1>
             <Text style={styles.headerTitle}>{t('verification_Zone_headerTitle')}</Text>
           </View>
           <View style={styles.zoneBody}>
@@ -99,7 +100,7 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
         </View>
         {isLastZone && (
           <Animated.View entering={FadeIn.duration(200)}>
-            <Button text={t('verification_Zone_buttonNext')} style={styles.zoneButton} onPress={onSubmit} />
+            <ButtonV1 text={t('verification_Zone_buttonNext')} style={styles.zoneButton} onPress={onSubmit} />
           </Animated.View>
         )}
       </View>

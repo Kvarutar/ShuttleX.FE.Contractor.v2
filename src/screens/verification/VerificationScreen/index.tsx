@@ -5,8 +5,9 @@ import {
   Bar,
   BarModes,
   BlueCheck1,
-  RoundButton,
-  RoundButtonMode,
+  ButtonV1,
+  ButtonV1Modes,
+  ButtonV1Shapes,
   SafeAreaView,
   ShortArrowSmallIcon,
   sizes,
@@ -49,9 +50,13 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
             {isZoneSelected ? (
               <BlueCheck1 />
             ) : (
-              <RoundButton roundButtonStyle={styles.roundButton} onPress={() => navigation.navigate('Zone')}>
+              <ButtonV1
+                shape={ButtonV1Shapes.Circle}
+                containerStyle={styles.roundButton}
+                onPress={() => navigation.navigate('Zone')}
+              >
                 <ShortArrowSmallIcon />
-              </RoundButton>
+              </ButtonV1>
             )}
           </Bar>
         </Pressable>
@@ -59,12 +64,13 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           <Bar mode={isZoneSelected ? BarModes.Default : BarModes.Disabled} style={styles.bar}>
             <Text style={styles.contentText}>{t('verification_Verification_stepTwo')}</Text>
 
-            <RoundButton
-              roundButtonStyle={styles.roundButton}
-              mode={isZoneSelected ? RoundButtonMode.Active : RoundButtonMode.Disabled}
+            <ButtonV1
+              shape={ButtonV1Shapes.Circle}
+              containerStyle={styles.roundButton}
+              mode={isZoneSelected ? ButtonV1Modes.Mode1 : ButtonV1Modes.Mode4}
             >
               <ShortArrowSmallIcon />
-            </RoundButton>
+            </ButtonV1>
           </Bar>
         </Pressable>
       </View>

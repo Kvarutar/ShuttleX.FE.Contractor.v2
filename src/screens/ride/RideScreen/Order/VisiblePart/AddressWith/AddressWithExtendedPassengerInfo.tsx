@@ -1,12 +1,12 @@
 import { Image, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import {
-  Button,
-  ButtonModes,
+  ButtonV1,
+  ButtonV1Modes,
+  ButtonV1Shapes,
   ChatIcon,
   DropOffIcon,
   PickUpIcon,
-  RoundButton,
   Text,
   useTheme,
 } from 'shuttlex-integration';
@@ -44,9 +44,9 @@ const AddressWithExtendedPassengerInfo = ({
   return (
     <View style={styles.passangerInfoWrapper}>
       <View style={styles.passangerInfoWithAvatar}>
-        <RoundButton roundButtonStyle={styles.passengerAvatarWrapper}>
+        <ButtonV1 containerStyle={styles.passengerAvatarWrapper} shape={ButtonV1Shapes.Circle}>
           <Image style={styles.passengerAvatar} source={require('../../../../../../assets/img/Man.png')} />
-        </RoundButton>
+        </ButtonV1>
         <Animated.View
           layout={LinearTransition.duration(constants.textLayoutAnimationDuration)}
           style={styles.visibleTextWrapper}
@@ -81,9 +81,9 @@ const AddressWithExtendedPassengerInfo = ({
           entering={FadeIn.duration(constants.buttonFadeAnimationDuration)}
           exiting={FadeOut.duration(constants.buttonFadeAnimationDuration)}
         >
-          <Button mode={ButtonModes.Mode3} style={styles.visibleButton}>
+          <ButtonV1 mode={ButtonV1Modes.Mode3} style={styles.visibleButton}>
             <ChatIcon />
-          </Button>
+          </ButtonV1>
         </Animated.View>
       )}
     </View>

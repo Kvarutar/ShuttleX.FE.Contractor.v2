@@ -6,13 +6,13 @@ import { useSelector } from 'react-redux';
 import {
   Bar,
   BottomWindow,
-  Button,
-  ButtonModes,
+  ButtonV1,
+  ButtonV1Modes,
+  ButtonV1Shapes,
   DropDownIcon,
   getPaymentIcon,
   PaymentMethod,
   PlusIcon,
-  RoundButton,
   SafeAreaView,
   ScrollViewWithCustomScroll,
   Separator,
@@ -162,9 +162,9 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
     <View style={[styles.wallet, computedStyles.wallet]}>
       <SafeAreaView>
         <View style={styles.header}>
-          <RoundButton onPress={navigation.goBack}>
+          <ButtonV1 onPress={navigation.goBack} shape={ButtonV1Shapes.Circle}>
             <ShortArrowIcon />
-          </RoundButton>
+          </ButtonV1>
           <Text style={styles.headerTitle}>{t('menu_Wallet_headerTitle')}</Text>
           <View style={styles.headerDummy} />
         </View>
@@ -235,9 +235,9 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
                   >
                     {paymentMethodsContent}
                   </ScrollViewWithCustomScroll>
-                  <Button mode={ButtonModes.Mode4} style={styles.button} onPress={onAddCard}>
+                  <ButtonV1 mode={ButtonV1Modes.Mode4} style={styles.button} onPress={onAddCard}>
                     <PlusIcon />
-                  </Button>
+                  </ButtonV1>
                 </Bar>
               </Animated.View>
             )}
@@ -247,7 +247,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
         </View>
       </SafeAreaView>
       <BottomWindow style={styles.bottomWindow}>
-        <Button text={t('menu_Wallet_withdrawButton')} onPress={() => navigation.navigate('Withdraw')} />
+        <ButtonV1 text={t('menu_Wallet_withdrawButton')} onPress={() => navigation.navigate('Withdraw')} />
       </BottomWindow>
     </View>
   );

@@ -3,13 +3,14 @@ import { Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import {
+  ButtonV1,
+  ButtonV1Shapes,
   IntegrationModule,
   LocationUnavailable,
   LocationUnavailableProps,
   MenuIcon,
   NotificationIcon,
   NotificationType,
-  RoundButton,
   sizes,
   StopWatch,
   Text,
@@ -209,15 +210,15 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       <SafeAreaView style={styles.wrapper}>
         <MapView />
         <View style={[styles.topButtonsContainer, computedStyles.topButtonsContainer]}>
-          <RoundButton onPress={() => setIsMenuVisible(true)}>
+          <ButtonV1 onPress={() => setIsMenuVisible(true)} shape={ButtonV1Shapes.Circle}>
             <MenuIcon />
-          </RoundButton>
+          </ButtonV1>
           <StopWatch initialDate={new Date()} mask="{h}h {m}m" />
           <View style={styles.topRightButtonContainer}>
-            <RoundButton onPress={() => navigation.navigate('Notifications')}>
+            <ButtonV1 onPress={() => navigation.navigate('Notifications')} shape={ButtonV1Shapes.Circle}>
               <NotificationIcon />
               {unreadNotificationsMarker}
-            </RoundButton>
+            </ButtonV1>
             {(tripStatus === TripStatus.Arrived || tripStatus === TripStatus.ArrivedAtStopPoint) && (
               <PassengerTimer isPassengerLate={isPassengerLate} setIsPassengerLate={() => setIsPassengerLate(true)} />
             )}

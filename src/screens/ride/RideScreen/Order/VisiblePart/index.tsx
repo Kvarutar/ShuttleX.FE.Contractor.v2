@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { Button, ButtonModes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
+import { ButtonV1, ButtonV1Modes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
 
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { setTripStatus } from '../../../../../core/ride/redux/trip';
@@ -84,13 +84,13 @@ const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
     idle: null,
     arriving: (
       <StatusSwitcher>
-        <Button mode={ButtonModes.Mode1} text={t('ride_Ride_Order_arrivedButton')} onPress={onArrived} />
+        <ButtonV1 mode={ButtonV1Modes.Mode1} text={t('ride_Ride_Order_arrivedButton')} onPress={onArrived} />
       </StatusSwitcher>
     ),
     arrivingAtStopPoint: (
       <StatusSwitcher>
-        <Button
-          mode={ButtonModes.Mode1}
+        <ButtonV1
+          mode={ButtonV1Modes.Mode1}
           text={t('ride_Ride_Order_arrivedToStopButton')}
           onPress={onArrivedAtStopPoint}
         />

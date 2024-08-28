@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { Bar, CloseIconMini, DocumentIcon, RoundButton, Text } from 'shuttlex-integration';
+import { Bar, ButtonV1, ButtonV1Shapes, CloseIconMini, DocumentIcon, Text } from 'shuttlex-integration';
 
 import { docsConsts } from '../props';
 import { DocumentProps } from './props';
@@ -13,9 +13,9 @@ const Document = ({ selectedDocument, onCloseButtonPress }: DocumentProps) => {
           <DocumentIcon />
           <Text style={styles.fileName}>{selectedDocument.name}</Text>
         </View>
-        <RoundButton onPress={onCloseButtonPress} roundButtonStyle={styles.roundButton}>
+        <ButtonV1 onPress={onCloseButtonPress} containerStyle={styles.roundButton} shape={ButtonV1Shapes.Circle}>
           <CloseIconMini />
-        </RoundButton>
+        </ButtonV1>
       </Bar>
     </Animated.View>
   );

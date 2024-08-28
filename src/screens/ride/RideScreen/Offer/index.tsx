@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
 import {
-  Button,
-  ButtonModes,
+  ButtonV1,
+  ButtonV1Modes,
   ClockIcon,
   CurrencyIcon,
   DropOffIcon,
@@ -114,13 +114,13 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
         </View>
       </View>
       <View style={styles.offerButtons}>
-        <Button
+        <ButtonV1
           text={t('ride_Ride_Offer_declineButton')}
-          mode={ButtonModes.Mode3}
+          mode={ButtonV1Modes.Mode3}
           containerStyle={styles.offerButtonsItem}
           onPress={onOfferDecline}
         />
-        <Button
+        <ButtonV1
           text={t('ride_Ride_Offer_acceptButton')}
           containerStyle={styles.offerButtonsItem}
           onPress={onOfferAccept}

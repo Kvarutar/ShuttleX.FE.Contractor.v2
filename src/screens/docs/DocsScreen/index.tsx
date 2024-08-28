@@ -6,9 +6,9 @@ import {
   Bar,
   BarModes,
   BlueCheck1,
-  Button,
+  ButtonV1,
+  ButtonV1Shapes,
   FlatListWithCustomScroll,
-  RoundButton,
   SafeAreaView,
   ShortArrowIcon,
   ShortArrowSmallIcon,
@@ -68,9 +68,9 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
           {isComplete ? (
             <BlueCheck1 />
           ) : (
-            <RoundButton roundButtonStyle={styles.roundButton}>
+            <ButtonV1 containerStyle={styles.roundButton} shape={ButtonV1Shapes.Circle}>
               <ShortArrowSmallIcon />
-            </RoundButton>
+            </ButtonV1>
           )}
         </Bar>
       </Pressable>
@@ -82,9 +82,9 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
   return (
     <SafeAreaView>
       <View style={styles.header}>
-        <RoundButton onPress={navigation.goBack}>
+        <ButtonV1 onPress={navigation.goBack} shape={ButtonV1Shapes.Circle}>
           <ShortArrowIcon />
-        </RoundButton>
+        </ButtonV1>
         <Text style={styles.headerTitle}>{t('docs_Docs_headerTitle')}</Text>
         <View style={styles.headerDummy} />
       </View>
@@ -101,7 +101,7 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
       />
       {isDocumentsCompleted && (
         <Animated.View entering={FadeIn.duration(200)}>
-          <Button
+          <ButtonV1
             text={t('docs_Docs_buttonNext')}
             style={styles.nextButton}
             onPress={() => navigation.navigate('Ride')}

@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { Blur, Button, sizes, SuccessIcon, Text, useTheme } from 'shuttlex-integration';
+import { Blur, ButtonV1, sizes, SuccessIcon, Text, useTheme } from 'shuttlex-integration';
 
 import { selectedPaymentMethodSelector } from '../../../../core/menu/redux/wallet/selectors';
 
@@ -34,7 +34,7 @@ const SuccessModal = ({ amount, onContinue }: { amount: number; onContinue: () =
             {t('menu_Withdraw_SuccessPopup_content2')}&nbsp;
             <Text style={styles.bold}>{selectedPaymentMethod?.details}</Text>
           </Text>
-          <Button text={t('menu_Withdraw_SuccessPopup_continueButton')} onPress={onContinue} />
+          <ButtonV1 text={t('menu_Withdraw_SuccessPopup_continueButton')} onPress={onContinue} />
         </View>
       </Animated.View>
     </>

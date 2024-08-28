@@ -1,6 +1,6 @@
 import { Image, Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { CloseIcon, RoundButton } from 'shuttlex-integration';
+import { ButtonV1, ButtonV1Shapes, CloseIcon } from 'shuttlex-integration';
 
 import { docsConsts } from '../props';
 import { PhotoProps } from './props';
@@ -29,9 +29,9 @@ const Photo = ({ photoAsset, onCloseButtonPress, photoWidth, photoHeight }: Phot
           style={styles.userUmage}
         />
         {/*TODO: remove uri check on deploy? */}
-        <RoundButton style={styles.closePhotoButton} onPress={onCloseButtonPress}>
+        <ButtonV1 style={styles.closePhotoButton} onPress={onCloseButtonPress} shape={ButtonV1Shapes.Circle}>
           <CloseIcon />
-        </RoundButton>
+        </ButtonV1>
       </Animated.View>
     </View>
   );

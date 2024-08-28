@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import {
   Bar,
-  Button,
+  ButtonV1,
+  ButtonV1Shapes,
   CreditCheckIcon,
   LockIcon,
-  RoundButton,
   SafeAreaView,
   ScrollViewWithCustomScroll,
   ShortArrowIcon,
@@ -58,9 +58,9 @@ const BackgroundCheckScreen = ({ navigation }: BackgroundCheckScreenProps): JSX.
     <SafeAreaView containerStyle={styles.container}>
       <View style={styles.wrapper}>
         <View style={[styles.header]}>
-          <RoundButton onPress={navigation.goBack}>
+          <ButtonV1 onPress={navigation.goBack} shape={ButtonV1Shapes.Circle}>
             <ShortArrowIcon />
-          </RoundButton>
+          </ButtonV1>
           <Text style={[styles.headerTitle]}>{t('docs_BackgroundCheck_headerTitle')}</Text>
           <View style={styles.headerDummy} />
         </View>
@@ -92,7 +92,9 @@ const BackgroundCheckScreen = ({ navigation }: BackgroundCheckScreenProps): JSX.
             </View>
           </View>
         </ScrollViewWithCustomScroll>
-        {ssn !== '' && <Button text={t('docs_BackgroundCheck_agreeButton')} onPress={onAgree} style={styles.button} />}
+        {ssn !== '' && (
+          <ButtonV1 text={t('docs_BackgroundCheck_agreeButton')} onPress={onAgree} style={styles.button} />
+        )}
       </View>
     </SafeAreaView>
   );

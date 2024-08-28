@@ -6,9 +6,9 @@ import ImageCropPicker from 'react-native-image-crop-picker';
 import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import {
   Bar,
-  Button,
-  ButtonModes,
-  RoundButton,
+  ButtonV1,
+  ButtonV1Modes,
+  ButtonV1Shapes,
   SafeAreaView,
   ScrollViewWithCustomScroll,
   ShortArrowIcon,
@@ -184,7 +184,7 @@ const DocsPhotoCore = ({
   };
 
   let bottomButton = (
-    <Button
+    <ButtonV1
       text={docsPhotoCoreRecord[permittedDocumentFileType].uploadButtonText}
       onPress={docsPhotoCoreRecord[permittedDocumentFileType].onUploadContent}
     />
@@ -192,21 +192,21 @@ const DocsPhotoCore = ({
 
   if (!isFileLoaded) {
     bottomButton = (
-      <Button mode={ButtonModes.Mode4} style={styles.loadingButton}>
+      <ButtonV1 mode={ButtonV1Modes.Mode4} style={styles.loadingButton}>
         <ActivityIndicator />
-      </Button>
+      </ButtonV1>
     );
   } else if (selectedFile) {
-    bottomButton = <Button text={t('docs_DocsPhotoCore_saveButton')} onPress={onSave} />;
+    bottomButton = <ButtonV1 text={t('docs_DocsPhotoCore_saveButton')} onPress={onSave} />;
   }
 
   return (
     <>
       <SafeAreaView>
         <View style={styles.header}>
-          <RoundButton onPress={goBack}>
+          <ButtonV1 onPress={goBack} shape={ButtonV1Shapes.Circle}>
             <ShortArrowIcon />
-          </RoundButton>
+          </ButtonV1>
           <Text style={[styles.headerTitle]}>{headerTitle}</Text>
           <View style={styles.headerDummy} />
         </View>

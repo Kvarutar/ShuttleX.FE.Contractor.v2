@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { Button, ButtonModes, Popup } from 'shuttlex-integration';
+import { ButtonV1, ButtonV1Modes, Popup } from 'shuttlex-integration';
 
 const FileTypePopup = ({
   onClose,
@@ -16,10 +16,10 @@ const FileTypePopup = ({
   return (
     <Popup>
       <View style={styles.buttons}>
-        <Button text={t('docs_DocsPhotoCore_FileTypePopup_uploadFile')} onPress={onOpenFilePicker} />
-        <Button text={t('docs_DocsPhotoCore_FileTypePopup_uploadImage')} onPress={onOpenImagePicker} />
+        <ButtonV1 text={t('docs_DocsPhotoCore_FileTypePopup_uploadFile')} onPress={onOpenFilePicker} />
+        <ButtonV1 text={t('docs_DocsPhotoCore_FileTypePopup_uploadImage')} onPress={onOpenImagePicker} />
       </View>
-      <Button mode={ButtonModes.Mode3} text={t('docs_DocsPhotoCore_FileTypePopup_closeButton')} onPress={onClose} />
+      <ButtonV1 mode={ButtonV1Modes.Mode3} text={t('docs_DocsPhotoCore_FileTypePopup_closeButton')} onPress={onClose} />
     </Popup>
   );
 };

@@ -1,8 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import {
-  Button,
-  ButtonModes,
+  ButtonV1,
+  ButtonV1Modes,
   ChatIcon,
   DropOffIcon,
   PassengerIcon,
@@ -77,9 +77,9 @@ const AddressWithPassengerInfo = ({
           entering={FadeIn.duration(constants.buttonFadeAnimationDuration)}
           exiting={FadeOut.duration(constants.buttonFadeAnimationDuration)}
         >
-          <Button mode={ButtonModes.Mode3} style={styles.visibleButton}>
+          <ButtonV1 mode={ButtonV1Modes.Mode3} style={styles.visibleButton}>
             <ChatIcon />
-          </Button>
+          </ButtonV1>
         </Animated.View>
       )}
     </View>

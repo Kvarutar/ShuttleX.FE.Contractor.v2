@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux';
 import {
   Bar,
   BottomWindow,
-  Button,
-  ButtonModes,
+  ButtonV1,
+  ButtonV1Modes,
   PreferencesIcon,
   StatisticsIcon,
   SwipeButtonModes,
@@ -33,7 +33,7 @@ type lineStateTypes = {
   toLineState: ContractorStatus;
   bottomTitle: string;
   buttonText: string;
-  buttonMode: ButtonModes;
+  buttonMode: ButtonV1Modes;
   swipeMode: SwipeButtonModes;
 };
 
@@ -43,7 +43,7 @@ const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record
     toLineState: 'offline',
     bottomTitle: t('ride_Ride_BottomWindow_onlineTitle'),
     buttonText: t('ride_Ride_Bar_onlineTitle'),
-    buttonMode: ButtonModes.Mode3,
+    buttonMode: ButtonV1Modes.Mode3,
     swipeMode: SwipeButtonModes.Decline,
   },
   offline: {
@@ -51,7 +51,7 @@ const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record
     toLineState: 'online',
     bottomTitle: t('ride_Ride_BottomWindow_offlineTitle'),
     buttonText: t('ride_Ride_Bar_offlineTitle'),
-    buttonMode: ButtonModes.Mode1,
+    buttonMode: ButtonV1Modes.Mode1,
     swipeMode: SwipeButtonModes.Confirm,
   },
 });
@@ -165,7 +165,7 @@ const Start = () => {
         </View>
         <Bar style={styles.card}>
           <TarifsCarousel />
-          <Button
+          <ButtonV1
             mode={lineState.buttonMode}
             text={lineState.buttonText}
             onPress={() => setIsConfirmationPopupVisible(true)}

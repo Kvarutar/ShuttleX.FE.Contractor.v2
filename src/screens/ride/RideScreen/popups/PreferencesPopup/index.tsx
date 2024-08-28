@@ -6,7 +6,7 @@ import {
   Bar,
   BarModes,
   BlueCheck1,
-  Button,
+  ButtonV1,
   FlatListWithCustomScroll,
   Popup,
   TariffsCarImage,
@@ -116,7 +116,7 @@ const TariffPreferencesPopup = ({ onClose }: PreferencesPopupProps) => {
         renderItem={renderTarifs}
         items={tariffs}
       />
-      <Button
+      <ButtonV1
         text={t('ride_Ride_RidePreferences_confirmButton')}
         containerStyle={styles.button}
         onPress={onConfirmHandler}
