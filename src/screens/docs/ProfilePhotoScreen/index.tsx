@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { Text, useTheme } from 'shuttlex-integration';
+import { Text, useThemeV1 } from 'shuttlex-integration';
 
 import { RequirementDocsType } from '../../../core/auth/redux/docs/types';
 import DocsPhotoCore from '../DocsPhotoCore';
@@ -8,7 +8,7 @@ import { DocumentFileType } from '../DocsPhotoCore/props';
 import { ProfilePhotoScreenProps } from './props';
 
 const ProfilePhotoScreen = ({ navigation }: ProfilePhotoScreenProps): JSX.Element => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const { t } = useTranslation();
 
   const computedStyles = StyleSheet.create({

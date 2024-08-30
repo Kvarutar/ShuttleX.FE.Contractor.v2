@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSelector } from 'react-redux';
-import { Separator, TariffsCarImage, TariffType, Text, useTheme } from 'shuttlex-integration';
+import { Separator, TariffsCarImage, TariffType, Text, useThemeV1 } from 'shuttlex-integration';
 
 import { preferredTariffsSelector } from '../../../core/contractor/redux/selectors';
 
@@ -66,7 +66,7 @@ const SliderItem = ({
   animationValue?: SharedValue<number>;
   smallText?: boolean;
 }) => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
 
   const computedStyles = StyleSheet.create({
     title: {
@@ -91,7 +91,7 @@ const SliderItem = ({
 };
 
 const PaginationItem = ({ internalIndex, activeSlideIndex }: { internalIndex: number; activeSlideIndex: number }) => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const paginationBackgroundAnimation = useSharedValue(0);
 
   useEffect(() => {

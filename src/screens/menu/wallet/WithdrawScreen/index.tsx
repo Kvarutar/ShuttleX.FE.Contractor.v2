@@ -11,7 +11,7 @@ import {
   Text,
   TextInput,
   TextInputInputMode,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { walletBalanceSelector } from '../../../../core/menu/redux/wallet/selectors';
@@ -19,7 +19,7 @@ import { WithdrawScreenProps } from './props';
 import SuccessModal from './SuccessModal';
 
 const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const balance = useSelector(walletBalanceSelector);
 
   const [amount, setAmount] = useState(100);

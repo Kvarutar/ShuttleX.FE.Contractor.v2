@@ -18,7 +18,7 @@ import {
   Separator,
   ShortArrowIcon,
   Text,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { setAvaliablePaymentMethods, setBalance, setSelectedPaymentMethod } from '../../../../core/menu/redux/wallet';
@@ -35,7 +35,7 @@ import WithdrawalHistoryItem from './WithdrawalHistoryItem';
 const fadeAnimationDuration = 200;
 
 const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 

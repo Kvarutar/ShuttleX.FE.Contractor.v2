@@ -13,7 +13,7 @@ import {
   ScrollViewWithCustomScroll,
   Separator,
   Text,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { TripPoint } from '../../../../core/ride/redux/trip/types';
@@ -24,7 +24,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline }: OfferProps) => {
 
   const { t } = useTranslation();
 
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
 
   const offerPoints = [offer.startPosition, ...offer.targetPointsPosition];
 

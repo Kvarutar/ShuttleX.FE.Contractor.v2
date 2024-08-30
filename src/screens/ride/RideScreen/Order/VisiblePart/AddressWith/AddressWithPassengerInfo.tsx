@@ -8,7 +8,7 @@ import {
   PassengerIcon,
   PickUpIcon,
   Text,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { OrderType, TripPoint } from '../../../../../../core/ride/redux/trip/types';
@@ -29,7 +29,7 @@ const AddressWithPassengerInfo = ({
   withStopPoint?: boolean;
   isOpened: boolean;
 }) => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
 
   const computedStyles = StyleSheet.create({
     passengerName: {

@@ -12,7 +12,7 @@ import {
   ShortArrowSmallIcon,
   sizes,
   Text,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { setContractorZone } from '../../../core/contractor/redux';
@@ -24,7 +24,7 @@ import { ZoneScreenProps } from './props';
 //TODO: Form of send zones not work, fix it
 
 const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
 
   const { t } = useTranslation();
   const dispatch = useAppDispatch();

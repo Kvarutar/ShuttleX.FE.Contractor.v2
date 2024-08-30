@@ -13,7 +13,7 @@ import {
   Text,
   TextInput,
   TextInputInputMode,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { updateRequirementDocuments } from '../../../core/auth/redux/docs';
@@ -22,7 +22,7 @@ import { useAppDispatch } from '../../../core/redux/hooks';
 import { BackgroundCheckScreenProps } from './props';
 
 const BackgroundCheckScreen = ({ navigation }: BackgroundCheckScreenProps): JSX.Element => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 

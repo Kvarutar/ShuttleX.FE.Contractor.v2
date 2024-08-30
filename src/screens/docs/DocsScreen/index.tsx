@@ -13,7 +13,7 @@ import {
   ShortArrowIcon,
   ShortArrowSmallIcon,
   Text,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { requirementDocumentsListSelector } from '../../../core/auth/redux/docs/selectors';
@@ -21,7 +21,7 @@ import { RequirementDocs, RequirementDocsType } from '../../../core/auth/redux/d
 import { DocsScreenProps } from './props';
 
 const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const { t } = useTranslation();
   const requirementDocumentsList = useSelector(requirementDocumentsListSelector);
 

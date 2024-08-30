@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { Blur, ButtonV1, sizes, SuccessIcon, Text, useTheme } from 'shuttlex-integration';
+import { Blur, ButtonV1, sizes, SuccessIcon, Text, useThemeV1 } from 'shuttlex-integration';
 
 import { selectedPaymentMethodSelector } from '../../../../core/menu/redux/wallet/selectors';
 
@@ -10,7 +10,7 @@ const animationDuration = 200;
 
 const SuccessModal = ({ amount, onContinue }: { amount: number; onContinue: () => void }) => {
   const selectedPaymentMethod = useSelector(selectedPaymentMethodSelector);
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const { t } = useTranslation();
 
   const computedStyles = StyleSheet.create({

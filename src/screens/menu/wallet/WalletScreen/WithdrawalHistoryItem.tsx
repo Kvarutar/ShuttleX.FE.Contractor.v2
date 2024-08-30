@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import { getLocales } from 'react-native-localize';
-import { Separator, Text, useTheme } from 'shuttlex-integration';
+import { Separator, Text, useThemeV1 } from 'shuttlex-integration';
 
 import { WithdrawalHistory } from './props';
 
@@ -12,7 +12,7 @@ const formatDate = (date: Date): string =>
   }).format(date);
 
 const WithdrawalHistoryItem = ({ withdrawalHistoryItem }: { withdrawalHistoryItem: WithdrawalHistory }) => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
 
   const computedStyles = StyleSheet.create({
     historyDate: {

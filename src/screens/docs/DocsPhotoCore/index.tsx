@@ -13,7 +13,7 @@ import {
   ScrollViewWithCustomScroll,
   ShortArrowIcon,
   Text,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { updateRequirementDocuments } from '../../../core/auth/redux/docs';
@@ -44,7 +44,7 @@ const DocsPhotoCore = ({
   children,
   permittedDocumentFileType,
 }: DocsPhotoCoreProps): JSX.Element => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 

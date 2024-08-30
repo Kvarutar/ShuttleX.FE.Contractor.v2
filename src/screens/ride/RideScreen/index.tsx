@@ -14,7 +14,7 @@ import {
   sizes,
   StopWatch,
   Text,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { setProfile, setProfileImage } from '../../../core/contractor/redux';
@@ -44,7 +44,7 @@ import { type RideScreenProps } from './props';
 import Start from './Start';
 
 const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const dispatch = useAppDispatch();
 
   useGeolocationStartWatch();

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Popup, sizes, Timer, TimerModes, useTheme } from 'shuttlex-integration';
+import { Popup, sizes, Timer, TimerModes, useThemeV1 } from 'shuttlex-integration';
 
 import Offer from '../../Offer';
 import { OfferPopupProps } from './props';
@@ -11,7 +11,7 @@ const windowHeight = Dimensions.get('window').height;
 const timerAnimationDuration = 300;
 
 const OfferPopup = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferPopupProps) => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const [currentTime, setCurrentTime] = useState(0);
 
   useEffect(() => {

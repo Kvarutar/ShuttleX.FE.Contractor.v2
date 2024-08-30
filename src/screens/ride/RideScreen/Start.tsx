@@ -11,7 +11,7 @@ import {
   StatisticsIcon,
   SwipeButtonModes,
   Text,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { contractorStatusSelector } from '../../../core/contractor/redux/selectors';
@@ -57,7 +57,7 @@ const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record
 });
 
 const Start = () => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 

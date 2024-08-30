@@ -9,7 +9,7 @@ import {
   ExternalMapIcon,
   LocationIcon,
   Text,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { TripPoint } from '../../../../../../core/ride/redux/trip/types';
@@ -17,7 +17,7 @@ import { TripPoint } from '../../../../../../core/ride/redux/trip/types';
 const buttonFadeAnimationDuration = 200;
 
 const AddressWithMeta = ({ tripPoints }: { tripPoints: TripPoint[] }) => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
   const { t } = useTranslation();
 
   const computedStyles = StyleSheet.create({

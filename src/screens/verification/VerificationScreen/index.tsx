@@ -12,14 +12,14 @@ import {
   ShortArrowSmallIcon,
   sizes,
   Text,
-  useTheme,
+  useThemeV1,
 } from 'shuttlex-integration';
 
 import { contractorZoneSelector, profileSelector } from '../../../core/contractor/redux/selectors';
 import { VerificationScreenProps } from './props';
 
 const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
-  const { colors } = useTheme();
+  const { colors } = useThemeV1();
 
   const profile = useSelector(profileSelector);
 
