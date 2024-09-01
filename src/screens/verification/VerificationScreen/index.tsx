@@ -68,6 +68,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
               shape={ButtonV1Shapes.Circle}
               containerStyle={styles.roundButton}
               mode={isZoneSelected ? ButtonV1Modes.Mode1 : ButtonV1Modes.Mode4}
+              disabled={!isZoneSelected}
             >
               <ShortArrowSmallIcon />
             </ButtonV1>
