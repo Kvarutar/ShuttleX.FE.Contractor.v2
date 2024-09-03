@@ -9,7 +9,6 @@ import LockOutScreen from '../screens/auth/LockOutScreen';
 import PhoneSelectScreen from '../screens/auth/PhoneSelectScreen';
 import SignInEmailCodeScreen from '../screens/auth/SignInEmailCodeScreen';
 import SignInPhoneCodeScreen from '../screens/auth/SignInPhoneCodeScreen';
-import SignUpPhoneCodeScreen from '../screens/auth/SignUpPhoneCodeScreen';
 import SplashScreen from '../screens/auth/SplashScreen';
 import TermsScreen from '../screens/auth/TermsScreen';
 import BackgroundCheckScreen from '../screens/docs/BackgroundCheck';
@@ -49,7 +48,6 @@ const Navigate = (): JSX.Element => {
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Auth" component={AuthScreen} />
         <Stack.Screen name="Ride" component={RideScreen} />
-        <Stack.Screen name="SignUpPhoneCode" component={SignUpPhoneCodeScreen} />
         <Stack.Screen name="SignInPhoneCode" component={SignInPhoneCodeScreen} />
         <Stack.Screen name="SignInEmailCode" component={SignInEmailCodeScreen} />
         <Stack.Screen name="Notifications" component={NotificationScreen} />

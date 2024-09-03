@@ -7,8 +7,6 @@ import { SplashScreenProps } from './props';
 const SplashScreen = ({ navigation }: SplashScreenProps): JSX.Element => {
   const { t } = useTranslation();
 
-  const navigationToSignUp = () => navigation.replace('Auth', { state: 'SignUp' });
-
   const navigationToSignIn = () => navigation.replace('Auth', { state: 'SignIn' });
 
   return (
@@ -18,7 +16,7 @@ const SplashScreen = ({ navigation }: SplashScreenProps): JSX.Element => {
         <Text style={styles.titleApp}>{t('auth_Splash_title')}</Text>
       </View>
       <View style={styles.buttonsContainer}>
-        <ButtonV1 text={t('auth_Splash_startButton')} onPress={navigationToSignUp} />
+        <ButtonV1 text={t('auth_Splash_startButton')} onPress={navigationToSignIn} />
         <Pressable style={styles.alreadyHaveAccountContainer} onPress={navigationToSignIn} hitSlop={20}>
           <Text style={styles.alreadyHaveAccountText}>{t('auth_Splash_haveAccount')}</Text>
         </Pressable>

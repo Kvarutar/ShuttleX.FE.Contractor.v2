@@ -21,13 +21,3 @@ export type SignInEmailStateProps = {
   changeEmail: (phoneNumber: string) => void;
   isCorrectEmail: boolean;
 };
-
-export type correctValidationUserDataFormProps = {
-  correctName: boolean;
-  correctLastName: boolean;
-  correctEmail: boolean;
-  correctDate: boolean;
-  correctPhoneNumber: boolean;
-  correctFamiliarWithTermsAndConditions: boolean;
-  correctAllowedProccessPersonalData: boolean;
-};

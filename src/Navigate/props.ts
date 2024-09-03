@@ -1,12 +1,9 @@
 import { countryDtosProps } from 'shuttlex-integration/lib/typescript/src/core/countries/props';
 
-import { Profile } from '../core/contractor/redux/types';
-
 export type RootStackParamList = {
   Splash: undefined;
-  Auth: { state: 'SignIn' | 'SignUp' };
+  Auth: { state: 'SignIn' };
   Ride: undefined;
-  SignUpPhoneCode: { profile: Profile };
   SignInPhoneCode: undefined;
   SignInEmailCode: undefined;
   Notifications: undefined;
