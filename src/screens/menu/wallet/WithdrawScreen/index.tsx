@@ -9,8 +9,8 @@ import {
   SafeAreaView,
   ShortArrowIcon,
   Text,
-  TextInput,
-  TextInputInputMode,
+  TextInputV1,
+  TextInputV1InputMode,
   useThemeV1,
 } from 'shuttlex-integration';
 
@@ -62,8 +62,8 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
         </View>
         <View>
           <Text style={[styles.available, computedStyles.available]}>{t('menu_Withdraw_avaliable', { balance })}</Text>
-          <TextInput
-            inputMode={TextInputInputMode.Money}
+          <TextInputV1
+            inputMode={TextInputV1InputMode.Money}
             value={amount.toString()}
             onChangeText={onChangeText}
             style={[styles.input, computedStyles.input]}

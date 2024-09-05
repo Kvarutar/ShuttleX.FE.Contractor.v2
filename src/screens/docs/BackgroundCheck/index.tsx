@@ -11,8 +11,8 @@ import {
   ScrollViewWithCustomScroll,
   ShortArrowIcon,
   Text,
-  TextInput,
-  TextInputInputMode,
+  TextInputV1,
+  TextInputV1InputMode,
   useThemeV1,
 } from 'shuttlex-integration';
 
@@ -73,9 +73,9 @@ const BackgroundCheckScreen = ({ navigation }: BackgroundCheckScreenProps): JSX.
           </Bar>
           <View style={styles.contentWrapper}>
             <Text style={styles.blockTitle}>{t('docs_BackgroundCheck_blockTitle')}</Text>
-            <TextInput
+            <TextInputV1
               maxLength={11}
-              inputMode={TextInputInputMode.Numeric}
+              inputMode={TextInputV1InputMode.Numeric}
               value={ssn}
               placeholder="000-00-0000"
               onChangeText={onChange}
