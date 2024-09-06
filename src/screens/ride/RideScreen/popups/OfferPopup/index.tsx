@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Popup, sizes, Timer, TimerModes, useThemeV1 } from 'shuttlex-integration';
+import { Popup, sizes, TimerV1, TimerV1Modes, useThemeV1 } from 'shuttlex-integration';
 
 import Offer from '../../Offer';
 import { OfferPopupProps } from './props';
@@ -36,12 +36,12 @@ const OfferPopup = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferPopu
         exiting={FadeOut.duration(timerAnimationDuration)}
         entering={FadeIn.duration(timerAnimationDuration)}
       >
-        <Timer
+        <TimerV1
           initialDate={new Date(currentTime)} //20000 - for test
           onAfterCountdownEnds={onClose}
           startColor={colors.primaryGradientStartColor}
           endColor={colors.primaryColor}
-          mode={TimerModes.Normal}
+          mode={TimerV1Modes.Normal}
         />
       </Animated.View>
     </>
