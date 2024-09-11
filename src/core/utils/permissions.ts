@@ -1,3 +1,5 @@
+import notifee from '@notifee/react-native';
+import messaging from '@react-native-firebase/messaging';
 import { Platform } from 'react-native';
 import {
   check,
@@ -68,5 +70,14 @@ export const checkGalleryUsagePermission = async (): Promise<boolean> => {
   } else {
     const result = await check(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES);
     return result === RESULTS.GRANTED;
+  }
+};
+
+//notifications permission
+export const requestNotificationsPermission = async () => {
+  if (Platform.OS === 'android') {
+    await notifee.requestPermission();
+  } else {
+    await messaging().requestPermission();
   }
 };
