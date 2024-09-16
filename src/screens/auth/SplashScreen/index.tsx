@@ -8,6 +8,7 @@ const SplashScreen = ({ navigation }: SplashScreenProps): JSX.Element => {
   const { t } = useTranslation();
 
   const navigationToSignIn = () => navigation.replace('Auth', { state: 'SignIn' });
+  const navigationToSignUp = () => navigation.replace('Auth', { state: 'SignUp' });
 
   return (
     <SafeAreaView>
@@ -16,7 +17,7 @@ const SplashScreen = ({ navigation }: SplashScreenProps): JSX.Element => {
         <Text style={styles.titleApp}>{t('auth_Splash_title')}</Text>
       </View>
       <View style={styles.buttonsContainer}>
-        <ButtonV1 text={t('auth_Splash_startButton')} onPress={navigationToSignIn} />
+        <ButtonV1 text={t('auth_Splash_startButton')} onPress={navigationToSignUp} />
         <Pressable style={styles.alreadyHaveAccountContainer} onPress={navigationToSignIn} hitSlop={20}>
           <Text style={styles.alreadyHaveAccountText}>{t('auth_Splash_haveAccount')}</Text>
         </Pressable>

@@ -2,11 +2,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect } from 'react';
 import BootSplash from 'react-native-bootsplash';
-import { useThemeV1 } from 'shuttlex-integration';
+import { useTheme } from 'shuttlex-integration';
 
 import AuthScreen from '../screens/auth/AuthScreen';
 import LockOutScreen from '../screens/auth/LockOutScreen';
-import PhoneSelectScreen from '../screens/auth/PhoneSelectScreen';
 import SignInEmailCodeScreen from '../screens/auth/SignInEmailCodeScreen';
 import SignInPhoneCodeScreen from '../screens/auth/SignInPhoneCodeScreen';
 import SplashScreen from '../screens/auth/SplashScreen';
@@ -31,10 +30,10 @@ import { RootStackParamList } from './props';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const Navigate = (): JSX.Element => {
-  const { setThemeMode } = useThemeV1();
+  const { setThemeMode } = useTheme();
 
   useEffect(() => {
-    setThemeMode('dark');
+    setThemeMode('light');
   }, [setThemeMode]);
 
   return (
@@ -63,7 +62,6 @@ const Navigate = (): JSX.Element => {
         <Stack.Screen name="Wallet" component={WalletScreen} />
         <Stack.Screen name="AddPayment" component={AddPaymentScreen} />
         <Stack.Screen name="Withdraw" component={WithdrawScreen} />
-        <Stack.Screen name="PhoneSelect" component={PhoneSelectScreen} />
         <Stack.Screen name="Terms" component={TermsScreen} />
         <Stack.Screen name="Verification" component={VerificationScreen} />
         <Stack.Screen name="LockOut" component={LockOutScreen} />

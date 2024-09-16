@@ -5,10 +5,10 @@ import { useSelector } from 'react-redux';
 import {
   Bar,
   BarModes,
-  BlueCheck1,
   ButtonV1,
   ButtonV1Shapes,
   FlatListWithCustomScroll,
+  RoundCheckIcon2,
   SafeAreaView,
   ShortArrowIcon,
   ShortArrowSmallIcon,
@@ -66,7 +66,7 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
         <Bar mode={isComplete ? BarModes.Active : BarModes.Default} style={styles.bar} key={index}>
           <Text>{screensContent[item[0]].title}</Text>
           {isComplete ? (
-            <BlueCheck1 />
+            <RoundCheckIcon2 />
           ) : (
             <ButtonV1 containerStyle={styles.roundButton} shape={ButtonV1Shapes.Circle}>
               <ShortArrowSmallIcon />

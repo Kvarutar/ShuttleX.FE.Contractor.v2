@@ -43,7 +43,7 @@ const Order = () => {
       ))}
       visiblePart={<VisiblePart isOpened={isOpened} />}
       hiddenPart={<HiddenPart />}
-      hiddenPartContainerStyles={styles.bottomWindowHiddenContainer}
+      hiddenPartContainerStyle={styles.bottomWindowHiddenContainer}
       setIsOpened={setIsOpened}
       ref={bottomWindowRef}
       hiddenPartButton={

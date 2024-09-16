@@ -4,10 +4,10 @@ import { useSelector } from 'react-redux';
 import {
   Bar,
   BarModes,
-  BlueCheck1,
   ButtonV1,
   ButtonV1Modes,
   ButtonV1Shapes,
+  RoundCheckIcon2,
   SafeAreaView,
   ShortArrowSmallIcon,
   sizes,
@@ -48,7 +48,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
             <Text style={styles.contentText}>{t('verification_Verification_stepOne')}</Text>
 
             {isZoneSelected ? (
-              <BlueCheck1 />
+              <RoundCheckIcon2 />
             ) : (
               <ButtonV1
                 shape={ButtonV1Shapes.Circle}

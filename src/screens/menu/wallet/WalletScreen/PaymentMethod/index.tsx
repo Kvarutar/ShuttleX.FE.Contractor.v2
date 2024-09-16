@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, View } from 'react-native';
-import { BlueCheck1, getPaymentIcon, Separator, Text } from 'shuttlex-integration';
+import { getPaymentIcon, RoundCheckIcon2, Separator, Text } from 'shuttlex-integration';
 
 import { PaymentMethodProps } from './props';
 
@@ -22,7 +22,7 @@ const PaymentMethodContent = ({
           {getPaymentIcon(paymentMethod.method)}
           <Text style={styles.details}>**** {paymentMethod.details}</Text>
         </View>
-        {isSelected && <BlueCheck1 />}
+        {isSelected && <RoundCheckIcon2 />}
       </View>
       {index !== paymentMethods.length - 1 && <Separator />}
     </Pressable>

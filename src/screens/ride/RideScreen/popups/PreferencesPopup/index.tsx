@@ -5,10 +5,10 @@ import { useSelector } from 'react-redux';
 import {
   Bar,
   BarModes,
-  BlueCheck1,
   ButtonV1,
   FlatListWithCustomScroll,
   Popup,
+  RoundCheckIcon2,
   TariffsCarImage,
   TariffType,
   Text,
@@ -96,7 +96,7 @@ const TariffPreferencesPopup = ({ onClose }: PreferencesPopupProps) => {
             <TariffsCarImage tariff={item} style={styles.img} />
             <Text>{item}</Text>
           </View>
-          {isPrefferedTariff && <BlueCheck1 />}
+          {isPrefferedTariff && <RoundCheckIcon2 />}
         </Bar>
       </Pressable>
     );
