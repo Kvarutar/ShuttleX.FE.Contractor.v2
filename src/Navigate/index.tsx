@@ -39,8 +39,7 @@ const Navigate = (): JSX.Element => {
   return (
     <NavigationContainer onReady={() => BootSplash.hide({ fade: true })}>
       <Stack.Navigator
-        //TODO: Change initial route to the "Splash" before this branch will be merged to dev
-        initialRouteName="Ride"
+        initialRouteName="Splash"
         screenOptions={{
           headerShown: false,
         }}
