@@ -8,11 +8,29 @@ export type Profile = {
   phone: string;
 };
 
+export type PreferenceType = 'CryptoPayment' | 'CashPayment';
+
 export type ContractorStatus = 'online' | 'offline';
 
+export type TariffInfo = {
+  id: string;
+  name: TariffType;
+  isPrimary: boolean;
+  isAvailable: boolean;
+  isSelected: boolean;
+};
+
+export type PreferenceInfo = {
+  id: string;
+  name: PreferenceType;
+  isAvailable: boolean;
+  isSelected: boolean;
+};
+
 export type ContractorState = {
-  preferredTariffs: TariffType[];
-  unavailableTariffs: TariffType[];
+  contractorId: string;
+  tariffs: TariffInfo[];
+  preferences: PreferenceInfo[];
   profile: Profile | null;
   status: ContractorStatus;
   zone: string | null;

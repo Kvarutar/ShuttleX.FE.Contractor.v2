@@ -12,7 +12,6 @@ import {
   NotificationIcon,
   NotificationType,
   sizes,
-  StopWatch,
   Text,
   useThemeV1,
 } from 'shuttlex-integration';
@@ -213,7 +212,6 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
           <ButtonV1 onPress={() => setIsMenuVisible(true)} shape={ButtonV1Shapes.Circle}>
             <MenuIcon />
           </ButtonV1>
-          <StopWatch initialDate={new Date()} mask="{h}h {m}m" />
           <View style={styles.topRightButtonContainer}>
             <ButtonV1 onPress={() => navigation.navigate('Notifications')} shape={ButtonV1Shapes.Circle}>
               <NotificationIcon />

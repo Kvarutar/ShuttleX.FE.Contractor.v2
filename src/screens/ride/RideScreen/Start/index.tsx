@@ -1,39 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
-  Bar,
-  BottomWindow,
-  ButtonV1,
-  ButtonV1Modes,
-  PreferencesIcon,
-  StatisticsIcon,
+  BottomWindowWithGesture,
+  BottomWindowWithGestureRef,
+  SquareButtonModes,
   SwipeButtonModes,
-  Text,
-  useThemeV1,
 } from 'shuttlex-integration';
 
-import { contractorStatusSelector } from '../../../core/contractor/redux/selectors';
-import { updateContractorStatus } from '../../../core/contractor/redux/thunks';
-import { ContractorStatus } from '../../../core/contractor/redux/types';
-import { useAppDispatch } from '../../../core/redux/hooks';
-import { twoHighestPriorityAlertsSelector } from '../../../core/ride/redux/alerts/selectors';
-import { setOrder } from '../../../core/ride/redux/trip';
-import { responseToOffer } from '../../../core/ride/redux/trip/thunks';
-import { OfferType } from '../../../core/ride/redux/trip/types';
-import AlertInitializer from '../../../shared/AlertInitializer';
-import ConfirmationPopup from './popups/ConfirmationPopup';
-import OfferPopup from './popups/OfferPopup';
-import TariffPreferencesPopup from './popups/PreferencesPopup';
-import TarifsCarousel from './TarifsCarousel';
+import { contractorStatusSelector } from '../../../../core/contractor/redux/selectors';
+import { getPreferences, getTariffs } from '../../../../core/contractor/redux/thunks';
+import { ContractorStatus } from '../../../../core/contractor/redux/types';
+import { useAppDispatch } from '../../../../core/redux/hooks';
+import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
+import { setOrder } from '../../../../core/ride/redux/trip';
+import { responseToOffer } from '../../../../core/ride/redux/trip/thunks';
+import { OfferType } from '../../../../core/ride/redux/trip/types';
+import AlertInitializer from '../../../../shared/AlertInitializer';
+import OfferPopup from '../popups/OfferPopup';
+import TariffPreferencesPopup from '../popups/PreferencesPopup';
+import HiddenPart from './HiddenPart';
+import VisiblePart from './VisiblePart';
 
 type lineStateTypes = {
   popupTitle: string;
   toLineState: ContractorStatus;
   bottomTitle: string;
   buttonText: string;
-  buttonMode: ButtonV1Modes;
+  buttonMode: SquareButtonModes;
   swipeMode: SwipeButtonModes;
 };
 
@@ -43,7 +38,7 @@ const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record
     toLineState: 'offline',
     bottomTitle: t('ride_Ride_BottomWindow_onlineTitle'),
     buttonText: t('ride_Ride_Bar_onlineTitle'),
-    buttonMode: ButtonV1Modes.Mode3,
+    buttonMode: SquareButtonModes.Mode2,
     swipeMode: SwipeButtonModes.Decline,
   },
   offline: {
@@ -51,31 +46,25 @@ const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record
     toLineState: 'online',
     bottomTitle: t('ride_Ride_BottomWindow_offlineTitle'),
     buttonText: t('ride_Ride_Bar_offlineTitle'),
-    buttonMode: ButtonV1Modes.Mode1,
+    buttonMode: SquareButtonModes.Mode1,
     swipeMode: SwipeButtonModes.Confirm,
   },
 });
 
 const Start = () => {
-  const { colors } = useThemeV1();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
+  const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
+
+  const contractorStatus = useSelector(contractorStatusSelector);
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
 
   const [offer, setOffer] = useState<OfferType>();
-  const contractorStatus = useSelector(contractorStatusSelector);
   const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t)[contractorStatus]);
-
-  const [isConfirmationPopupVisible, setIsConfirmationPopupVisible] = useState<boolean>(false);
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
   const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
-
-  const computedStyles = StyleSheet.create({
-    title: {
-      color: colors.textPrimaryColor,
-    },
-  });
+  const [isOpened, setIsOpened] = useState<boolean>(false);
 
   useEffect(() => {
     setLineState(getRideBuilderRecord(t)[contractorStatus]);
@@ -118,10 +107,14 @@ const Start = () => {
     });
   }, []);
 
-  const swipeHandler = async (mode: ContractorStatus) => {
-    setIsConfirmationPopupVisible(false);
-    await dispatch(updateContractorStatus(mode));
-  };
+  useEffect(() => {
+    const asyncGetTariffsPreferences = async () => {
+      //TODO: Add a real contractor id
+      await dispatch(getTariffs({ contractorId: '' }));
+      await dispatch(getPreferences({ contractorId: '' }));
+    };
+    asyncGetTariffsPreferences();
+  }, [dispatch]);
 
   const onOfferPopupClose = () => {
     setIsOfferPopupVisible(false);
@@ -140,10 +133,18 @@ const Start = () => {
     }
   };
 
+  const computedStyles = StyleSheet.create({
+    bottomWindowStyle: {
+      paddingBottom: isOpened ? 0 : 20,
+    },
+  });
+
   return (
     <>
-      <BottomWindow
-        style={styles.bottom}
+      <BottomWindowWithGesture
+        bottomWindowStyle={[styles.bottomWindowStyle, computedStyles.bottomWindowStyle]}
+        setIsOpened={setIsOpened}
+        ref={bottomWindowRef}
         alerts={alerts.map(alertData => (
           <AlertInitializer
             key={alertData.id}
@@ -153,34 +154,22 @@ const Start = () => {
             options={'options' in alertData ? alertData.options : undefined}
           />
         ))}
-      >
-        <View style={styles.infoWrapper}>
-          <Pressable onPress={() => setIsPreferencesPopupVisible(true)} hitSlop={10}>
-            <PreferencesIcon />
-          </Pressable>
-          <Text style={[computedStyles.title, styles.title]}>{lineState.bottomTitle}</Text>
-          <Pressable onPress={() => setIsOfferPopupVisible(true)} hitSlop={10}>
-            <StatisticsIcon />
-          </Pressable>
-        </View>
-        <Bar style={styles.card}>
-          <TarifsCarousel />
-          <ButtonV1
-            mode={lineState.buttonMode}
-            text={lineState.buttonText}
-            onPress={() => setIsConfirmationPopupVisible(true)}
+        visiblePart={
+          <VisiblePart
+            isOpened={isOpened}
+            bottomWindowRef={bottomWindowRef}
+            setIsPreferencesPopupVisible={setIsPreferencesPopupVisible}
+            lineState={lineState}
           />
-        </Bar>
-      </BottomWindow>
-      {isConfirmationPopupVisible && (
-        <ConfirmationPopup
-          onClose={() => setIsConfirmationPopupVisible(false)}
-          onSwipeEnd={() => swipeHandler(lineState.toLineState)}
-          popupTitle={lineState.popupTitle}
-          swipeMode={lineState.swipeMode}
+        }
+        hiddenPart={<HiddenPart isOpened={isOpened} bottomWindowRef={bottomWindowRef} lineState={lineState} />}
+      />
+      {isPreferencesPopupVisible && (
+        <TariffPreferencesPopup
+          onClose={() => setIsPreferencesPopupVisible(false)}
+          setIsPreferencesPopupVisible={setIsPreferencesPopupVisible}
         />
       )}
-      {isPreferencesPopupVisible && <TariffPreferencesPopup onClose={() => setIsPreferencesPopupVisible(false)} />}
       {offer && isOfferPopupVisible && (
         <OfferPopup
           offer={offer}
@@ -194,27 +183,8 @@ const Start = () => {
 };
 
 const styles = StyleSheet.create({
-  bottom: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  infoWrapper: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 28,
-  },
-  title: {
-    fontSize: 18,
-    fontFamily: 'Inter Medium',
-    textAlign: 'center',
-  },
-  card: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
+  bottomWindowStyle: {
+    paddingHorizontal: 0,
   },
 });
 

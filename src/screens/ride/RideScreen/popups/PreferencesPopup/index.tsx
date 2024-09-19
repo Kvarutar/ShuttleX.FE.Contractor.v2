@@ -1,158 +1,205 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Dimensions, ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useEffect, useRef } from 'react';
+import { ListRenderItem, StyleSheet, View } from 'react-native';
 import {
   Bar,
   BarModes,
-  ButtonV1,
-  FlatListWithCustomScroll,
-  Popup,
-  RoundCheckIcon2,
+  BottomWindowWithGesture,
+  BottomWindowWithGestureRef,
+  ProfileIconMini,
+  RoundCheckIcon1,
   TariffsCarImage,
-  TariffType,
   Text,
+  useTheme,
 } from 'shuttlex-integration';
 
-import { preferredTariffsSelector, unavailableTariffsSelector } from '../../../../../core/contractor/redux/selectors';
-import { sendSelectedTariffs } from '../../../../../core/contractor/redux/thunks';
+import { revertTariffFieldById } from '../../../../../core/contractor/redux';
+import { TariffInfo } from '../../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../../core/redux/hooks';
+import HiddenPart from './HiddenPart';
 import { PreferencesPopupProps } from './props';
 
-const windowHeight = Dimensions.get('window').height;
+// TODO: Add logic with preferences when work with it
+// Uncomment it for working with preferences
+// type PreferenceModeType = {
+//   barMode?: BarModes;
+//   pressable?: boolean;
+// };
 
-type TariffModeType = {
-  barMode: BarModes;
-  onPressHandler?: (tariff: TariffType) => void;
-};
+const TariffPreferencesPopup = ({ onClose, setIsPreferencesPopupVisible }: PreferencesPopupProps) => {
+  const { colors } = useTheme();
 
-const tariffs = ['BasicX', 'BasicXL', 'ComfortX', 'PremiumX', 'PremiumXL', 'TeslaX'];
+  const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
 
-const TariffPreferencesPopup = ({ onClose }: PreferencesPopupProps) => {
   const dispatch = useAppDispatch();
-  const unavailableTariffs = useSelector(unavailableTariffsSelector);
-  const { t } = useTranslation();
 
-  const [selectedPrefferedTariffs, setSelectedPrefferedTariffs] = useState<TariffType[]>([
-    ...useSelector(preferredTariffsSelector),
-  ]);
+  // Uncomment if for working with preferences
+  // const preferencesTexts = {
+  //   CashPayment: 'ride_Ride_PreferencesPopup_cashPayment',
+  //   CryptoPayment: 'ride_Ride_PreferencesPopup_cryptoPayment',
+  // };
 
-  const onPressHandler = (tariff: TariffType) => {
-    setSelectedPrefferedTariffs(prev => {
-      let temp = [...prev];
+  useEffect(() => {
+    bottomWindowRef.current?.openWindow();
+  }, []);
 
-      if (temp.indexOf(tariff) === -1) {
-        temp.push(tariff);
-      } else {
-        temp = temp.filter(el => el !== tariff);
-      }
-
-      return temp;
-    });
+  const onTariffPressHandler = (tariff: TariffInfo) => {
+    if (!tariff.isPrimary) {
+      dispatch(revertTariffFieldById({ tariffId: tariff.id, field: 'isSelected' }));
+    }
   };
 
-  const renderTarifs: ListRenderItem<TariffType> = ({ item, index }: { item: TariffType; index: number }) => {
-    const tariffModes: Record<any, TariffModeType> = {
-      preffered: {
-        barMode: BarModes.Active,
-        onPressHandler: onPressHandler,
-      },
-      unavailable: {
-        barMode: BarModes.Disabled,
-      },
-      default: {
-        barMode: BarModes.Default,
-        onPressHandler: onPressHandler,
-      },
-    };
-
-    const isPrefferedTariff = selectedPrefferedTariffs.includes(item);
-    const isUnavailableTariff = unavailableTariffs.includes(item);
-
-    let tariffMode = tariffModes.default;
+  const renderTariffs: ListRenderItem<TariffInfo> = ({ item, index }: { item: TariffInfo; index: number }) => {
+    const isSelected = item.isSelected;
+    const isAvailable = item.isAvailable;
 
     const computedStyles = StyleSheet.create({
       bar: {
         marginBottom: 0,
       },
+      tariffInfo: {
+        color: colors.textSecondaryColor,
+      },
     });
 
-    if (isPrefferedTariff) {
-      tariffMode = tariffModes.preffered;
-      computedStyles.bar = {
-        marginBottom: 2,
-      };
-    } else if (isUnavailableTariff) {
-      tariffMode = tariffModes.unavailable;
-      computedStyles.bar = {
-        marginBottom: 2,
-      };
-    }
-
     return (
-      <Pressable key={index} onPress={() => tariffMode.onPressHandler?.(item)}>
-        <Bar mode={tariffMode.barMode} style={[styles.bar, computedStyles.bar]}>
-          <View style={styles.preferenceContent}>
-            <TariffsCarImage tariff={item} style={styles.img} />
-            <Text>{item}</Text>
+      <Bar
+        mode={isAvailable ? BarModes.Active : BarModes.Disabled}
+        style={[styles.bar, computedStyles.bar]}
+        key={index}
+        onPress={() => (isAvailable ? onTariffPressHandler(item) : {})}
+      >
+        <View style={styles.preferenceContent}>
+          <TariffsCarImage tariff={item.name} style={styles.img} />
+          <View>
+            <Text>{item.name}</Text>
+            <View style={styles.tariffInfoContainer}>
+              <ProfileIconMini />
+              {/* TODO: Add info about car seats when it state will be added */}
+              <Text style={[styles.tariffInfo, computedStyles.tariffInfo]}>1-6</Text>
+            </View>
           </View>
-          {isPrefferedTariff && <RoundCheckIcon2 />}
-        </Bar>
-      </Pressable>
+        </View>
+        {isSelected && <RoundCheckIcon1 />}
+      </Bar>
     );
   };
+  // Uncomment this function for working with preferences
+  // const onPressPreferencesHandler = (preference: PreferenceInfo) => {
+  //   dispatch(revertPreferenceFieldById({ preferenceId: preference.id, field: 'isSelected' }));
+  // };
 
-  const onConfirmHandler = async () => {
-    await dispatch(sendSelectedTariffs(selectedPrefferedTariffs));
-    onClose();
-  };
+  // const renderPreferences: ListRenderItem<PreferenceInfo> = ({
+  //   item,
+  //   index,
+  // }: {
+  //   item: PreferenceInfo;
+  //   index: number;
+  // }) => {
+  //   const preferenceModes: Record<any, PreferenceModeType> = {
+  //     preffered: {
+  //       barMode: BarModes.Active,
+  //       pressable: true,
+  //     },
+  //     unavailable: {
+  //       barMode: BarModes.Disabled,
+  //     },
+  //     default: {
+  //       pressable: true,
+  //     },
+  //   };
+
+  //   const isSelected = item.isSelected;
+  //   const isUnavailable = !item.isAvailable;
+
+  //   let preferenceMode = preferenceModes.default;
+
+  //   const computedStyles = StyleSheet.create({
+  //     bar: {
+  //       marginBottom: 0,
+  //     },
+  //     tariffInfo: {
+  //       color: colors.textSecondaryColor,
+  //     },
+  //     plusIcon: {
+  //       color: colors.iconPrimaryColor,
+  //     },
+  //   });
+
+  //   if (isSelected) {
+  //     preferenceMode = preferenceModes.preffered;
+  //   } else if (isUnavailable) {
+  //     preferenceMode = preferenceModes.unavailable;
+  //   }
+
+  //   return (
+  //     <Bar
+  //       mode={preferenceMode.barMode}
+  //       style={[styles.bar, computedStyles.bar]}
+  //       key={index}
+  //       onPress={() => (preferenceMode.pressable ? onPressPreferencesHandler(item) : {})}
+  //     >
+  //       <View style={styles.preferenceContent}>
+  //         <Text style={styles.preferencesText}>{t(preferencesTexts[item.name])}</Text>
+  //       </View>
+  //       {isSelected && <RoundCheckIcon1 />}
+  //       {isUnavailable && (
+  //         <Pressable style={styles.plusIconContainer}>
+  //           <PlusIcon style={styles.plusIcon} color={computedStyles.plusIcon.color} />
+  //         </Pressable>
+  //       )}
+  //     </Bar>
+  //   );
+  // };
 
   return (
-    <Popup bottomWindowStyle={styles.popup} onCloseButtonPress={onClose}>
-      <FlatListWithCustomScroll
-        withShadow
-        wrapperStyle={styles.flatListWrapper}
-        contentContainerStyle={styles.contentContainerStyle}
-        renderItem={renderTarifs}
-        items={tariffs}
-      />
-      <ButtonV1
-        text={t('ride_Ride_RidePreferences_confirmButton')}
-        containerStyle={styles.button}
-        onPress={onConfirmHandler}
-      />
-    </Popup>
+    <BottomWindowWithGesture
+      withHiddenPartScroll={false}
+      setIsOpened={setIsPreferencesPopupVisible}
+      ref={bottomWindowRef}
+      hiddenPart={<HiddenPart onClose={onClose} renderTariffs={renderTariffs} />}
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  preferenceContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  popup: {
-    maxHeight: windowHeight * 0.7,
-  },
-  barStyle: {
-    top: 0,
-  },
   bar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  preferenceContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   img: {
     marginRight: 24,
+    width: 130,
   },
-  contentContainerStyle: {
-    gap: 16,
+  tariffInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
-  button: {
-    marginTop: 30,
+  tariffInfo: {
+    fontFamily: 'Inter Medium',
+    fontSize: 14,
   },
-  flatListWrapper: {
-    flex: 0,
-    flexShrink: 1,
+  preferencesText: {
+    paddingVertical: 12,
+  },
+  plusIconContainer: {
+    backgroundColor: 'white',
+    width: 18,
+    height: 18,
+    borderRadius: 100,
+    marginHorizontal: 8,
+    padding: 4,
+  },
+  plusIcon: {
+    height: '100%',
+    width: '100%',
   },
 });
 
