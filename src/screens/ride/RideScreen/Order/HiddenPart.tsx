@@ -1,50 +1,54 @@
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import {
-  Bar,
-  ButtonV1,
-  ButtonV1Modes,
-  ChatIcon,
-  EmergencyServiceIcon,
-  PassengerIcon,
-  PhoneIcon,
-  ReportIcon,
-  sizes,
-  Text,
-  useThemeV1,
-} from 'shuttlex-integration';
+import { EmergencyServiceIcon, ReportIcon, Text, useTheme } from 'shuttlex-integration';
 
 import { orderSelector } from '../../../../core/ride/redux/trip/selectors';
-import { OrderType } from '../../../../core/ride/redux/trip/types';
 
 const HiddenPart = () => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const order = useSelector(orderSelector);
+
+  const computedStyles = StyleSheet.create({
+    hiddenTripInfo: {
+      backgroundColor: colors.backgroundSecondaryColor,
+    },
+    hiddenTripInfoTitle: {
+      color: colors.textSecondaryColor,
+    },
+    hiddenSafetyItem: {
+      borderColor: colors.borderColor,
+    },
+  });
 
   if (order) {
     return (
       <>
-        <ContactInfo order={order} />
-        <View style={styles.hiddenTripType}>
-          <Text style={styles.hiddenTripTypeTitle}>{t('ride_Ride_Order_tripType')}</Text>
-          <Text style={styles.hiddenTripTypeContent}>{order.tripTariff}</Text>
+        <View style={[styles.hiddenTripInfo, computedStyles.hiddenTripInfo]}>
+          <Text style={[styles.hiddenTripInfoTitle, computedStyles.hiddenTripInfoTitle]}>
+            {t('ride_Ride_Order_passenger')}
+          </Text>
+          <Text numberOfLines={1} style={styles.hiddenTripInfoContent}>
+            {order.passenger.name + ' ' + order.passenger.lastName}
+          </Text>
         </View>
-        <Bar style={styles.hiddenTotal}>
-          <Text style={styles.hiddenTotalTitle}>{t('ride_Ride_Order_totalForRide')}</Text>
-          <Text style={styles.hiddenTotalContent}>{order.total}</Text>
-        </Bar>
+        <View style={[styles.hiddenTripInfo, computedStyles.hiddenTripInfo]}>
+          <Text style={[styles.hiddenTripInfoTitle, computedStyles.hiddenTripInfoTitle]}>
+            {t('ride_Ride_Order_tripType')}
+          </Text>
+          <Text style={styles.hiddenTripInfoContent}>{order.tripTariff}</Text>
+        </View>
         <View style={styles.hiddenSafety}>
-          <Pressable style={styles.hiddenSafetyItem} onPress={() => Linking.openURL('tel:911')}>
-            <Bar style={styles.hiddenSafetyItemIcon}>
-              <EmergencyServiceIcon />
-            </Bar>
+          <Pressable
+            style={[styles.hiddenSafetyItem, computedStyles.hiddenSafetyItem]}
+            onPress={() => Linking.openURL('tel:112')}
+          >
+            <EmergencyServiceIcon />
             <Text style={styles.hiddenSafetyItemText}>{t('ride_Ride_Order_contactEmergency')}</Text>
           </Pressable>
-          <Pressable style={styles.hiddenSafetyItem}>
-            <Bar style={styles.hiddenSafetyItemIcon}>
-              <ReportIcon />
-            </Bar>
+          <Pressable style={[styles.hiddenSafetyItem, computedStyles.hiddenSafetyItem]}>
+            <ReportIcon />
             <Text style={styles.hiddenSafetyItemText}>{t('ride_Ride_Order_reportIssue')}</Text>
           </Pressable>
         </View>
@@ -55,107 +59,41 @@ const HiddenPart = () => {
   return <></>;
 };
 
-const ContactInfo = ({ order }: { order: OrderType }) => {
-  const { colors } = useThemeV1();
-
-  return (
-    <Bar>
-      <View style={styles.hiddenPassengerInfo}>
-        <PassengerIcon style={styles.passengerBigIcon} color={colors.iconPrimaryColor} />
-        <Text style={styles.hiddenPassengerInfoName}>
-          {order.passenger.name} {order.passenger.lastName}
-        </Text>
-      </View>
-      <View style={styles.hiddenContactButtons}>
-        <ButtonV1 style={styles.hiddenContactButton} containerStyle={styles.hiddenContactButtonContainer}>
-          <ChatIcon />
-        </ButtonV1>
-        <ButtonV1
-          style={styles.hiddenContactButton}
-          containerStyle={styles.hiddenContactButtonContainer}
-          mode={ButtonV1Modes.Mode3}
-          onPress={() => Linking.openURL(`tel:${order.passenger.phone}`)}
-        >
-          <PhoneIcon />
-        </ButtonV1>
-      </View>
-    </Bar>
-  );
-};
-
 const styles = StyleSheet.create({
-  hiddenPassengerInfo: {
-    flexDirection: 'row',
-    marginBottom: 20,
-    justifyContent: 'center',
-    gap: 4,
-  },
-  hiddenPassengerInfoName: {
-    fontFamily: 'Inter Medium',
-    fontSize: 17,
-  },
-  hiddenContactButtons: {
-    flexDirection: 'row',
-    gap: 18,
-  },
-  hiddenContactButtonContainer: {
-    flex: 1,
-  },
-  hiddenTripType: {
+  hiddenTripInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 16,
     paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderRadius: 12,
   },
-  hiddenTripTypeTitle: {
+  hiddenTripInfoTitle: {
     fontFamily: 'Inter Medium',
+    fontSize: 14,
   },
-  hiddenTripTypeContent: {
+  hiddenTripInfoContent: {
+    flexShrink: 1,
     fontFamily: 'Inter Medium',
-    fontSize: 18,
-  },
-  hiddenTotal: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  hiddenTotalTitle: {
-    fontFamily: 'Inter Medium',
-  },
-  hiddenTotalContent: {
-    fontFamily: 'Inter Medium',
-    fontSize: 18,
+    fontSize: 14,
   },
   hiddenSafety: {
     flexDirection: 'row',
     gap: 14,
+    marginBottom: 8,
   },
   hiddenSafetyItem: {
     flex: 1,
-  },
-  hiddenSafetyItemIcon: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    gap: 14,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
   },
   hiddenSafetyItemText: {
-    textAlign: 'center',
     fontFamily: 'Inter Medium',
     fontSize: 12,
-    marginTop: 6,
-  },
-  hiddenContactButton: {
-    height: 48,
-  },
-  passengerBigIcon: {
-    width: sizes.iconSize,
-    height: sizes.iconSize,
-  },
-  smallPhoneButton: {
-    paddingHorizontal: 0,
-    width: 34,
-    height: 34,
-  },
-  smallPhoneButtonIcon: {
-    width: 16,
-    height: 16,
   },
 });
 

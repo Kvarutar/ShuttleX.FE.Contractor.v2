@@ -6,12 +6,14 @@ export type OfferProps = {
   offer: OfferType;
   onOfferAccept: () => void;
   onOfferDecline: () => void;
+  onClose: () => void;
 };
 
 export type OfferItemProps = {
   address: string;
   pointName: string;
   isDropOff: boolean;
+  isStopPoint?: boolean;
   style: StyleProp<TextStyle>;
   setIsShowMorePoints?: (isShowMorePoints: boolean) => void;
   numberOfAdditionalPoints?: number;

@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import {
   BottomWindowWithGesture,
   BottomWindowWithGestureRef,
+  minToMilSec,
   SquareButtonModes,
   SwipeButtonModes,
 } from 'shuttlex-integration';
@@ -16,7 +17,7 @@ import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { setOrder } from '../../../../core/ride/redux/trip';
 import { responseToOffer } from '../../../../core/ride/redux/trip/thunks';
-import { OfferType } from '../../../../core/ride/redux/trip/types';
+import { OfferType, OrderType } from '../../../../core/ride/redux/trip/types';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import OfferPopup from '../popups/OfferPopup';
 import TariffPreferencesPopup from '../popups/PreferencesPopup';
@@ -30,6 +31,82 @@ type lineStateTypes = {
   buttonText: string;
   buttonMode: SquareButtonModes;
   swipeMode: SwipeButtonModes;
+};
+
+// Just example! This data might be changed on backend later
+//TODO: Rewrite this logic to receiving data from backend
+//TODO: Add latitude and longtude keys (maybe it will be separate request to backend)
+const orderFromBack: OrderType = {
+  id: '4503c782-35f4-470b-8f8b-fb0796d5af40',
+  startPosition: {
+    address: '123 Queen St W, Toronto, ON M5H 2M9',
+    latitude: 12312312,
+    longitude: 123123123,
+  },
+  targetPointsPosition: [
+    // {
+    //   address: '241 Harvie Ave, York, ON M6E 4K9',
+    //   latitude: 123123123,
+    //   longitude: 123123123,
+    // },
+    // {
+    //   address: '450 Blythwood Rd, North York, ON M4N 1A9',
+    //   latitude: 123123123,
+    //   longitude: 123123123,
+    // },
+    {
+      address: '12 Bushbury Dr, North York, ON M3A 2Z7',
+      latitude: 12312312,
+      longitude: 123123123,
+    },
+  ],
+  fullTimeTimestamp: Date.now() + minToMilSec(25), // 25 min
+  fullTimeMinutes: 25, // min
+  timeToOffer: Date.now() + minToMilSec(2), // 2 min
+  fullDistance: 20.4,
+  price: '100',
+  pricePerKm: 0.3,
+  waitingTimeInMin: 10,
+  pricePerMin: 3.5,
+  passengerId: '0',
+  passenger: {
+    name: 'John',
+    lastName: 'Doe',
+    phone: '0432342342',
+    avatarURL: '',
+  },
+  tripTariff: 'BasicX',
+};
+
+// Just example! This data might be changed on backend later
+//TODO: Rewrite this logic to receiving data from backend
+//TODO: Add latitude and longtude keys (maybe it will be separate request to backend)
+const offerFromBack: OfferType = {
+  startPosition: {
+    address: '123 Queen St W, Toronto, ON M5H 2M9',
+    latitude: 12312312,
+    longitude: 123123123,
+  },
+  targetPointsPosition: [
+    // {
+    //   address: '241 Harvie Ave, York, ON M6E 4K9',
+    //   latitude: 123123123,
+    //   longitude: 123123123,
+    // },
+    // {
+    //   address: '450 Blythwood Rd, North York, ON M4N 1A9',
+    //   latitude: 123123123,
+    //   longitude: 123123123,
+    // },
+    {
+      address: '12 Bushbury Dr, North York, ON M3A 2Z7',
+      latitude: 12312312,
+      longitude: 123123123,
+    },
+  ],
+  fullTimeMinutes: Date.now() + minToMilSec(25), // 25 min
+  price: '100',
+  pricePerKm: 0.3,
 };
 
 const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record<ContractorStatus, lineStateTypes> => ({
@@ -71,40 +148,7 @@ const Start = () => {
   }, [contractorStatus, t]);
 
   useEffect(() => {
-    setOffer({
-      startPosition: {
-        address: '123 Queen St W, Toronto, ON M5H 2M9',
-        latitude: 12312312,
-        longitude: 123123123,
-      },
-      targetPointsPosition: [
-        {
-          address: '241 Harvie Ave, York, ON M6E 4K9',
-          latitude: 123123123,
-          longitude: 123123123,
-        },
-        {
-          address: '450 Blythwood Rd, North York, ON M4N 1A9',
-          latitude: 123123123,
-          longitude: 123123123,
-        },
-        {
-          address: '12 Bushbury Dr, North York, ON M3A 2Z7',
-          latitude: 123123123,
-          longitude: 123213123,
-        },
-      ],
-      passengerId: '0',
-      passenger: {
-        name: 'Michael',
-        lastName: 'Skorodumov',
-        phone: '89990622720',
-      },
-      tripTariff: 'BasicX',
-      total: '20.45',
-      fullDistance: 20.4,
-      fullTime: 25,
-    });
+    setOffer(offerFromBack);
   }, []);
 
   useEffect(() => {
@@ -129,7 +173,7 @@ const Start = () => {
     setIsOfferPopupVisible(false);
     dispatch(responseToOffer(true));
     if (offer) {
-      dispatch(setOrder(offer));
+      dispatch(setOrder(orderFromBack));
     }
   };
 

@@ -7,7 +7,7 @@ import {
   fetchPickedUpAtPickUpPoint,
   fetchPickedUpAtStopPoint,
 } from './thunks';
-import { OfferType, TripState, TripStatus } from './types';
+import { OrderType, TripState, TripStatus } from './types';
 
 const initialState: TripState = {
   order: null,
@@ -20,27 +20,17 @@ const slice = createSlice({
   name: 'trip',
   initialState,
   reducers: {
-    setOrder(state, action: PayloadAction<OfferType>) {
-      const { startPosition, targetPointsPosition, passengerId, passenger, tripTariff, total } = action.payload;
+    setOrder(state, action: PayloadAction<OrderType>) {
       if (state.order && !state.secondOrder) {
-        state.secondOrder = {
-          startPosition,
-          targetPointsPosition,
-          passengerId,
-          passenger,
-          tripTariff,
-          total,
-        };
+        state.secondOrder = action.payload;
       } else if (!state.order) {
-        state.order = {
-          startPosition,
-          targetPointsPosition,
-          passengerId,
-          passenger,
-          tripTariff,
-          total,
-        };
-        state.tripPoints = [startPosition, ...targetPointsPosition];
+        state.order = action.payload;
+        state.tripPoints = [action.payload.startPosition, ...action.payload.targetPointsPosition];
+      }
+    },
+    setOrderFullTime(state, action: PayloadAction<number>) {
+      if (state.order) {
+        state.order.fullTimeTimestamp = action.payload;
       }
     },
     setTripStatus(state, action: PayloadAction<TripStatus>) {
@@ -81,8 +71,9 @@ const slice = createSlice({
       .addCase(fetchArrivedToDropOff.fulfilled, state => {
         slice.caseReducers.endTrip(state);
       })
-      .addCase(fetchPickedUpAtPickUpPoint.fulfilled, state => {
+      .addCase(fetchPickedUpAtPickUpPoint.fulfilled, (state, action) => {
         slice.caseReducers.toNextTripPoint(state);
+        slice.caseReducers.setOrderFullTime(state, slice.actions.setOrderFullTime(action.payload.fulltime));
       })
       .addCase(fetchPickedUpAtStopPoint.fulfilled, state => {
         slice.caseReducers.toNextTripPoint(state);

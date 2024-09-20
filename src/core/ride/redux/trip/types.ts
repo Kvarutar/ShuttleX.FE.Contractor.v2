@@ -4,22 +4,32 @@ export type PassengerInfoType = {
   name: string;
   lastName: string;
   phone: string;
+  avatarURL: string;
 };
 
 export type TripPoint = { address: string } & LatLng;
 
-export type OfferType = {
+export type OrderType = {
+  id: string;
   startPosition: TripPoint;
   targetPointsPosition: TripPoint[];
   passengerId: string;
   passenger: PassengerInfoType;
   tripTariff: string;
-  total: string;
+  price: string;
   fullDistance: number;
-  fullTime: number;
+  fullTimeTimestamp: number;
+  fullTimeMinutes: number;
+  timeToOffer: number;
+  waitingTimeInMin: number;
+  pricePerMin: number;
+  pricePerKm: number;
 };
 
-export type OrderType = Omit<OfferType, 'fullDistance' | 'fullTime'>;
+export type OfferType = Pick<
+  OrderType,
+  'startPosition' | 'targetPointsPosition' | 'price' | 'pricePerKm' | 'fullTimeMinutes'
+>;
 
 export type TripState = {
   order: OrderType | null;

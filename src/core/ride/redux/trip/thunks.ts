@@ -1,4 +1,4 @@
-import { getAxiosErrorInfo } from 'shuttlex-integration';
+import { getAxiosErrorInfo, minToMilSec } from 'shuttlex-integration';
 
 import shuttlexContractorInstance from '../../../client';
 import { createAppAsyncThunk } from '../../../redux/hooks';
@@ -26,10 +26,10 @@ export const fetchArrivedToPickUp = createAppAsyncThunk<void, void>(
   'trip/fetchArrivedToPickUp',
   async (_, { rejectWithValue }) => {
     try {
-      await shuttlexContractorInstance.post('/contractor/order/arrived-to-pick-up', {
-        //TODO: orderId,
-        orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
-      });
+      //TODO: Add networking,
+      // await shuttlexContractorInstance.post('/contractor/order/arrived-to-pick-up', {
+      //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
+      // });
     } catch (error) {
       const { code, message } = getAxiosErrorInfo(error);
       return rejectWithValue({
@@ -44,10 +44,10 @@ export const fetchArrivedToStopPoint = createAppAsyncThunk<void, void>(
   'trip/fetchArrivedToStopPoint',
   async (_, { rejectWithValue }) => {
     try {
-      await shuttlexContractorInstance.post('/contractor/order/arrived-to-stop-point', {
-        //TODO: orderId,
-        orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
-      });
+      //TODO: Add networking,
+      // await shuttlexContractorInstance.post('/contractor/order/arrived-to-stop-point', {
+      //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
+      // });
     } catch (error) {
       const { code, message } = getAxiosErrorInfo(error);
       return rejectWithValue({
@@ -62,10 +62,10 @@ export const fetchArrivedToDropOff = createAppAsyncThunk<void, void>(
   'trip/fetchArrivedToDropOff',
   async (_, { rejectWithValue }) => {
     try {
-      await shuttlexContractorInstance.post('/contractor/order/arrived-to-drop-off', {
-        //TODO: orderId,
-        orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
-      });
+      //TODO: Add networking,
+      // await shuttlexContractorInstance.post('/contractor/order/arrived-to-drop-off', {
+      //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
+      // });
     } catch (error) {
       const { code, message } = getAxiosErrorInfo(error);
       return rejectWithValue({
@@ -76,14 +76,19 @@ export const fetchArrivedToDropOff = createAppAsyncThunk<void, void>(
   },
 );
 
-export const fetchPickedUpAtPickUpPoint = createAppAsyncThunk<void, void>(
+export const fetchPickedUpAtPickUpPoint = createAppAsyncThunk<{ fulltime: number }, void>(
   'trip/fetchPickedUpAtPickUpPoint',
   async (_, { rejectWithValue }) => {
     try {
-      await shuttlexContractorInstance.post('/contractor/order/picked-up-passenger-on-pick-up-point', {
-        //TODO: orderId,
-        orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
-      });
+      //TODO: Add networking,
+      // await shuttlexContractorInstance.post('/contractor/order/picked-up-passenger-on-pick-up-point', {
+      //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
+      // });
+
+      // Returning for rendering a correct time for trip
+      return {
+        fulltime: Date.now() + minToMilSec(25),
+      };
     } catch (error) {
       const { code, message } = getAxiosErrorInfo(error);
       return rejectWithValue({
