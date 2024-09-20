@@ -57,7 +57,7 @@
     "react-native-svg-transformer": "^1.1.0",
     "react-native-url-polyfill": "^2.0.0",
     "react-redux": "^8.1.3",
-    "shuttlex-integration": "github:DevShuttleXInc/ShuttleX.FE.Integration.v1#b36814b2cc6e84ff7714d69718ff8d3ec8734cb5",
+    "shuttlex-integration": "github:DevShuttleXInc/ShuttleX.FE.Integration.v1#dev",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
