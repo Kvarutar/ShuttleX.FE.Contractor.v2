@@ -66,7 +66,7 @@ const orderFromBack: OrderType = {
   fullDistance: 20.4,
   price: '100',
   pricePerKm: 0.3,
-  waitingTimeInMin: 10,
+  waitingTimeInMin: 0.1,
   pricePerMin: 3.5,
   passengerId: '0',
   passenger: {
@@ -152,6 +152,14 @@ const Start = () => {
   }, []);
 
   useEffect(() => {
+    if (contractorStatus === 'online') {
+      setTimeout(() => {
+        setIsOfferPopupVisible(true);
+      }, 5000);
+    }
+  }, [contractorStatus]);
+
+  useEffect(() => {
     const asyncGetTariffsPreferences = async () => {
       //TODO: Add a real contractor id
       await dispatch(getTariffs({ contractorId: '' }));
@@ -186,6 +194,7 @@ const Start = () => {
   return (
     <>
       <BottomWindowWithGesture
+        withHiddenPartScroll={false}
         bottomWindowStyle={[styles.bottomWindowStyle, computedStyles.bottomWindowStyle]}
         setIsOpened={setIsOpened}
         ref={bottomWindowRef}

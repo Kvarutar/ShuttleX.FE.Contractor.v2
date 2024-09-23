@@ -1,92 +1,113 @@
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { Pressable, StyleSheet, View } from 'react-native';
 import {
-  ButtonV1,
-  ButtonV1Modes,
-  ClockIcon,
-  DropOffIcon,
   ExternalMapIcon,
-  LocationIcon,
+  PointIcon,
   Text,
-  useThemeV1,
+  Timer,
+  TimerColorModes,
+  TimerSizesModes,
+  useTheme,
 } from 'shuttlex-integration';
 
-import { TripPoint } from '../../../../../../core/ride/redux/trip/types';
+import { AddressWithMetaProps } from './props';
 
-const buttonFadeAnimationDuration = 200;
-
-const AddressWithMeta = ({ tripPoints }: { tripPoints: TripPoint[] }) => {
-  const { colors } = useThemeV1();
+const AddressWithMeta = ({ tripPoints, timeForTimer }: AddressWithMetaProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   const computedStyles = StyleSheet.create({
-    orderMetaText: {
+    dropOffText: {
       color: colors.textSecondaryColor,
+    },
+    openOnGoogleMapButton: {
+      borderColor: colors.borderColor,
+    },
+    openOnText: {
+      color: colors.textSecondaryColor,
+    },
+    googleMapText: {
+      color: colors.textPrimaryColor,
+    },
+    pointOuterColor: {
+      color: colors.errorColor,
+    },
+    pointInnerColor: {
+      color: colors.backgroundPrimaryColor,
     },
   });
 
   return (
-    <View style={styles.passangerInfoWrapper}>
-      <View style={styles.visibleTextWrapper}>
-        <View style={styles.visibleHeader}>
-          <DropOffIcon />
-          <Text numberOfLines={1} style={styles.address}>
-            {tripPoints[0].address}
-          </Text>
-        </View>
-        <View style={styles.visibleContent}>
-          <View style={styles.visibleContentItem}>
-            <ClockIcon />
-            <Text style={computedStyles.orderMetaText}>{t('ride_Ride_Order_minutes', { count: 25 })}</Text>
-          </View>
-          <View style={styles.visibleContentItem}>
-            <LocationIcon />
-            <Text style={computedStyles.orderMetaText}>{t('ride_Ride_Order_kilometers', { count: 20.4 })}</Text>
-          </View>
+    <View style={styles.visibleTextWrapper}>
+      <Timer
+        style={{
+          timerWrapper: styles.timerWrapper,
+        }}
+        time={timeForTimer}
+        sizeMode={TimerSizesModes.S}
+        colorMode={TimerColorModes.Mode3}
+      />
+      <View style={styles.metaInfoContainer}>
+        <PointIcon
+          outerColor={computedStyles.pointOuterColor.color}
+          innerColor={computedStyles.pointInnerColor.color}
+        />
+        <View style={styles.dropOffTextsContainer}>
+          <Text style={[styles.dropOffText, computedStyles.dropOffText]}>{t('ride_Ride_Order_dropOff')}</Text>
+          <Text style={styles.address}>{tripPoints[0].address}</Text>
         </View>
       </View>
-      <Animated.View
-        entering={FadeIn.duration(buttonFadeAnimationDuration)}
-        exiting={FadeOut.duration(buttonFadeAnimationDuration)}
-      >
-        <ButtonV1 mode={ButtonV1Modes.Mode3} style={styles.visibleButton}>
-          <ExternalMapIcon />
-        </ButtonV1>
-      </Animated.View>
+      <Pressable style={[styles.openOnGoogleMapButton, computedStyles.openOnGoogleMapButton]}>
+        <ExternalMapIcon />
+        <View style={styles.googleMapTextContainer}>
+          <Text style={computedStyles.openOnText}>{t('ride_Ride_Order_openOnText')}</Text>
+          <Text style={computedStyles.googleMapText}>{t('ride_Ride_Order_googleMapText')}</Text>
+        </View>
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  passangerInfoWrapper: {
-    alignItems: 'center',
+  timerWrapper: {
+    position: 'absolute',
+    top: -78,
+    alignSelf: 'center',
+  },
+  metaInfoContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 6,
+    paddingTop: 24,
+    gap: 18,
+  },
+  dropOffTextsContainer: {
+    flex: 1,
+    gap: 8,
+  },
+  dropOffText: {
+    fontFamily: 'Inter Medium',
   },
   visibleTextWrapper: {
     flexShrink: 1,
   },
-  visibleHeader: {
-    flexDirection: 'row',
-  },
   address: {
     fontFamily: 'Inter Medium',
-    flexShrink: 1,
+    fontSize: 21,
+    marginBottom: 20,
   },
-  visibleContent: {
+  openOnGoogleMapButton: {
     flexDirection: 'row',
-    gap: 16,
-    marginTop: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 14,
+    marginBottom: 8,
   },
-  visibleContentItem: {
+  googleMapTextContainer: {
     flexDirection: 'row',
     gap: 4,
-  },
-  visibleButton: {
-    height: 52,
-    width: 52,
   },
 });
 

@@ -53,12 +53,6 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) =
     dot: {
       backgroundColor: colors.iconSecondaryColor,
     },
-    carColorContainer: {
-      borderColor: colors.borderColor,
-    },
-    carColor: {
-      backgroundColor: riderData.car.color,
-    },
     carTitleContainer: {
       borderColor: colors.borderColor,
     },
@@ -114,11 +108,10 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) =
         </View>
       </View>
       <View style={styles.carDataContainer}>
-        <View style={[styles.carColorContainer, computedStyles.carColorContainer]}>
-          <View style={[styles.carColor, computedStyles.carColor]} />
-        </View>
         <View style={[styles.carTitleContainer, computedStyles.carTitleContainer]}>
-          <Text style={styles.carTitleText}>{riderData.car.title}</Text>
+          <Text numberOfLines={1} style={styles.carTitleText}>
+            {riderData.car.title}
+          </Text>
         </View>
         <View style={[styles.carIdContainer, computedStyles.carIdContainer]}>
           <Text>{riderData.car.number}</Text>
@@ -209,24 +202,14 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 24,
   },
-  carColorContainer: {
-    borderWidth: 1,
-    borderRadius: 100,
-    width: 40,
-    height: 40,
-    padding: 12,
-  },
-  carColor: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 100,
-  },
   carTitleContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 8,
+    paddingVertical: 12,
     borderWidth: 1,
     borderRadius: 12,
+    maxWidth: '50%',
   },
   carTitleText: {
     fontFamily: 'Inter Medium',

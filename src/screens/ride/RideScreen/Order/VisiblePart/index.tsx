@@ -1,9 +1,9 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { ButtonV1, ButtonV1Modes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
+import { Button, minToMilSec, SquareButtonModes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
 
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { setTripStatus } from '../../../../../core/ride/redux/trip';
@@ -18,15 +18,17 @@ import {
 import { TripStatus } from '../../../../../core/ride/redux/trip/types';
 import AddressWithExtendedPassengerInfo from './AddressWith/AddressWithExtendedPassengerInfo';
 import AddressWithMeta from './AddressWith/AddressWithMeta';
-import AddressWithPassengerInfo from './AddressWith/AddressWithPassengerInfo';
+import AddressWithPassengerAndOrderInfo from './AddressWith/AddressWithPassengerAndOrderInfo';
 
-const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
+const VisiblePart = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const order = useSelector(orderSelector);
   const tripStatus = useSelector(tripStatusSelector);
   const tripPoints = useSelector(tripPointsSelector);
+
+  const [waitingTime, setWaitingTime] = useState(Date.now() + minToMilSec(1)); // random date in a future for correct working
 
   const updateTripStatus = useCallback(() => {
     if (order && tripPoints) {
@@ -45,6 +47,7 @@ const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
 
   useEffect(() => {
     // TODO: replace with check is contractor arriving
+    // TODO: Add "tripStatus === TripStatus.Ride ||" when work with stop points for ride imitation
     if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Idle) {
       setTimeout(updateTripStatus, 5000);
     }
@@ -66,17 +69,51 @@ const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
 
   if (order && tripPoints) {
     mainContent = {
-      idle: <AddressWithMeta tripPoints={tripPoints} />,
-      arriving: <AddressWithPassengerInfo tripPoints={tripPoints} order={order} isOpened={isOpened} />,
+      idle: (
+        <AddressWithPassengerAndOrderInfo
+          tripPoints={tripPoints}
+          timeForTimer={order.timeToOffer}
+          contentType={TripStatus.Idle}
+        />
+      ),
+      arriving: (
+        <AddressWithPassengerAndOrderInfo
+          tripPoints={tripPoints}
+          timeForTimer={order.timeToOffer}
+          contentType={TripStatus.Arriving}
+        />
+      ),
       arrivingAtStopPoint: (
-        <AddressWithPassengerInfo withStopPoint tripPoints={tripPoints} order={order} isOpened={isOpened} />
+        <AddressWithPassengerAndOrderInfo
+          tripPoints={tripPoints}
+          timeForTimer={waitingTime}
+          contentType={TripStatus.ArrivingAtStopPoint}
+        />
       ),
-      arrived: <AddressWithExtendedPassengerInfo tripPoints={tripPoints} order={order} isOpened={isOpened} />,
-      arrivedAtStopPoint: (
-        <AddressWithExtendedPassengerInfo withStopPoint tripPoints={tripPoints} order={order} isOpened={isOpened} />
+      arrived: (
+        <AddressWithPassengerAndOrderInfo
+          tripPoints={tripPoints}
+          withAvatar
+          withGoogleMapButton={false}
+          timeForTimer={waitingTime}
+          isWaiting
+          setWaitingTime={setWaitingTime}
+          contentType={TripStatus.Arrived}
+        />
       ),
-      ride: <AddressWithMeta tripPoints={tripPoints} />,
-      ending: <AddressWithExtendedPassengerInfo tripPoints={tripPoints} order={order} isOpened={isOpened} />,
+      //TODO: Add this component when work with stop points
+      // Note: Not styled for new design
+      arrivedAtStopPoint: <AddressWithExtendedPassengerInfo withStopPoint tripPoints={tripPoints} />,
+      ride: <AddressWithMeta tripPoints={tripPoints} timeForTimer={order.fullTimeTimestamp} />,
+      ending: (
+        <AddressWithPassengerAndOrderInfo
+          tripPoints={tripPoints}
+          withAvatar
+          withGoogleMapButton={false}
+          timeForTimer={order.fullTimeTimestamp}
+          contentType={TripStatus.Ending}
+        />
+      ),
     };
   }
 
@@ -84,13 +121,13 @@ const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
     idle: null,
     arriving: (
       <StatusSwitcher>
-        <ButtonV1 mode={ButtonV1Modes.Mode1} text={t('ride_Ride_Order_arrivedButton')} onPress={onArrived} />
+        <Button mode={SquareButtonModes.Mode2} text={t('ride_Ride_Order_arrivedButton')} onPress={onArrived} />
       </StatusSwitcher>
     ),
     arrivingAtStopPoint: (
       <StatusSwitcher>
-        <ButtonV1
-          mode={ButtonV1Modes.Mode1}
+        <Button
+          mode={SquareButtonModes.Mode1}
           text={t('ride_Ride_Order_arrivedToStopButton')}
           onPress={onArrivedAtStopPoint}
         />
@@ -118,7 +155,7 @@ const VisiblePart = ({ isOpened }: { isOpened: boolean }) => {
     ending: (
       <StatusSwitcher>
         <SwipeButton
-          mode={SwipeButtonModes.Confirm}
+          mode={SwipeButtonModes.Finish}
           onSwipeEnd={() => dispatch(fetchArrivedToDropOff())}
           text={t('ride_Ride_Order_finishRideButton')}
         />

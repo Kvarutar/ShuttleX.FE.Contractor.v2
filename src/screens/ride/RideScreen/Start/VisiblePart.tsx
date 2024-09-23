@@ -39,16 +39,14 @@ const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, 
       color: colors.textPrimaryColor,
     },
     onlineStatusText: {
-      color: colors.textSecondaryColor,
+      color: colors.textPrimaryColor,
     },
   });
 
   if (isOpened) {
     return (
       <Animated.View entering={FadeIn.duration(animationDuration)}>
-        <View style={styles.tariffsCarImageContainer}>
-          <TariffsCarImage tariff={primaryTariff.name} style={styles.bigCarImage} />
-        </View>
+        <TariffsCarImage tariff={primaryTariff.name} style={styles.bigCarImage} />
       </Animated.View>
     );
   }
@@ -86,25 +84,22 @@ const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, 
   return (
     <Animated.View entering={FadeIn.duration(animationDuration)} exiting={FadeOut.duration(animationDuration)}>
       <View style={styles.onlineInfoWrapper}>
-        <View style={styles.onlineCarImageContainer}>
-          <TariffsCarImage tariff={primaryTariff.name} style={styles.miniCarImage} />
-        </View>
-        <Text style={styles.onlineBasicTariffText}>{t(primaryTariff.name)}</Text>
-        <View style={styles.onlinePreferencesButtonContainer}>
-          <Button
-            shape={ButtonShapes.Circle}
-            size={ButtonSizes.S}
-            mode={CircleButtonModes.Mode2}
-            disableShadow
-            onPress={() => setIsPreferencesPopupVisible(true)}
-          >
-            <PreferencesIcon />
-          </Button>
-        </View>
+        <Text style={[computedStyles.onlineStatusText, styles.onlineStatusText]}>
+          {t('ride_Ride_BottomWindow_onlineTitle')}
+        </Text>
+        <Button
+          shape={ButtonShapes.Circle}
+          size={ButtonSizes.S}
+          mode={CircleButtonModes.Mode2}
+          disableShadow
+          onPress={() => setIsPreferencesPopupVisible(true)}
+        >
+          <PreferencesIcon />
+        </Button>
       </View>
-      <Text style={[computedStyles.onlineStatusText, styles.onlineStatusText]}>
-        {t('ride_Ride_BottomWindow_onlineTitle')}
-      </Text>
+      <View style={styles.card}>
+        <TariffsCarousel />
+      </View>
       {/* //TODO: Add a component which render "remains to work" time  */}
       <Button
         text={lineState.buttonText}
@@ -120,23 +115,16 @@ const styles = StyleSheet.create({
   onlineStatusText: {
     fontFamily: 'Inter Medium',
     alignSelf: 'center',
-    marginBottom: 12,
-  },
-  tariffsCarImageContainer: {
-    paddingHorizontal: 16,
-    position: 'absolute',
-    top: -130,
-    width: '100%',
-    height: 200,
-  },
-  miniCarImage: {
-    width: '100%',
-    height: 36,
+    fontSize: 21,
   },
   bigCarImage: {
-    width: '100%',
-    height: 120,
+    position: 'absolute',
+    top: -110,
+    width: '80%',
+    height: 100,
     marginBottom: 24,
+    paddingHorizontal: 16,
+    alignSelf: 'center',
   },
   offlineInfoWrapper: {
     justifyContent: 'space-between',
@@ -153,20 +141,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 12,
   },
-  onlineCarImageContainer: {
-    flex: 1,
-  },
-  onlineBasicTariffText: {
-    flex: 1,
-    textAlign: 'center',
-    fontFamily: 'Inter Medium',
-  },
-  onlinePreferencesButtonContainer: {
-    flex: 1,
-    alignItems: 'flex-end',
-  },
   title: {
-    fontFamily: 'Inter Medium',
     fontSize: 18,
     textAlign: 'center',
   },

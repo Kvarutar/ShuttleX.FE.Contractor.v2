@@ -126,12 +126,12 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferProps) =>
         <View style={[styles.offerInfoItem, computedStyles.offerInfoItem]}>
           <Text style={[styles.offerInfoTitle, computedStyles.offerInfoTitle]}>{t('ride_Ride_Offer_travelTime')}</Text>
           <View style={styles.offerTimeContainer}>
-            {travelTime.hours && (
+            {travelTime.hours !== 0 && (
               <Text style={[styles.offerInfoText, computedStyles.offerInfoText]}>
                 {t('ride_Ride_Offer_hours', { hours: travelTime.hours })}
               </Text>
             )}
-            {travelTime.minutes && (
+            {travelTime.minutes !== 0 && (
               <Text style={[styles.offerInfoText, computedStyles.offerInfoText]}>
                 {t('ride_Ride_Offer_minutes', { minutes: travelTime.minutes })}
               </Text>

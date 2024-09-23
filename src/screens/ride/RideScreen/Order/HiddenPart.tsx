@@ -24,7 +24,7 @@ const HiddenPart = () => {
 
   if (order) {
     return (
-      <>
+      <View style={styles.hiddenContainer}>
         <View style={[styles.hiddenTripInfo, computedStyles.hiddenTripInfo]}>
           <Text style={[styles.hiddenTripInfoTitle, computedStyles.hiddenTripInfoTitle]}>
             {t('ride_Ride_Order_passenger')}
@@ -52,7 +52,7 @@ const HiddenPart = () => {
             <Text style={styles.hiddenSafetyItemText}>{t('ride_Ride_Order_reportIssue')}</Text>
           </Pressable>
         </View>
-      </>
+      </View>
     );
   }
 
@@ -60,6 +60,9 @@ const HiddenPart = () => {
 };
 
 const styles = StyleSheet.create({
+  hiddenContainer: {
+    gap: 8,
+  },
   hiddenTripInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',

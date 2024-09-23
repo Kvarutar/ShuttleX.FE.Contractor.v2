@@ -1,35 +1,24 @@
 import { Image, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
-import {
-  ButtonV1,
-  ButtonV1Modes,
-  ButtonV1Shapes,
-  ChatIcon,
-  DropOffIcon,
-  PickUpIcon,
-  Text,
-  useThemeV1,
-} from 'shuttlex-integration';
+import { useSelector } from 'react-redux';
+import { DropOffIcon, PickUpIcon, Text, useTheme } from 'shuttlex-integration';
 
-import { OrderType, TripPoint } from '../../../../../../core/ride/redux/trip/types';
-
-const constants = {
-  buttonFadeAnimationDuration: 200,
-  textLayoutAnimationDuration: 100,
-};
+import { orderSelector } from '../../../../../../core/ride/redux/trip/selectors';
+import { TripPoint } from '../../../../../../core/ride/redux/trip/types';
 
 const AddressWithExtendedPassengerInfo = ({
-  order,
   tripPoints,
   withStopPoint = false,
-  isOpened,
 }: {
-  order: OrderType;
   tripPoints: TripPoint[];
   withStopPoint?: boolean;
-  isOpened: boolean;
 }) => {
-  const { colors } = useThemeV1();
+  const { colors } = useTheme();
+
+  const order = useSelector(orderSelector);
+
+  if (!order) {
+    return;
+  }
 
   const computedStyles = StyleSheet.create({
     addressMini: {
@@ -37,55 +26,39 @@ const AddressWithExtendedPassengerInfo = ({
     },
   });
 
-  const numberOfLines = isOpened ? 2 : 1;
-
   const isPickUp = tripPoints.length === order.targetPointsPosition.length + 1;
 
   return (
     <View style={styles.passangerInfoWrapper}>
       <View style={styles.passangerInfoWithAvatar}>
-        <ButtonV1 containerStyle={styles.passengerAvatarWrapper} shape={ButtonV1Shapes.Circle}>
-          <Image style={styles.passengerAvatar} source={require('../../../../../../assets/img/Man.png')} />
-        </ButtonV1>
-        <Animated.View
-          layout={LinearTransition.duration(constants.textLayoutAnimationDuration)}
-          style={styles.visibleTextWrapper}
-        >
+        <Image style={styles.passengerAvatar} source={require('../../../../../../assets/img/Man.png')} />
+        <View style={styles.visibleTextWrapper}>
           <Text style={styles.passangerInfoWithAvatarText}>
             {order.passenger.name} {order.passenger.lastName}
           </Text>
-          <Animated.View
-            layout={LinearTransition.duration(constants.textLayoutAnimationDuration)}
-            style={styles.addressMiniWrapper}
-          >
+          <View style={styles.addressMiniWrapper}>
             {withStopPoint ? <PickUpIcon /> : <DropOffIcon />}
-            <Text numberOfLines={numberOfLines} style={[styles.addressMini, computedStyles.addressMini]}>
-              {tripPoints[0].address}
-            </Text>
-          </Animated.View>
+            <Text style={[styles.addressMini, computedStyles.addressMini]}>{tripPoints[0].address}</Text>
+          </View>
           {(isPickUp || withStopPoint) && (
-            <Animated.View
-              layout={LinearTransition.duration(constants.textLayoutAnimationDuration)}
-              style={[styles.addressMiniWrapper, styles.withoutMarginTop]}
-            >
+            <View style={[styles.addressMiniWrapper, styles.withoutMarginTop]}>
               <DropOffIcon />
-              <Text numberOfLines={numberOfLines} style={[styles.addressMini, computedStyles.addressMini]}>
-                {tripPoints[1].address}
-              </Text>
-            </Animated.View>
+              <Text style={[styles.addressMini, computedStyles.addressMini]}>{tripPoints[1].address}</Text>
+            </View>
           )}
-        </Animated.View>
+        </View>
       </View>
-      {!isOpened && (
+      {/* TODO: Add this component when work with chat */}
+      {/* {!isOpened && (
         <Animated.View
           entering={FadeIn.duration(constants.buttonFadeAnimationDuration)}
           exiting={FadeOut.duration(constants.buttonFadeAnimationDuration)}
         >
-          <ButtonV1 mode={ButtonV1Modes.Mode3} style={styles.visibleButton}>
+          <Button mode={SquareButtonModes.Mode3} style={styles.visibleButton}>
             <ChatIcon />
-          </ButtonV1>
+          </Button>
         </Animated.View>
-      )}
+      )} */}
     </View>
   );
 };
@@ -112,11 +85,6 @@ const styles = StyleSheet.create({
   },
   passangerInfoWithAvatarText: {
     fontFamily: 'Inter Medium',
-  },
-  passengerAvatarWrapper: {
-    width: 61,
-    height: 61,
-    borderRadius: 100,
   },
   passengerAvatar: {
     width: 52,

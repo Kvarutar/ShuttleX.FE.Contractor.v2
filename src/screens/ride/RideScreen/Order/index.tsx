@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -17,8 +17,8 @@ const Order = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const [isOpened, setIsOpened] = useState(false);
   const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
+
   const tripStatus = useSelector(tripStatusSelector);
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
 
@@ -32,6 +32,7 @@ const Order = () => {
 
   return (
     <BottomWindowWithGesture
+      withHiddenPartScroll={false}
       alerts={alerts.map(alertData => (
         <AlertInitializer
           key={alertData.id}
@@ -41,10 +42,10 @@ const Order = () => {
           options={'options' in alertData ? alertData.options : undefined}
         />
       ))}
-      visiblePart={<VisiblePart isOpened={isOpened} />}
+      visiblePart={<VisiblePart />}
       hiddenPart={<HiddenPart />}
+      visiblePartStyle={styles.bottomWindowVisiblePartStyle}
       hiddenPartContainerStyle={styles.bottomWindowHiddenContainer}
-      setIsOpened={setIsOpened}
       ref={bottomWindowRef}
       hiddenPartButton={
         <SwipeButton
@@ -59,7 +60,10 @@ const Order = () => {
 
 const styles = StyleSheet.create({
   bottomWindowHiddenContainer: {
-    gap: 30,
+    gap: 8,
+  },
+  bottomWindowVisiblePartStyle: {
+    paddingBottom: 24,
   },
 });
 

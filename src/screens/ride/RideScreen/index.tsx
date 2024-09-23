@@ -3,8 +3,10 @@ import { Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import {
-  ButtonV1,
-  ButtonV1Shapes,
+  Button,
+  ButtonShapes,
+  ButtonSizes,
+  CircleButtonModes,
   IntegrationModule,
   LocationUnavailable,
   LocationUnavailableProps,
@@ -13,7 +15,7 @@ import {
   NotificationType,
   sizes,
   Text,
-  useThemeV1,
+  useTheme,
 } from 'shuttlex-integration';
 
 import { setProfile, setProfileImage } from '../../../core/contractor/redux';
@@ -43,7 +45,7 @@ import { type RideScreenProps } from './props';
 import Start from './Start';
 
 const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
-  const { colors } = useThemeV1();
+  const { colors } = useTheme();
   const dispatch = useAppDispatch();
 
   useGeolocationStartWatch();
@@ -65,7 +67,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : 0,
     },
     unreadNotificationsMarker: {
-      backgroundColor: colors.primaryColor,
+      backgroundColor: colors.errorColor,
     },
     unreadNotificationsText: {
       color: colors.backgroundPrimaryColor,
@@ -209,14 +211,29 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       <SafeAreaView style={styles.wrapper}>
         <MapView />
         <View style={[styles.topButtonsContainer, computedStyles.topButtonsContainer]}>
-          <ButtonV1 onPress={() => setIsMenuVisible(true)} shape={ButtonV1Shapes.Circle}>
+          <Button
+            circleSubContainerStyle={styles.topButton}
+            onPress={() => setIsMenuVisible(true)}
+            shape={ButtonShapes.Circle}
+            mode={CircleButtonModes.Mode2}
+            size={ButtonSizes.S}
+            disableShadow
+          >
             <MenuIcon />
-          </ButtonV1>
+          </Button>
           <View style={styles.topRightButtonContainer}>
-            <ButtonV1 onPress={() => navigation.navigate('Notifications')} shape={ButtonV1Shapes.Circle}>
-              <NotificationIcon />
+            <View>
+              <Button
+                circleSubContainerStyle={styles.topButton}
+                onPress={() => navigation.navigate('Notifications')}
+                shape={ButtonShapes.Circle}
+                mode={CircleButtonModes.Mode2}
+                size={ButtonSizes.S}
+              >
+                <NotificationIcon />
+              </Button>
               {unreadNotificationsMarker}
-            </ButtonV1>
+            </View>
             {(tripStatus === TripStatus.Arrived || tripStatus === TripStatus.ArrivedAtStopPoint) && (
               <PassengerTimer isPassengerLate={isPassengerLate} setIsPassengerLate={() => setIsPassengerLate(true)} />
             )}
@@ -259,6 +276,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: sizes.paddingHorizontal,
     justifyContent: 'space-between',
     flexDirection: 'row',
+  },
+  topButton: {
+    borderWidth: 0,
   },
   topRightButtonContainer: {
     alignItems: 'center',

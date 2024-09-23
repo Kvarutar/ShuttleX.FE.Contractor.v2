@@ -4,7 +4,11 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSelector } from 'react-redux';
 import { TariffsCarImage, TariffType, Text, useTheme } from 'shuttlex-integration';
 
-import { availableTariffsSelector } from '../../../core/contractor/redux/selectors';
+import {
+  availableTariffsSelector,
+  contractorStatusSelector,
+  selectedTariffsSelector,
+} from '../../../core/contractor/redux/selectors';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -16,6 +20,10 @@ const carouselAnimationDurations = {
 const TariffsCarousel = () => {
   const carouselRef = useRef<ICarouselInstance>(null);
   const availableTariffs = useSelector(availableTariffsSelector);
+  const selectedTariffs = useSelector(selectedTariffsSelector);
+  const contractorStatus = useSelector(contractorStatusSelector);
+
+  const tariffsForRender = contractorStatus === 'offline' ? availableTariffs : selectedTariffs;
 
   const computedStyles = StyleSheet.create({
     carouselWrapper: {
@@ -26,11 +34,11 @@ const TariffsCarousel = () => {
     },
   });
 
-  if (availableTariffs.length === 0) {
+  if (tariffsForRender.length === 0) {
     return;
   }
 
-  if (availableTariffs.length > 1) {
+  if (tariffsForRender.length > 1) {
     return (
       <View>
         <View style={[styles.carouselWrapper, computedStyles.carouselWrapper]}>
@@ -39,7 +47,7 @@ const TariffsCarousel = () => {
             width={340}
             height={142}
             style={computedStyles.carousel}
-            data={availableTariffs}
+            data={tariffsForRender}
             scrollAnimationDuration={carouselAnimationDurations.scroll}
             ref={carouselRef}
             renderItem={({ item }) => <SliderItem item={item.name} smallText />}
@@ -49,7 +57,7 @@ const TariffsCarousel = () => {
     );
   }
 
-  return <SliderItem item={availableTariffs[0].name} />;
+  return <SliderItem item={tariffsForRender[0].name} />;
 };
 
 const SliderItem = ({ item, smallText }: { item: TariffType; smallText?: boolean }) => {
