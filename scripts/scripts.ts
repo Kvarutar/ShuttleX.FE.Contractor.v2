@@ -72,30 +72,35 @@ switch (process.env.npm_lifecycle_event) {
     });
     break;
   case 'build:android:assemble:dev:debug':
+    prepareGoogleServices('dev');
     exec({
       unixCommand: 'cd android && ./gradlew assembleDevDebug',
       winCommand: 'cd android & .\\gradlew assembleDevDebug',
     });
     break;
   case 'build:android:assemble:dev:release':
+    prepareGoogleServices('dev');
     exec({
       unixCommand: 'cd android && ./gradlew assembleDevRelease',
       winCommand: 'cd android & .\\gradlew assembleDevRelease',
     });
     break;
   case 'build:android:assemble:prod:debug':
+    prepareGoogleServices('prod');
     exec({
       unixCommand: 'cd android && ./gradlew assembleProdDebug',
       winCommand: 'cd android & .\\gradlew assembleProdDebug',
     });
     break;
   case 'build:android:assemble:prod:release':
+    prepareGoogleServices('prod');
     exec({
       unixCommand: 'cd android && ./gradlew assembleProdRelease',
       winCommand: 'cd android & .\\gradlew assembleProdRelease',
     });
     break;
   case 'build:android:bundle:prod:release':
+    prepareGoogleServices('prod');
     exec({
       unixCommand: 'cd android && ./gradlew bundleProdRelease',
       winCommand: 'cd android & .\\gradlew bundleProdRelease',
