@@ -12,14 +12,28 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1A8A853E7F13A3B6A805295C /* Pods_SharedPods_ShuttleX_Contractor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62835B4C4E87BB4D0E7BD3C /* Pods_SharedPods_ShuttleX_Contractor.framework */; };
 		2DF56FA9BAA848AFB544681A /* Inter Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AE74D88DE3B4B12B6902699 /* Inter Black.ttf */; };
-		3B89126A4B0BE618EAB129B1 /* libPods-ShuttleX_Contractor-ShuttleX_ContractorTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E04A6B1FCA51B5A6B6025EA /* libPods-ShuttleX_Contractor-ShuttleX_ContractorTests.a */; };
 		4B62709666624D5FA2C0EB2E /* Inter Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9627073BFA23443BA6D6F66F /* Inter Bold.ttf */; };
 		4C9B87D6634D4D31AF8D36F2 /* Inter SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4002563309F4E7EBD4155B6 /* Inter SemiBold.ttf */; };
 		565994BFDB8A45C39C4B4A06 /* Inter Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F5E4ADE10F1E4AB6AB97E8CD /* Inter Regular.ttf */; };
 		5723C9A7C26040A8957E5C57 /* Inter Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0B15E9A1F544FB5A85D1D67 /* Inter Thin.ttf */; };
+		75673DCC2C9B1CE5006E9710 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
+		75673DCD2C9B1CE5006E9710 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		75673DD12C9B1CE5006E9710 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		75673DD22C9B1CE5006E9710 /* Inter Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AE74D88DE3B4B12B6902699 /* Inter Black.ttf */; };
+		75673DD32C9B1CE5006E9710 /* Inter Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9627073BFA23443BA6D6F66F /* Inter Bold.ttf */; };
+		75673DD42C9B1CE5006E9710 /* Inter ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4D6046ECD14D41DC841AB349 /* Inter ExtraBold.ttf */; };
+		75673DD52C9B1CE5006E9710 /* Inter ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80E447F92D9A43DEBC3752EC /* Inter ExtraLight.ttf */; };
+		75673DD62C9B1CE5006E9710 /* Inter Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB8E221A6BA6413E9625B903 /* Inter Light.ttf */; };
+		75673DD72C9B1CE5006E9710 /* Inter Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3F0E93F1D8294B7EBE30C3F2 /* Inter Medium.ttf */; };
+		75673DD82C9B1CE5006E9710 /* Inter Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F5E4ADE10F1E4AB6AB97E8CD /* Inter Regular.ttf */; };
+		75673DD92C9B1CE5006E9710 /* Inter SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4002563309F4E7EBD4155B6 /* Inter SemiBold.ttf */; };
+		75673DDA2C9B1CE5006E9710 /* Inter Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0B15E9A1F544FB5A85D1D67 /* Inter Thin.ttf */; };
+		75673DDB2C9B1CE5006E9710 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8EACC64E4D3A416BB4FF6C74 /* BootSplash.storyboard */; };
+		7CC979EF346499C4716E618C /* Pods_SharedPods_ShuttleX_Contractor_dev.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3143A753470638B7FC74F987 /* Pods_SharedPods_ShuttleX_Contractor_dev.framework */; };
+		A0A14047647BC84C9ADE4D5B /* Pods_SharedPods_ShuttleX_ContractorTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7273EE71D916CF2A3F1187F /* Pods_SharedPods_ShuttleX_ContractorTests.framework */; };
 		AA75A189654C41F498BBAA8B /* Inter ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80E447F92D9A43DEBC3752EC /* Inter ExtraLight.ttf */; };
-		BE689CC3C57418083DDBBBEA /* libPods-ShuttleX_Contractor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2886910F4F402E7FE6EF8495 /* libPods-ShuttleX_Contractor.a */; };
 		C9BC2C98981B48F69D01E05B /* Inter ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4D6046ECD14D41DC841AB349 /* Inter ExtraBold.ttf */; };
 		DD9062822F54413195072E84 /* Inter Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3F0E93F1D8294B7EBE30C3F2 /* Inter Medium.ttf */; };
 		F596F5F42458425CA7DBC88B /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8EACC64E4D3A416BB4FF6C74 /* BootSplash.storyboard */; };
@@ -46,19 +60,28 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ShuttleX_Contractor/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ShuttleX_Contractor/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ShuttleX_Contractor/main.m; sourceTree = "<group>"; };
-		2886910F4F402E7FE6EF8495 /* libPods-ShuttleX_Contractor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ShuttleX_Contractor.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CAF954224E98C338B0FA307 /* Pods-SharedPods-ShuttleX_Contractor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharedPods-ShuttleX_Contractor.debug.xcconfig"; path = "Target Support Files/Pods-SharedPods-ShuttleX_Contractor/Pods-SharedPods-ShuttleX_Contractor.debug.xcconfig"; sourceTree = "<group>"; };
+		2C7AB05BD91BFB79EADC55CA /* Pods-SharedPods-ShuttleX_ContractorTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharedPods-ShuttleX_ContractorTests.release.xcconfig"; path = "Target Support Files/Pods-SharedPods-ShuttleX_ContractorTests/Pods-SharedPods-ShuttleX_ContractorTests.release.xcconfig"; sourceTree = "<group>"; };
 		2FF0828770D074BC092F6728 /* Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.debug.xcconfig"; path = "Target Support Files/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.debug.xcconfig"; sourceTree = "<group>"; };
+		3143A753470638B7FC74F987 /* Pods_SharedPods_ShuttleX_Contractor_dev.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SharedPods_ShuttleX_Contractor_dev.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DEF935395434169AAD5D6DA /* Pods-ShuttleX_Contractor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShuttleX_Contractor.release.xcconfig"; path = "Target Support Files/Pods-ShuttleX_Contractor/Pods-ShuttleX_Contractor.release.xcconfig"; sourceTree = "<group>"; };
 		3F0E93F1D8294B7EBE30C3F2 /* Inter Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter Medium.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter Medium.ttf"; sourceTree = "<group>"; };
 		4D6046ECD14D41DC841AB349 /* Inter ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter ExtraBold.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter ExtraBold.ttf"; sourceTree = "<group>"; };
 		5991448C00A070C784846D68 /* Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig"; path = "Target Support Files/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig"; sourceTree = "<group>"; };
+		5B3BAE8016DD2CE29160DD01 /* Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig"; path = "Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig"; sourceTree = "<group>"; };
+		75673DE22C9B1CE5006E9710 /* ShuttleX_Contractor_dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShuttleX_Contractor_dev.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		75673DE32C9B1CE5006E9710 /* ShuttleX_Contractor_dev.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = ShuttleX_Contractor_dev.plist; path = /Users/nikolab131/Documents/Work/NewShuttleX/ShuttleX.FE.Contractor.v2/ios/ShuttleX_Contractor_dev.plist; sourceTree = "<absolute>"; };
 		789C8A2B72601E037F65660E /* Pods-ShuttleX_Contractor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShuttleX_Contractor.debug.xcconfig"; path = "Target Support Files/Pods-ShuttleX_Contractor/Pods-ShuttleX_Contractor.debug.xcconfig"; sourceTree = "<group>"; };
+		7DCB645E790A9BD6A413FF47 /* Pods-SharedPods-ShuttleX_Contractor_dev.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharedPods-ShuttleX_Contractor_dev.release.xcconfig"; path = "Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev.release.xcconfig"; sourceTree = "<group>"; };
 		80E447F92D9A43DEBC3752EC /* Inter ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter ExtraLight.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter ExtraLight.ttf"; sourceTree = "<group>"; };
 		8EACC64E4D3A416BB4FF6C74 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = ShuttleX_Contractor/BootSplash.storyboard; sourceTree = "<group>"; };
 		9627073BFA23443BA6D6F66F /* Inter Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter Bold.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter Bold.ttf"; sourceTree = "<group>"; };
-		9E04A6B1FCA51B5A6B6025EA /* libPods-ShuttleX_Contractor-ShuttleX_ContractorTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ShuttleX_Contractor-ShuttleX_ContractorTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E2D703C028F01A2B396CD09 /* Pods-SharedPods-ShuttleX_ContractorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharedPods-ShuttleX_ContractorTests.debug.xcconfig"; path = "Target Support Files/Pods-SharedPods-ShuttleX_ContractorTests/Pods-SharedPods-ShuttleX_ContractorTests.debug.xcconfig"; sourceTree = "<group>"; };
+		9FD923C0FBC897FA7053E6AC /* Pods-SharedPods-ShuttleX_Contractor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharedPods-ShuttleX_Contractor.release.xcconfig"; path = "Target Support Files/Pods-SharedPods-ShuttleX_Contractor/Pods-SharedPods-ShuttleX_Contractor.release.xcconfig"; sourceTree = "<group>"; };
+		B62835B4C4E87BB4D0E7BD3C /* Pods_SharedPods_ShuttleX_Contractor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SharedPods_ShuttleX_Contractor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB8E221A6BA6413E9625B903 /* Inter Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter Light.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter Light.ttf"; sourceTree = "<group>"; };
 		C0B15E9A1F544FB5A85D1D67 /* Inter Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter Thin.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter Thin.ttf"; sourceTree = "<group>"; };
+		D7273EE71D916CF2A3F1187F /* Pods_SharedPods_ShuttleX_ContractorTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SharedPods_ShuttleX_ContractorTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F4002563309F4E7EBD4155B6 /* Inter SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter SemiBold.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter SemiBold.ttf"; sourceTree = "<group>"; };
 		F5E4ADE10F1E4AB6AB97E8CD /* Inter Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter Regular.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter Regular.ttf"; sourceTree = "<group>"; };
@@ -69,7 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B89126A4B0BE618EAB129B1 /* libPods-ShuttleX_Contractor-ShuttleX_ContractorTests.a in Frameworks */,
+				A0A14047647BC84C9ADE4D5B /* Pods_SharedPods_ShuttleX_ContractorTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,7 +100,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE689CC3C57418083DDBBBEA /* libPods-ShuttleX_Contractor.a in Frameworks */,
+				1A8A853E7F13A3B6A805295C /* Pods_SharedPods_ShuttleX_Contractor.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		75673DCE2C9B1CE5006E9710 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7CC979EF346499C4716E618C /* Pods_SharedPods_ShuttleX_Contractor_dev.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,8 +149,9 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				2886910F4F402E7FE6EF8495 /* libPods-ShuttleX_Contractor.a */,
-				9E04A6B1FCA51B5A6B6025EA /* libPods-ShuttleX_Contractor-ShuttleX_ContractorTests.a */,
+				B62835B4C4E87BB4D0E7BD3C /* Pods_SharedPods_ShuttleX_Contractor.framework */,
+				D7273EE71D916CF2A3F1187F /* Pods_SharedPods_ShuttleX_ContractorTests.framework */,
+				3143A753470638B7FC74F987 /* Pods_SharedPods_ShuttleX_Contractor_dev.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -141,6 +173,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
 				C1B3D85CEECE4A05B293E8B4 /* Resources */,
+				75673DE32C9B1CE5006E9710 /* ShuttleX_Contractor_dev.plist */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -152,6 +185,7 @@
 			children = (
 				13B07F961A680F5B00A75B9A /* ShuttleX_Contractor.app */,
 				00E356EE1AD99517003FC87E /* ShuttleX_ContractorTests.xctest */,
+				75673DE22C9B1CE5006E9710 /* ShuttleX_Contractor_dev.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -163,6 +197,12 @@
 				3DEF935395434169AAD5D6DA /* Pods-ShuttleX_Contractor.release.xcconfig */,
 				2FF0828770D074BC092F6728 /* Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.debug.xcconfig */,
 				5991448C00A070C784846D68 /* Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig */,
+				1CAF954224E98C338B0FA307 /* Pods-SharedPods-ShuttleX_Contractor.debug.xcconfig */,
+				9FD923C0FBC897FA7053E6AC /* Pods-SharedPods-ShuttleX_Contractor.release.xcconfig */,
+				9E2D703C028F01A2B396CD09 /* Pods-SharedPods-ShuttleX_ContractorTests.debug.xcconfig */,
+				2C7AB05BD91BFB79EADC55CA /* Pods-SharedPods-ShuttleX_ContractorTests.release.xcconfig */,
+				5B3BAE8016DD2CE29160DD01 /* Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig */,
+				7DCB645E790A9BD6A413FF47 /* Pods-SharedPods-ShuttleX_Contractor_dev.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -229,6 +269,28 @@
 			productReference = 13B07F961A680F5B00A75B9A /* ShuttleX_Contractor.app */;
 			productType = "com.apple.product-type.application";
 		};
+		75673DC82C9B1CE5006E9710 /* ShuttleX_Contractor_dev */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 75673DDF2C9B1CE5006E9710 /* Build configuration list for PBXNativeTarget "ShuttleX_Contractor_dev" */;
+			buildPhases = (
+				75673DC92C9B1CE5006E9710 /* [CP] Check Pods Manifest.lock */,
+				75673DCA2C9B1CE5006E9710 /* Start Packager */,
+				75673DCB2C9B1CE5006E9710 /* Sources */,
+				75673DCE2C9B1CE5006E9710 /* Frameworks */,
+				75673DD02C9B1CE5006E9710 /* Resources */,
+				75673DDC2C9B1CE5006E9710 /* Bundle React Native code and images */,
+				75673DDD2C9B1CE5006E9710 /* [CP] Embed Pods Frameworks */,
+				75673DDE2C9B1CE5006E9710 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShuttleX_Contractor_dev;
+			productName = ShuttleX_Contractor;
+			productReference = 75673DE22C9B1CE5006E9710 /* ShuttleX_Contractor_dev.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -260,6 +322,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* ShuttleX_Contractor */,
+				75673DC82C9B1CE5006E9710 /* ShuttleX_Contractor_dev */,
 				00E356ED1AD99517003FC87E /* ShuttleX_ContractorTests */,
 			);
 		};
@@ -288,6 +351,24 @@
 				4C9B87D6634D4D31AF8D36F2 /* Inter SemiBold.ttf in Resources */,
 				5723C9A7C26040A8957E5C57 /* Inter Thin.ttf in Resources */,
 				F596F5F42458425CA7DBC88B /* BootSplash.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		75673DD02C9B1CE5006E9710 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				75673DD12C9B1CE5006E9710 /* Images.xcassets in Resources */,
+				75673DD22C9B1CE5006E9710 /* Inter Black.ttf in Resources */,
+				75673DD32C9B1CE5006E9710 /* Inter Bold.ttf in Resources */,
+				75673DD42C9B1CE5006E9710 /* Inter ExtraBold.ttf in Resources */,
+				75673DD52C9B1CE5006E9710 /* Inter ExtraLight.ttf in Resources */,
+				75673DD62C9B1CE5006E9710 /* Inter Light.ttf in Resources */,
+				75673DD72C9B1CE5006E9710 /* Inter Medium.ttf in Resources */,
+				75673DD82C9B1CE5006E9710 /* Inter Regular.ttf in Resources */,
+				75673DD92C9B1CE5006E9710 /* Inter SemiBold.ttf in Resources */,
+				75673DDA2C9B1CE5006E9710 /* Inter Thin.ttf in Resources */,
+				75673DDB2C9B1CE5006E9710 /* BootSplash.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,11 +406,102 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-SharedPods-ShuttleX_ContractorTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		75673DC92C9B1CE5006E9710 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SharedPods-ShuttleX_Contractor_dev-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		75673DCA2C9B1CE5006E9710 /* Start Packager */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Start Packager";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		75673DDC2C9B1CE5006E9710 /* Bundle React Native code and images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/.xcode.env",
+			);
+			name = "Bundle React Native code and images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
+		};
+		75673DDD2C9B1CE5006E9710 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		75673DDE2C9B1CE5006E9710 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		760B3AAC04E2E2337770E8C2 /* [CP] Check Pods Manifest.lock */ = {
@@ -347,7 +519,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ShuttleX_Contractor-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-SharedPods-ShuttleX_Contractor-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -360,15 +532,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor/Pods-ShuttleX_Contractor-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor/Pods-SharedPods-ShuttleX_Contractor-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor/Pods-ShuttleX_Contractor-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor/Pods-SharedPods-ShuttleX_Contractor-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor/Pods-ShuttleX_Contractor-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor/Pods-SharedPods-ShuttleX_Contractor-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		9E2D7268C0850DF729500AF0 /* [CP] Embed Pods Frameworks */ = {
@@ -377,15 +549,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_ContractorTests/Pods-SharedPods-ShuttleX_ContractorTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_ContractorTests/Pods-SharedPods-ShuttleX_ContractorTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_ContractorTests/Pods-SharedPods-ShuttleX_ContractorTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B43DD70738955D58F31483F5 /* [CP] Copy Pods Resources */ = {
@@ -394,15 +566,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor/Pods-ShuttleX_Contractor-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor/Pods-SharedPods-ShuttleX_Contractor-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor/Pods-ShuttleX_Contractor-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor/Pods-SharedPods-ShuttleX_Contractor-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor/Pods-ShuttleX_Contractor-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_Contractor/Pods-SharedPods-ShuttleX_Contractor-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C5E582976AB90E1A0C84DCFD /* [CP] Copy Pods Resources */ = {
@@ -411,15 +583,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_ContractorTests/Pods-SharedPods-ShuttleX_ContractorTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_ContractorTests/Pods-SharedPods-ShuttleX_ContractorTests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_ContractorTests/Pods-SharedPods-ShuttleX_ContractorTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -461,6 +633,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		75673DCB2C9B1CE5006E9710 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				75673DCC2C9B1CE5006E9710 /* AppDelegate.mm in Sources */,
+				75673DCD2C9B1CE5006E9710 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -474,7 +655,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2FF0828770D074BC092F6728 /* Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.debug.xcconfig */;
+			baseConfigurationReference = 9E2D703C028F01A2B396CD09 /* Pods-SharedPods-ShuttleX_ContractorTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -501,7 +682,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5991448C00A070C784846D68 /* Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig */;
+			baseConfigurationReference = 2C7AB05BD91BFB79EADC55CA /* Pods-SharedPods-ShuttleX_ContractorTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -525,7 +706,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 789C8A2B72601E037F65660E /* Pods-ShuttleX_Contractor.debug.xcconfig */;
+			baseConfigurationReference = 1CAF954224E98C338B0FA307 /* Pods-SharedPods-ShuttleX_Contractor.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -552,7 +733,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3DEF935395434169AAD5D6DA /* Pods-ShuttleX_Contractor.release.xcconfig */;
+			baseConfigurationReference = 9FD923C0FBC897FA7053E6AC /* Pods-SharedPods-ShuttleX_Contractor.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -570,6 +751,58 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.shuttlex.contractor;
 				PRODUCT_NAME = ShuttleX_Contractor;
+				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		75673DE02C9B1CE5006E9710 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5B3BAE8016DD2CE29160DD01 /* Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_BITCODE = NO;
+				INFOPLIST_FILE = ShuttleX_Contractor_dev.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.shuttlex.contractor.dev;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		75673DE12C9B1CE5006E9710 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7DCB645E790A9BD6A413FF47 /* Pods-SharedPods-ShuttleX_Contractor_dev.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = ShuttleX_Contractor_dev.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.shuttlex.contractor.dev;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -625,6 +858,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
@@ -696,6 +937,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
@@ -738,6 +987,15 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		75673DDF2C9B1CE5006E9710 /* Build configuration list for PBXNativeTarget "ShuttleX_Contractor_dev" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				75673DE02C9B1CE5006E9710 /* Debug */,
+				75673DE12C9B1CE5006E9710 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

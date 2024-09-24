@@ -3,8 +3,10 @@ apply plugin: "com.facebook.react"
 apply plugin: 'com.google.gms.google-services'
 
 project.ext.envConfigFiles = [
-    debug: ".env.development",
-    release: ".env.production",
+    devdebug: ".env.development",
+    devrelease: ".env.development",
+    proddebug: ".env.production",
+    prodrelease: ".env.production",
 ]
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
@@ -79,6 +81,17 @@ android {
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
+
+    flavorDimensions "default"
+    productFlavors {
+        dev {
+            applicationIdSuffix ".dev"
+            resValue "string", "build_config_package", "com.shuttlex.contractor"
+        }
+        prod {
+            resValue "string", "build_config_package", "com.shuttlex.contractor"
+        }
+    }
 
     namespace "com.shuttlex.contractor"
     defaultConfig {

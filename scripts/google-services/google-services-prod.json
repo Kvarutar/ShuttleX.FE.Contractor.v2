@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "300262610955",
+    "project_id": "shuttlex-contractor-prod",
+    "storage_bucket": "shuttlex-contractor-prod.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:300262610955:android:57768b34289aff59c64f0e",
+        "android_client_info": {
+          "package_name": "com.shuttlex.contractor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbXdrh8uaYMfnCzZFKeNRmxeyv2V7pECo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
