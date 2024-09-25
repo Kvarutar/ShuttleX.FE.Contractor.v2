@@ -115,12 +115,16 @@ const styles = StyleSheet.create({
   onlineStatusText: {
     fontFamily: 'Inter Medium',
     alignSelf: 'center',
-    fontSize: 21,
+    marginBottom: 12,
+  },
+  miniCarImage: {
+    width: '100%',
+    height: 36,
   },
   bigCarImage: {
     position: 'absolute',
-    top: -110,
-    width: '80%',
+    top: -120,
+    width: 330,
     height: 100,
     marginBottom: 24,
     paddingHorizontal: 16,

@@ -1,19 +1,28 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
+  getAchievements,
   getPreferences,
   getTariffs,
   sendSelectedPreferences,
   sendSelectedTariffs,
   updateContractorStatus,
 } from './thunks';
-import { ContractorState, ContractorStatus, PreferenceInfo, Profile, TariffInfo } from './types';
+import {
+  AchievementsAPIResponse,
+  ContractorState,
+  ContractorStatus,
+  PreferenceInfo,
+  Profile,
+  TariffInfo,
+} from './types';
 
 const initialState: ContractorState = {
   //TODO: Remove contractorId value when logic for receiving it will be added
   contractorId: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // Random value
   tariffs: [],
   preferences: [],
+  achievements: [],
   profile: null,
   zone: null,
   profileImageUri: null,
@@ -42,6 +51,9 @@ const slice = createSlice({
     },
     setPreferences(state, action: PayloadAction<PreferenceInfo[]>) {
       state.preferences = action.payload;
+    },
+    setAchievements(state, action: PayloadAction<AchievementsAPIResponse[]>) {
+      state.achievements = action.payload;
     },
     revertPreferenceFieldById(
       state,
@@ -94,6 +106,12 @@ const slice = createSlice({
           type: setPreferences.type,
         });
       })
+      .addCase(getAchievements.fulfilled, (state, action) => {
+        slice.caseReducers.setAchievements(state, {
+          payload: action.payload,
+          type: setAchievements.type,
+        });
+      })
       .addCase(updateContractorStatus.rejected, (_, action) => {
         console.log(action.payload);
       });
@@ -105,6 +123,7 @@ export const {
   setTariffs,
   revertTariffFieldById,
   setPreferences,
+  setAchievements,
   revertPreferenceFieldById,
   setProfile,
   setContractorState,

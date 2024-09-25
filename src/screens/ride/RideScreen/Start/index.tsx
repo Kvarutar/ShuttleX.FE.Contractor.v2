@@ -11,7 +11,7 @@ import {
 } from 'shuttlex-integration';
 
 import { contractorStatusSelector } from '../../../../core/contractor/redux/selectors';
-import { getPreferences, getTariffs } from '../../../../core/contractor/redux/thunks';
+import { getAchievements, getPreferences, getTariffs } from '../../../../core/contractor/redux/thunks';
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
@@ -19,6 +19,7 @@ import { setOrder } from '../../../../core/ride/redux/trip';
 import { responseToOffer } from '../../../../core/ride/redux/trip/thunks';
 import { OfferType, OrderType } from '../../../../core/ride/redux/trip/types';
 import AlertInitializer from '../../../../shared/AlertInitializer';
+import AchievementsPopup from '../popups/AchievementsPopup';
 import OfferPopup from '../popups/OfferPopup';
 import TariffPreferencesPopup from '../popups/PreferencesPopup';
 import HiddenPart from './HiddenPart';
@@ -141,6 +142,7 @@ const Start = () => {
   const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t)[contractorStatus]);
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
   const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
+  const [isAchievementsPopupVisible, setIsAchievementsPopupVisible] = useState<boolean>(false);
   const [isOpened, setIsOpened] = useState<boolean>(false);
 
   useEffect(() => {
@@ -164,6 +166,7 @@ const Start = () => {
       //TODO: Add a real contractor id
       await dispatch(getTariffs({ contractorId: '' }));
       await dispatch(getPreferences({ contractorId: '' }));
+      await dispatch(getAchievements({ contractorId: '' }));
     };
     asyncGetTariffsPreferences();
   }, [dispatch]);
@@ -215,7 +218,14 @@ const Start = () => {
             lineState={lineState}
           />
         }
-        hiddenPart={<HiddenPart isOpened={isOpened} bottomWindowRef={bottomWindowRef} lineState={lineState} />}
+        hiddenPart={
+          <HiddenPart
+            isOpened={isOpened}
+            bottomWindowRef={bottomWindowRef}
+            lineState={lineState}
+            setIsAchievementsPopupVisible={setIsAchievementsPopupVisible}
+          />
+        }
       />
       {isPreferencesPopupVisible && (
         <TariffPreferencesPopup
@@ -231,6 +241,9 @@ const Start = () => {
           onClose={onOfferPopupClose}
         />
       )}
+      {isAchievementsPopupVisible && (
+        <AchievementsPopup setIsAchievementsPopupVisible={setIsAchievementsPopupVisible} />
+      )}
     </>
   );
 };
@@ -238,6 +251,7 @@ const Start = () => {
 const styles = StyleSheet.create({
   bottomWindowStyle: {
     paddingHorizontal: 0,
+    paddingTop: 12,
   },
 });
 

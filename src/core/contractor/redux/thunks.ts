@@ -1,7 +1,7 @@
 import Config from 'react-native-config';
 
 import { createAppAsyncThunk } from '../../redux/hooks';
-import { ContractorStatus, PreferenceInfo, TariffInfo } from './types';
+import { AchievementsAPIResponse, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
 
 export const sendSelectedTariffs = createAppAsyncThunk<void, { selectedTariffs: TariffInfo[]; contractorId: string }>(
   'contractor/sendSelectedTariffs',
@@ -164,5 +164,45 @@ export const getPreferences = createAppAsyncThunk<PreferenceInfo[], { contractor
         isSelected: false,
       },
     ];
+  },
+);
+
+//TODO: There's just example! Rewrite when info about "achievements" logic will be known
+export const getAchievements = createAppAsyncThunk<AchievementsAPIResponse[], { contractorId: string }>(
+  'trip/getAchievements',
+  async () => {
+    //TODO: Add networking
+    // try {
+    //   return await shuttlexContractorInstance.get(`/achievements/contractor/${payload.contractorId}`, {});
+    // } catch (error) {
+    //   const { code, message } = getAxiosErrorInfo(error);
+    //   return rejectWithValue({
+    //     code,
+    //     message,
+    //   });
+    // }
+    const achievementsFromBack: AchievementsAPIResponse[] = [
+      {
+        key: 'complete_your_profile',
+        isDone: true,
+        pointsAmount: 125,
+      },
+      {
+        key: 'invite_a_friend',
+        isDone: false,
+        pointsAmount: 225,
+      },
+      {
+        key: 'finish_your_first_ride',
+        isDone: false,
+        pointsAmount: 325,
+      },
+      {
+        key: 'finish_your_first_ride',
+        isDone: false,
+        pointsAmount: 325,
+      },
+    ];
+    return achievementsFromBack;
   },
 );

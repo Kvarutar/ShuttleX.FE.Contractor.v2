@@ -29,6 +29,10 @@ export const selectedPreferencesSelector = createSelector([preferencesSelector],
   preferences.filter(preference => preference.isSelected),
 );
 export const profileSelector = (state: AppState) => state.contractor.profile;
+export const achievementsSelector = (state: AppState) => state.contractor.achievements;
+export const doneAchievementsSelector = createSelector([achievementsSelector], achievements =>
+  achievements.filter(achievement => achievement.isDone),
+);
 export const extendedProfileSelector = (state: AppState) => ({
   ...state.contractor.profile,
   profileImageUri: state.contractor.profileImageUri,

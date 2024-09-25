@@ -1,12 +1,13 @@
 import { RefObject } from 'react';
 import { BottomWindowWithGestureRef, SquareButtonModes, SwipeButtonModes } from 'shuttlex-integration';
 
-import { ContractorStatus } from '../../../../core/contractor/redux/types';
+import { AchievementsAPIResponse, ContractorStatus } from '../../../../core/contractor/redux/types';
 
 export type HiddenPartProps = {
   isOpened: boolean;
   bottomWindowRef: RefObject<BottomWindowWithGestureRef>;
   lineState: lineStateTypes;
+  setIsAchievementsPopupVisible: (newState: boolean) => void;
 };
 
 export type VisiblePartProps = {
@@ -33,4 +34,13 @@ export type lineStateTypes = {
   buttonText: string;
   buttonMode: SquareButtonModes;
   swipeMode: SwipeButtonModes;
+};
+
+export type AchievementsCarouselProps = {
+  setIsAchievementsPopupVisible: (newState: boolean) => void;
+};
+
+export type AchievementsSliderItemProps = {
+  item: AchievementsAPIResponse;
+  setIsAchievementsPopupVisible: (newState: boolean) => void;
 };

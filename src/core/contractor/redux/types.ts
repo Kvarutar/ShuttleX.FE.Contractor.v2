@@ -1,5 +1,7 @@
 import { TariffType } from 'shuttlex-integration';
 
+import { AchievementsKeys } from '../../../shared/Achievements/types';
+
 export type Profile = {
   name: string;
   surname: string;
@@ -27,10 +29,17 @@ export type PreferenceInfo = {
   isSelected: boolean;
 };
 
+export type AchievementsAPIResponse = {
+  key: AchievementsKeys;
+  isDone: boolean;
+  pointsAmount: number;
+};
+
 export type ContractorState = {
   contractorId: string;
   tariffs: TariffInfo[];
   preferences: PreferenceInfo[];
+  achievements: AchievementsAPIResponse[];
   profile: Profile | null;
   status: ContractorStatus;
   zone: string | null;

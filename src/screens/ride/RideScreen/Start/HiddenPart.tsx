@@ -5,6 +5,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
   Like2Icon,
+  sizes,
   SteeringWheelIcon,
   SwipeButton,
   SwipeButtonModes,
@@ -22,11 +23,12 @@ import {
 import { updateContractorStatus } from '../../../../core/contractor/redux/thunks';
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
+import AchievementsCarousel from './AchievementsCarousel';
 import { HiddenPartProps, RiderData } from './props';
 
 const animationDuration = 200;
 
-const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) => {
+const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPopupVisible }: HiddenPartProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -114,12 +116,13 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) =
           </Text>
         </View>
         <View style={[styles.carIdContainer, computedStyles.carIdContainer]}>
-          <Text>{riderData.car.number}</Text>
+          <Text style={styles.carIdText}>{riderData.car.number}</Text>
         </View>
       </View>
+      <AchievementsCarousel setIsAchievementsPopupVisible={setIsAchievementsPopupVisible} />
       <View style={styles.bottomInfoWrapper}>
         <View style={[styles.tripTypeContainer, computedStyles.bottomInfo]}>
-          <Text numberOfLines={1} style={[computedStyles.bottomInfoTitle]}>
+          <Text numberOfLines={1} style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
             {t('ride_Ride_Order_tripType')}
           </Text>
           <Text elipsizeMode={TextElipsizeMode.Tail} numberOfLines={1} style={styles.bottomInfoText}>
@@ -132,6 +135,7 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) =
           </Text>
           <Text style={[styles.bottomInfoText, computedStyles.bottomInfoText]}>{selectedPreferences.length}</Text>
         </View>
+        <View />
         {contractorStatus === 'online' && (
           <View style={[styles.earnedTodayContainer, computedStyles.bottomInfo]}>
             <Text style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
@@ -190,6 +194,7 @@ const styles = StyleSheet.create({
   },
   likesAndRidesText: {
     fontFamily: 'Inter Medium',
+    fontSize: 17,
   },
   dot: {
     width: 4,
@@ -213,12 +218,17 @@ const styles = StyleSheet.create({
   },
   carTitleText: {
     fontFamily: 'Inter Medium',
+    fontSize: 17,
   },
   carIdContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 8,
     borderRadius: 12,
+  },
+  carIdText: {
+    fontFamily: 'Inter Medium',
+    fontSize: 17,
   },
   tripTypeContainer: {
     justifyContent: 'space-between',
@@ -230,14 +240,16 @@ const styles = StyleSheet.create({
   bottomInfoWrapper: {
     gap: 8,
     marginBottom: 32,
-    paddingHorizontal: 12,
+    paddingHorizontal: sizes.paddingHorizontal,
   },
   bottomInfoTitle: {
     fontFamily: 'Inter Medium',
+    fontSize: 14,
   },
   bottomInfoText: {
     fontFamily: 'Inter Medium',
     maxWidth: '50%',
+    fontSize: 14,
   },
   includedAdditionContainer: {
     justifyContent: 'space-between',
@@ -252,7 +264,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   swipeButtonContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: sizes.paddingHorizontal,
   },
 });
 
