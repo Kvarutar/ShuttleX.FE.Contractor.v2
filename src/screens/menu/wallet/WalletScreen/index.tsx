@@ -53,6 +53,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
       setSelectedPaymentMethod({
         method: 'visa',
         details: '1234',
+        expiresAt: '12/34',
       }),
     );
     setWithdrawalHistory([
@@ -86,14 +87,17 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
         {
           method: 'visa',
           details: '1234',
+          expiresAt: '12/34',
         },
         {
           method: 'mastercard',
           details: '6578',
+          expiresAt: '12/34',
         },
         {
           method: 'mastercard',
           details: '9101',
+          expiresAt: '12/34',
         },
       ]),
     );
