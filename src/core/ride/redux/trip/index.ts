@@ -36,6 +36,9 @@ const slice = createSlice({
     setTripStatus(state, action: PayloadAction<TripStatus>) {
       state.tripStatus = action.payload;
     },
+    rateTrip(state) {
+      state.tripStatus = TripStatus.Rating;
+    },
     endTrip(state) {
       if (state.secondOrder) {
         state.tripPoints = [state.secondOrder.startPosition, ...state.secondOrder.targetPointsPosition];
@@ -69,7 +72,7 @@ const slice = createSlice({
         });
       })
       .addCase(fetchArrivedToDropOff.fulfilled, state => {
-        slice.caseReducers.endTrip(state);
+        slice.caseReducers.rateTrip(state);
       })
       .addCase(fetchPickedUpAtPickUpPoint.fulfilled, (state, action) => {
         slice.caseReducers.toNextTripPoint(state);
@@ -81,6 +84,6 @@ const slice = createSlice({
   },
 });
 
-export const { setOrder, setTripStatus, endTrip, toNextTripPoint } = slice.actions;
+export const { setOrder, setTripStatus, rateTrip, toNextTripPoint, endTrip } = slice.actions;
 
 export default slice.reducer;

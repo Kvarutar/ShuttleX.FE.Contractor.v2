@@ -46,4 +46,5 @@ export enum TripStatus {
   ArrivedAtStopPoint = 'arrivedAtStopPoint',
   Ride = 'ride',
   Ending = 'ending',
+  Rating = 'rating',
 }

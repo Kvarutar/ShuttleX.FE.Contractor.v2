@@ -34,13 +34,11 @@ import {
   geolocationIsLocationEnabledSelector,
   geolocationIsPermissionGrantedSelector,
 } from '../../../core/ride/redux/geolocation/selectors';
-import { orderSelector, tripStatusSelector } from '../../../core/ride/redux/trip/selectors';
-import { TripStatus } from '../../../core/ride/redux/trip/types';
+import { orderSelector } from '../../../core/ride/redux/trip/selectors';
 import Menu from '../Menu';
 import MapCameraModeButton from './MapCameraModeButton';
 import MapView from './MapView';
 import Order from './Order';
-import PassengerTimer from './PassengerTimer';
 import { type RideScreenProps } from './props';
 import Start from './Start';
 
@@ -52,14 +50,12 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   useNetworkConnectionStartWatch();
 
   const order = useSelector(orderSelector);
-  const tripStatus = useSelector(tripStatusSelector);
   const isPermissionGranted = useSelector(geolocationIsPermissionGrantedSelector);
   const isLocationEnabled = useSelector(geolocationIsLocationEnabledSelector);
   const geolocationAccuracy = useSelector(geolocationAccuracySelector);
   const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
   const profile = useSelector(profileSelector);
 
-  const [isPassengerLate, setIsPassengerLate] = useState<boolean>(false);
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
 
   const computedStyles = StyleSheet.create({
@@ -73,12 +69,6 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       color: colors.backgroundPrimaryColor,
     },
   });
-
-  useEffect(() => {
-    if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Idle) {
-      setIsPassengerLate(false);
-    }
-  }, [tripStatus]);
 
   useEffect(() => {
     if (!profile) {
@@ -234,9 +224,6 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
               </Button>
               {unreadNotificationsMarker}
             </View>
-            {(tripStatus === TripStatus.Arrived || tripStatus === TripStatus.ArrivedAtStopPoint) && (
-              <PassengerTimer isPassengerLate={isPassengerLate} setIsPassengerLate={() => setIsPassengerLate(true)} />
-            )}
           </View>
         </View>
         {order ? (

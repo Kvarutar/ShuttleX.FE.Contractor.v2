@@ -114,6 +114,7 @@ const VisiblePart = () => {
           contentType={TripStatus.Ending}
         />
       ),
+      rating: null,
     };
   }
 
@@ -161,6 +162,7 @@ const VisiblePart = () => {
         />
       </StatusSwitcher>
     ),
+    rating: null,
   };
 
   if (mainContent) {

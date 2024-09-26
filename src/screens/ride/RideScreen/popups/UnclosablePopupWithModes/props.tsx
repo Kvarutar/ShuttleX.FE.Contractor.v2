@@ -2,6 +2,7 @@ export enum UnclosablePopupModes {
   Warning = 'warning',
   Banned = 'banned',
   AccountIsNotActive = 'accountIsNotActive',
+  PassengerPaidTripViaCash = 'passengerPaidTripViaCash',
 }
 
 export type UnclosablePopupInfo = Record<
