@@ -4,8 +4,7 @@ export type RootStackParamList = {
   Splash: undefined;
   Auth: { state: 'SignIn' | 'SignUp' };
   Ride: undefined;
-  SignInPhoneCode: undefined;
-  SignInEmailCode: undefined;
+  SignInCode: { verificationType: 'phone' | 'email'; data: string };
   Notifications: undefined;
   Rating: undefined;
   Zone: undefined;

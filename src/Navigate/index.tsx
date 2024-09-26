@@ -6,8 +6,7 @@ import { useTheme } from 'shuttlex-integration';
 
 import AuthScreen from '../screens/auth/AuthScreen';
 import LockOutScreen from '../screens/auth/LockOutScreen';
-import SignInEmailCodeScreen from '../screens/auth/SignInEmailCodeScreen';
-import SignInPhoneCodeScreen from '../screens/auth/SignInPhoneCodeScreen';
+import SignInCodeScreen from '../screens/auth/SignInCodeScreen';
 import SplashScreen from '../screens/auth/SplashScreen';
 import TermsScreen from '../screens/auth/TermsScreen';
 import BackgroundCheckScreen from '../screens/docs/BackgroundCheck';
@@ -47,8 +46,7 @@ const Navigate = (): JSX.Element => {
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Auth" component={AuthScreen} />
         <Stack.Screen name="Ride" component={RideScreen} />
-        <Stack.Screen name="SignInPhoneCode" component={SignInPhoneCodeScreen} />
-        <Stack.Screen name="SignInEmailCode" component={SignInEmailCodeScreen} />
+        <Stack.Screen name="SignInCode" component={SignInCodeScreen} />
         <Stack.Screen name="Notifications" component={NotificationScreen} />
         <Stack.Screen name="Rating" component={RatingScreen} />
         <Stack.Screen name="Zone" component={ZoneScreen} />
