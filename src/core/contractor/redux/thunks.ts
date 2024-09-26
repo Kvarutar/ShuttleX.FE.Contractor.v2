@@ -100,21 +100,21 @@ export const getTariffs = createAppAsyncThunk<TariffInfo[], { contractorId: stri
     },
     {
       id: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // Random value
-      name: 'BasicX',
+      name: 'Basic',
       isAvailable: true,
       isPrimary: true,
       isSelected: true,
     },
     {
       id: '3fa85f64-5717-4562-b3fc-2c963f66afa2', // Random value
-      name: 'ComfortX',
+      name: 'ComfortPlus',
       isAvailable: false,
       isPrimary: false,
       isSelected: false,
     },
     {
       id: '3fa85f64-5717-4562-b3fc-2c963f66afa3', // Random value
-      name: 'PremiumX',
+      name: 'Business',
       isAvailable: false,
       isPrimary: false,
       isSelected: false,
@@ -122,14 +122,7 @@ export const getTariffs = createAppAsyncThunk<TariffInfo[], { contractorId: stri
     },
     {
       id: '3fa85f64-5717-4562-b3fc-2c963f66afa4', // Random value
-      name: 'TeslaX',
-      isAvailable: false,
-      isPrimary: false,
-      isSelected: false,
-    },
-    {
-      id: '3fa85f64-5717-4562-b3fc-2c963f66afa5', // Random value
-      name: 'PremiumXL',
+      name: 'Eco',
       isAvailable: false,
       isPrimary: false,
       isSelected: false,
