@@ -90,13 +90,15 @@ export const getTariffs = createAppAsyncThunk<TariffInfo[], { contractorId: stri
   //     message,
   //   });
   // }
-  return [
+  const tariffsFromBack: TariffInfo[] = [
     {
       id: '3fa85f64-5717-4562-b3fc-2c963f66afa1', // Random value
       name: 'BasicXL',
       isAvailable: true,
       isPrimary: false,
       isSelected: false,
+      seatsAmount: 4,
+      baggageAmount: 3,
     },
     {
       id: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // Random value
@@ -104,6 +106,8 @@ export const getTariffs = createAppAsyncThunk<TariffInfo[], { contractorId: stri
       isAvailable: true,
       isPrimary: true,
       isSelected: true,
+      seatsAmount: 3,
+      baggageAmount: 2,
     },
     {
       id: '3fa85f64-5717-4562-b3fc-2c963f66afa2', // Random value
@@ -111,6 +115,8 @@ export const getTariffs = createAppAsyncThunk<TariffInfo[], { contractorId: stri
       isAvailable: false,
       isPrimary: false,
       isSelected: false,
+      seatsAmount: 3,
+      baggageAmount: 2,
     },
     {
       id: '3fa85f64-5717-4562-b3fc-2c963f66afa3', // Random value
@@ -118,7 +124,8 @@ export const getTariffs = createAppAsyncThunk<TariffInfo[], { contractorId: stri
       isAvailable: false,
       isPrimary: false,
       isSelected: false,
-      isMain: false,
+      seatsAmount: 3,
+      baggageAmount: 2,
     },
     {
       id: '3fa85f64-5717-4562-b3fc-2c963f66afa4', // Random value
@@ -126,8 +133,11 @@ export const getTariffs = createAppAsyncThunk<TariffInfo[], { contractorId: stri
       isAvailable: false,
       isPrimary: false,
       isSelected: false,
+      seatsAmount: 4,
+      baggageAmount: 3,
     },
   ];
+  return tariffsFromBack;
 });
 
 //TODO: There's just example! Rewrite when info about "preferences" logic will be known

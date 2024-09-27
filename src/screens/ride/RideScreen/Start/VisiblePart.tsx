@@ -8,8 +8,8 @@ import {
   ButtonSizes,
   CircleButtonModes,
   PreferencesIcon,
-  TariffsCarImage,
   Text,
+  useTariffsIcons,
   useTheme,
 } from 'shuttlex-integration';
 
@@ -27,10 +27,13 @@ const animationDuration = 200;
 const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, lineState }: VisiblePartProps) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const tariffsIconsData = useTariffsIcons();
 
   const contractorStatus = useSelector(contractorStatusSelector);
   const tariffs = useSelector(tariffsSelector);
   const primaryTariff: TariffInfo = useSelector(primaryTariffSelector) || tariffs[0];
+
+  const IconComponent = tariffsIconsData[primaryTariff?.name]?.icon;
 
   const contractorStatusIsOffline = contractorStatus === 'offline';
 
@@ -46,7 +49,7 @@ const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, 
   if (isOpened) {
     return (
       <Animated.View entering={FadeIn.duration(animationDuration)}>
-        <TariffsCarImage tariff={primaryTariff.name} style={styles.bigCarImage} />
+        <IconComponent style={styles.bigCarImage} />
       </Animated.View>
     );
   }

@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSelector } from 'react-redux';
-import { TariffsCarImage, TariffType, Text, useTheme } from 'shuttlex-integration';
+import { TariffIconData, Text, useTariffsIcons, useTheme } from 'shuttlex-integration';
 
 import {
   availableTariffsSelector,
@@ -18,6 +18,7 @@ const carouselAnimationDurations = {
 };
 
 const TariffsCarousel = () => {
+  const tariffsIconsData = useTariffsIcons();
   const carouselRef = useRef<ICarouselInstance>(null);
   const availableTariffs = useSelector(availableTariffsSelector);
   const selectedTariffs = useSelector(selectedTariffsSelector);
@@ -50,18 +51,19 @@ const TariffsCarousel = () => {
             data={tariffsForRender}
             scrollAnimationDuration={carouselAnimationDurations.scroll}
             ref={carouselRef}
-            renderItem={({ item }) => <SliderItem item={item.name} smallText />}
+            renderItem={({ item }) => <SliderItem iconData={tariffsIconsData[item.name]} smallText />}
           />
         </View>
       </View>
     );
   }
 
-  return <SliderItem item={tariffsForRender[0].name} />;
+  return <SliderItem iconData={tariffsIconsData[tariffsForRender[0].name]} />;
 };
 
-const SliderItem = ({ item, smallText }: { item: TariffType; smallText?: boolean }) => {
+const SliderItem = ({ iconData, smallText }: { iconData: TariffIconData; smallText?: boolean }) => {
   const { colors } = useTheme();
+  const IconComponent = iconData.icon;
 
   const computedStyles = StyleSheet.create({
     title: {
@@ -74,8 +76,8 @@ const SliderItem = ({ item, smallText }: { item: TariffType; smallText?: boolean
 
   return (
     <View style={[styles.carouselItemWrapper, computedStyles.carouselItemWrapper]}>
-      <Text style={[computedStyles.title, styles.title, smallText ? styles.smallTitle : {}]}>{item}</Text>
-      <TariffsCarImage tariff={item} style={styles.carImage} />
+      <Text style={[computedStyles.title, styles.title, smallText ? styles.smallTitle : {}]}>{iconData.text}</Text>
+      <IconComponent style={styles.carImage} />
     </View>
   );
 };

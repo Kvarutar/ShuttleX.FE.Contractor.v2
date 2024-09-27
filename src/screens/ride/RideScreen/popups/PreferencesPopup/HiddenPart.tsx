@@ -34,10 +34,10 @@ const HiddenPart = ({ onClose, renderTariffs }: HiddenPartProps) => {
 
   const computedStyles = StyleSheet.create({
     filterText: {
-      color: colors.textSecondaryColor,
+      color: colors.textTitleColor,
     },
     secondTitleText: {
-      color: colors.textSecondaryColor,
+      color: colors.textQuadraticColor,
     },
     tariffsText: {
       color: colors.textSecondaryColor,
@@ -87,10 +87,10 @@ const HiddenPart = ({ onClose, renderTariffs }: HiddenPartProps) => {
 
 const styles = StyleSheet.create({
   hiddenPartContainerStyle: {
-    height: windowHeight * 0.7,
+    height: windowHeight * 0.9,
   },
   filterText: {
-    paddingTop: 24,
+    paddingTop: 15,
     fontFamily: 'Inter Bold',
     fontSize: 14,
     marginBottom: 12,
@@ -98,6 +98,8 @@ const styles = StyleSheet.create({
   firstTitleText: {
     fontFamily: 'Inter Bold',
     fontSize: 34,
+    lineHeight: 34,
+    letterSpacing: -1.53,
   },
   secondTitleText: {
     fontFamily: 'Inter Bold',

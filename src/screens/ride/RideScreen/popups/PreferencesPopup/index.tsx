@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { ListRenderItem, StyleSheet, View } from 'react-native';
 import {
+  BaggageIcon,
   Bar,
   BarModes,
   BottomWindowWithGesture,
   BottomWindowWithGestureRef,
   ProfileIconMini,
-  RoundCheckIcon1,
-  TariffsCarImage,
+  RoundCheckIcon3,
   Text,
+  useTariffsIcons,
   useTheme,
 } from 'shuttlex-integration';
 
@@ -17,6 +18,13 @@ import { TariffInfo } from '../../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import HiddenPart from './HiddenPart';
 import { PreferencesPopupProps } from './props';
+
+const formatSeatsAmount = (value: number) => {
+  if (value === 1) {
+    return '1';
+  }
+  return `1-${value}`;
+};
 
 // TODO: Add logic with preferences when work with it
 // Uncomment it for working with preferences
@@ -27,6 +35,7 @@ import { PreferencesPopupProps } from './props';
 
 const TariffPreferencesPopup = ({ onClose, setIsPreferencesPopupVisible }: PreferencesPopupProps) => {
   const { colors } = useTheme();
+  const tariffsIconsData = useTariffsIcons();
 
   const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
 
@@ -49,6 +58,8 @@ const TariffPreferencesPopup = ({ onClose, setIsPreferencesPopupVisible }: Prefe
   };
 
   const renderTariffs: ListRenderItem<TariffInfo> = ({ item, index }: { item: TariffInfo; index: number }) => {
+    const IconComponent = tariffsIconsData[item.name].icon;
+
     const isSelected = item.isSelected;
     const isAvailable = item.isAvailable;
 
@@ -56,8 +67,8 @@ const TariffPreferencesPopup = ({ onClose, setIsPreferencesPopupVisible }: Prefe
       bar: {
         marginBottom: 0,
       },
-      tariffInfo: {
-        color: colors.textSecondaryColor,
+      tariffInfoText: {
+        color: colors.textQuadraticColor,
       },
     });
 
@@ -69,17 +80,24 @@ const TariffPreferencesPopup = ({ onClose, setIsPreferencesPopupVisible }: Prefe
         onPress={() => (isAvailable ? onTariffPressHandler(item) : {})}
       >
         <View style={styles.preferenceContent}>
-          <TariffsCarImage tariff={item.name} style={styles.img} />
+          <IconComponent style={styles.img} />
           <View>
-            <Text>{item.name}</Text>
+            <Text style={styles.itemTitle}>{tariffsIconsData[item.name].text}</Text>
             <View style={styles.tariffInfoContainer}>
-              <ProfileIconMini />
-              {/* TODO: Add info about car seats when it state will be added */}
-              <Text style={[styles.tariffInfo, computedStyles.tariffInfo]}>1-6</Text>
+              <View style={styles.tariffSeatsAndBaggageContainer}>
+                <ProfileIconMini />
+                <Text style={[styles.tariffInfoText, computedStyles.tariffInfoText]}>
+                  {formatSeatsAmount(item.seatsAmount)}
+                </Text>
+              </View>
+              <View style={styles.tariffSeatsAndBaggageContainer}>
+                <BaggageIcon />
+                <Text style={[styles.tariffInfoText, computedStyles.tariffInfoText]}>{item.baggageAmount}</Text>
+              </View>
             </View>
           </View>
         </View>
-        {isSelected && <RoundCheckIcon1 />}
+        {isSelected && <RoundCheckIcon3 />}
       </Bar>
     );
   };
@@ -166,25 +184,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 17,
     paddingHorizontal: 16,
   },
   preferenceContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 23,
   },
   img: {
-    marginRight: 24,
-    width: 130,
+    width: 112,
+    height: 36,
+  },
+  itemTitle: {
+    fontFamily: 'Inter Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    marginBottom: 8,
   },
   tariffInfoContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
+    gap: 14,
   },
-  tariffInfo: {
+  tariffSeatsAndBaggageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  tariffInfoText: {
     fontFamily: 'Inter Medium',
     fontSize: 14,
+    lineHeight: 22,
   },
   preferencesText: {
     paddingVertical: 12,

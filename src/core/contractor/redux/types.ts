@@ -20,6 +20,8 @@ export type TariffInfo = {
   isPrimary: boolean;
   isAvailable: boolean;
   isSelected: boolean;
+  seatsAmount: number;
+  baggageAmount: number;
 };
 
 export type PreferenceInfo = {
