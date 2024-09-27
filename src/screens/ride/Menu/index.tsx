@@ -2,7 +2,7 @@ import { useNavigationState } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Bar, MenuBase, MenuNavigation, Separator, Text, useTheme } from 'shuttlex-integration';
+import { Bar, BarModes, LevelIcon, MenuBase, MenuNavigation, Text, useTheme } from 'shuttlex-integration';
 
 import { extendedProfileSelector } from '../../../core/contractor/redux/selectors';
 import { MenuProps } from './props';
@@ -15,20 +15,21 @@ const Menu = ({ onClose, navigation }: MenuProps) => {
   const currentRoute = useNavigationState(state => state.routes[state.index].name);
 
   const menuNavigation: MenuNavigation = {
-    ride: {
+    statistics: {
       navFunc: () => {
         navigation.navigate('Ride');
+        //TODO Create statistics page
         onClose();
       },
-      title: t('ride_Menu_navigationMyRide'),
+      title: t('ride_Menu_navigationStatistics'),
     },
-    activity: {
+    subscription: {
       navFunc: () => {
         navigation.navigate('Ride');
-        //TODO Create activity page
+        //TODO Create subscription page
         onClose();
       },
-      title: t('ride_Menu_navigationActivity'),
+      title: t('ride_Menu_navigationSubscription'),
     },
     wallet: {
       navFunc: () => {
@@ -37,29 +38,13 @@ const Menu = ({ onClose, navigation }: MenuProps) => {
       },
       title: t('ride_Menu_navigationWallet'),
     },
-    promocodes: {
-      navFunc: () => {
-        navigation.navigate('Ride');
-        //TODO Create Promocodes page
-        onClose();
-      },
-      title: t('ride_Menu_navigationPromocodes'),
-    },
-    becomeDriver: {
-      navFunc: () => {
-        navigation.navigate('Ride');
-        //TODO go to page becomeDriver
-        onClose();
-      },
-      title: t('ride_Menu_navigationBecomeDriver'),
-    },
     settings: {
       navFunc: () => {
         navigation.navigate('Ride');
         //TODO Create settings page
         onClose();
       },
-      title: t('ride_Menu_navigationSettings'),
+      title: t('ride_Menu_navigationAccountSettings'),
     },
     help: {
       navFunc: () => {
@@ -80,63 +65,86 @@ const Menu = ({ onClose, navigation }: MenuProps) => {
       userSurname={profile?.surname}
       menuNavigation={menuNavigation}
       currentRoute={currentRoute}
+      label={<LevelLabel />}
     />
   );
 };
+const LevelLabel = () => {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
 
+  const computedStyles = StyleSheet.create({
+    label: {
+      borderColor: colors.backgroundSecondaryColor,
+      backgroundColor: colors.backgroundPrimaryColor,
+    },
+  });
+  return (
+    <View style={[styles.label, computedStyles.label]}>
+      <LevelIcon />
+      <Text style={[styles.labelText, { color: colors.textQuadraticColor }]}>{t('ride_Menu_level', { level: 4 })}</Text>
+    </View>
+  );
+};
 const AdditionalContent = () => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const computedStyles = {
     balanceTitle: {
-      color: colors.textSecondaryColor,
+      color: colors.textQuadraticColor,
     },
   };
 
   return (
-    <Bar style={styles.balance}>
-      <View style={styles.textWrapper}>
-        <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>Earned</Text>
+    <View style={styles.balance}>
+      <Bar mode={BarModes.Disabled} style={styles.textWrapper}>
+        <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('ride_Menu_additionalEarned')}</Text>
+        {/* TODO: create logic for it (from where will we get the balance) */}
         <Text style={styles.balanceTotal}>$682.40</Text>
-      </View>
-      <Separator mode="vertical" style={styles.separator} />
-      <View style={styles.textWrapper}>
-        <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>Previous</Text>
+      </Bar>
+      <Bar mode={BarModes.Disabled} style={styles.textWrapper}>
+        <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('ride_Menu_additionalPrevious')}</Text>
         <Text style={styles.balanceTotal}>$12.10</Text>
-      </View>
-    </Bar>
+      </Bar>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  labelText: {
+    fontSize: 14,
+    fontFamily: 'Inter Medium',
+  },
+  label: {
+    borderWidth: 1,
+    gap: 7,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingLeft: 10,
+    paddingRight: 20,
+    borderRadius: 10,
+  },
   balance: {
     flexDirection: 'row',
+    gap: 4,
+    borderWidth: 0,
     justifyContent: 'space-between',
   },
   balanceTitle: {
-    fontFamily: 'Inter Medium',
-    fontSize: 12,
+    fontSize: 14,
     flexShrink: 1,
   },
   balanceTotal: {
     fontFamily: 'Inter Medium',
-  },
-  separator: {
-    flex: 0,
+    fontSize: 18,
   },
   textWrapper: {
-    flexShrink: 1,
-  },
-  unreadMarker: {
-    width: 29,
-    height: 29,
-    borderRadius: 100,
-    justifyContent: 'center',
+    flex: 1,
+    paddingBottom: 19,
+    paddingTop: 16,
     alignItems: 'center',
-  },
-  unreadNotificationsText: {
-    fontFamily: 'Inter Medium',
-    fontSize: 14,
   },
 });
 
