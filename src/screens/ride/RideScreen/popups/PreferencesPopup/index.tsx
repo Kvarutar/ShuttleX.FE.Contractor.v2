@@ -70,6 +70,12 @@ const TariffPreferencesPopup = ({ onClose, setIsPreferencesPopupVisible }: Prefe
       tariffInfoText: {
         color: colors.textQuadraticColor,
       },
+      roundCheckIcon: {
+        borderColor: colors.borderColor,
+      },
+      roundCheckIconColors: {
+        backgroundColor: colors.backgroundPrimaryColor,
+      },
     });
 
     return (
@@ -80,24 +86,38 @@ const TariffPreferencesPopup = ({ onClose, setIsPreferencesPopupVisible }: Prefe
         onPress={() => (isAvailable ? onTariffPressHandler(item) : {})}
       >
         <View style={styles.preferenceContent}>
-          <IconComponent style={styles.img} />
-          <View>
-            <Text style={styles.itemTitle}>{tariffsIconsData[item.name].text}</Text>
-            <View style={styles.tariffInfoContainer}>
-              <View style={styles.tariffSeatsAndBaggageContainer}>
-                <ProfileIconMini />
-                <Text style={[styles.tariffInfoText, computedStyles.tariffInfoText]}>
-                  {formatSeatsAmount(item.seatsAmount)}
-                </Text>
-              </View>
-              <View style={styles.tariffSeatsAndBaggageContainer}>
-                <BaggageIcon />
-                <Text style={[styles.tariffInfoText, computedStyles.tariffInfoText]}>{item.baggageAmount}</Text>
+          <IconComponent style={styles.tariffImage} />
+          <View style={styles.tariffInfoAndCheckIconContainer}>
+            <View style={styles.tariffTitleAndInfoContainer}>
+              <Text style={styles.itemTitle}>{tariffsIconsData[item.name].text}</Text>
+              <View style={styles.tariffInfoContainer}>
+                <View style={styles.tariffSeatsAndBaggageContainer}>
+                  <ProfileIconMini />
+                  <Text style={[styles.tariffInfoText, computedStyles.tariffInfoText]}>
+                    {formatSeatsAmount(item.seatsAmount)}
+                  </Text>
+                </View>
+                <View style={styles.tariffSeatsAndBaggageContainer}>
+                  <BaggageIcon />
+                  <Text style={[styles.tariffInfoText, computedStyles.tariffInfoText]}>{item.baggageAmount}</Text>
+                </View>
               </View>
             </View>
+            {isSelected ? (
+              <View style={styles.roundCheckIconContainer}>
+                <RoundCheckIcon3 />
+              </View>
+            ) : (
+              isAvailable && (
+                <View style={styles.roundCheckIconContainer}>
+                  <View style={[styles.roundCheckIcon, computedStyles.roundCheckIcon]}>
+                    <RoundCheckIcon3 outerColor={computedStyles.roundCheckIconColors.backgroundColor} />
+                  </View>
+                </View>
+              )
+            )}
           </View>
         </View>
-        {isSelected && <RoundCheckIcon3 />}
       </Bar>
     );
   };
@@ -192,9 +212,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 23,
   },
-  img: {
-    width: 112,
-    height: 36,
+  tariffImage: {
+    width: undefined,
+    height: 55,
+    aspectRatio: 2.5,
+    resizeMode: 'contain',
+  },
+  tariffInfoAndCheckIconContainer: {
+    flex: 2,
+    flexDirection: 'row',
+  },
+  tariffTitleAndInfoContainer: {
+    flex: 1,
+    justifyContent: 'center',
   },
   itemTitle: {
     fontFamily: 'Inter Medium',
@@ -215,6 +245,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter Medium',
     fontSize: 14,
     lineHeight: 22,
+  },
+  roundCheckIconContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  roundCheckIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 36,
+    height: 36,
+    borderWidth: 1,
+    borderRadius: 100,
   },
   preferencesText: {
     paddingVertical: 12,

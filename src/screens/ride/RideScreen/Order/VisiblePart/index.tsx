@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import { Button, minToMilSec, SquareButtonModes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
 
@@ -120,47 +118,35 @@ const VisiblePart = () => {
 
   const statusSwitchers = {
     idle: null,
-    arriving: (
-      <StatusSwitcher>
-        <Button mode={SquareButtonModes.Mode2} text={t('ride_Ride_Order_arrivedButton')} onPress={onArrived} />
-      </StatusSwitcher>
-    ),
+    arriving: <Button mode={SquareButtonModes.Mode2} text={t('ride_Ride_Order_arrivedButton')} onPress={onArrived} />,
     arrivingAtStopPoint: (
-      <StatusSwitcher>
-        <Button
-          mode={SquareButtonModes.Mode1}
-          text={t('ride_Ride_Order_arrivedToStopButton')}
-          onPress={onArrivedAtStopPoint}
-        />
-      </StatusSwitcher>
+      <Button
+        mode={SquareButtonModes.Mode1}
+        text={t('ride_Ride_Order_arrivedToStopButton')}
+        onPress={onArrivedAtStopPoint}
+      />
     ),
     arrived: (
-      <StatusSwitcher>
-        <SwipeButton
-          mode={SwipeButtonModes.Confirm}
-          onSwipeEnd={() => dispatch(fetchPickedUpAtPickUpPoint())}
-          text={t('ride_Ride_Order_pickUpButton')}
-        />
-      </StatusSwitcher>
+      <SwipeButton
+        mode={SwipeButtonModes.Confirm}
+        onSwipeEnd={() => dispatch(fetchPickedUpAtPickUpPoint())}
+        text={t('ride_Ride_Order_pickUpButton')}
+      />
     ),
     arrivedAtStopPoint: (
-      <StatusSwitcher>
-        <SwipeButton
-          mode={SwipeButtonModes.Confirm}
-          onSwipeEnd={() => dispatch(fetchPickedUpAtStopPoint())}
-          text={t('ride_Ride_Order_pickUpButton')}
-        />
-      </StatusSwitcher>
+      <SwipeButton
+        mode={SwipeButtonModes.Confirm}
+        onSwipeEnd={() => dispatch(fetchPickedUpAtStopPoint())}
+        text={t('ride_Ride_Order_pickUpButton')}
+      />
     ),
     ride: null,
     ending: (
-      <StatusSwitcher>
-        <SwipeButton
-          mode={SwipeButtonModes.Finish}
-          onSwipeEnd={() => dispatch(fetchArrivedToDropOff())}
-          text={t('ride_Ride_Order_finishRideButton')}
-        />
-      </StatusSwitcher>
+      <SwipeButton
+        mode={SwipeButtonModes.Finish}
+        onSwipeEnd={() => dispatch(fetchArrivedToDropOff())}
+        text={t('ride_Ride_Order_finishRideButton')}
+      />
     ),
     rating: null,
   };
@@ -176,15 +162,5 @@ const VisiblePart = () => {
 
   return <></>;
 };
-
-const StatusSwitcher = ({ children }: { children: React.ReactNode }) => (
-  <Animated.View style={styles.statusSwitcher}>{children}</Animated.View>
-);
-
-const styles = StyleSheet.create({
-  statusSwitcher: {
-    marginTop: 26,
-  },
-});
 
 export default VisiblePart;

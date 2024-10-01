@@ -32,6 +32,9 @@ const PassengerRating = () => {
 
   const [passengerRate, setPassengerRate] = useState<PassengerRate>(null);
 
+  const isPassengerLiked = passengerRate === 'like';
+  const isPassengerDisilked = passengerRate === 'dislike';
+
   if (!order) {
     return;
   }
@@ -47,7 +50,10 @@ const PassengerRating = () => {
       color: colors.textSecondaryColor,
     },
     likeIcon: {
-      color: colors.iconPrimaryColor,
+      color: isPassengerLiked ? colors.iconTertiaryColor : colors.iconPrimaryColor,
+    },
+    dislikeIcon: {
+      color: isPassengerDisilked ? colors.iconTertiaryColor : colors.iconPrimaryColor,
     },
     avatarShadow: {
       backgroundColor: colors.backgroundPrimaryColor,
@@ -86,12 +92,12 @@ const PassengerRating = () => {
         <View style={styles.avatarAndButtonsContainer}>
           <Button
             shape={ButtonShapes.Circle}
-            mode={CircleButtonModes.Mode2}
+            mode={isPassengerDisilked ? CircleButtonModes.Mode3 : CircleButtonModes.Mode2}
             size={ButtonSizes.M}
             disableShadow
             onPress={() => onPressPassengerRate('dislike')}
           >
-            <DislikeIcon style={styles.dislikeIcon} />
+            <DislikeIcon color={computedStyles.dislikeIcon.color} style={styles.dislikeIcon} />
           </Button>
           <Shadow
             {...defaultShadow(colors.strongShadowColor)}
@@ -110,7 +116,7 @@ const PassengerRating = () => {
           </Shadow>
           <Button
             shape={ButtonShapes.Circle}
-            mode={CircleButtonModes.Mode2}
+            mode={isPassengerLiked ? CircleButtonModes.Mode5 : CircleButtonModes.Mode2}
             size={ButtonSizes.M}
             disableShadow
             onPress={() => onPressPassengerRate('like')}
@@ -188,7 +194,7 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 6,
   },
   buttonText: {
     fontSize: 17,

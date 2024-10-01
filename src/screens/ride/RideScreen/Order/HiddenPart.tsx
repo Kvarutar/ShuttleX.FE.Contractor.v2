@@ -17,8 +17,14 @@ const HiddenPart = () => {
     hiddenTripInfoTitle: {
       color: colors.textSecondaryColor,
     },
+    hiddenTripInfoContent: {
+      color: colors.textPrimaryColor,
+    },
     hiddenSafetyItem: {
       borderColor: colors.borderColor,
+    },
+    hiddenSafetyItemText: {
+      color: colors.textSecondaryColor,
     },
   });
 
@@ -29,7 +35,7 @@ const HiddenPart = () => {
           <Text style={[styles.hiddenTripInfoTitle, computedStyles.hiddenTripInfoTitle]}>
             {t('ride_Ride_Order_passenger')}
           </Text>
-          <Text numberOfLines={1} style={styles.hiddenTripInfoContent}>
+          <Text numberOfLines={1} style={[styles.hiddenTripInfoContent, computedStyles.hiddenTripInfoContent]}>
             {order.passenger.name + ' ' + order.passenger.lastName}
           </Text>
         </View>
@@ -37,7 +43,7 @@ const HiddenPart = () => {
           <Text style={[styles.hiddenTripInfoTitle, computedStyles.hiddenTripInfoTitle]}>
             {t('ride_Ride_Order_tripType')}
           </Text>
-          <Text style={styles.hiddenTripInfoContent}>{order.tripTariff}</Text>
+          <Text style={[styles.hiddenTripInfoContent, computedStyles.hiddenTripInfoContent]}>{order.tripTariff}</Text>
         </View>
         <View style={styles.hiddenSafety}>
           <Pressable
@@ -45,11 +51,15 @@ const HiddenPart = () => {
             onPress={() => Linking.openURL('tel:112')}
           >
             <EmergencyServiceIcon />
-            <Text style={styles.hiddenSafetyItemText}>{t('ride_Ride_Order_contactEmergency')}</Text>
+            <Text style={[styles.hiddenSafetyItemText, computedStyles.hiddenSafetyItemText]}>
+              {t('ride_Ride_Order_contactEmergency')}
+            </Text>
           </Pressable>
           <Pressable style={[styles.hiddenSafetyItem, computedStyles.hiddenSafetyItem]}>
             <ReportIcon />
-            <Text style={styles.hiddenSafetyItemText}>{t('ride_Ride_Order_reportIssue')}</Text>
+            <Text style={[styles.hiddenSafetyItemText, computedStyles.hiddenSafetyItemText]}>
+              {t('ride_Ride_Order_reportIssue')}
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -74,16 +84,18 @@ const styles = StyleSheet.create({
   hiddenTripInfoTitle: {
     fontFamily: 'Inter Medium',
     fontSize: 14,
+    lineHeight: 22,
   },
   hiddenTripInfoContent: {
     flexShrink: 1,
     fontFamily: 'Inter Medium',
     fontSize: 14,
+    lineHeight: 22,
   },
   hiddenSafety: {
     flexDirection: 'row',
-    gap: 14,
-    marginBottom: 8,
+    gap: 8,
+    marginBottom: 32,
   },
   hiddenSafetyItem: {
     flex: 1,
@@ -96,7 +108,8 @@ const styles = StyleSheet.create({
   },
   hiddenSafetyItemText: {
     fontFamily: 'Inter Medium',
-    fontSize: 12,
+    fontSize: 14,
+    lineHeight: 22,
   },
 });
 

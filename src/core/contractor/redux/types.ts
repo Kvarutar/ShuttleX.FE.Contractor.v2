@@ -8,6 +8,13 @@ export type Profile = {
   dateOfBirth: number;
   email: string;
   phone: string;
+  level: number;
+  likes: number;
+  rides: number;
+  carData: {
+    id: string;
+    title: string;
+  };
 };
 
 export type PreferenceType = 'CryptoPayment' | 'CashPayment';

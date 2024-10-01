@@ -17,16 +17,6 @@ export type VisiblePartProps = {
   lineState: lineStateTypes;
 };
 
-export type RiderData = {
-  likes: number;
-  rides: number;
-  car: {
-    number: string;
-    title: string;
-    color: string;
-  };
-};
-
 export type lineStateTypes = {
   popupTitle: string;
   toLineState: ContractorStatus;

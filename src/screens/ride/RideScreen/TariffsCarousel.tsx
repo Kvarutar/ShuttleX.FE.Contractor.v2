@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSelector } from 'react-redux';
-import { TariffIconData, Text, useTariffsIcons, useTheme } from 'shuttlex-integration';
+import { sizes, TariffIconData, Text, useTariffsIcons, useTheme } from 'shuttlex-integration';
 
 import {
   availableTariffsSelector,
@@ -11,7 +11,6 @@ import {
 } from '../../../core/contractor/redux/selectors';
 
 const windowWidth = Dimensions.get('window').width;
-
 const carouselAnimationDurations = {
   scroll: 500,
   opacity: 200,
@@ -27,11 +26,9 @@ const TariffsCarousel = () => {
   const tariffsForRender = contractorStatus === 'offline' ? availableTariffs : selectedTariffs;
 
   const computedStyles = StyleSheet.create({
-    carouselWrapper: {
-      width: windowWidth,
-    },
     carousel: {
       width: windowWidth,
+      marginLeft: sizes.paddingHorizontal,
     },
   });
 
@@ -42,26 +39,24 @@ const TariffsCarousel = () => {
   if (tariffsForRender.length > 1) {
     return (
       <View>
-        <View style={[styles.carouselWrapper, computedStyles.carouselWrapper]}>
-          <Carousel
-            loop
-            width={340}
-            height={142}
-            style={computedStyles.carousel}
-            data={tariffsForRender}
-            scrollAnimationDuration={carouselAnimationDurations.scroll}
-            ref={carouselRef}
-            renderItem={({ item }) => <SliderItem iconData={tariffsIconsData[item.name]} smallText />}
-          />
-        </View>
+        <Carousel
+          loop
+          width={windowWidth - sizes.paddingHorizontal * 2} // width of SliderItem
+          height={186} // height of SliderItem
+          style={computedStyles.carousel}
+          data={tariffsForRender}
+          scrollAnimationDuration={carouselAnimationDurations.scroll}
+          ref={carouselRef}
+          renderItem={({ item }) => <SliderItem iconData={tariffsIconsData[item.name]} />}
+        />
       </View>
     );
   }
 
-  return <SliderItem iconData={tariffsIconsData[tariffsForRender[0].name]} />;
+  return <SliderItem iconData={tariffsIconsData[tariffsForRender[0].name]} isSingleItem />;
 };
 
-const SliderItem = ({ iconData, smallText }: { iconData: TariffIconData; smallText?: boolean }) => {
+const SliderItem = ({ iconData, isSingleItem }: { iconData: TariffIconData; isSingleItem?: boolean }) => {
   const { colors } = useTheme();
   const IconComponent = iconData.icon;
 
@@ -71,38 +66,49 @@ const SliderItem = ({ iconData, smallText }: { iconData: TariffIconData; smallTe
     },
     carouselItemWrapper: {
       borderColor: colors.borderColor,
+      marginRight: isSingleItem ? sizes.paddingHorizontal : 8,
+      marginLeft: isSingleItem ? sizes.paddingHorizontal : 0,
+      height: isSingleItem ? 186 : undefined,
     },
   });
 
   return (
     <View style={[styles.carouselItemWrapper, computedStyles.carouselItemWrapper]}>
-      <Text style={[computedStyles.title, styles.title, smallText ? styles.smallTitle : {}]}>{iconData.text}</Text>
-      <IconComponent style={styles.carImage} />
+      <Text style={[computedStyles.title, styles.title]}>{iconData.text}</Text>
+      <View style={styles.carImageContainer}>
+        <IconComponent style={styles.carImage} />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  title: {
-    fontFamily: 'Inter Medium',
-  },
-  smallTitle: {
-    fontSize: 14,
-  },
-  carouselWrapper: {
-    flexDirection: 'row',
-    paddingLeft: 24,
-  },
   carouselItemWrapper: {
+    flex: 1,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    width: 332,
+    paddingTop: 10,
+    marginRight: 8,
     borderWidth: 1,
     borderRadius: 12,
+    paddingBottom: 28,
+  },
+  title: {
+    alignSelf: 'flex-start',
+    fontFamily: 'Inter Medium',
+    fontSize: 17,
+    lineHeight: 22,
+  },
+  carImageContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 28,
   },
   carImage: {
-    height: 92,
     width: '100%',
+    height: undefined,
+    aspectRatio: 3,
+    resizeMode: 'contain',
   },
 });
 

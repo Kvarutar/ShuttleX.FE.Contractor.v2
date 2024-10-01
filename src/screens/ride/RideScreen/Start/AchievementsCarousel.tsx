@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Inter Bold',
     fontSize: 17,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   chargedPointsContainer: {
     flexDirection: 'row',

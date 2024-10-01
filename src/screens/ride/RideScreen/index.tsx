@@ -79,6 +79,13 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
           email: 'mail@mail.ru',
           dateOfBirth: new Date().getTime(),
           phone: '+79990622720',
+          level: 4,
+          likes: 4000,
+          rides: 10000,
+          carData: {
+            id: 'BB 4177 CH',
+            title: 'Toyota Land Cruser',
+          },
         }),
       );
     }

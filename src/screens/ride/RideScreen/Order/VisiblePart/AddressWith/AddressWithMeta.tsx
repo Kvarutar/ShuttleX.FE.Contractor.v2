@@ -38,7 +38,7 @@ const AddressWithMeta = ({ tripPoints, timeForTimer }: AddressWithMetaProps) => 
   });
 
   return (
-    <View style={styles.visibleTextWrapper}>
+    <View>
       <Timer
         style={{
           timerWrapper: styles.timerWrapper,
@@ -60,8 +60,8 @@ const AddressWithMeta = ({ tripPoints, timeForTimer }: AddressWithMetaProps) => 
       <Pressable style={[styles.openOnGoogleMapButton, computedStyles.openOnGoogleMapButton]}>
         <ExternalMapIcon />
         <View style={styles.googleMapTextContainer}>
-          <Text style={computedStyles.openOnText}>{t('ride_Ride_Order_openOnText')}</Text>
-          <Text style={computedStyles.googleMapText}>{t('ride_Ride_Order_googleMapText')}</Text>
+          <Text style={[styles.openOnText, computedStyles.openOnText]}>{t('ride_Ride_Order_openOnText')}</Text>
+          <Text style={[styles.googleMapText, computedStyles.googleMapText]}>{t('ride_Ride_Order_googleMapText')}</Text>
         </View>
       </Pressable>
     </View>
@@ -69,15 +69,16 @@ const AddressWithMeta = ({ tripPoints, timeForTimer }: AddressWithMetaProps) => 
 };
 
 const styles = StyleSheet.create({
+  //TODO: Check image sizes on smaller and bigger devices
   timerWrapper: {
     position: 'absolute',
-    top: -78,
+    top: -64,
     alignSelf: 'center',
   },
   metaInfoContainer: {
     flexDirection: 'row',
-    paddingTop: 24,
-    gap: 18,
+    paddingTop: 48,
+    gap: 12,
   },
   dropOffTextsContainer: {
     flex: 1,
@@ -85,9 +86,6 @@ const styles = StyleSheet.create({
   },
   dropOffText: {
     fontFamily: 'Inter Medium',
-  },
-  visibleTextWrapper: {
-    flexShrink: 1,
   },
   address: {
     fontFamily: 'Inter Medium',
@@ -108,6 +106,14 @@ const styles = StyleSheet.create({
   googleMapTextContainer: {
     flexDirection: 'row',
     gap: 4,
+  },
+  openOnText: {
+    fontFamily: 'Inter Medium',
+    fontSize: 14,
+  },
+  googleMapText: {
+    fontFamily: 'Inter Medium',
+    fontSize: 14,
   },
 });
 

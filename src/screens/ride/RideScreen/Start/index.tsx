@@ -71,8 +71,8 @@ const orderFromBack: OrderType = {
   pricePerMin: 3.5,
   passengerId: '0',
   passenger: {
-    name: 'John',
-    lastName: 'Doe',
+    name: 'Arnold',
+    lastName: 'Scharzenegger',
     phone: '0432342342',
     avatarURL: '',
   },
@@ -191,6 +191,7 @@ const Start = () => {
   const computedStyles = StyleSheet.create({
     bottomWindowStyle: {
       paddingBottom: isOpened ? 0 : 20,
+      paddingTop: isOpened ? 16 : 6,
     },
   });
 
@@ -251,7 +252,6 @@ const Start = () => {
 const styles = StyleSheet.create({
   bottomWindowStyle: {
     paddingHorizontal: 0,
-    paddingTop: 12,
   },
 });
 

@@ -8,6 +8,7 @@ import {
   ButtonSizes,
   CircleButtonModes,
   PreferencesIcon,
+  sizes,
   Text,
   useTariffsIcons,
   useTheme,
@@ -38,10 +39,10 @@ const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, 
   const contractorStatusIsOffline = contractorStatus === 'offline';
 
   const computedStyles = StyleSheet.create({
-    title: {
-      color: colors.textPrimaryColor,
+    headerWrapper: {
+      paddingLeft: sizes.paddingHorizontal + 6,
     },
-    onlineStatusText: {
+    statusText: {
       color: colors.textPrimaryColor,
     },
   });
@@ -49,7 +50,9 @@ const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, 
   if (isOpened) {
     return (
       <Animated.View entering={FadeIn.duration(animationDuration)}>
-        <IconComponent style={styles.bigCarImage} />
+        <View style={styles.bigCarImageContainer}>
+          <IconComponent style={styles.bigCarImage} />
+        </View>
       </Animated.View>
     );
   }
@@ -57,9 +60,9 @@ const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, 
   if (contractorStatusIsOffline) {
     return (
       <Animated.View entering={FadeIn.duration(animationDuration)} exiting={FadeOut.duration(animationDuration)}>
-        <View style={styles.offlineInfoWrapper}>
+        <View style={[styles.headerWrapper, computedStyles.headerWrapper]}>
           <View>
-            <Text style={[computedStyles.title, styles.title]}>{lineState.bottomTitle}</Text>
+            <Text style={[computedStyles.statusText, styles.statusText]}>{lineState.bottomTitle}</Text>
           </View>
           <Button
             shape={ButtonShapes.Circle}
@@ -78,7 +81,7 @@ const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, 
           text={lineState.buttonText}
           mode={lineState.buttonMode}
           onPress={() => bottomWindowRef.current?.openWindow()}
-          containerStyle={styles.offlineStartStopButton}
+          containerStyle={styles.startStopButton}
         />
       </Animated.View>
     );
@@ -86,10 +89,8 @@ const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, 
 
   return (
     <Animated.View entering={FadeIn.duration(animationDuration)} exiting={FadeOut.duration(animationDuration)}>
-      <View style={styles.onlineInfoWrapper}>
-        <Text style={[computedStyles.onlineStatusText, styles.onlineStatusText]}>
-          {t('ride_Ride_BottomWindow_onlineTitle')}
-        </Text>
+      <View style={[styles.headerWrapper, computedStyles.headerWrapper]}>
+        <Text style={[computedStyles.statusText, styles.statusText]}>{t('ride_Ride_BottomWindow_onlineTitle')}</Text>
         <Button
           shape={ButtonShapes.Circle}
           size={ButtonSizes.S}
@@ -108,61 +109,50 @@ const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, 
         text={lineState.buttonText}
         mode={lineState.buttonMode}
         onPress={() => bottomWindowRef.current?.openWindow()}
-        containerStyle={styles.onlineStartStopButton}
+        containerStyle={styles.startStopButton}
       />
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  onlineStatusText: {
-    fontFamily: 'Inter Medium',
-    alignSelf: 'center',
-    marginBottom: 12,
+  headerWrapper: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 22,
+    paddingTop: 18,
+    paddingRight: sizes.paddingHorizontal,
   },
-  miniCarImage: {
+  statusText: {
+    alignSelf: 'center',
+    fontFamily: 'Inter Medium',
+    fontSize: 21,
+    lineHeight: 22,
+    opacity: 0.6,
+  },
+  //TODO: Check image sizes on smaller and bigger devices
+  bigCarImageContainer: {
+    position: 'absolute',
+    top: -144,
     width: '100%',
-    height: 36,
+    height: 130,
+    marginBottom: 24,
+    paddingHorizontal: 38,
+    alignSelf: 'center',
   },
   bigCarImage: {
-    position: 'absolute',
-    top: -120,
-    width: 330,
-    height: 100,
-    marginBottom: 24,
-    paddingHorizontal: 16,
-    alignSelf: 'center',
-  },
-  offlineInfoWrapper: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 28,
-    paddingHorizontal: 24,
-  },
-  onlineInfoWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-    paddingHorizontal: 24,
-    gap: 12,
-  },
-  title: {
-    fontSize: 18,
-    textAlign: 'center',
+    width: '100%',
+    aspectRatio: 2.5,
+    height: undefined,
+    resizeMode: 'contain',
   },
   card: {
-    justifyContent: 'center',
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 16,
   },
-  offlineStartStopButton: {
-    paddingHorizontal: 24,
-  },
-  onlineStartStopButton: {
-    paddingHorizontal: 24,
+  startStopButton: {
+    paddingHorizontal: 16,
   },
 });
 

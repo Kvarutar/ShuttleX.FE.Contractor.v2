@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ListRenderItem, Pressable, StyleSheet, View } from 'react-native';
+import { ListRenderItem, StyleSheet, View } from 'react-native';
 import {
   Button,
   FlatListWithCustomScroll,
@@ -18,6 +18,8 @@ import {
 import { TripPoint } from '../../../../core/ride/redux/trip/types';
 import { OfferItemProps, OfferProps } from './props';
 
+const addressGap = 40;
+
 const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferProps) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -29,10 +31,10 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferProps) =>
   const offerPoints = [offer.startPosition, ...offer.targetPointsPosition];
 
   const computedStyles = StyleSheet.create({
-    offerInfoTitle: {
-      color: colors.textSecondaryColor,
-    },
     offerInfoText: {
+      color: colors.textQuadraticColor,
+    },
+    offerInfoCounter: {
       color: colors.textPrimaryColor,
     },
     offerInfoItem: {
@@ -117,14 +119,14 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferProps) =>
           <Timer
             time={makeDecisionTime}
             sizeMode={TimerSizesModes.S}
-            colorMode={TimerColorModes.Mode1}
+            colorMode={TimerColorModes.Mode4}
             onAfterCountdownEnds={onClose}
           />
         </View>
       }
       <View style={styles.offerInfoWrapper}>
         <View style={[styles.offerInfoItem, computedStyles.offerInfoItem]}>
-          <Text style={[styles.offerInfoTitle, computedStyles.offerInfoTitle]}>{t('ride_Ride_Offer_travelTime')}</Text>
+          <Text style={[styles.offerInfoTitle, computedStyles.offerInfoText]}>{t('ride_Ride_Offer_travelTime')}</Text>
           <View style={styles.offerTimeContainer}>
             {travelTime.hours !== 0 && (
               <Text style={[styles.offerInfoText, computedStyles.offerInfoText]}>
@@ -132,21 +134,21 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferProps) =>
               </Text>
             )}
             {travelTime.minutes !== 0 && (
-              <Text style={[styles.offerInfoText, computedStyles.offerInfoText]}>
+              <Text style={[styles.offerInfoCounter, computedStyles.offerInfoCounter]}>
                 {t('ride_Ride_Offer_minutes', { minutes: travelTime.minutes })}
               </Text>
             )}
           </View>
         </View>
         <View style={[styles.offerInfoItem, computedStyles.offerInfoItem]}>
-          <Text style={[styles.offerInfoTitle, computedStyles.offerInfoTitle]}>{t('ride_Ride_Offer_pricePerKm')}</Text>
-          <Text style={[styles.offerInfoText, computedStyles.offerInfoText]}>
+          <Text style={[styles.offerInfoTitle, computedStyles.offerInfoText]}>{t('ride_Ride_Offer_pricePerKm')}</Text>
+          <Text style={[styles.offerInfoCounter, computedStyles.offerInfoCounter]}>
             ${t('ride_Ride_Offer_kilometers', { count: offer.pricePerKm })}
           </Text>
         </View>
         <View style={[styles.offerInfoItem, computedStyles.offerInfoItem]}>
-          <Text style={[styles.offerInfoTitle, computedStyles.offerInfoTitle]}>{t('ride_Ride_Offer_price')}</Text>
-          <Text style={[styles.offerInfoText, computedStyles.offerInfoText]}>${offer.price}</Text>
+          <Text style={[styles.offerInfoTitle, computedStyles.offerInfoText]}>{t('ride_Ride_Offer_price')}</Text>
+          <Text style={[styles.offerInfoCounter, computedStyles.offerInfoCounter]}>${offer.price}</Text>
         </View>
       </View>
       {content}
@@ -167,19 +169,13 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferProps) =>
   );
 };
 
-const OfferItem = ({
-  address,
-  pointName,
-  isDropOff,
-  isStopPoint,
-  style,
-  setIsShowMorePoints,
-  numberOfAdditionalPoints,
-}: OfferItemProps) => {
-  const { t } = useTranslation();
+const OfferItem = ({ address, pointName, isDropOff, isStopPoint, style }: OfferItemProps) => {
   const { colors } = useTheme();
 
   const computedStyles = StyleSheet.create({
+    offerItemTitle: {
+      color: colors.textQuadraticColor,
+    },
     dropOffOuter: {
       color: colors.errorColor,
     },
@@ -189,14 +185,11 @@ const OfferItem = ({
     stopPointOuter: {
       color: colors.backgroundSecondaryColor,
     },
-    invisibleHorizontalSeparator: {
-      marginVertical: numberOfAdditionalPoints && numberOfAdditionalPoints > 0 ? 20 : 10,
-    },
   });
 
   return (
-    <View style={[styles.offerWrapper, isDropOff ? styles.dropOffWrapper : {}]}>
-      <View style={styles.offerItemTop}>
+    <View style={styles.offerWrapper}>
+      <View style={styles.offerIconsContainer}>
         {isDropOff ? (
           <PointIcon innerColor={computedStyles.dropOffInner.color} outerColor={computedStyles.dropOffOuter.color} />
         ) : isStopPoint ? (
@@ -207,23 +200,8 @@ const OfferItem = ({
         {!isDropOff && <Separator mode="vertical" />}
       </View>
       <View style={styles.offerItemBottom}>
-        <Text style={[style, styles.offerItemTitle]}>{pointName}</Text>
-        <View style={styles.offerAddressWrapper}>
-          <Text style={styles.offerItemAddress}>{address}</Text>
-          {!isDropOff &&
-            (numberOfAdditionalPoints && numberOfAdditionalPoints > 0 ? (
-              <View style={styles.offerAdditionalPoints}>
-                <View style={computedStyles.invisibleHorizontalSeparator} />
-                <Pressable onPress={() => setIsShowMorePoints?.(true)}>
-                  <Text style={[styles.offerAdditionalPointsText, style]}>
-                    {t('ride_Ride_Offer_moreButton', { numberOfPoints: numberOfAdditionalPoints })}
-                  </Text>
-                </Pressable>
-              </View>
-            ) : (
-              <View style={computedStyles.invisibleHorizontalSeparator} />
-            ))}
-        </View>
+        <Text style={[style, styles.offerPointTitle, computedStyles.offerItemTitle]}>{pointName}</Text>
+        <Text style={styles.offerItemAddress}>{address}</Text>
       </View>
     </View>
   );
@@ -240,9 +218,9 @@ const styles = StyleSheet.create({
   offerInfoWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    gap: 4,
+    gap: 5,
     paddingTop: 30,
-    paddingBottom: 30,
+    marginBottom: addressGap,
   },
   scrollViewWrapper: {
     flex: 0,
@@ -262,52 +240,44 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
   },
+  offerItemBottom: {
+    flexShrink: 1,
+    marginLeft: 12,
+    marginBottom: addressGap,
+  },
   offerInfoTitle: {
-    fontFamily: 'Inter Madium',
     fontSize: 14,
   },
   offerInfoText: {
-    fontFamily: 'Inter Madium',
-    fontSize: 17,
+    fontSize: 18,
+    lineHeight: 16,
+  },
+  offerInfoCounter: {
+    fontFamily: 'Inter Medium',
+    fontSize: 18,
+    lineHeight: 18,
   },
   offerTimeContainer: {
     flexDirection: 'row',
     gap: 4,
   },
-  offerItemTitle: {
-    marginLeft: 6,
-  },
-  offerItemAddress: {
-    fontSize: 20,
-    width: '100%',
-  },
-  offerAddressWrapper: {
-    paddingLeft: 6,
-    marginTop: 4,
-  },
-  offerItemTop: {
+  offerIconsContainer: {
     alignItems: 'center',
   },
-  offerItemBottom: {
-    flexShrink: 1,
+  offerPointTitle: {
+    fontFamily: 'Inter Medium',
+    fontSize: 16,
+  },
+  offerItemAddress: {
+    fontFamily: 'Inter Medium',
+    fontSize: 21,
   },
   offerButtons: {
     flexDirection: 'row',
-    gap: 22,
+    gap: 8,
   },
   offerButtonsItem: {
     flex: 1,
-  },
-  offerAdditionalPoints: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  offerAdditionalPointsText: {
-    fontSize: 14,
-    paddingHorizontal: 8,
-  },
-  dropOffWrapper: {
-    marginBottom: 20,
   },
 });
 

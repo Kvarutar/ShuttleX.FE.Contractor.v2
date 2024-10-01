@@ -88,9 +88,10 @@ const HiddenPart = ({ onClose, renderTariffs }: HiddenPartProps) => {
 const styles = StyleSheet.create({
   hiddenPartContainerStyle: {
     height: windowHeight * 0.9,
+    paddingBottom: 34,
   },
   filterText: {
-    paddingTop: 15,
+    paddingTop: 12,
     fontFamily: 'Inter Bold',
     fontSize: 14,
     marginBottom: 12,
@@ -105,6 +106,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter Bold',
     fontSize: 34,
     marginBottom: 24,
+    lineHeight: 34,
+    letterSpacing: -1.53,
   },
   tariffsText: {
     fontFamily: 'Inter Medium',
@@ -121,9 +124,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 22,
   },
-  preferencesText: {
-    paddingVertical: 12,
-  },
   flatListContentContainer: {
     gap: 8,
   },
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   flatListWrapper: {
-    flex: 0,
+    flex: 1,
     flexShrink: 1,
   },
 });

@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
+  CrownIcon,
   Like2Icon,
   sizes,
   SteeringWheelIcon,
@@ -17,14 +17,13 @@ import {
 import {
   contractorStatusSelector,
   profileSelector,
-  selectedPreferencesSelector,
   selectedTariffsSelector,
 } from '../../../../core/contractor/redux/selectors';
 import { updateContractorStatus } from '../../../../core/contractor/redux/thunks';
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import AchievementsCarousel from './AchievementsCarousel';
-import { HiddenPartProps, RiderData } from './props';
+import { HiddenPartProps } from './props';
 
 const animationDuration = 200;
 
@@ -36,22 +35,16 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
   const profile = useSelector(profileSelector);
   const contractorStatus = useSelector(contractorStatusSelector);
   const selectedTariffs = useSelector(selectedTariffsSelector);
-  const selectedPreferences = useSelector(selectedPreferencesSelector);
 
   const contractorStatusIsOffline = contractorStatus === 'offline';
 
-  //TODO: Remove it after will be added a logic receiving data from back-end
-  const [riderData] = useState<RiderData>({
-    likes: 10000,
-    rides: 45,
-    car: {
-      number: 'BGH 284',
-      title: 'Toyota Land Cruser',
-      color: 'black',
-    },
-  });
-
   const computedStyles = StyleSheet.create({
+    levelCounter: {
+      color: colors.textSecondaryColor,
+    },
+    levelText: {
+      color: colors.textQuadraticColor,
+    },
     dot: {
       backgroundColor: colors.iconSecondaryColor,
     },
@@ -60,6 +53,9 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
     },
     carIdContainer: {
       backgroundColor: colors.primaryColor,
+    },
+    bottomInfoWrapper: {
+      paddingHorizontal: sizes.paddingHorizontal,
     },
     bottomInfo: {
       backgroundColor: colors.backgroundSecondaryColor,
@@ -70,8 +66,14 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
     bottomInfoText: {
       color: colors.textPrimaryColor,
     },
-    likesAndRidesText: {
+    likesAndRidesCounter: {
       color: colors.textSecondaryColor,
+    },
+    likesAndRidesText: {
+      color: colors.textQuadraticColor,
+    },
+    steeringWheelIcon: {
+      color: colors.textQuadraticColor,
     },
   });
 
@@ -87,40 +89,45 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
     return value.toString();
   }
 
-  if (!isOpened) {
+  if (!isOpened || !profile) {
     return;
   }
 
   return (
     <Animated.View entering={FadeIn.duration(animationDuration)} exiting={FadeOut.duration(animationDuration)}>
-      {profile && <Text style={styles.namesText}>{profile.name + ' ' + profile.surname}</Text>}
+      <View style={styles.levelContainer}>
+        <CrownIcon />
+        <View style={styles.levelTextsContainer}>
+          <Text style={[styles.levelCounter, computedStyles.levelCounter]}>{profile.level}</Text>
+          <Text style={[styles.levelText, computedStyles.levelText]}>lvl.</Text>
+        </View>
+      </View>
+      <Text style={styles.namesText}>{profile.name + ' ' + profile.surname}</Text>
       <View style={styles.rideDataContainer}>
         <View style={styles.likesContainer}>
           <Like2Icon style={styles.likeIcon} />
-          <Text style={[styles.likesAndRidesText, computedStyles.likesAndRidesText]}>
-            {formatBigNumbers(riderData.likes) + ' ' + t('ride_Ride_Order_likes')}
-          </Text>
+          <Text style={computedStyles.likesAndRidesCounter}>{formatBigNumbers(profile.likes)}</Text>
+          <Text style={[styles.likesAndRidesText, computedStyles.likesAndRidesText]}>{t('ride_Ride_Order_likes')}</Text>
         </View>
         <View style={styles.ridesContainer}>
           <View style={[styles.dot, computedStyles.dot]} />
-          <SteeringWheelIcon />
-          <Text style={[styles.likesAndRidesText, computedStyles.likesAndRidesText]}>
-            {formatBigNumbers(riderData.rides) + ' ' + t('ride_Ride_Order_rides')}
-          </Text>
+          <SteeringWheelIcon color={computedStyles.steeringWheelIcon.color} />
+          <Text style={computedStyles.likesAndRidesCounter}>{formatBigNumbers(profile.rides)}</Text>
+          <Text style={[styles.likesAndRidesText, computedStyles.likesAndRidesText]}>{t('ride_Ride_Order_rides')}</Text>
         </View>
       </View>
       <View style={styles.carDataContainer}>
         <View style={[styles.carTitleContainer, computedStyles.carTitleContainer]}>
           <Text numberOfLines={1} style={styles.carTitleText}>
-            {riderData.car.title}
+            {profile.carData.title}
           </Text>
         </View>
         <View style={[styles.carIdContainer, computedStyles.carIdContainer]}>
-          <Text style={styles.carIdText}>{riderData.car.number}</Text>
+          <Text style={styles.carIdText}>{profile.carData.id}</Text>
         </View>
       </View>
       <AchievementsCarousel setIsAchievementsPopupVisible={setIsAchievementsPopupVisible} />
-      <View style={styles.bottomInfoWrapper}>
+      <View style={[styles.bottomInfoWrapper, computedStyles.bottomInfoWrapper]}>
         <View style={[styles.tripTypeContainer, computedStyles.bottomInfo]}>
           <Text numberOfLines={1} style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
             {t('ride_Ride_Order_tripType')}
@@ -129,22 +136,13 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
             {selectedTariffs.map(selectedTariff => selectedTariff.name).join(',')}
           </Text>
         </View>
-        <View style={[styles.includedAdditionContainer, computedStyles.bottomInfo]}>
+        <View style={[styles.earnedTodayContainer, computedStyles.bottomInfo]}>
           <Text style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
-            {t('ride_Ride_Order_includedAdditions')}
+            {t('ride_Ride_Order_earnedToday')}
           </Text>
-          <Text style={[styles.bottomInfoText, computedStyles.bottomInfoText]}>{selectedPreferences.length}</Text>
+          {/* TODO: Add "Earned today" state when it will be added */}
+          <Text style={[styles.bottomInfoText, computedStyles.bottomInfoText]}>{'$0.0'}</Text>
         </View>
-        <View />
-        {contractorStatus === 'online' && (
-          <View style={[styles.earnedTodayContainer, computedStyles.bottomInfo]}>
-            <Text style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
-              {t('ride_Ride_Order_earnedToday')}
-            </Text>
-            {/* TODO: Add "Earned today" state when it will be added */}
-            <Text style={[styles.bottomInfoText, computedStyles.bottomInfoText]}>{'$0.0'}</Text>
-          </View>
-        )}
       </View>
       {/* //TODO: Add a component which render "remains to work" time  */}
       <View style={styles.swipeButtonContainer}>
@@ -167,21 +165,44 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
 };
 
 const styles = StyleSheet.create({
+  levelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: -8,
+  },
+  levelTextsContainer: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  levelCounter: {
+    fontFamily: 'Inter Medium',
+    fontSize: 14,
+    lineHeight: 22,
+  },
+  levelText: {
+    fontFamily: 'Inter Medium',
+    fontSize: 14,
+    lineHeight: 22,
+  },
   namesText: {
     fontFamily: 'Inter Medium',
     textAlign: 'center',
     fontSize: 21,
+    paddingTop: 8,
+    marginBottom: 8,
   },
   rideDataContainer: {
     justifyContent: 'center',
     flexDirection: 'row',
-    gap: 32,
-    marginBottom: 24,
+    gap: 4,
+    marginBottom: 13,
   },
   likesContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 4,
   },
   likeIcon: {
     width: 16,
@@ -195,6 +216,7 @@ const styles = StyleSheet.create({
   likesAndRidesText: {
     fontFamily: 'Inter Medium',
     fontSize: 17,
+    lineHeight: 22,
   },
   dot: {
     width: 4,
@@ -204,14 +226,14 @@ const styles = StyleSheet.create({
   carDataContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 8,
-    marginBottom: 24,
+    gap: 6,
+    marginBottom: 21,
   },
   carTitleContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 12,
+    paddingHorizontal: 21,
+    paddingVertical: 9,
     borderWidth: 1,
     borderRadius: 12,
     maxWidth: '50%',
@@ -219,48 +241,48 @@ const styles = StyleSheet.create({
   carTitleText: {
     fontFamily: 'Inter Medium',
     fontSize: 17,
+    lineHeight: 22,
   },
   carIdContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: 11,
+    paddingVertical: 9,
     borderRadius: 12,
   },
   carIdText: {
     fontFamily: 'Inter Medium',
     fontSize: 17,
+    lineHeight: 22,
   },
   tripTypeContainer: {
     justifyContent: 'space-between',
     flexDirection: 'row',
-    padding: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     borderRadius: 12,
     overflow: 'hidden',
   },
   bottomInfoWrapper: {
     gap: 8,
-    marginBottom: 32,
-    paddingHorizontal: sizes.paddingHorizontal,
+    marginBottom: 16,
   },
   bottomInfoTitle: {
     fontFamily: 'Inter Medium',
     fontSize: 14,
+    lineHeight: 22,
   },
   bottomInfoText: {
-    fontFamily: 'Inter Medium',
     maxWidth: '50%',
+    fontFamily: 'Inter Medium',
     fontSize: 14,
-  },
-  includedAdditionContainer: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    padding: 16,
-    borderRadius: 12,
+    lineHeight: 22,
   },
   earnedTodayContainer: {
     justifyContent: 'space-between',
     flexDirection: 'row',
-    padding: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     borderRadius: 12,
   },
   swipeButtonContainer: {
