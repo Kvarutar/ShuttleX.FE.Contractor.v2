@@ -5,6 +5,7 @@ import { RequirementDocs, RequirementDocsType } from './types';
 const initialState: Record<RequirementDocsType, RequirementDocs> = {
   backgroundCheck: null,
   profilePhoto: null,
+  passport: null,
   driversLicense: null,
   vehicleInspection: null,
   vehicleInsurance: null,

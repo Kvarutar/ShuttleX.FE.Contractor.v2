@@ -1,122 +1,182 @@
-import { t } from 'i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
-  Bar,
   BarModes,
-  ButtonV1,
-  ButtonV1Modes,
-  ButtonV1Shapes,
-  RoundCheckIcon2,
+  Button,
+  ButtonShapes,
+  ButtonSizes,
+  CircleButtonModes,
   SafeAreaView,
-  ShortArrowSmallIcon,
-  sizes,
-  Text,
-  useThemeV1,
+  ShortArrowIcon,
+  useTheme,
 } from 'shuttlex-integration';
 
+import {
+  driversLicenseSelector,
+  isDriverDocumentsFilledSelector,
+  isPersonalDocumentsFilledSelector,
+  passportSelector,
+  profilePhotoSelector,
+  vehicleInsuranceSelector,
+  vehicleRegistrationSelector,
+} from '../../../core/auth/redux/docs/selectors';
 import { contractorZoneSelector, profileSelector } from '../../../core/contractor/redux/selectors';
 import { VerificationScreenProps } from './props';
+import VerificationHeader from './VerificationHeader';
+import VerificationStepBar from './VerificationStepBar';
 
 const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
-  const { colors } = useThemeV1();
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
 
   const profile = useSelector(profileSelector);
+  const isZoneSelected = useSelector(contractorZoneSelector) !== null;
+  const isPresentPersonalDocuments = useSelector(isPersonalDocumentsFilledSelector);
+  const isPresentVehicleDocuments = useSelector(isDriverDocumentsFilledSelector);
+
+  const isVehicleInsurance = useSelector(vehicleInsuranceSelector) !== null;
+  const isVehicleRegistration = useSelector(vehicleRegistrationSelector) !== null;
+
+  const isPresentProfile = useSelector(profilePhotoSelector) !== null;
+  const isPresentPassport = useSelector(passportSelector) !== null;
+  const isPresentDriversLicense = useSelector(driversLicenseSelector) !== null;
 
   const computedStyles = StyleSheet.create({
-    description: {
-      color: colors.textSecondaryColor,
+    stepBarText: {
+      color: isZoneSelected ? colors.textPrimaryColor : colors.textQuadraticColor,
     },
   });
 
-  const isZoneSelected = useSelector(contractorZoneSelector) !== null;
+  const onBackButtonPress = () => {
+    if (selectedSection !== null) {
+      setSelectedSection(null);
+    }
+  };
 
+  const defaultState = (
+    <>
+      <VerificationStepBar
+        isSelected={isZoneSelected}
+        barMode={isZoneSelected ? BarModes.Active : BarModes.Default}
+        buttonMode={isZoneSelected ? CircleButtonModes.Mode2 : CircleButtonModes.Mode4}
+        onPress={() => navigation.navigate('Zone')}
+        text={t('verification_Verification_stepOne')}
+      />
+
+      <VerificationStepBar
+        isSelected={isPresentPersonalDocuments}
+        textStyle={computedStyles.stepBarText}
+        barMode={!isZoneSelected ? BarModes.Disabled : BarModes.Default}
+        buttonMode={!isZoneSelected ? CircleButtonModes.Mode2 : CircleButtonModes.Mode4}
+        onPress={() => setSelectedSection('PersonalDocument')}
+        text={t('verification_Verification_stepTwo')}
+        isDisabled={!isZoneSelected}
+      />
+
+      <VerificationStepBar
+        isSelected={isPresentVehicleDocuments}
+        textStyle={computedStyles.stepBarText}
+        barMode={!isZoneSelected ? BarModes.Disabled : BarModes.Default}
+        buttonMode={!isZoneSelected ? CircleButtonModes.Mode2 : CircleButtonModes.Mode4}
+        onPress={() => setSelectedSection('VehicleDocument')}
+        text={t('verification_Verification_stepThree')}
+        isDisabled={!isZoneSelected}
+      />
+    </>
+  );
+
+  const vehicleDocument = (
+    <>
+      <VerificationStepBar
+        isSelected={isVehicleInsurance}
+        barMode={isVehicleInsurance ? BarModes.Active : BarModes.Default}
+        buttonMode={CircleButtonModes.Mode2}
+        onPress={() => navigation.navigate('VehicleInsurance')}
+        text={t('verification_Verification_vehicleDocumentStepOne')}
+      />
+      <VerificationStepBar
+        isSelected={isVehicleRegistration}
+        barMode={isVehicleRegistration ? BarModes.Active : BarModes.Default}
+        buttonMode={CircleButtonModes.Mode2}
+        onPress={() => navigation.navigate('VehicleRegistration')}
+        text={t('verification_Verification_vehicleDocumentStepTwo')}
+      />
+    </>
+  );
+
+  const personalDocument = (
+    <>
+      <VerificationStepBar
+        isSelected={isPresentProfile}
+        barMode={isPresentProfile ? BarModes.Active : BarModes.Default}
+        buttonMode={CircleButtonModes.Mode2}
+        onPress={() => navigation.navigate('ProfilePhoto')}
+        text={t('verification_Verification_personalDocumentStepOne')}
+      />
+
+      <VerificationStepBar
+        isSelected={isPresentPassport}
+        barMode={isPresentPassport ? BarModes.Active : BarModes.Default}
+        buttonMode={CircleButtonModes.Mode2}
+        onPress={() => navigation.navigate('VehicleInsurance')}
+        text={t('verification_Verification_personalDocumentStepTwo')}
+      />
+
+      <VerificationStepBar
+        isSelected={isPresentDriversLicense}
+        barMode={isPresentDriversLicense ? BarModes.Active : BarModes.Default}
+        buttonMode={CircleButtonModes.Mode2}
+        onPress={() => navigation.navigate('DriversLicense')}
+        text={t('verification_Verification_personalDocumentStepThree')}
+      />
+    </>
+  );
+
+  let renderSection;
+
+  if (selectedSection == null) {
+    renderSection = defaultState;
+  } else if (selectedSection === 'PersonalDocument') {
+    renderSection = personalDocument;
+  } else if (selectedSection === 'VehicleDocument') {
+    renderSection = vehicleDocument;
+  }
+
+  //TODO delete name Vladyslav  after connection with backend
   return (
     <SafeAreaView>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('verification_Verification_headerTitle')}</Text>
-      </View>
-      <Bar>
-        <Text style={styles.title}>{t('verification_Verification_explanationTitle', { name: profile?.name })}</Text>
-        <Text style={[styles.description, computedStyles.description]}>
-          {t('verification_Verification_explanationDescription')}
-        </Text>
-      </Bar>
-      <View style={styles.content}>
-        <Pressable onPress={() => navigation.navigate('Zone')}>
-          <Bar mode={isZoneSelected ? BarModes.Active : BarModes.Default} style={styles.bar}>
-            <Text style={styles.contentText}>{t('verification_Verification_stepOne')}</Text>
+      <Button
+        onPress={onBackButtonPress}
+        shape={ButtonShapes.Circle}
+        mode={CircleButtonModes.Mode2}
+        size={ButtonSizes.S}
+      >
+        <ShortArrowIcon />
+      </Button>
+      <VerificationHeader
+        containerStyle={styles.verificationHeader}
+        windowTitle={t('verification_Verification_headerTitle')}
+        firstHeaderTitle={t('verification_Verification_explanationTitle')}
+        secondHeaderTitle={profile?.name ?? 'Vladyslav'}
+        description={t('verification_Verification_explanationDescription')}
+      />
 
-            {isZoneSelected ? (
-              <RoundCheckIcon2 />
-            ) : (
-              <ButtonV1
-                shape={ButtonV1Shapes.Circle}
-                containerStyle={styles.roundButton}
-                onPress={() => navigation.navigate('Zone')}
-              >
-                <ShortArrowSmallIcon />
-              </ButtonV1>
-            )}
-          </Bar>
-        </Pressable>
-        <Pressable onPress={() => navigation.navigate('Docs')}>
-          <Bar mode={isZoneSelected ? BarModes.Default : BarModes.Disabled} style={styles.bar}>
-            <Text style={styles.contentText}>{t('verification_Verification_stepTwo')}</Text>
-
-            <ButtonV1
-              shape={ButtonV1Shapes.Circle}
-              containerStyle={styles.roundButton}
-              mode={isZoneSelected ? ButtonV1Modes.Mode1 : ButtonV1Modes.Mode4}
-              disabled={!isZoneSelected}
-            >
-              <ShortArrowSmallIcon />
-            </ButtonV1>
-          </Bar>
-        </Pressable>
-      </View>
+      <View style={styles.content}>{renderSection}</View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 14,
-    marginBottom: sizes.paddingVertical,
-  },
-  headerTitle: {
-    fontFamily: 'Inter Medium',
-    fontSize: 18,
-  },
-  headerDummy: {
-    width: 50,
-  },
-  title: {
-    fontFamily: 'Inter Medium',
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  roundButton: {
-    height: 28,
-    width: 28,
+  verificationHeader: {
+    marginTop: 18,
   },
   content: {
-    marginTop: 40,
-    gap: 16,
-  },
-  bar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  contentText: {
-    fontFamily: 'Inter Medium',
+    marginTop: 32,
+    gap: 8,
   },
 });
 

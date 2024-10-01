@@ -1,6 +1,7 @@
 export enum RequirementDocsType {
   BackgroundCheck = 'backgroundCheck',
   ProfilePhoto = 'profilePhoto',
+  Passport = 'passport',
   DriversLicense = 'driversLicense',
   VehicleInsurance = 'vehicleInsurance',
   VehicleRegistration = 'vehicleRegistration',

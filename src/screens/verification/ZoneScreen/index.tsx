@@ -1,163 +1,180 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 import {
-  Bar,
   BarModes,
-  ButtonV1,
-  ButtonV1Shapes,
+  BottomWindowWithGesture,
+  Button,
+  ButtonShapes,
+  ButtonSizes,
+  CircleButtonModes,
   FlatListWithCustomScroll,
+  SafeAreaView,
   ShortArrowIcon,
-  ShortArrowSmallIcon,
-  sizes,
-  Text,
-  useThemeV1,
+  SquareButtonModes,
+  TextInput,
+  useTheme,
 } from 'shuttlex-integration';
 
 import { setContractorZone } from '../../../core/contractor/redux';
 import { useAppDispatch } from '../../../core/redux/hooks';
-import { zones } from './mockData';
-import { ZoneScreenProps } from './props';
-
-//TODO: Back button not work, fix it
-//TODO: Form of send zones not work, fix it
+import VerificationHeader from '../VerificationScreen/VerificationHeader';
+import VerificationStepBar from '../VerificationScreen/VerificationStepBar';
+import { zoneData } from './mockData';
+import { Zone, ZoneScreenProps } from './props';
 
 const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
-  const { colors } = useThemeV1();
-
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const dispatch = useAppDispatch();
 
-  const [data, setData] = useState(zones);
+  const [isVisiblePropositionWindow, setIsVisiblePropositionWindow] = useState(false);
+  const [propositionCity, setPropositionCity] = useState('');
   const [zone, setZone] = useState('');
+  const [data, setData] = useState(zoneData);
 
-  const computedStyles = StyleSheet.create({
-    wrapper: {
-      backgroundColor: colors.backgroundPrimaryColor,
-    },
-    container: {
-      paddingVertical: Platform.OS === 'android' ? sizes.paddingVertical : 0,
-    },
-    signUpLabel: {
-      color: colors.primaryColor,
-    },
-    placeholderZone: {
-      color: colors.textSecondaryColor,
-    },
-  });
-
-  const isLastZone = data.length === 0;
+  const isLastZone = data[0].next.length === 0;
 
   const onSubmit = () => {
     dispatch(setContractorZone(zone));
     navigation.navigate('Verification');
   };
 
-  //TODO: add type to zone items
-  // @ts-expect-error Parameter 'item' implicitly has an 'any' type.ts(7006)
-  const renderItem = ({ item }) => (
-    <Pressable style={styles.zoneList} key={item.id}>
-      <Bar mode={BarModes.Active} style={styles.zoneListBar}>
-        <Text style={styles.zoneBodyText}>{item.name}</Text>
+  const handlePressOnZone = (item: Zone) => {
+    if (isLastZone) {
+      setZone(item.name);
+      return;
+    }
+    setData(item.next);
+  };
 
-        <ButtonV1
-          onPress={() => {
-            setData(item.next);
-            setZone(item.name);
-          }}
-          containerStyle={styles.zoneRoundButton}
-          shape={ButtonV1Shapes.Circle}
-        >
-          <ShortArrowSmallIcon />
-        </ButtonV1>
-      </Bar>
-    </Pressable>
+  const onPropositionButtonPress = () => {
+    setIsVisiblePropositionWindow(false);
+  };
+
+  const computedStyles = StyleSheet.create({
+    propositionButton: {
+      backgroundColor: colors.backgroundPrimaryColor,
+      borderColor: colors.borderColor,
+    },
+    propositionButtonText: {
+      color: colors.textSecondaryColor,
+    },
+  });
+
+  const HiddenPart = (
+    <>
+      <VerificationHeader
+        containerStyle={styles.propositionVerificationHeader}
+        windowTitle={t('verification_Zone_propositionHeaderTitle')}
+        firstHeaderTitle={t('verification_Zone_propositionExplanationFirstTitle')}
+        secondHeaderTitle={t('verification_Zone_propositionExplanationSecondTitle')}
+        description={t('verification_Zone_propositionExplanationDescription')}
+      />
+      <TextInput
+        onChangeText={setPropositionCity}
+        value={propositionCity}
+        placeholder={t('verification_Zone_propositionInputPlaceholder')}
+      />
+      <Button
+        text={t('verification_Zone_propositionButton')}
+        style={styles.propositionCompleteButton}
+        textStyle={styles.buttonText}
+        onPress={onPropositionButtonPress}
+      />
+    </>
+  );
+
+  const renderItem = ({ item }: { item: Zone }) => (
+    <VerificationStepBar
+      text={item.name}
+      isSelected={zone === item.name}
+      onPress={() => handlePressOnZone(item)}
+      barMode={BarModes.Default}
+    />
   );
 
   return (
-    <SafeAreaView style={[styles.wrapper, computedStyles.wrapper]}>
-      <View style={[styles.container, computedStyles.container]}>
-        <View style={styles.zoneWrapper}>
-          <View style={styles.zoneHeader}>
-            <ButtonV1 onPress={navigation.goBack} shape={ButtonV1Shapes.Circle}>
-              <ShortArrowIcon />
-            </ButtonV1>
-            <Text style={styles.headerTitle}>{t('verification_Zone_headerTitle')}</Text>
-          </View>
-          <View style={styles.zoneBody}>
-            <Text style={styles.zoneBodyText}>{t('verification_Zone_selectAreaDescription')}</Text>
-            <Bar style={styles.zoneBodyTextInput}>
-              <Text style={zone === '' ? computedStyles.placeholderZone : {}}>
-                {zone ?? t('auth_Zone_textInputPlaceholder')}
-              </Text>
-            </Bar>
+    <SafeAreaView>
+      <Button
+        onPress={navigation.goBack}
+        shape={ButtonShapes.Circle}
+        mode={CircleButtonModes.Mode2}
+        size={ButtonSizes.S}
+      >
+        <ShortArrowIcon />
+      </Button>
+      <VerificationHeader
+        containerStyle={styles.verificationHeader}
+        windowTitle={t('verification_Zone_headerTitle')}
+        firstHeaderTitle={t('verification_Zone_explanationFirstTitle')}
+        secondHeaderTitle={t('verification_Zone_explanationSecondTitle')}
+        description={t('verification_Zone_explanationDescription')}
+      />
 
-            <Text style={styles.zoneBodyText}>{t('verification_Zone_zoneListDescription')}</Text>
-
-            <FlatListWithCustomScroll items={data} renderItem={renderItem} withShadow />
-          </View>
-        </View>
-        {isLastZone && (
-          <Animated.View entering={FadeIn.duration(200)}>
-            <ButtonV1 text={t('verification_Zone_buttonNext')} style={styles.zoneButton} onPress={onSubmit} />
-          </Animated.View>
-        )}
+      <View style={styles.zoneBody}>
+        <FlatListWithCustomScroll
+          withScroll={true}
+          contentContainerStyle={styles.zoneList}
+          items={data}
+          renderItem={renderItem}
+          withShadow
+        />
       </View>
+
+      <Button
+        text={t('verification_Zone_buttonProposition')}
+        style={[styles.propositionButton, computedStyles.propositionButton]}
+        mode={SquareButtonModes.Mode5}
+        textStyle={[styles.propositionButtonText, computedStyles.propositionButtonText]}
+        onPress={() => setIsVisiblePropositionWindow(true)}
+      />
+      <Button
+        disabled={!zone}
+        text={t('verification_Zone_buttonNext')}
+        style={styles.nextButton}
+        mode={!zone ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
+        textStyle={styles.buttonText}
+        onPress={onSubmit}
+      />
+      {isVisiblePropositionWindow && (
+        <BottomWindowWithGesture withShade opened={isVisiblePropositionWindow} hiddenPart={HiddenPart} />
+      )}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
+  verificationHeader: {
+    marginTop: 18,
   },
-  container: {
-    flex: 1,
-    paddingHorizontal: sizes.paddingHorizontal,
-    justifyContent: 'space-between',
+  propositionVerificationHeader: {
+    marginTop: 18,
+    marginBottom: 20,
   },
-  zoneWrapper: {
-    flex: 1,
-  },
-  zoneHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 80,
-    marginBottom: 32,
-  },
-  headerTitle: {
-    fontFamily: 'Inter Medium',
-    fontSize: 18,
+  propositionCompleteButton: {
+    marginTop: 100,
   },
   zoneBody: {
-    marginTop: 30,
     flex: 1,
-  },
-  zoneBodyText: {
-    fontFamily: 'Inter Medium',
-  },
-  zoneBodyTextInput: {
-    marginTop: 26,
-    marginBottom: 26,
+    marginTop: 40,
   },
   zoneList: {
-    marginTop: 28,
+    gap: 8,
   },
-  zoneListBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingLeft: 30,
-    paddingRight: 15,
-    paddingVertical: 15,
+  propositionButtonText: {
+    fontFamily: 'Inter Medium',
+    fontSize: 17,
   },
-  zoneRoundButton: {
-    height: 28,
-    width: 28,
-  },
-  zoneButton: {
+  propositionButton: {
+    borderWidth: 1,
     marginTop: 20,
+  },
+  nextButton: {
+    marginTop: 8,
+  },
+  buttonText: {
+    fontSize: 17,
   },
 });
 

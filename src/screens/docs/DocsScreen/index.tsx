@@ -34,6 +34,10 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
       navFunc: () => navigation.navigate('ProfilePhoto'),
       title: t('docs_Docs_profilePhoto'),
     },
+    passport: {
+      navFunc: () => navigation.navigate('ProfilePhoto'),
+      title: t('docs_Docs_profilePhoto'),
+    },
     driversLicense: {
       navFunc: () => navigation.navigate('DriversLicense'),
       title: t('docs_Docs_driversLicense'),

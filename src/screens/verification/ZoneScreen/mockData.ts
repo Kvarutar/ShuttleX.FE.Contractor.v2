@@ -1,49 +1,48 @@
-export const zones = [
+import { Zone } from './props';
+
+export const zoneData: Zone[] = [
   {
     id: '1',
-    name: 'Canada',
+    name: 'Ukraine',
     next: [
       {
         id: '1',
-        name: 'Great Torornto Area',
+        name: 'Kyiv Region',
         next: [
-          {
-            id: '1',
-            name: 'Toronto',
-            next: [],
-          },
-          {
-            id: '2',
-            name: 'Durhan',
-            next: [],
-          },
-          {
-            id: '3',
-            name: 'Halton',
-            next: [],
-          },
-          {
-            id: '4',
-            name: 'Peel',
-            next: [],
-          },
+          { id: '1', name: 'Kyiv', next: [] },
+          { id: '2', name: 'Bila Tserkva', next: [] },
         ],
       },
-    ],
-  },
-  {
-    id: '2',
-    name: 'USA',
-    next: [
       {
-        id: '1',
-        name: 'Michcigan',
+        id: '2',
+        name: 'Lviv Region',
         next: [
-          {
-            id: '1',
-            name: 'New York',
-            next: [],
-          },
+          { id: '1', name: 'Lviv', next: [] },
+          { id: '2', name: 'Drohobych', next: [] },
+        ],
+      },
+      {
+        id: '3',
+        name: 'Odessa Region',
+        next: [
+          { id: '1', name: 'Odessa', next: [] },
+          { id: '2', name: 'Izmail', next: [] },
+        ],
+      },
+      {
+        id: '4',
+        name: 'Kharkiv Region',
+        next: [
+          { id: '1', name: 'Kharkiv', next: [] },
+          { id: '2', name: 'Izium', next: [] },
+        ],
+      },
+      {
+        id: '5',
+        name: 'Poltava Region',
+        next: [
+          { id: '1', name: 'Poltava', next: [] },
+          { id: '2', name: 'Kremenchuk', next: [] },
         ],
       },
     ],
