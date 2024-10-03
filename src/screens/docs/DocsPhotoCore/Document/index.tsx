@@ -1,21 +1,23 @@
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { Bar, ButtonV1, ButtonV1Shapes, CloseIconMini, DocumentIcon, Text } from 'shuttlex-integration';
+import { Bar, BarModes, CloseIconMini, DocumentIcon, Text, TextElipsizeMode } from 'shuttlex-integration';
 
 import { docsConsts } from '../props';
 import { DocumentProps } from './props';
 
 const Document = ({ selectedDocument, onCloseButtonPress }: DocumentProps) => {
   return (
-    <Animated.View style={styles.barWrapper} entering={FadeIn.duration(docsConsts.fadeAnimationDuration)}>
-      <Bar style={styles.bar}>
+    <Animated.View entering={FadeIn.duration(docsConsts.fadeAnimationDuration)}>
+      <Bar style={styles.bar} mode={BarModes.Disabled}>
         <View style={styles.content}>
           <DocumentIcon />
-          <Text style={styles.fileName}>{selectedDocument.name}</Text>
+          <Text style={styles.fileName} numberOfLines={1} elipsizeMode={TextElipsizeMode.Middle}>
+            {selectedDocument.name}
+          </Text>
         </View>
-        <ButtonV1 onPress={onCloseButtonPress} containerStyle={styles.roundButton} shape={ButtonV1Shapes.Circle}>
+        <Pressable style={styles.closeButton} onPress={onCloseButtonPress}>
           <CloseIconMini />
-        </ButtonV1>
+        </Pressable>
       </Bar>
     </Animated.View>
   );
@@ -23,23 +25,26 @@ const Document = ({ selectedDocument, onCloseButtonPress }: DocumentProps) => {
 
 const styles = StyleSheet.create({
   bar: {
-    justifyContent: 'space-between',
+    height: 64,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  barWrapper: {
-    marginTop: 40,
-    marginBottom: 10,
+    justifyContent: 'space-between',
   },
   content: {
+    flex: 1,
     flexDirection: 'row',
-    gap: 20,
     alignItems: 'center',
+    gap: 16,
   },
   fileName: {
     fontFamily: 'Inter Medium',
+    fontSize: 14,
+    flexShrink: 1,
   },
-  roundButton: {
+  closeButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 32,
     height: 32,
   },

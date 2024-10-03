@@ -62,7 +62,6 @@ const Menu = ({ onClose, navigation }: MenuProps) => {
       additionalContent={<AdditionalContent />}
       userImageUri={profile?.profileImageUri ?? undefined}
       userName={profile?.name}
-      userSurname={profile?.surname}
       menuNavigation={menuNavigation}
       currentRoute={currentRoute}
       label={<LevelLabel />}

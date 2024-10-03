@@ -33,7 +33,7 @@ const SignInCodeScreen = ({ navigation, route }: SignInCodeScreenProps): JSX.Ele
       if (newCode === '4444') {
         setIsIncorrectCode(true);
       } else {
-        navigation.replace('Ride');
+        navigation.replace('Verification');
       }
     }
   };

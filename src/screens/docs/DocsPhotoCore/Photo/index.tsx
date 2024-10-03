@@ -1,15 +1,26 @@
 import { Image, Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { ButtonV1, ButtonV1Shapes, CloseIcon } from 'shuttlex-integration';
+import { Button, ButtonShapes, CircleButtonModes, CloseIcon } from 'shuttlex-integration';
 
 import { docsConsts } from '../props';
 import { PhotoProps } from './props';
 
-const Photo = ({ photoAsset, onCloseButtonPress, photoWidth, photoHeight }: PhotoProps) => {
+const Photo = ({ photoAsset, onCloseButtonPress, photoWidth, photoHeight, isProfilePhoto }: PhotoProps) => {
+  const imageSize = Math.min(docsConsts.photoMaxSize, photoWidth, photoHeight);
+  const borderRadius = isProfilePhoto ? imageSize / 2 : 10;
+
   const computedStyles = StyleSheet.create({
     photoWrapper: {
       width: Math.min(docsConsts.photoMaxSize, photoWidth),
       height: Math.min(docsConsts.photoMaxSize, photoHeight),
+      borderRadius: borderRadius,
+    },
+    image: {
+      borderRadius: borderRadius,
+    },
+    closePhotoButton: {
+      bottom: isProfilePhoto ? 50 : -15,
+      right: isProfilePhoto ? 0 : -15,
     },
   });
 
@@ -26,42 +37,35 @@ const Photo = ({ photoAsset, onCloseButtonPress, photoWidth, photoHeight }: Phot
       >
         <Image
           source={{ uri: Platform.OS === 'ios' ? photoAsset.uri.replace('file://', '') : photoAsset.uri }}
-          style={styles.userUmage}
+          style={[styles.image, computedStyles.image]}
         />
         {/*TODO: remove uri check on deploy? */}
-        <ButtonV1 style={styles.closePhotoButton} onPress={onCloseButtonPress} shape={ButtonV1Shapes.Circle}>
+        <Button
+          style={[styles.closePhotoButton, computedStyles.closePhotoButton]}
+          onPress={onCloseButtonPress}
+          shape={ButtonShapes.Circle}
+          mode={CircleButtonModes.Mode2}
+        >
           <CloseIcon />
-        </ButtonV1>
+        </Button>
       </Animated.View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  takePhoto: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-  },
   photoWrapper: {
-    marginTop: 40,
     flex: 1,
     alignSelf: 'center',
   },
-  takePhotoWrapper: {
-    width: docsConsts.photoMaxSize,
-  },
-  closePhotoButton: {
-    position: 'absolute',
-    right: 10,
-    top: 10,
-  },
-  userUmage: {
+  image: {
     flex: 1,
-    borderRadius: 20,
   },
   photoContainer: {
     flex: 1,
+  },
+  closePhotoButton: {
+    position: 'absolute',
   },
 });
 

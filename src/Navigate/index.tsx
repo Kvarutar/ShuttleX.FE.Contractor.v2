@@ -9,11 +9,9 @@ import LockOutScreen from '../screens/auth/LockOutScreen';
 import SignInCodeScreen from '../screens/auth/SignInCodeScreen';
 import SplashScreen from '../screens/auth/SplashScreen';
 import TermsScreen from '../screens/auth/TermsScreen';
-import BackgroundCheckScreen from '../screens/docs/BackgroundCheck';
-import DocsScreen from '../screens/docs/DocsScreen';
 import DriversLicenseScreen from '../screens/docs/DriversLicenseScreen';
+import PassportScreen from '../screens/docs/PassportScreen';
 import ProfilePhotoScreen from '../screens/docs/ProfilePhotoScreen';
-import VehicleInspectionScreen from '../screens/docs/VehicleInspectionScreen';
 import VehicleInsuranceScreen from '../screens/docs/VehicleInsuranceScreen';
 import VehicleRegistrationScreen from '../screens/docs/VehicleRegistrationScreen';
 import NotificationScreen from '../screens/menu/NotificationsScreen';
@@ -50,13 +48,11 @@ const Navigate = (): JSX.Element => {
         <Stack.Screen name="Notifications" component={NotificationScreen} />
         <Stack.Screen name="Rating" component={RatingScreen} />
         <Stack.Screen name="Zone" component={ZoneScreen} />
-        <Stack.Screen name="Docs" component={DocsScreen} />
-        <Stack.Screen name="BackgroundCheck" component={BackgroundCheckScreen} />
         <Stack.Screen name="ProfilePhoto" component={ProfilePhotoScreen} />
+        <Stack.Screen name="Passport" component={PassportScreen} />
         <Stack.Screen name="DriversLicense" component={DriversLicenseScreen} />
         <Stack.Screen name="VehicleInsurance" component={VehicleInsuranceScreen} />
         <Stack.Screen name="VehicleRegistration" component={VehicleRegistrationScreen} />
-        <Stack.Screen name="VehicleInspection" component={VehicleInspectionScreen} />
         <Stack.Screen name="Wallet" component={WalletScreen} />
         <Stack.Screen name="AddPayment" component={AddPaymentScreen} />
         <Stack.Screen name="Withdraw" component={WithdrawScreen} />

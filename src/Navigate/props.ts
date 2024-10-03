@@ -1,4 +1,4 @@
-import { countryDtosProps } from 'shuttlex-integration/lib/typescript/src/core/countries/props';
+import { CountryPhoneMaskDto } from 'shuttlex-integration';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -8,17 +8,16 @@ export type RootStackParamList = {
   Notifications: undefined;
   Rating: undefined;
   Zone: undefined;
-  Docs: undefined;
   BackgroundCheck: undefined;
   ProfilePhoto: undefined;
+  Passport: undefined;
   DriversLicense: undefined;
   VehicleInsurance: undefined;
   VehicleRegistration: undefined;
-  VehicleInspection: undefined;
   Wallet: undefined;
   AddPayment: undefined;
   Withdraw: undefined;
-  PhoneSelect: { initialFlag: countryDtosProps; onFlagSelect: (flag: countryDtosProps) => void };
+  PhoneSelect: { initialFlag: CountryPhoneMaskDto; onFlagSelect: (flag: CountryPhoneMaskDto) => void };
   Terms: undefined;
   Verification: undefined;
   LockOut: undefined;

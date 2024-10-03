@@ -17,11 +17,11 @@ export type DocsPhotoCoreProps = {
   photoWidth: number;
   photoHeight: number;
   goBack: () => void;
-  headerTitle: string;
-  explanationTitle: string;
-  explanationDescription: string;
+  windowTitle: string;
+  firstHeaderTitle: string;
+  secondHeaderTitle: string;
+  headerDescription: string;
   documentType: RequirementDocsType;
-  permittedDocumentFileType: DocumentFileType;
 };
 
 export const docsConsts = {

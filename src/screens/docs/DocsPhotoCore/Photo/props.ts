@@ -5,4 +5,5 @@ export type PhotoProps = {
   onCloseButtonPress: () => void;
   photoWidth: number;
   photoHeight: number;
+  isProfilePhoto: boolean;
 };

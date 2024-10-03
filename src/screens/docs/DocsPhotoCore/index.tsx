@@ -1,20 +1,24 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, StyleSheet, View } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import {
-  Bar,
-  ButtonV1,
-  ButtonV1Modes,
-  ButtonV1Shapes,
+  Button,
+  ButtonShadows,
+  ButtonShapes,
+  ButtonSizes,
+  CameraIcon,
+  CircleButtonModes,
+  DocumentIcon,
+  GalleryIcon,
+  RoundCheckIcon2,
   SafeAreaView,
   ScrollViewWithCustomScroll,
   ShortArrowIcon,
-  Text,
-  useThemeV1,
 } from 'shuttlex-integration';
+import { useTheme } from 'shuttlex-integration/src/core/themes/v2/themeContext';
 
 import { updateRequirementDocuments } from '../../../core/auth/redux/docs';
 import { useAppDispatch } from '../../../core/redux/hooks';
@@ -24,43 +28,43 @@ import {
   requestCameraUsagePermission,
   requestGalleryUsagePermission,
 } from '../../../core/utils/permissions';
-import FileTypePopup from './FileTypePopup';
+import VerificationHeader from '../../verification/VerificationScreen/VerificationHeader';
 import { docsConsts, DocsPhotoCoreProps, DocumentFileType, SelectedFile } from './props';
 import SelectedFilePresentation from './SelectedFilePresentation';
-
-type DocsPhotoCoreContent = {
-  onUploadContent: () => {} | void;
-  uploadButtonText: string;
-};
 
 const DocsPhotoCore = ({
   photoWidth,
   photoHeight,
   goBack,
-  headerTitle,
-  explanationTitle,
-  explanationDescription,
+  windowTitle,
+  firstHeaderTitle,
+  secondHeaderTitle,
+  headerDescription,
   documentType,
   children,
-  permittedDocumentFileType,
 }: DocsPhotoCoreProps): JSX.Element => {
-  const { colors } = useThemeV1();
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const dispatch = useAppDispatch();
 
   const [isFileLoaded, setIsFileLoaded] = useState(true);
-  const [selectedFile, setSelectedFile] = useState<SelectedFile | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
 
-  const [isFileTypePopupVisible, setIsFileTypePopupVisible] = useState(false);
+  const isProfilePhoto = documentType === 'profilePhoto';
 
-  const computedStyles = StyleSheet.create({
-    description: {
-      color: colors.textSecondaryColor,
-    },
-  });
+  const addSelectedFile = (file: SelectedFile) => {
+    const fileExists = selectedFiles.some(selectedFile => selectedFile.body.uri === file.body.uri);
+
+    if (fileExists) {
+      Alert.alert(t('docs_DocsPhotoCore_titleAlertDuplicateFile'), t('docs_DocsPhotoCore_messageAlertDuplicateFile'));
+    } else {
+      setSelectedFiles(prevFiles => [...prevFiles, file]);
+    }
+  };
 
   const cropPhoto = async (result: ImagePickerResponse) => {
     if (!result.didCancel && result.assets) {
+      const asset = result.assets[0];
       try {
         if (result.assets[0].uri) {
           const croppedResult = await ImageCropPicker.openCropper({
@@ -68,204 +72,209 @@ const DocsPhotoCore = ({
             mediaType: 'photo',
             width: photoWidth,
             height: photoHeight,
+            cropperCircleOverlay: isProfilePhoto,
           });
-          setSelectedFile({
+          addSelectedFile({
             type: DocumentFileType.Photo,
-            body: {
-              ...result.assets[0],
-              uri: croppedResult.path,
-              width: croppedResult.width,
-              height: croppedResult.height,
-            },
+            body: { ...asset, uri: croppedResult.path, width: croppedResult.width, height: croppedResult.height },
           });
         }
       } catch {
-        setSelectedFile({
-          type: DocumentFileType.Photo,
-          body: result.assets[0],
-        });
+        addSelectedFile({ type: DocumentFileType.Photo, body: asset });
       }
     }
     setIsFileLoaded(true);
   };
 
-  const onTakePhoto = async () => {
-    let isGranted = await checkCameraUsagePermission();
+  const handlePhotoAction = async (action: 'camera' | 'gallery') => {
+    const permissionCheck = action === 'camera' ? checkCameraUsagePermission : checkGalleryUsagePermission;
+    const requestPermission = action === 'camera' ? requestCameraUsagePermission : requestGalleryUsagePermission;
+    let isGranted = await permissionCheck();
 
     if (!isGranted) {
-      await requestCameraUsagePermission();
-      isGranted = await checkCameraUsagePermission();
+      await requestPermission();
+      isGranted = await permissionCheck();
     }
+
     if (isGranted) {
-      const result = await launchCamera({ mediaType: 'photo', cameraType: 'front', maxHeight: 1400, maxWidth: 1400 });
+      const result =
+        action === 'camera'
+          ? await launchCamera({ mediaType: 'photo', maxHeight: 1400, maxWidth: 1400 })
+          : await launchImageLibrary({ mediaType: 'photo' });
 
       setIsFileLoaded(false);
       setTimeout(() => cropPhoto(result), docsConsts.cropTimeOut);
     }
   };
 
-  const onSelectPhoto = async () => {
-    let isGranted = await checkGalleryUsagePermission();
-
-    if (!isGranted) {
-      await requestGalleryUsagePermission();
-      isGranted = await checkGalleryUsagePermission();
-    }
-
-    if (isGranted) {
-      const result = await launchImageLibrary({ mediaType: 'photo' });
-
-      if (!result.didCancel) {
-        setIsFileLoaded(false);
-        setTimeout(() => {
-          cropPhoto(result);
-          setIsFileTypePopupVisible(false);
-        }, docsConsts.cropTimeOut);
-      }
-    }
-  };
-
   const onSelectDocument = async () => {
     try {
-      const result = await DocumentPicker.pickSingle({
-        type: [DocumentPicker.types.allFiles],
-      });
-
-      setIsFileTypePopupVisible(false);
-      setSelectedFile({
-        type: DocumentFileType.Document,
-        body: result,
-      });
+      const result = await DocumentPicker.pickSingle({ type: [DocumentPicker.types.allFiles] });
+      addSelectedFile({ type: DocumentFileType.Document, body: result });
     } catch {
-      //TODO: add error
+      Alert.alert(t('docs_DocsPhotoCore_titleAlertSelectDocument'), t('docs_DocsPhotoCore_messageAlertSelectDocument'));
     }
   };
 
   const onSave = () => {
-    let body = null;
+    const filesToUpload = selectedFiles.map(file => {
+      const fileName = file.type === 'photo' ? file.body.fileName : file.body.name;
 
-    if (selectedFile) {
-      const fileName = selectedFile.type === 'photo' ? selectedFile.body.fileName : selectedFile.body.name;
-
-      if (selectedFile.body.uri && selectedFile.body.type && fileName) {
-        body = {
+      if (file.body.uri && file.body.type && fileName) {
+        return {
           name: fileName,
-          type: selectedFile.body.type,
-          uri: Platform.OS === 'ios' ? selectedFile.body.uri.replace('file://', '') : selectedFile.body.uri,
-          //TODO: check if be need this replace
+          type: file.body.type,
+          uri: Platform.OS === 'ios' ? file.body.uri.replace('file://', '') : file.body.uri,
         };
       }
-    }
+      return null;
+    });
 
-    if (body) {
-      dispatch(
-        updateRequirementDocuments({
-          type: documentType,
-          body,
-        }),
-      );
+    if (filesToUpload.length > 0) {
+      dispatch(updateRequirementDocuments({ [documentType]: filesToUpload }));
       goBack();
     }
   };
 
-  const docsPhotoCoreRecord: Record<DocumentFileType, DocsPhotoCoreContent> = {
-    photo: {
-      onUploadContent: onSelectPhoto,
-      uploadButtonText: t('docs_DocsPhotoCore_selectPhotoButton'),
-    },
-    document: {
-      onUploadContent: onSelectDocument,
-      uploadButtonText: t('docs_DocsPhotoCore_selectDocumentButton'),
-    },
-    all: {
-      onUploadContent: () => setIsFileTypePopupVisible(true),
-      uploadButtonText: t('docs_DocsPhotoCore_selectFileButton'),
-    },
-  };
-
   let bottomButton = (
-    <ButtonV1
-      text={docsPhotoCoreRecord[permittedDocumentFileType].uploadButtonText}
-      onPress={docsPhotoCoreRecord[permittedDocumentFileType].onUploadContent}
-    />
+    <>
+      <Button
+        shape={ButtonShapes.Circle}
+        mode={CircleButtonModes.Mode2}
+        size={ButtonSizes.M}
+        onPress={() => handlePhotoAction('gallery')}
+      >
+        <GalleryIcon />
+      </Button>
+
+      <Button
+        shape={ButtonShapes.Circle}
+        size={ButtonSizes.L}
+        innerSpacing={5}
+        shadow={ButtonShadows.Strong}
+        onPress={() => handlePhotoAction('camera')}
+      >
+        <CameraIcon />
+      </Button>
+
+      <Button
+        shape={ButtonShapes.Circle}
+        mode={CircleButtonModes.Mode2}
+        size={ButtonSizes.M}
+        onPress={onSelectDocument}
+      >
+        <DocumentIcon style={styles.documentIcon} />
+      </Button>
+    </>
   );
 
+  if (isProfilePhoto) {
+    bottomButton =
+      selectedFiles.length > 0 ? (
+        <Button containerStyle={styles.button} text={t('docs_DocsPhotoCore_saveButton')} onPress={onSave} />
+      ) : (
+        <Button
+          containerStyle={styles.button}
+          text={t('docs_DocsPhotoCore_selectPhotoButton')}
+          onPress={() => handlePhotoAction('gallery')}
+        />
+      );
+  }
+
   if (!isFileLoaded) {
-    bottomButton = (
-      <ButtonV1 mode={ButtonV1Modes.Mode4} style={styles.loadingButton}>
+    bottomButton = isProfilePhoto ? (
+      <Button containerStyle={styles.button}>
         <ActivityIndicator />
-      </ButtonV1>
+      </Button>
+    ) : (
+      <Button
+        shape={ButtonShapes.Circle}
+        size={ButtonSizes.L}
+        innerSpacing={5}
+        shadow={ButtonShadows.Strong}
+        onPress={() => handlePhotoAction('camera')}
+      >
+        <ActivityIndicator />
+      </Button>
     );
-  } else if (selectedFile) {
-    bottomButton = <ButtonV1 text={t('docs_DocsPhotoCore_saveButton')} onPress={onSave} />;
   }
 
   return (
     <>
       <SafeAreaView>
-        <View style={styles.header}>
-          <ButtonV1 onPress={goBack} shape={ButtonV1Shapes.Circle}>
+        <View style={styles.headerButtonContainer}>
+          <Button onPress={goBack} shape={ButtonShapes.Circle} mode={CircleButtonModes.Mode2}>
             <ShortArrowIcon />
-          </ButtonV1>
-          <Text style={[styles.headerTitle]}>{headerTitle}</Text>
-          <View style={styles.headerDummy} />
+          </Button>
+
+          {!isProfilePhoto && (
+            <Button
+              onPress={onSave}
+              shape={ButtonShapes.Circle}
+              disabled={selectedFiles.length === 0}
+              size={ButtonSizes.S}
+              mode={selectedFiles.length > 0 ? CircleButtonModes.Mode1 : CircleButtonModes.Mode2}
+            >
+              <RoundCheckIcon2
+                style={styles.roundCheckIcon}
+                color={selectedFiles.length > 0 ? undefined : colors.backgroundSecondaryColor}
+              />
+            </Button>
+          )}
         </View>
-        <ScrollViewWithCustomScroll withShadow>
-          <Bar>
-            <Text style={styles.title}>{explanationTitle}</Text>
-            <Text style={[styles.description, computedStyles.description]}>{explanationDescription}</Text>
-          </Bar>
+
+        <VerificationHeader
+          containerStyle={styles.verificationHeader}
+          windowTitle={windowTitle}
+          firstHeaderTitle={firstHeaderTitle}
+          secondHeaderTitle={secondHeaderTitle}
+          description={headerDescription}
+        />
+
+        <ScrollViewWithCustomScroll withShadow withScroll>
           <SelectedFilePresentation
-            selectedFile={selectedFile ?? undefined}
-            onTakePhoto={onTakePhoto}
-            onCloseFile={() => setSelectedFile(null)}
+            selectedFiles={selectedFiles}
+            onTakePhoto={() => handlePhotoAction('camera')}
+            onCloseFile={fileUri => setSelectedFiles(selectedFiles.filter(file => file.body.uri !== fileUri))}
             photoHeight={photoHeight}
             photoWidth={photoWidth}
+            isProfilePhoto={isProfilePhoto}
           />
           {children}
         </ScrollViewWithCustomScroll>
-        {bottomButton}
+        <View style={styles.buttonContainer}>{bottomButton}</View>
       </SafeAreaView>
-      {isFileTypePopupVisible && (
-        <FileTypePopup
-          onClose={() => setIsFileTypePopupVisible(false)}
-          onOpenFilePicker={onSelectDocument}
-          onOpenImagePicker={onSelectPhoto}
-        />
-      )}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  loadingButton: {
-    padding: 12,
+  verificationHeader: {
+    marginTop: 20,
+    marginBottom: 24,
   },
-  header: {
+  headerButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 32,
   },
-  headerTitle: {
-    fontFamily: 'Inter Medium',
-    fontSize: 18,
-  },
-  headerDummy: {
-    width: 50,
-  },
-  title: {
-    fontFamily: 'Inter Medium',
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  tips: {
-    gap: 8,
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
     marginTop: 24,
-    marginBottom: 44,
+    gap: 8,
+  },
+  button: {
+    flex: 1,
+  },
+  documentIcon: {
+    width: 20,
+    height: 20,
+  },
+  roundCheckIcon: {
+    width: 42,
+    height: 42,
   },
 });
 

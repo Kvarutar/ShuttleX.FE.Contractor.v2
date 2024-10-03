@@ -1,23 +1,24 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { RequirementDocs, RequirementDocsType } from './types';
+import { DocsState } from './types';
 
-const initialState: Record<RequirementDocsType, RequirementDocs> = {
-  backgroundCheck: null,
+const initialState: DocsState = {
   profilePhoto: null,
-  passport: null,
-  driversLicense: null,
-  vehicleInspection: null,
-  vehicleInsurance: null,
-  vehicleRegistration: null,
+  passport: [],
+  driversLicense: [],
+  vehicleInsurance: [],
+  vehicleRegistration: [],
 };
 
 const slice = createSlice({
   name: 'docs',
   initialState,
   reducers: {
-    updateRequirementDocuments(state, action: PayloadAction<{ body: RequirementDocs; type: RequirementDocsType }>) {
-      state[action.payload.type] = action.payload.body;
+    updateRequirementDocuments(state, action: PayloadAction<Partial<DocsState>>) {
+      return {
+        ...state,
+        ...action.payload,
+      };
     },
   },
 });

@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import {
   BarModes,
   BottomWindowWithGesture,
   Button,
   ButtonShapes,
-  ButtonSizes,
   CircleButtonModes,
   FlatListWithCustomScroll,
   SafeAreaView,
@@ -49,6 +48,7 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
   };
 
   const onPropositionButtonPress = () => {
+    Alert.alert(t('verification_Zone_alertTitle'), t('verification_Zone_alertMessage'));
     setIsVisiblePropositionWindow(false);
   };
 
@@ -96,12 +96,7 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
 
   return (
     <SafeAreaView>
-      <Button
-        onPress={navigation.goBack}
-        shape={ButtonShapes.Circle}
-        mode={CircleButtonModes.Mode2}
-        size={ButtonSizes.S}
-      >
+      <Button onPress={navigation.goBack} shape={ButtonShapes.Circle} mode={CircleButtonModes.Mode2}>
         <ShortArrowIcon />
       </Button>
       <VerificationHeader

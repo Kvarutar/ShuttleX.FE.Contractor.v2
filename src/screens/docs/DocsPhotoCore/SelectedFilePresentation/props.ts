@@ -2,8 +2,9 @@ import { SelectedFile } from '../props';
 
 export type SelectedFileProps = {
   onTakePhoto: () => void;
-  onCloseFile: () => void;
-  selectedFile?: SelectedFile;
+  onCloseFile: (fileUri: string | undefined) => void;
+  selectedFiles: SelectedFile[];
   photoWidth: number;
   photoHeight: number;
+  isProfilePhoto: boolean;
 };
