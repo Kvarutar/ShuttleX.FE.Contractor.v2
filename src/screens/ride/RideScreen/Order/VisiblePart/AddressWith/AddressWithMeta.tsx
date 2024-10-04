@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { Shadow } from 'react-native-shadow-2';
 import {
+  defaultShadow,
   ExternalMapIcon,
   PointIcon,
   Text,
@@ -39,14 +41,11 @@ const AddressWithMeta = ({ tripPoints, timeForTimer }: AddressWithMetaProps) => 
 
   return (
     <View>
-      <Timer
-        style={{
-          timerWrapper: styles.timerWrapper,
-        }}
-        time={timeForTimer}
-        sizeMode={TimerSizesModes.S}
-        colorMode={TimerColorModes.Mode3}
-      />
+      <View style={styles.timerWrapper}>
+        <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.shadowStyle}>
+          <Timer time={timeForTimer} sizeMode={TimerSizesModes.S} colorMode={TimerColorModes.Mode3} />
+        </Shadow>
+      </View>
       <View style={styles.metaInfoContainer}>
         <PointIcon
           outerColor={computedStyles.pointOuterColor.color}
@@ -75,6 +74,9 @@ const styles = StyleSheet.create({
     top: -64,
     alignSelf: 'center',
   },
+  shadowStyle: {
+    borderRadius: 100,
+  },
   metaInfoContainer: {
     flexDirection: 'row',
     paddingTop: 48,
@@ -82,7 +84,7 @@ const styles = StyleSheet.create({
   },
   dropOffTextsContainer: {
     flex: 1,
-    gap: 8,
+    gap: 4,
   },
   dropOffText: {
     fontFamily: 'Inter Medium',

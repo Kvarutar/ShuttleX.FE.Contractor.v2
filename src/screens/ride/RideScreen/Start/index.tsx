@@ -200,6 +200,7 @@ const Start = () => {
   return (
     <>
       <BottomWindowWithGesture
+        withDraggable={!isOpened}
         withHiddenPartScroll={false}
         bottomWindowStyle={[styles.bottomWindowStyle, computedStyles.bottomWindowStyle]}
         setIsOpened={setIsOpened}

@@ -134,11 +134,9 @@ const styles = StyleSheet.create({
   //TODO: Check image sizes on smaller and bigger devices
   bigCarImageContainer: {
     position: 'absolute',
-    top: -144,
-    width: '100%',
+    top: -120,
+    width: '75%',
     height: 130,
-    marginBottom: 24,
-    paddingHorizontal: 38,
     alignSelf: 'center',
   },
   bigCarImage: {

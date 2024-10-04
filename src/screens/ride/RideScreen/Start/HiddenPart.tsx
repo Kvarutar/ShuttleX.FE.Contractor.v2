@@ -154,13 +154,13 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
           <SwipeButton
             mode={SwipeButtonModes.Confirm}
             onSwipeEnd={() => swipeHandler(lineState.toLineState)}
-            text={t('ride_Ride_Order_startRideButton')}
+            text={t('ride_Ride_Start_startRideButton')}
           />
         ) : (
           <SwipeButton
             mode={SwipeButtonModes.Decline}
             onSwipeEnd={() => swipeHandler(lineState.toLineState)}
-            text={t('ride_Ride_Order_finishRideButton')}
+            text={t('ride_Ride_Start_finishRideButton')}
           />
         )}
       </View>
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
-    marginTop: -8,
+    marginTop: -20,
   },
   levelTextsContainer: {
     flexDirection: 'row',
@@ -194,13 +194,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter Medium',
     textAlign: 'center',
     fontSize: 21,
-    paddingTop: 8,
-    marginBottom: 8,
+    paddingTop: 4,
   },
   rideDataContainer: {
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 4,
+    paddingTop: 2,
     marginBottom: 13,
   },
   likesContainer: {

@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ListRenderItem, StyleSheet, View } from 'react-native';
+import { Shadow } from 'react-native-shadow-2';
 import {
   Button,
+  defaultShadow,
   FlatListWithCustomScroll,
   PointIcon,
   ScrollViewWithCustomScroll,
@@ -116,12 +118,14 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferProps) =>
     <>
       {
         <View style={styles.timerContainer}>
-          <Timer
-            time={makeDecisionTime}
-            sizeMode={TimerSizesModes.S}
-            colorMode={TimerColorModes.Mode4}
-            onAfterCountdownEnds={onClose}
-          />
+          <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.shadowStyle}>
+            <Timer
+              time={makeDecisionTime}
+              sizeMode={TimerSizesModes.S}
+              colorMode={TimerColorModes.Mode4}
+              onAfterCountdownEnds={onClose}
+            />
+          </Shadow>
         </View>
       }
       <View style={styles.offerInfoWrapper}>
@@ -214,6 +218,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
+  },
+  shadowStyle: {
+    borderRadius: 100,
   },
   offerInfoWrapper: {
     flexDirection: 'row',

@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   },
   tariffImage: {
     width: undefined,
-    height: 55,
+    height: 45,
     aspectRatio: 2.5,
     resizeMode: 'contain',
   },

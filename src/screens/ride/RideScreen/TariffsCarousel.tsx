@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     borderWidth: 1,
     borderRadius: 12,
-    paddingBottom: 28,
+    paddingBottom: 16,
   },
   title: {
     alignSelf: 'flex-start',
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingHorizontal: 28,
+    paddingHorizontal: 10,
   },
   carImage: {
     width: '100%',

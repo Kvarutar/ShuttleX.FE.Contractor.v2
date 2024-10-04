@@ -43,13 +43,13 @@ const AddressWithPassengerAndOrderInfo = ({
   const [extraWaiting, setExtraWaiting] = useState<boolean>(false);
   const [timerColorMode, setTimerColorMode] = useState<TimerColorModes>(TimerColorModes.Mode1);
   const [extraWaitingSum, setExtraWaitingSum] = useState<number>(0);
-  const [disabledShadow, setDisabledShadow] = useState(true);
+  // const [disabledShadow, setDisabledShadow] = useState(true);
 
   const order = useSelector(orderSelector);
 
-  useEffect(() => {
-    setDisabledShadow(timerColorMode !== TimerColorModes.Mode2);
-  }, [timerColorMode, extraWaiting]);
+  // useEffect(() => {
+  //   setDisabledShadow(timerColorMode !== TimerColorModes.Mode2);
+  // }, [timerColorMode, extraWaiting]);
 
   useEffect(() => {
     switch (contentType) {
@@ -245,7 +245,13 @@ const AddressWithPassengerAndOrderInfo = ({
             </Text>
           </View>
           <View>
-            <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.shadowStyle} disabled={disabledShadow}>
+            <Shadow
+              {...defaultShadow(
+                timerColorMode !== TimerColorModes.Mode2 ? colors.strongShadowColor : colors.weakShadowColor,
+              )}
+              style={styles.shadowStyle}
+              // disabled={disabledShadow}
+            >
               <Timer
                 time={timeForTimer}
                 isWaiting={isWaiting}
@@ -328,7 +334,6 @@ const styles = StyleSheet.create({
   endingAdressAndNames: {
     marginTop: 32,
     marginBottom: 14,
-    gap: 4,
   },
   endingPassengerNames: {
     fontFamily: 'Inter Medium',
@@ -382,7 +387,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 4,
+    gap: 2,
     paddingVertical: 16,
     borderRadius: 12,
   },
@@ -417,10 +422,12 @@ const styles = StyleSheet.create({
   },
   timerStatusContainer: {
     alignSelf: 'center',
+    alignItems: 'center',
     position: 'absolute',
-    bottom: -6,
-    paddingVertical: 8,
+    bottom: 0,
+    paddingVertical: 4,
     paddingHorizontal: 14,
+    minWidth: 68,
     borderRadius: 16,
   },
   timerStatusText: {

@@ -13,6 +13,10 @@ export const useAchievement = (key: AchievementsKeys) => {
       text: t('Achievements_FinishYourFirstRide'),
       icon: <FinishYourFirstRide />,
     },
+    finish_your_second_ride: {
+      text: t('Achievements_FinishYourSecondRide'),
+      icon: <FinishYourFirstRide />,
+    },
     invite_a_friend: {
       text: t('Achievements_InviteAFriend'),
       icon: <InviteAFriend />,

@@ -201,7 +201,7 @@ export const getAchievements = createAppAsyncThunk<AchievementsAPIResponse[], { 
         pointsAmount: 325,
       },
       {
-        key: 'finish_your_first_ride',
+        key: 'finish_your_second_ride',
         isDone: false,
         pointsAmount: 325,
       },
