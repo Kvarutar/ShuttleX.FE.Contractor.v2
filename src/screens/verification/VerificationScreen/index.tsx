@@ -204,7 +204,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
         containerStyle={styles.verificationHeader}
         windowTitle={t('verification_Verification_headerTitle')}
         firstHeaderTitle={t('verification_Verification_explanationTitle')}
-        secondHeaderTitle={profile?.name ?? 'Vladyslav'}
+        secondHeaderTitle={profile?.fullName ?? 'Vladyslav'}
         description={t('verification_Verification_explanationDescription')}
       />
       <View style={styles.content}>{renderSection}</View>

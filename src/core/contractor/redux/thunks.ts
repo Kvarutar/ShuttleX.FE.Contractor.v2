@@ -1,7 +1,7 @@
 import Config from 'react-native-config';
 
 import { createAppAsyncThunk } from '../../redux/hooks';
-import { AchievementsAPIResponse, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
+import { AchievementsAPIResponse, CarDataAPIResponse, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
 
 export const sendSelectedTariffs = createAppAsyncThunk<void, { selectedTariffs: TariffInfo[]; contractorId: string }>(
   'contractor/sendSelectedTariffs',
@@ -207,5 +207,27 @@ export const getAchievements = createAppAsyncThunk<AchievementsAPIResponse[], { 
       },
     ];
     return achievementsFromBack;
+  },
+);
+
+//TODO: There's just example! Rewrite when info about "achievements" logic will be known
+export const getCarData = createAppAsyncThunk<CarDataAPIResponse, { contractorId: string }>(
+  'trip/getCarData',
+  async () => {
+    //TODO: Add networking
+    // try {
+    //   return await shuttlexContractorInstance.get(`/contractor/carData/${payload.contractorId}`, {});
+    // } catch (error) {
+    //   const { code, message } = getAxiosErrorInfo(error);
+    //   return rejectWithValue({
+    //     code,
+    //     message,
+    //   });
+    // }
+    const carDataFromBack: CarDataAPIResponse = {
+      id: 'BB 4177 CH',
+      title: 'Toyota Land Cruser',
+    };
+    return carDataFromBack;
   },
 );

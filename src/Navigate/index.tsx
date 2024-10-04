@@ -14,6 +14,7 @@ import PassportScreen from '../screens/docs/PassportScreen';
 import ProfilePhotoScreen from '../screens/docs/ProfilePhotoScreen';
 import VehicleInsuranceScreen from '../screens/docs/VehicleInsuranceScreen';
 import VehicleRegistrationScreen from '../screens/docs/VehicleRegistrationScreen';
+import AccountSettings from '../screens/menu/AccountSettings';
 import NotificationScreen from '../screens/menu/NotificationsScreen';
 import AddPaymentScreen from '../screens/menu/wallet/AddPaymentScreen';
 import WalletScreen from '../screens/menu/wallet/WalletScreen';
@@ -59,6 +60,7 @@ const Navigate = (): JSX.Element => {
         <Stack.Screen name="Terms" component={TermsScreen} />
         <Stack.Screen name="Verification" component={VerificationScreen} />
         <Stack.Screen name="LockOut" component={LockOutScreen} />
+        <Stack.Screen name="AccountSettings" component={AccountSettings} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -70,7 +70,7 @@
   "ride_Ride_PassengerRatingPopup_confirmButton": "Yes",
   "ride_Ride_PassengerRatingPopup_getHelpButton": "Get help",
   "ride_Rating_Feedback_title": "Rate the passenger {{name}} on this ride.",
-  "ride_Menu_navigationMyRide": "My ride",
+  "ride_Menu_navigationRide": "Ride",
   "ride_Menu_navigationActivity": "Activity",
   "ride_Menu_navigationStatistics": "Statistics",
   "ride_Menu_navigationPromocodes": "Promocodes",

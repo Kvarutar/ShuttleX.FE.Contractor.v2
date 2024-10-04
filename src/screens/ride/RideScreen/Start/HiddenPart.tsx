@@ -15,6 +15,7 @@ import {
 } from 'shuttlex-integration';
 
 import {
+  carDataSelector,
   contractorStatusSelector,
   profileSelector,
   selectedTariffsSelector,
@@ -22,6 +23,7 @@ import {
 import { updateContractorStatus } from '../../../../core/contractor/redux/thunks';
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
+import { statisticsContractorSelector } from '../../../../core/statistics/redux/selectors';
 import AchievementsCarousel from './AchievementsCarousel';
 import { HiddenPartProps } from './props';
 
@@ -33,6 +35,8 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
   const dispatch = useAppDispatch();
 
   const profile = useSelector(profileSelector);
+  const contractorStatistics = useSelector(statisticsContractorSelector);
+  const carData = useSelector(carDataSelector);
   const contractorStatus = useSelector(contractorStatusSelector);
   const selectedTariffs = useSelector(selectedTariffsSelector);
 
@@ -89,7 +93,7 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
     return value.toString();
   }
 
-  if (!isOpened || !profile) {
+  if (!isOpened || !profile || !contractorStatistics || !carData) {
     return;
   }
 
@@ -98,32 +102,32 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
       <View style={styles.levelContainer}>
         <CrownIcon />
         <View style={styles.levelTextsContainer}>
-          <Text style={[styles.levelCounter, computedStyles.levelCounter]}>{profile.level}</Text>
+          <Text style={[styles.levelCounter, computedStyles.levelCounter]}>{contractorStatistics.level}</Text>
           <Text style={[styles.levelText, computedStyles.levelText]}>lvl.</Text>
         </View>
       </View>
-      <Text style={styles.namesText}>{profile.name + ' ' + profile.surname}</Text>
+      <Text style={styles.namesText}>{profile.fullName}</Text>
       <View style={styles.rideDataContainer}>
         <View style={styles.likesContainer}>
           <Like2Icon style={styles.likeIcon} />
-          <Text style={computedStyles.likesAndRidesCounter}>{formatBigNumbers(profile.likes)}</Text>
+          <Text style={computedStyles.likesAndRidesCounter}>{formatBigNumbers(contractorStatistics.likes)}</Text>
           <Text style={[styles.likesAndRidesText, computedStyles.likesAndRidesText]}>{t('ride_Ride_Order_likes')}</Text>
         </View>
         <View style={styles.ridesContainer}>
           <View style={[styles.dot, computedStyles.dot]} />
           <SteeringWheelIcon color={computedStyles.steeringWheelIcon.color} />
-          <Text style={computedStyles.likesAndRidesCounter}>{formatBigNumbers(profile.rides)}</Text>
+          <Text style={computedStyles.likesAndRidesCounter}>{formatBigNumbers(contractorStatistics.rides)}</Text>
           <Text style={[styles.likesAndRidesText, computedStyles.likesAndRidesText]}>{t('ride_Ride_Order_rides')}</Text>
         </View>
       </View>
       <View style={styles.carDataContainer}>
         <View style={[styles.carTitleContainer, computedStyles.carTitleContainer]}>
           <Text numberOfLines={1} style={styles.carTitleText}>
-            {profile.carData.title}
+            {carData.title}
           </Text>
         </View>
         <View style={[styles.carIdContainer, computedStyles.carIdContainer]}>
-          <Text style={styles.carIdText}>{profile.carData.id}</Text>
+          <Text style={styles.carIdText}>{carData.id}</Text>
         </View>
       </View>
       <AchievementsCarousel setIsAchievementsPopupVisible={setIsAchievementsPopupVisible} />

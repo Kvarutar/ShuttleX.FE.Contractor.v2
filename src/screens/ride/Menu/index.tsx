@@ -1,20 +1,31 @@
-import { useNavigationState } from '@react-navigation/native';
+import { useNavigation, useNavigationState } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Bar, BarModes, LevelIcon, MenuBase, MenuNavigation, Text, useTheme } from 'shuttlex-integration';
 
-import { extendedProfileSelector } from '../../../core/contractor/redux/selectors';
+import { profileSelector } from '../../../core/contractor/redux/selectors';
+import { RootStackParamList } from '../../../Navigate/props';
 import { MenuProps } from './props';
 
-const Menu = ({ onClose, navigation }: MenuProps) => {
+const Menu = ({ onClose }: MenuProps) => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const { t } = useTranslation();
 
-  const profile = useSelector(extendedProfileSelector);
+  const profile = useSelector(profileSelector);
 
   const currentRoute = useNavigationState(state => state.routes[state.index].name);
 
   const menuNavigation: MenuNavigation = {
+    ride: {
+      navFunc: () => {
+        navigation.navigate('Ride');
+        onClose();
+      },
+      title: t('ride_Menu_navigationRide'),
+    },
     statistics: {
       navFunc: () => {
         navigation.navigate('Ride');
@@ -40,8 +51,7 @@ const Menu = ({ onClose, navigation }: MenuProps) => {
     },
     settings: {
       navFunc: () => {
-        navigation.navigate('Ride');
-        //TODO Create settings page
+        navigation.navigate('AccountSettings');
         onClose();
       },
       title: t('ride_Menu_navigationAccountSettings'),
@@ -60,14 +70,15 @@ const Menu = ({ onClose, navigation }: MenuProps) => {
     <MenuBase
       onClose={onClose}
       additionalContent={<AdditionalContent />}
-      userImageUri={profile?.profileImageUri ?? undefined}
-      userName={profile?.name}
+      userImageUri={profile?.imageUri ?? undefined}
+      userName={profile?.fullName}
       menuNavigation={menuNavigation}
       currentRoute={currentRoute}
       label={<LevelLabel />}
     />
   );
 };
+
 const LevelLabel = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -81,6 +92,7 @@ const LevelLabel = () => {
   return (
     <View style={[styles.label, computedStyles.label]}>
       <LevelIcon />
+      {/* TODO add dynamic level variable */}
       <Text style={[styles.labelText, { color: colors.textQuadraticColor }]}>{t('ride_Menu_level', { level: 4 })}</Text>
     </View>
   );
@@ -102,6 +114,7 @@ const AdditionalContent = () => {
         {/* TODO: create logic for it (from where will we get the balance) */}
         <Text style={styles.balanceTotal}>$682.40</Text>
       </Bar>
+
       <Bar mode={BarModes.Disabled} style={styles.textWrapper}>
         <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('ride_Menu_additionalPrevious')}</Text>
         <Text style={styles.balanceTotal}>$12.10</Text>

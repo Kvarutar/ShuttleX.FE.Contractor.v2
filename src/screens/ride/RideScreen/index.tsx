@@ -18,7 +18,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { setProfile, setProfileImage } from '../../../core/contractor/redux';
+import { setProfile } from '../../../core/contractor/redux';
 import { profileSelector } from '../../../core/contractor/redux/selectors';
 import { setNotificationList } from '../../../core/menu/redux/notifications';
 import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
@@ -74,26 +74,14 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     if (!profile) {
       dispatch(
         setProfile({
-          name: 'John',
-          surname: 'Smith',
+          fullName: 'John Smith',
           email: 'mail@mail.ru',
-          dateOfBirth: new Date().getTime(),
           phone: '+79990622720',
-          level: 4,
-          likes: 4000,
-          rides: 10000,
-          carData: {
-            id: 'BB 4177 CH',
-            title: 'Toyota Land Cruser',
-          },
+          imageUri:
+            'https://sun9-34.userapi.com/impg/ZGuJiFBAp-93En3yLK7LWZNPxTGmncHrrtVgbg/hd6uHaUv1zE.jpg?size=1200x752&quality=96&sign=e79799e4b75c839d0ddb1a2232fe5d60&type=album',
         }),
       );
     }
-    dispatch(
-      setProfileImage(
-        'https://sun9-34.userapi.com/impg/ZGuJiFBAp-93En3yLK7LWZNPxTGmncHrrtVgbg/hd6uHaUv1zE.jpg?size=1200x752&quality=96&sign=e79799e4b75c839d0ddb1a2232fe5d60&type=album',
-      ),
-    );
   }, [dispatch, profile]);
 
   useEffect(() => {
@@ -243,7 +231,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
         )}
         {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
       </SafeAreaView>
-      {isMenuVisible && <Menu navigation={navigation} onClose={() => setIsMenuVisible(false)} />}
+      {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
     </>
   );
 };

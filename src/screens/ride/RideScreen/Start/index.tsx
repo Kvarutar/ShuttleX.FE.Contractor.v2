@@ -11,13 +11,14 @@ import {
 } from 'shuttlex-integration';
 
 import { contractorStatusSelector } from '../../../../core/contractor/redux/selectors';
-import { getAchievements, getPreferences, getTariffs } from '../../../../core/contractor/redux/thunks';
+import { getAchievements, getCarData, getPreferences, getTariffs } from '../../../../core/contractor/redux/thunks';
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { setOrder } from '../../../../core/ride/redux/trip';
 import { responseToOffer } from '../../../../core/ride/redux/trip/thunks';
 import { OfferType, OrderType } from '../../../../core/ride/redux/trip/types';
+import { getContractorStatistics } from '../../../../core/statistics/redux/thunks';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import AchievementsPopup from '../popups/AchievementsPopup';
 import OfferPopup from '../popups/OfferPopup';
@@ -162,13 +163,14 @@ const Start = () => {
   }, [contractorStatus]);
 
   useEffect(() => {
-    const asyncGetTariffsPreferences = async () => {
-      //TODO: Add a real contractor id
-      await dispatch(getTariffs({ contractorId: '' }));
-      await dispatch(getPreferences({ contractorId: '' }));
+    (async () => {
+      //TODO: Change contractorId when we know how it seems
       await dispatch(getAchievements({ contractorId: '' }));
-    };
-    asyncGetTariffsPreferences();
+      await dispatch(getPreferences({ contractorId: '' }));
+      await dispatch(getTariffs({ contractorId: '' }));
+      await dispatch(getContractorStatistics({ contractorId: '' }));
+      await dispatch(getCarData({ contractorId: '' }));
+    })();
   }, [dispatch]);
 
   const onOfferPopupClose = () => {

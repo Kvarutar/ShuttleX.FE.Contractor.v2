@@ -2,24 +2,16 @@ import { TariffType } from 'shuttlex-integration';
 
 import { AchievementsKeys } from '../../../shared/Achievements/types';
 
-export type Profile = {
-  name: string;
-  surname: string;
-  dateOfBirth: number;
-  email: string;
-  phone: string;
-  level: number;
-  likes: number;
-  rides: number;
-  carData: {
-    id: string;
-    title: string;
-  };
-};
-
 export type PreferenceType = 'CryptoPayment' | 'CashPayment';
 
 export type ContractorStatus = 'online' | 'offline';
+
+export type Profile = {
+  fullName: string;
+  email: string;
+  phone: string;
+  imageUri: string;
+};
 
 export type TariffInfo = {
   id: string;
@@ -44,13 +36,18 @@ export type AchievementsAPIResponse = {
   pointsAmount: number;
 };
 
+export type CarDataAPIResponse = {
+  id: string;
+  title: string;
+};
+
 export type ContractorState = {
   contractorId: string;
   tariffs: TariffInfo[];
   preferences: PreferenceInfo[];
   achievements: AchievementsAPIResponse[];
   profile: Profile | null;
+  carData: CarDataAPIResponse | null;
   status: ContractorStatus;
   zone: string | null;
-  profileImageUri: string | null;
 };

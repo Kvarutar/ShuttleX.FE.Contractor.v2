@@ -12,12 +12,14 @@ import mapReducer from '../ride/redux/map';
 import tripReducer from '../ride/redux/trip';
 import signalRReducer from '../signalr';
 import { signalRMiddleware } from '../signalr/middleware';
+import statisticsReducer from '../statistics/redux';
 
 const rootReducer = combineReducers({
   docs: docsReducer,
   lockout: lockoutReducer,
   notifications: notificationsReducer,
   wallet: walletReducer,
+  statistics: statisticsReducer,
   alerts: alertsReducer,
   geolocation: geolocationReducer,
   map: mapReducer,

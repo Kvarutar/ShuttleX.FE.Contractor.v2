@@ -2,30 +2,30 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
   getAchievements,
+  getCarData,
   getPreferences,
   getTariffs,
   sendSelectedPreferences,
   sendSelectedTariffs,
   updateContractorStatus,
 } from './thunks';
-import {
-  AchievementsAPIResponse,
-  ContractorState,
-  ContractorStatus,
-  PreferenceInfo,
-  Profile,
-  TariffInfo,
-} from './types';
+import { CarDataAPIResponse, type Profile } from './types';
+import { AchievementsAPIResponse, ContractorState, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
 
 const initialState: ContractorState = {
-  //TODO: Remove contractorId value when logic for receiving it will be added
+  //TODO: Remove contractorId and Profile value when logic for receiving it will be added
   contractorId: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // Random value
   tariffs: [],
   preferences: [],
   achievements: [],
-  profile: null,
+  profile: {
+    fullName: 'John Smith',
+    email: 'mail@mail.ru',
+    phone: '+79990622720',
+    imageUri: '',
+  },
+  carData: null,
   zone: null,
-  profileImageUri: null,
   status: 'offline',
 };
 
@@ -55,6 +55,9 @@ const slice = createSlice({
     setAchievements(state, action: PayloadAction<AchievementsAPIResponse[]>) {
       state.achievements = action.payload;
     },
+    setCarData(state, action: PayloadAction<CarDataAPIResponse>) {
+      state.carData = action.payload;
+    },
     revertPreferenceFieldById(
       state,
       action: PayloadAction<{ preferenceId: string; field: keyof Omit<PreferenceInfo, 'id' | 'name'> }>,
@@ -67,13 +70,21 @@ const slice = createSlice({
     setProfile(state, action: PayloadAction<Profile>) {
       state.profile = action.payload;
     },
+
+    updateProfile(state, action: PayloadAction<Partial<Profile>>) {
+      if (state.profile) {
+        state.profile = {
+          ...state.profile,
+          ...action.payload,
+        };
+      }
+    },
+
     setContractorZone(state, action: PayloadAction<string>) {
       state.zone = action.payload;
     },
-    setProfileImage(state, action: PayloadAction<string>) {
-      state.profileImageUri = action.payload;
-    },
   },
+
   extraReducers: builder => {
     builder
       .addCase(sendSelectedTariffs.fulfilled, (state, action) => {
@@ -112,6 +123,12 @@ const slice = createSlice({
           type: setAchievements.type,
         });
       })
+      .addCase(getCarData.fulfilled, (state, action) => {
+        slice.caseReducers.setCarData(state, {
+          payload: action.payload,
+          type: setCarData.type,
+        });
+      })
       .addCase(updateContractorStatus.rejected, (_, action) => {
         console.log(action.payload);
       });
@@ -126,9 +143,10 @@ export const {
   setAchievements,
   revertPreferenceFieldById,
   setProfile,
+  setCarData,
   setContractorState,
   setContractorZone,
-  setProfileImage,
+  updateProfile,
 } = slice.actions;
 
 export default slice.reducer;
