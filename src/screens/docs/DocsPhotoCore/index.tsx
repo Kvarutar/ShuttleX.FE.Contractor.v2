@@ -102,8 +102,10 @@ const DocsPhotoCore = ({
           ? await launchCamera({ mediaType: 'photo', maxHeight: 1400, maxWidth: 1400 })
           : await launchImageLibrary({ mediaType: 'photo' });
 
-      setIsFileLoaded(false);
-      setTimeout(() => cropPhoto(result), docsConsts.cropTimeOut);
+      if (result.assets) {
+        setIsFileLoaded(false);
+        setTimeout(() => cropPhoto(result), docsConsts.cropTimeOut);
+      }
     }
   };
 
@@ -136,6 +138,12 @@ const DocsPhotoCore = ({
     }
   };
 
+  const computedStyles = StyleSheet.create({
+    activityIndicator: {
+      color: colors.iconPrimaryColor,
+    },
+  });
+
   let bottomButton = (
     <>
       <Button
@@ -144,7 +152,7 @@ const DocsPhotoCore = ({
         size={ButtonSizes.M}
         onPress={() => handlePhotoAction('gallery')}
       >
-        <GalleryIcon />
+        <GalleryIcon style={styles.buttonIcons} />
       </Button>
 
       <Button
@@ -153,8 +161,9 @@ const DocsPhotoCore = ({
         innerSpacing={5}
         shadow={ButtonShadows.Strong}
         onPress={() => handlePhotoAction('camera')}
+        withCircleMode1Border
       >
-        <CameraIcon />
+        <CameraIcon style={styles.cameraIcon} />
       </Button>
 
       <Button
@@ -163,7 +172,7 @@ const DocsPhotoCore = ({
         size={ButtonSizes.M}
         onPress={onSelectDocument}
       >
-        <DocumentIcon style={styles.documentIcon} />
+        <DocumentIcon style={styles.buttonIcons} />
       </Button>
     </>
   );
@@ -184,7 +193,7 @@ const DocsPhotoCore = ({
   if (!isFileLoaded) {
     bottomButton = isProfilePhoto ? (
       <Button containerStyle={styles.button}>
-        <ActivityIndicator />
+        <ActivityIndicator color={computedStyles.activityIndicator.color} />
       </Button>
     ) : (
       <Button
@@ -192,9 +201,10 @@ const DocsPhotoCore = ({
         size={ButtonSizes.L}
         innerSpacing={5}
         shadow={ButtonShadows.Strong}
+        withCircleMode1Border
         onPress={() => handlePhotoAction('camera')}
       >
-        <ActivityIndicator />
+        <ActivityIndicator color={computedStyles.activityIndicator.color} />
       </Button>
     );
   }
@@ -214,6 +224,7 @@ const DocsPhotoCore = ({
               disabled={selectedFiles.length === 0}
               size={ButtonSizes.S}
               mode={selectedFiles.length > 0 ? CircleButtonModes.Mode1 : CircleButtonModes.Mode2}
+              disableShadow
             >
               <RoundCheckIcon2
                 style={styles.roundCheckIcon}
@@ -268,9 +279,13 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
   },
-  documentIcon: {
+  buttonIcons: {
     width: 20,
     height: 20,
+  },
+  cameraIcon: {
+    width: 28,
+    height: 28,
   },
   roundCheckIcon: {
     width: 42,

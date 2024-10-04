@@ -60,7 +60,7 @@ const SelectedFilePresentation = ({
 
 const styles = StyleSheet.create({
   content: {
-    paddingVertical: 10,
+    paddingVertical: 5,
     gap: 20,
   },
   takePhoto: {

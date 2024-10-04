@@ -48,7 +48,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
   const isPresentPassport = Boolean(useSelector(passportSelector).length);
   const isPresentDriversLicense = Boolean(useSelector(driversLicenseSelector).length);
 
-  const handlePress = () => {
+  const handleNextPress = () => {
     if (isZoneSelected && isPresentAllDocuments) {
       navigation.navigate('Ride');
     } else {
@@ -56,10 +56,16 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
     }
   };
 
-  const computedStyles = StyleSheet.create({
-    stepBarText: {
-      color: isZoneSelected ? colors.textPrimaryColor : colors.textQuadraticColor,
-    },
+  const handleBackPress = () => {
+    if (selectedSection) {
+      setSelectedSection(null);
+    } else {
+      navigation.navigate('Splash');
+    }
+  };
+
+  const getStyleForText = (isSelected: boolean) => ({
+    color: isSelected ? colors.textPrimaryColor : colors.textQuadraticColor,
   });
 
   const defaultState = {
@@ -71,24 +77,27 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           buttonMode={isZoneSelected ? CircleButtonModes.Mode2 : CircleButtonModes.Mode4}
           onPress={() => navigation.navigate('Zone')}
           text={t('verification_Verification_stepOne')}
+          textStyle={getStyleForText(isZoneSelected)}
         />
         <VerificationStepBar
           isSelected={isPresentPersonalDocuments}
-          textStyle={computedStyles.stepBarText}
-          barMode={!isZoneSelected ? BarModes.Disabled : BarModes.Default}
+          barMode={
+            isPresentPersonalDocuments ? BarModes.Active : !isZoneSelected ? BarModes.Disabled : BarModes.Default
+          }
           buttonMode={!isZoneSelected ? CircleButtonModes.Mode2 : CircleButtonModes.Mode4}
           onPress={() => setSelectedSection('PersonalDocument')}
           text={t('verification_Verification_stepTwo')}
+          textStyle={getStyleForText(isPresentPersonalDocuments)}
           isDisabled={!isZoneSelected}
         />
 
         <VerificationStepBar
           isSelected={isPresentVehicleDocuments}
-          textStyle={computedStyles.stepBarText}
-          barMode={!isZoneSelected ? BarModes.Disabled : BarModes.Default}
+          barMode={isPresentVehicleDocuments ? BarModes.Active : !isZoneSelected ? BarModes.Disabled : BarModes.Default}
           buttonMode={!isZoneSelected ? CircleButtonModes.Mode2 : CircleButtonModes.Mode4}
           onPress={() => setSelectedSection('VehicleDocument')}
           text={t('verification_Verification_stepThree')}
+          textStyle={getStyleForText(isPresentVehicleDocuments)}
           isDisabled={!isZoneSelected}
         />
       </>
@@ -100,7 +109,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
         style={styles.nextButton}
         mode={!(isZoneSelected && isPresentAllDocuments) ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
         textStyle={styles.buttonText}
-        onPress={handlePress}
+        onPress={handleNextPress}
       />
     ),
   };
@@ -114,6 +123,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           buttonMode={CircleButtonModes.Mode4}
           onPress={() => navigation.navigate('VehicleInsurance')}
           text={t('verification_Verification_vehicleDocumentStepOne')}
+          textStyle={getStyleForText(isVehicleInsurance)}
         />
         <VerificationStepBar
           isSelected={isVehicleRegistration}
@@ -121,6 +131,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           buttonMode={CircleButtonModes.Mode4}
           onPress={() => navigation.navigate('VehicleRegistration')}
           text={t('verification_Verification_vehicleDocumentStepTwo')}
+          textStyle={getStyleForText(isVehicleRegistration)}
         />
       </>
     ),
@@ -131,7 +142,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
         style={styles.nextButton}
         mode={!isPresentVehicleDocuments ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
         textStyle={styles.buttonText}
-        onPress={handlePress}
+        onPress={handleNextPress}
       />
     ),
   };
@@ -145,6 +156,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           buttonMode={CircleButtonModes.Mode4}
           onPress={() => navigation.navigate('ProfilePhoto')}
           text={t('verification_Verification_personalDocumentStepOne')}
+          textStyle={getStyleForText(isPresentProfile)}
         />
         <VerificationStepBar
           isSelected={isPresentPassport}
@@ -152,6 +164,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           buttonMode={CircleButtonModes.Mode4}
           onPress={() => navigation.navigate('Passport')}
           text={t('verification_Verification_personalDocumentStepTwo')}
+          textStyle={getStyleForText(isPresentPassport)}
         />
 
         <VerificationStepBar
@@ -160,6 +173,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           buttonMode={CircleButtonModes.Mode4}
           onPress={() => navigation.navigate('DriversLicense')}
           text={t('verification_Verification_personalDocumentStepThree')}
+          textStyle={getStyleForText(isPresentDriversLicense)}
         />
       </>
     ),
@@ -170,7 +184,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
         style={styles.nextButton}
         mode={!isPresentPersonalDocuments ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
         textStyle={styles.buttonText}
-        onPress={handlePress}
+        onPress={handleNextPress}
       />
     ),
   };
@@ -192,12 +206,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
   //TODO delete name Vladyslav  after connection with backend
   return (
     <SafeAreaView>
-      <Button
-        onPress={() => setSelectedSection(null)}
-        shape={ButtonShapes.Circle}
-        mode={CircleButtonModes.Mode2}
-        size={ButtonSizes.S}
-      >
+      <Button onPress={handleBackPress} shape={ButtonShapes.Circle} mode={CircleButtonModes.Mode2} size={ButtonSizes.S}>
         <ShortArrowIcon />
       </Button>
       <VerificationHeader

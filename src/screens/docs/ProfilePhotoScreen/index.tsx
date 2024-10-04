@@ -48,8 +48,7 @@ const ProfilePhotoScreen = ({ navigation }: ProfilePhotoScreenProps): JSX.Elemen
 const styles = StyleSheet.create({
   tips: {
     gap: 8,
-    marginTop: 16,
-    marginBottom: 32,
+    paddingVertical: 16,
   },
   tip: {
     width: '90%',

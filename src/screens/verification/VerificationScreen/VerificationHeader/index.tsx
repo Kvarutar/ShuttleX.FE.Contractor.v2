@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   description: {
-    width: '70%',
+    maxWidth: 300,
     fontFamily: 'Inter Medium',
     marginTop: 8,
     fontSize: 14,
