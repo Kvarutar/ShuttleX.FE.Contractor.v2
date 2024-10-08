@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ListRenderItem, StyleSheet, View } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
@@ -22,7 +22,7 @@ import { OfferItemProps, OfferProps } from './props';
 
 const addressGap = 40;
 
-const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferProps) => {
+const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottomWindows }: OfferProps) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -31,6 +31,10 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferProps) =>
   const [isShowMorePoints, setIsShowMorePoints] = useState<boolean>(false);
 
   const offerPoints = [offer.startPosition, ...offer.targetPointsPosition];
+
+  useEffect(() => {
+    onCloseAllBottomWindows();
+  }, [onCloseAllBottomWindows]);
 
   const computedStyles = StyleSheet.create({
     offerInfoText: {

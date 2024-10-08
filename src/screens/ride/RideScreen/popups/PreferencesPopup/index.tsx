@@ -1,11 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { ListRenderItem, StyleSheet, View } from 'react-native';
 import {
   BaggageIcon,
   Bar,
   BarModes,
   BottomWindowWithGesture,
-  BottomWindowWithGestureRef,
   ProfileIconMini,
   RoundCheckIcon3,
   Text,
@@ -33,11 +32,13 @@ const formatSeatsAmount = (value: number) => {
 //   pressable?: boolean;
 // };
 
-const TariffPreferencesPopup = ({ onClose, setIsPreferencesPopupVisible }: PreferencesPopupProps) => {
+const TariffPreferencesPopup = ({
+  onClose,
+  setIsPreferencesPopupVisible,
+  preferencesBottomWindowRef,
+}: PreferencesPopupProps) => {
   const { colors } = useTheme();
   const tariffsIconsData = useTariffsIcons();
-
-  const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
 
   const dispatch = useAppDispatch();
 
@@ -48,8 +49,8 @@ const TariffPreferencesPopup = ({ onClose, setIsPreferencesPopupVisible }: Prefe
   // };
 
   useEffect(() => {
-    bottomWindowRef.current?.openWindow();
-  }, []);
+    preferencesBottomWindowRef.current?.openWindow();
+  }, [preferencesBottomWindowRef]);
 
   const onTariffPressHandler = (tariff: TariffInfo) => {
     if (!tariff.isPrimary) {
@@ -193,7 +194,7 @@ const TariffPreferencesPopup = ({ onClose, setIsPreferencesPopupVisible }: Prefe
     <BottomWindowWithGesture
       withHiddenPartScroll={false}
       setIsOpened={setIsPreferencesPopupVisible}
-      ref={bottomWindowRef}
+      ref={preferencesBottomWindowRef}
       hiddenPart={<HiddenPart onClose={onClose} renderTariffs={renderTariffs} />}
     />
   );

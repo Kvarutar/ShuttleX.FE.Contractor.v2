@@ -135,6 +135,8 @@ const Start = () => {
   const dispatch = useAppDispatch();
 
   const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
+  const preferencesBottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
+  const achievementsBottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
 
   const contractorStatus = useSelector(contractorStatusSelector);
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
@@ -190,6 +192,12 @@ const Start = () => {
     }
   };
 
+  const onCloseAllBottomWindows = () => {
+    bottomWindowRef.current?.closeWindow();
+    preferencesBottomWindowRef.current?.closeWindow();
+    achievementsBottomWindowRef.current?.closeWindow();
+  };
+
   const computedStyles = StyleSheet.create({
     bottomWindowStyle: {
       paddingBottom: isOpened ? 0 : 20,
@@ -235,6 +243,7 @@ const Start = () => {
         <TariffPreferencesPopup
           onClose={() => setIsPreferencesPopupVisible(false)}
           setIsPreferencesPopupVisible={setIsPreferencesPopupVisible}
+          preferencesBottomWindowRef={preferencesBottomWindowRef}
         />
       )}
       {offer && isOfferPopupVisible && (
@@ -243,10 +252,14 @@ const Start = () => {
           onOfferAccept={onOfferAccept}
           onOfferDecline={onOfferDecline}
           onClose={onOfferPopupClose}
+          onCloseAllBottomWindows={onCloseAllBottomWindows}
         />
       )}
       {isAchievementsPopupVisible && (
-        <AchievementsPopup setIsAchievementsPopupVisible={setIsAchievementsPopupVisible} />
+        <AchievementsPopup
+          setIsAchievementsPopupVisible={setIsAchievementsPopupVisible}
+          achievementsBottomWindowRef={achievementsBottomWindowRef}
+        />
       )}
     </>
   );

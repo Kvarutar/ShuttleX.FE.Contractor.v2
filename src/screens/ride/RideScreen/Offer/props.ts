@@ -7,6 +7,7 @@ export type OfferProps = {
   onOfferAccept: () => void;
   onOfferDecline: () => void;
   onClose: () => void;
+  onCloseAllBottomWindows: () => void;
 };
 
 export type OfferItemProps = {

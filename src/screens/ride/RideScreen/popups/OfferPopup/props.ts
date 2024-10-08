@@ -5,4 +5,5 @@ export type OfferPopupProps = {
   onOfferAccept: () => void;
   onOfferDecline: () => void;
   onClose: () => void;
+  onCloseAllBottomWindows: () => void;
 };

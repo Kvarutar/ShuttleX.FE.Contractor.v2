@@ -6,10 +6,16 @@ import { OfferPopupProps } from './props';
 
 const windowHeight = Dimensions.get('window').height;
 
-const OfferPopup = ({ offer, onOfferAccept, onOfferDecline, onClose }: OfferPopupProps) => {
+const OfferPopup = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottomWindows }: OfferPopupProps) => {
   return (
     <Popup bottomWindowStyle={styles.popup} isWithBlur={false}>
-      <Offer offer={offer} onOfferAccept={onOfferAccept} onOfferDecline={onOfferDecline} onClose={onClose} />
+      <Offer
+        offer={offer}
+        onOfferAccept={onOfferAccept}
+        onOfferDecline={onOfferDecline}
+        onClose={onClose}
+        onCloseAllBottomWindows={onCloseAllBottomWindows}
+      />
     </Popup>
   );
 };

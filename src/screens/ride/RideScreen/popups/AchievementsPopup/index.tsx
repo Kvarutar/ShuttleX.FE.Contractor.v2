@@ -1,25 +1,23 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
-import { BottomWindowWithGesture, BottomWindowWithGestureRef } from 'shuttlex-integration';
+import { BottomWindowWithGesture } from 'shuttlex-integration';
 
 import HiddenPart from './HiddenPart';
 import { AchievementsPopupProps } from './props';
 
-const AchievementsPopup = ({ setIsAchievementsPopupVisible }: AchievementsPopupProps) => {
-  const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
-
+const AchievementsPopup = ({ setIsAchievementsPopupVisible, achievementsBottomWindowRef }: AchievementsPopupProps) => {
   useEffect(() => {
-    bottomWindowRef.current?.openWindow();
-  }, []);
+    achievementsBottomWindowRef.current?.openWindow();
+  }, [achievementsBottomWindowRef]);
 
   return (
     <BottomWindowWithGesture
       withHiddenPartScroll={false}
       withShade
-      ref={bottomWindowRef}
+      ref={achievementsBottomWindowRef}
       hiddenPartStyle={styles.hiddenPartStyle}
       setIsOpened={setIsAchievementsPopupVisible}
-      hiddenPart={<HiddenPart bottomWindowRef={bottomWindowRef} />}
+      hiddenPart={<HiddenPart bottomWindowRef={achievementsBottomWindowRef} />}
     />
   );
 };
