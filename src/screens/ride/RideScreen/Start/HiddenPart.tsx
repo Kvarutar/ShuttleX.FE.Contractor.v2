@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
-  CrownIcon,
   Like2Icon,
   sizes,
   SteeringWheelIcon,
@@ -24,12 +23,13 @@ import { updateContractorStatus } from '../../../../core/contractor/redux/thunks
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { statisticsContractorSelector } from '../../../../core/statistics/redux/selectors';
-import AchievementsCarousel from './AchievementsCarousel';
 import { HiddenPartProps } from './props';
 
 const animationDuration = 200;
 
-const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPopupVisible }: HiddenPartProps) => {
+//TODO: Add "setIsAchievementsPopupVisible" prop when we need achievements
+// Details in Task-266
+const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -99,13 +99,16 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
 
   return (
     <Animated.View entering={FadeIn.duration(animationDuration)} exiting={FadeOut.duration(animationDuration)}>
-      <View style={styles.levelContainer}>
+      {/* TODO: Add this block when we need a rider level */}
+      {/* Removed from render part in Task-266 */}
+      {/* Details in Task-266 */}
+      {/* <View style={styles.levelContainer}>
         <CrownIcon />
         <View style={styles.levelTextsContainer}>
           <Text style={[styles.levelCounter, computedStyles.levelCounter]}>{contractorStatistics.level}</Text>
           <Text style={[styles.levelText, computedStyles.levelText]}>lvl.</Text>
         </View>
-      </View>
+      </View> */}
       <Text style={styles.namesText}>{profile.fullName}</Text>
       <View style={styles.rideDataContainer}>
         <View style={styles.likesContainer}>
@@ -130,7 +133,10 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
           <Text style={styles.carIdText}>{carData.id}</Text>
         </View>
       </View>
-      <AchievementsCarousel setIsAchievementsPopupVisible={setIsAchievementsPopupVisible} />
+      {/* TODO: Add this block when we need achievements */}
+      {/* Removed from render part in Task-266 */}
+      {/* Details in Task-266 */}
+      {/* <AchievementsCarousel setIsAchievementsPopupVisible={setIsAchievementsPopupVisible} /> */}
       <View style={[styles.bottomInfoWrapper, computedStyles.bottomInfoWrapper]}>
         <View style={[styles.tripTypeContainer, computedStyles.bottomInfo]}>
           <Text numberOfLines={1} style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
@@ -169,6 +175,7 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState, setIsAchievementsPop
 };
 
 const styles = StyleSheet.create({
+  // Don't remove unused styles. There're some styles for unused component for now
   levelContainer: {
     flexDirection: 'row',
     justifyContent: 'center',

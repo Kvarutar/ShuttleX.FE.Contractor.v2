@@ -201,7 +201,7 @@ const Start = () => {
   const computedStyles = StyleSheet.create({
     bottomWindowStyle: {
       paddingBottom: isOpened ? 0 : 20,
-      paddingTop: isOpened ? 16 : 6,
+      paddingTop: isOpened ? 0 : 6,
     },
   });
 
