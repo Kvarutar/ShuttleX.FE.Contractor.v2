@@ -3,8 +3,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Bar, BarModes, LevelIcon, MenuBase, MenuNavigation, Text, useTheme } from 'shuttlex-integration';
+import { Bar, BarModes, MenuBase, MenuNavigation, Text, useTheme } from 'shuttlex-integration';
 
+// TODO Uncomment all code whe we need it
+// import CrownIcon from 'shuttlex-integration';
 import { profileSelector } from '../../../core/contractor/redux/selectors';
 import { RootStackParamList } from '../../../Navigate/props';
 import { MenuProps } from './props';
@@ -26,14 +28,17 @@ const Menu = ({ onClose }: MenuProps) => {
       },
       title: t('ride_Menu_navigationRide'),
     },
-    statistics: {
-      navFunc: () => {
-        navigation.navigate('Ride');
-        //TODO Create statistics page
-        onClose();
-      },
-      title: t('ride_Menu_navigationStatistics'),
-    },
+
+    // TODO Uncomment all code whe we need it
+
+    // statistics: {
+    //   navFunc: () => {
+    //     navigation.navigate('Ride');
+    //     //TODO Create statistics page
+    //     onClose();
+    //   },
+    //   title: t('ride_Menu_navigationStatistics'),
+    // },
     subscription: {
       navFunc: () => {
         navigation.navigate('Ride');
@@ -74,29 +79,32 @@ const Menu = ({ onClose }: MenuProps) => {
       userName={profile?.fullName}
       menuNavigation={menuNavigation}
       currentRoute={currentRoute}
-      label={<LevelLabel />}
+      // label={<LevelLabel />}
     />
   );
 };
 
-const LevelLabel = () => {
-  const { t } = useTranslation();
-  const { colors } = useTheme();
+// TODO Uncomment all code whe we need it
 
-  const computedStyles = StyleSheet.create({
-    label: {
-      borderColor: colors.backgroundSecondaryColor,
-      backgroundColor: colors.backgroundPrimaryColor,
-    },
-  });
-  return (
-    <View style={[styles.label, computedStyles.label]}>
-      <LevelIcon />
-      {/* TODO add dynamic level variable */}
-      <Text style={[styles.labelText, { color: colors.textQuadraticColor }]}>{t('ride_Menu_level', { level: 4 })}</Text>
-    </View>
-  );
-};
+// const LevelLabel = () => {
+//   const { t } = useTranslation();
+//   const { colors } = useTheme();
+
+//   const computedStyles = StyleSheet.create({
+//     label: {
+//       borderColor: colors.backgroundSecondaryColor,
+//       backgroundColor: colors.backgroundPrimaryColor,
+//     },
+//   });
+//   return (
+//     <View style={[styles.label, computedStyles.label]}>
+// <CrownIcon />
+//       {/* TODO add dynamic level variable */}
+//       <Text style={[styles.labelText, { color: colors.textQuadraticColor }]}>{t('ride_Menu_level', { level: 4 })}</Text>
+//     </View>
+//   );
+// };
+
 const AdditionalContent = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
