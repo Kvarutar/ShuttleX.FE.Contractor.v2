@@ -15,6 +15,7 @@ import ProfilePhotoScreen from '../screens/docs/ProfilePhotoScreen';
 import VehicleInsuranceScreen from '../screens/docs/VehicleInsuranceScreen';
 import VehicleRegistrationScreen from '../screens/docs/VehicleRegistrationScreen';
 import AccountSettings from '../screens/menu/AccountSettings';
+import AccountVerificateCodeScreen from '../screens/menu/AccountVerificateCodeScreen';
 import NotificationScreen from '../screens/menu/NotificationsScreen';
 import AddPaymentScreen from '../screens/menu/wallet/AddPaymentScreen';
 import WalletScreen from '../screens/menu/wallet/WalletScreen';
@@ -61,6 +62,7 @@ const Navigate = (): JSX.Element => {
         <Stack.Screen name="Verification" component={VerificationScreen} />
         <Stack.Screen name="LockOut" component={LockOutScreen} />
         <Stack.Screen name="AccountSettings" component={AccountSettings} />
+        <Stack.Screen name="AccountVerificateCode" component={AccountVerificateCodeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

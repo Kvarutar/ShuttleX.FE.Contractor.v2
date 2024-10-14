@@ -4,10 +4,12 @@ import {
   getAchievements,
   getCarData,
   getPreferences,
+  getProfile,
   getTariffs,
   sendSelectedPreferences,
   sendSelectedTariffs,
   updateContractorStatus,
+  updateProfileData,
 } from './thunks';
 import { CarDataAPIResponse, type Profile } from './types';
 import { AchievementsAPIResponse, ContractorState, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
@@ -21,7 +23,7 @@ const initialState: ContractorState = {
   profile: {
     fullName: 'John Smith',
     email: 'mail@mail.ru',
-    phone: '+79990622720',
+    phone: '+380(50)924-50-61',
     imageUri: '',
   },
   carData: null,
@@ -87,6 +89,18 @@ const slice = createSlice({
 
   extraReducers: builder => {
     builder
+      .addCase(getProfile.fulfilled, (state, action) => {
+        slice.caseReducers.setProfile(state, {
+          payload: action.payload,
+          type: setProfile.type,
+        });
+      })
+      .addCase(updateProfileData.fulfilled, (state, action) => {
+        slice.caseReducers.updateProfile(state, {
+          payload: action.payload,
+          type: updateProfile.type,
+        });
+      })
       .addCase(sendSelectedTariffs.fulfilled, (state, action) => {
         slice.caseReducers.setTariffs(state, {
           payload: action.meta.arg.selectedTariffs,
@@ -131,6 +145,12 @@ const slice = createSlice({
       })
       .addCase(updateContractorStatus.rejected, (_, action) => {
         console.log(action.payload);
+      })
+      .addCase(getProfile.rejected, (_, action) => {
+        console.error('Error fetching profile:', action.payload);
+      })
+      .addCase(updateProfileData.rejected, (_, action) => {
+        console.error('Profile update failed:', action.payload);
       });
   },
 });

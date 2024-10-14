@@ -54,7 +54,7 @@ const Menu = ({ onClose }: MenuProps) => {
       },
       title: t('ride_Menu_navigationWallet'),
     },
-    settings: {
+    accountSettings: {
       navFunc: () => {
         navigation.navigate('AccountSettings');
         onClose();

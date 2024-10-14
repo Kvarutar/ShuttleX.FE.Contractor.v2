@@ -169,5 +169,8 @@
   "menu_Withdraw_withdrawButton": "Withdraw",
   "menu_Withdraw_SuccessPopup_content1": "You have successfully withdrawn",
   "menu_Withdraw_SuccessPopup_content2": "to your card ending in",
-  "menu_Withdraw_SuccessPopup_continueButton": "Continue"
+  "menu_Withdraw_SuccessPopup_continueButton": "Continue",
+  "menu_AccountVerificateCode_firstHeader": "Enter the Four-digit Code You Received",
+  "menu_AccountVerificateCode_secondHeader": "in Message",
+  "menu_AccountVerificateCode_change": "Change"
 }

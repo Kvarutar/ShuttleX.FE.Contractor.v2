@@ -1,7 +1,64 @@
 import Config from 'react-native-config';
 
 import { createAppAsyncThunk } from '../../redux/hooks';
-import { AchievementsAPIResponse, CarDataAPIResponse, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
+import {
+  AchievementsAPIResponse,
+  CarDataAPIResponse,
+  ContractorStatus,
+  PreferenceInfo,
+  Profile,
+  TariffInfo,
+} from './types';
+
+//TODO: There's just example! Rewrite when info about "profile" logic will be known
+export const getProfile = createAppAsyncThunk<Profile, { contractorId: string }>(
+  'contractor/getProfile',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${Config.API_URL_HTTPS}/contractor/profile/${payload.contractorId}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw 'Error occurred during fetching profile data';
+      }
+
+      const profileData: Profile = await response.json();
+      return profileData;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
+//TODO: There's just example! Rewrite when info about "profile" logic will be known
+export const updateProfileData = createAppAsyncThunk<Profile, { contractorId: string; updatedData: Partial<Profile> }>(
+  'contractor/updateProfileData',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${Config.API_URL_HTTPS}/contractor/update-profile/${payload.contractorId}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload.updatedData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error occurred during profile update');
+      }
+
+      const updatedProfile = await response.json();
+      return updatedProfile;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
+);
 
 export const sendSelectedTariffs = createAppAsyncThunk<void, { selectedTariffs: TariffInfo[]; contractorId: string }>(
   'contractor/sendSelectedTariffs',

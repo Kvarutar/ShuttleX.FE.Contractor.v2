@@ -161,7 +161,7 @@ const DocsPhotoCore = ({
         innerSpacing={5}
         shadow={ButtonShadows.Strong}
         onPress={() => handlePhotoAction('camera')}
-        withCircleMode1Border
+        withCircleModeBorder
       >
         <CameraIcon style={styles.cameraIcon} />
       </Button>
@@ -201,7 +201,7 @@ const DocsPhotoCore = ({
         size={ButtonSizes.L}
         innerSpacing={5}
         shadow={ButtonShadows.Strong}
-        withCircleMode1Border
+        withCircleModeBorder
         onPress={() => handlePhotoAction('camera')}
       >
         <ActivityIndicator color={computedStyles.activityIndicator.color} />

@@ -22,4 +22,5 @@ export type RootStackParamList = {
   Verification: undefined;
   LockOut: undefined;
   AccountSettings: undefined;
+  AccountVerificateCode: undefined;
 };
