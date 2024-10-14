@@ -3,7 +3,7 @@ import { ContractorStatisticsAPIResponse } from './types';
 
 //TODO: There's just example! Rewrite when info about "achievements" logic will be known
 export const getContractorStatistics = createAppAsyncThunk<ContractorStatisticsAPIResponse, { contractorId: string }>(
-  'trip/getContractorStatistics',
+  'statistics/getContractorStatistics',
   async () => {
     //TODO: Add networking
     // try {

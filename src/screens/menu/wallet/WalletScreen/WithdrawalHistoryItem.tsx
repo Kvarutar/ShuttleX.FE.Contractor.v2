@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 22,
+    paddingVertical: 20,
   },
   historyQuantity: {
     fontFamily: 'Inter Medium',

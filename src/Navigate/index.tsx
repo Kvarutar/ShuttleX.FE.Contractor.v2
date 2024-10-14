@@ -17,7 +17,6 @@ import VehicleRegistrationScreen from '../screens/docs/VehicleRegistrationScreen
 import AccountSettings from '../screens/menu/AccountSettings';
 import AccountVerificateCodeScreen from '../screens/menu/AccountVerificateCodeScreen';
 import NotificationScreen from '../screens/menu/NotificationsScreen';
-import AddPaymentScreen from '../screens/menu/wallet/AddPaymentScreen';
 import WalletScreen from '../screens/menu/wallet/WalletScreen';
 import WithdrawScreen from '../screens/menu/wallet/WithdrawScreen';
 import RatingScreen from '../screens/ride/RatingScreen';
@@ -56,7 +55,6 @@ const Navigate = (): JSX.Element => {
         <Stack.Screen name="VehicleInsurance" component={VehicleInsuranceScreen} />
         <Stack.Screen name="VehicleRegistration" component={VehicleRegistrationScreen} />
         <Stack.Screen name="Wallet" component={WalletScreen} />
-        <Stack.Screen name="AddPayment" component={AddPaymentScreen} />
         <Stack.Screen name="Withdraw" component={WithdrawScreen} />
         <Stack.Screen name="Terms" component={TermsScreen} />
         <Stack.Screen name="Verification" component={VerificationScreen} />

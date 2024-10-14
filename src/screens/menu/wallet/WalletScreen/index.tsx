@@ -1,142 +1,115 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
 import {
-  Bar,
-  BottomWindow,
-  ButtonV1,
-  ButtonV1Modes,
-  ButtonV1Shapes,
-  DropDownIcon,
+  ArrowInPrimaryColorIcon,
+  Button,
+  ButtonSizes,
+  CircleButtonModes,
+  defaultShadow,
   getPaymentIcon,
-  PaymentMethod,
-  PlusIcon,
+  MenuHeader,
   SafeAreaView,
   ScrollViewWithCustomScroll,
-  Separator,
-  ShortArrowIcon,
+  sizes,
   Text,
-  useThemeV1,
+  useTheme,
 } from 'shuttlex-integration';
 
-import { setAvaliablePaymentMethods, setBalance, setSelectedPaymentMethod } from '../../../../core/menu/redux/wallet';
+import { setSelectedPaymentMethod } from '../../../../core/menu/redux/wallet';
 import {
   avaliablePaymentMethodsListSelector,
   selectedPaymentMethodSelector,
+  totalWalletBalanceSelector,
   walletBalanceSelector,
+  withdrawalHistoryListSelector,
 } from '../../../../core/menu/redux/wallet/selectors';
+import { getWalletStatistic } from '../../../../core/menu/redux/wallet/thunks';
 import { useAppDispatch } from '../../../../core/redux/hooks';
-import PaymentMethodContent from './PaymentMethod';
-import { WalletScreenProps, WithdrawalHistory } from './props';
+import Menu from '../../../ride/Menu';
+import AddCardPopup from '../popups/AddCardPopup';
+import PaymentMethodPopup from '../popups/PaymentMethodPopup';
+import BalancePerDayBlock from './BalancePerDayBlock';
+import BalancePerDayText from './BalancePerDayText';
+import { WalletScreenProps } from './props';
 import WithdrawalHistoryItem from './WithdrawalHistoryItem';
 
-const fadeAnimationDuration = 200;
+const currency = '₴';
 
 const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
-  const { colors } = useThemeV1();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const balance = useSelector(walletBalanceSelector);
+  const totalBalance = useSelector(totalWalletBalanceSelector);
   const selectedPaymentMethod = useSelector(selectedPaymentMethodSelector);
-  const avaliablePaymentMethods = useSelector(avaliablePaymentMethodsListSelector);
+  const availablePaymentMethods = useSelector(avaliablePaymentMethodsListSelector);
+  const withdrawalHistory = useSelector(withdrawalHistoryListSelector);
+  // Removed from render part in Task-263
+  // TODO: Uncomment this components when work with trips or tokens amount
+  // const tokensAmount = useSelector(tokensAmountSelector);
+  // const tripsAmount = useSelector(tripsAmountSelector);
 
-  const [withdrawalHistory, setWithdrawalHistory] = useState<WithdrawalHistory[]>([]);
   const [isPaymentsVariantsVisible, setIsPaymentsVariantsVisible] = useState(false);
+  const [isAddCardPopupVisible, setIsAddCardPopupVisible] = useState(false);
+  const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
+
+  const maxSum = Math.max(...Object.values(balance).filter(sum => sum > 0));
+
+  const dayTitles: Record<keyof typeof balance, string> = {
+    monday: 'menu_Wallet_monday',
+    tuesday: 'menu_Wallet_tuesday',
+    wednesday: 'menu_Wallet_wednesday',
+    thursday: 'menu_Wallet_thursday',
+    friday: 'menu_Wallet_friday',
+    saturday: 'menu_Wallet_saturday',
+    sunday: 'menu_Wallet_sunday',
+  };
 
   useEffect(() => {
     //for test
-    dispatch(setBalance(686.18));
-    dispatch(
-      setSelectedPaymentMethod({
-        method: 'visa',
-        details: '1234',
-        expiresAt: '12/34',
-      }),
-    );
-    setWithdrawalHistory([
-      {
-        quantity: '100.18',
-        date: new Date().getTime(),
-      },
-      {
-        quantity: '101.18',
-        date: new Date().getTime() + 1,
-      },
-      {
-        quantity: '102.18',
-        date: new Date().getTime() + 2,
-      },
-      {
-        quantity: '103.18',
-        date: new Date().getTime() + 3,
-      },
-      {
-        quantity: '104.18',
-        date: new Date().getTime() + 4,
-      },
-      {
-        quantity: '105.18',
-        date: new Date().getTime() + 5,
-      },
-    ]);
-    dispatch(
-      setAvaliablePaymentMethods([
-        {
-          method: 'visa',
-          details: '1234',
-          expiresAt: '12/34',
-        },
-        {
-          method: 'mastercard',
-          details: '6578',
-          expiresAt: '12/34',
-        },
-        {
-          method: 'mastercard',
-          details: '9101',
-          expiresAt: '12/34',
-        },
-      ]),
-    );
+    (async () => {
+      dispatch(getWalletStatistic({ contractorId: '' }));
+    })();
   }, [dispatch]);
 
+  //TODO: Change selected method setting when work with "redux persist store"
+  useEffect(() => {
+    dispatch(setSelectedPaymentMethod(availablePaymentMethods[0]));
+  }, [dispatch, availablePaymentMethods]);
+
   const computedStyles = StyleSheet.create({
-    separator: {
-      borderColor: colors.strokeColor,
+    safeAreaWrapper: {
+      backgroundColor: colors.primaryColor,
+    },
+    balanceTotal: {
+      color: colors.textPrimaryColor,
     },
     balanceTitle: {
-      color: colors.textSecondaryColor,
+      color: colors.textPrimaryColor,
     },
-    tripsTitle: {
-      color: colors.textSecondaryColor,
+    mainContent: {
+      backgroundColor: colors.backgroundSecondaryColor,
     },
-    wallet: {
+    tokensAndTrips: {
       backgroundColor: colors.backgroundPrimaryColor,
     },
+    tokensAndTripsCounter: {
+      color: colors.textPrimaryColor,
+    },
+    tokensAndTripsTitle: {
+      color: colors.textQuadraticColor,
+    },
+    selectedMethod: {
+      backgroundColor: colors.backgroundPrimaryColor,
+    },
+    detailsStars: {
+      color: colors.textQuadraticColor,
+    },
   });
-
-  const onSelectMethod = (method: PaymentMethod) => {
-    dispatch(setSelectedPaymentMethod(method));
-    setIsPaymentsVariantsVisible(false);
-  };
-
-  let paymentMethodsContent = null;
-
-  if (avaliablePaymentMethods.length > 0 && selectedPaymentMethod) {
-    paymentMethodsContent = avaliablePaymentMethods.map((method, index, methods) => (
-      <PaymentMethodContent
-        key={index}
-        index={index}
-        paymentMethod={method}
-        onSelectMethod={() => onSelectMethod(method)}
-        selectedPaymentMethod={selectedPaymentMethod}
-        paymentMethods={methods}
-      />
-    ));
-  }
 
   let history = null;
 
@@ -146,202 +119,157 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
     ));
 
     history = (
-      <View style={styles.history}>
+      <>
         <Text style={styles.historyTitle}>{t('menu_Wallet_historyTitle')}</Text>
         <ScrollViewWithCustomScroll style={styles.scrollView} contentContainerStyle={styles.contentContainer}>
           {withdrawalHistoryItems}
         </ScrollViewWithCustomScroll>
-      </View>
+      </>
     );
   }
 
-  const onAddCard = () => {
-    navigation.navigate('AddPayment');
-    setTimeout(() => {
-      setIsPaymentsVariantsVisible(false);
-    }, 50);
+  const formatNumberWithCommas = (num: number): string => {
+    const [integerPart, decimalPart] = num.toFixed(2).split('.');
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    return decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
   };
 
   return (
-    <View style={[styles.wallet, computedStyles.wallet]}>
-      <SafeAreaView>
-        <View style={styles.header}>
-          <ButtonV1 onPress={navigation.goBack} shape={ButtonV1Shapes.Circle}>
-            <ShortArrowIcon />
-          </ButtonV1>
-          <Text style={styles.headerTitle}>{t('menu_Wallet_headerTitle')}</Text>
-          <View style={styles.headerDummy} />
-        </View>
+    <View style={[styles.wallet]}>
+      <SafeAreaView wrapperStyle={computedStyles.safeAreaWrapper} containerStyle={styles.safeAreaWrapper}>
+        <MenuHeader
+          leftButtonProps={{
+            mode: CircleButtonModes.Mode1,
+            size: ButtonSizes.S,
+            disableShadow: true,
+          }}
+          onMenuPress={() => setIsMenuVisible(true)}
+          onNotificationPress={() => {}}
+        >
+          <Text style={[styles.headerTitle]}>{t('menu_Wallet_headerTitle')}</Text>
+        </MenuHeader>
         <View style={styles.totalsWrapper}>
-          <View style={styles.balanceWrapper}>
-            <Bar style={styles.balance}>
-              <View>
-                <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_balance')}</Text>
-                <Text style={styles.balanceTotal}>${balance}</Text>
-              </View>
-              <Separator mode="vertical" style={styles.verticalSeparator} />
-              <View>
-                <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_coinBalance')}</Text>
-                <Text style={styles.balanceTotal}>123</Text>
-              </View>
-            </Bar>
-          </View>
-          <View style={styles.tripsWrapper}>
-            <Bar style={styles.trips}>
-              <View>
-                <Text style={[styles.tripsTitle, computedStyles.tripsTitle]}>{t('menu_Wallet_trips')}</Text>
-                <Text style={styles.tripsTotal}>242</Text>
-              </View>
-            </Bar>
-          </View>
+          <Text style={[styles.balanceTotal, computedStyles.balanceTotal]}>
+            {currency + formatNumberWithCommas(totalBalance)}
+          </Text>
+          <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_balance')}</Text>
         </View>
-        <View style={styles.mainContent}>
-          <View style={styles.payment}>
-            {selectedPaymentMethod?.method && (
-              <Pressable onPress={() => setIsPaymentsVariantsVisible(prevState => !prevState)}>
-                <Bar style={styles.selectedMethod}>
-                  <View style={styles.selectedMethodWrapper}>
-                    {getPaymentIcon(selectedPaymentMethod.method)}
-                    <Text style={styles.details}>**** {selectedPaymentMethod.details}</Text>
-                  </View>
-                  {isPaymentsVariantsVisible ? (
-                    <Animated.View
-                      entering={FadeIn.duration(fadeAnimationDuration)}
-                      exiting={FadeOut.duration(fadeAnimationDuration)}
-                      key="active"
-                    >
-                      <DropDownIcon mode="filled" style={{ transform: [{ rotate: '90deg' }] }} />
-                    </Animated.View>
-                  ) : (
-                    <Animated.View
-                      entering={FadeIn.duration(fadeAnimationDuration)}
-                      exiting={FadeOut.duration(fadeAnimationDuration)}
-                      key="default"
-                    >
-                      <DropDownIcon />
-                    </Animated.View>
-                  )}
-                </Bar>
-              </Pressable>
-            )}
+        <View style={styles.balancePerDay}>
+          <View style={styles.balancePerDayBlocks}>
+            {Object.entries(balance).map(([dayTitle, sumPerDay]) => (
+              <BalancePerDayBlock key={dayTitle} sumPerDay={sumPerDay} maxSum={maxSum} />
+            ))}
           </View>
-          <View style={styles.paymentVariants}>
-            {isPaymentsVariantsVisible && (
-              <Animated.View
-                entering={FadeIn.duration(fadeAnimationDuration)}
-                exiting={FadeOut.duration(fadeAnimationDuration)}
-              >
-                <Bar style={styles.bar}>
-                  <ScrollViewWithCustomScroll
-                    wrapperStyle={styles.paymentScrollViewWrapper}
-                    style={styles.paymentScrollView}
-                    contentContainerStyle={styles.paymentScrollViewContainer}
-                  >
-                    {paymentMethodsContent}
-                  </ScrollViewWithCustomScroll>
-                  <ButtonV1 mode={ButtonV1Modes.Mode4} style={styles.button} onPress={onAddCard}>
-                    <PlusIcon />
-                  </ButtonV1>
-                </Bar>
-              </Animated.View>
-            )}
+          <View style={styles.balancePerDayBlocks}>
+            {(Object.keys(balance) as (keyof typeof balance)[]).map(dayTitle => (
+              <BalancePerDayText key={dayTitle} title={t(dayTitles[dayTitle])} sumPerDay={balance[dayTitle]} />
+            ))}
           </View>
-          <Separator style={styles.mainHorizontalSeparator} />
-          {history}
         </View>
       </SafeAreaView>
-      <BottomWindow style={styles.bottomWindow}>
-        <ButtonV1 text={t('menu_Wallet_withdrawButton')} onPress={() => navigation.navigate('Withdraw')} />
-      </BottomWindow>
+      <View style={[styles.mainContent, computedStyles.mainContent]}>
+        <View style={styles.paymentAndTokensWrapper}>
+          {/* Removed from render part in Task-263 */}
+          {/* TODO: Uncomment this components when work with trips or tokens amount */}
+
+          {/* <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.mainContentShadow}>
+            <View style={[styles.tokensAndTrips, computedStyles.tokensAndTrips]}>
+              <View style={styles.tokensAndTripsTextsWrapper}>
+                <Text style={[styles.tokensAndTripsCounter, computedStyles.tokensAndTripsCounter]}>{tokensAmount}</Text>
+                <Text style={[styles.tokensAndTripsTitle, computedStyles.tokensAndTripsTitle]}>
+                  {t('menu_Wallet_tokensBalance')}
+                </Text>
+              </View>
+              <Separator mode="vertical" style={styles.separatorVertical} />
+              <View style={styles.tokensAndTripsTextsWrapper}>
+                <Text style={[styles.tokensAndTripsCounter, computedStyles.tokensAndTripsCounter]}>{tripsAmount}</Text>
+                <Text style={[styles.tokensAndTripsTitle, computedStyles.tokensAndTripsTitle]}>
+                  {t('menu_Wallet_trips')}
+                </Text>
+              </View>
+            </View>
+          </Shadow> */}
+
+          {selectedPaymentMethod?.method && (
+            <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.mainContentShadow}>
+              <Pressable onPress={() => setIsPaymentsVariantsVisible(prevState => !prevState)}>
+                <View style={[styles.selectedMethod, computedStyles.selectedMethod]}>
+                  <View style={styles.selectedMethodWrapper}>
+                    {getPaymentIcon(selectedPaymentMethod.method)}
+                    <View style={styles.detailsWrapper}>
+                      <Text style={[styles.detailsStars, computedStyles.detailsStars]}>****</Text>
+                      <Text style={styles.details}>{selectedPaymentMethod.details}</Text>
+                    </View>
+                  </View>
+                  <ArrowInPrimaryColorIcon />
+                </View>
+              </Pressable>
+            </Shadow>
+          )}
+        </View>
+        <View style={styles.history}>{history}</View>
+        <Button text={t('menu_Wallet_withdrawButton')} onPress={() => navigation.navigate('Withdraw')} />
+      </View>
+      {isPaymentsVariantsVisible && (
+        <PaymentMethodPopup
+          setIsPaymentsVariantsVisible={setIsPaymentsVariantsVisible}
+          onOpenAddCardPopup={() => setIsAddCardPopupVisible(true)}
+        />
+      )}
+      {isAddCardPopupVisible && (
+        <AddCardPopup
+          setIsAddCardPopupVisible={setIsAddCardPopupVisible}
+          setIsPaymentsVariantsVisible={setIsPaymentsVariantsVisible}
+        />
+      )}
+      {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  safeAreaWrapper: {
+    paddingBottom: 44,
+  },
   wallet: {
     flex: 1,
   },
-  mainContent: {
-    position: 'relative',
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
   headerTitle: {
     fontFamily: 'Inter Medium',
-    fontSize: 18,
-  },
-  headerDummy: {
-    width: 50,
-  },
-  bar: {
-    paddingTop: 0,
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
+    fontSize: 17,
+    lineHeight: 22,
   },
   totalsWrapper: {
-    flexDirection: 'row',
-    gap: 15,
-    justifyContent: 'space-between',
-    marginBottom: 40,
+    gap: 4,
+    marginTop: 28,
+    marginBottom: 24,
   },
-  balanceWrapper: {
-    flex: 2,
-  },
-  balance: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  balanceTotal: {
+    fontFamily: 'Inter Bold',
+    fontSize: 32,
+    letterSpacing: -0.64,
+    alignSelf: 'center',
   },
   balanceTitle: {
     fontFamily: 'Inter Medium',
-    fontSize: 12,
+    fontSize: 17,
+    lineHeight: 20,
+    letterSpacing: -0.48,
+    alignSelf: 'center',
+    opacity: 0.4,
   },
-  balanceTotal: {
-    fontFamily: 'Inter Medium',
-  },
-  tripsWrapper: {
+  balancePerDay: {
     flex: 1,
+    justifyContent: 'flex-end',
+    paddingHorizontal: 4,
+    gap: 10,
   },
-  trips: {
+  balancePerDayBlocks: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  tripsTitle: {
-    fontFamily: 'Inter Medium',
-    fontSize: 12,
-  },
-  tripsTotal: {
-    fontFamily: 'Inter Medium',
-  },
-  selectedMethodContainer: {
-    flex: 1,
-  },
-  selectedMethod: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  selectedMethodWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  details: {
-    fontFamily: 'Inter Medium',
-    fontSize: 18,
-  },
-  mainHorizontalSeparator: {
-    marginTop: 30,
-    marginBottom: 40,
-    flex: 0,
-  },
-  historyTitle: {
-    fontFamily: 'Inter Medium',
-    fontSize: 18,
-    marginBottom: 14,
+    alignItems: 'flex-end',
+    gap: 10,
   },
   scrollView: {
     marginVertical: 0,
@@ -349,40 +277,83 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingVertical: 0,
   },
-  payment: {
-    position: 'relative',
-    zIndex: 3,
+  mainContent: {
+    flex: 1,
+    maxHeight: '45%',
+    paddingBottom: 36,
+    paddingHorizontal: sizes.paddingHorizontal,
   },
-  paymentVariants: {
-    position: 'absolute',
-    top: 72,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 10,
-    zIndex: 2,
+  paymentAndTokensWrapper: {
+    top: -36,
+    gap: 8,
   },
-  button: {
-    paddingVertical: 14,
+  mainContentShadow: {
+    alignSelf: 'stretch',
+  },
+  tokensAndTrips: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 18,
+    borderRadius: 12,
+  },
+  tokensAndTripsTextsWrapper: {
+    flex: 1,
+    gap: 4,
+    paddingHorizontal: 28,
+  },
+  tokensAndTripsCounter: {
+    fontFamily: 'Inter Medium',
+    fontSize: 17,
+    letterSpacing: -0.64,
+    alignSelf: 'center',
+  },
+  tokensAndTripsTitle: {
+    fontFamily: 'Inter Medium',
+    fontSize: 12,
+    letterSpacing: 0.48,
+    alignSelf: 'center',
+  },
+  separatorVertical: {
+    flex: 0,
+  },
+  selectedMethod: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 20,
+    paddingRight: 16,
+    paddingLeft: 24,
+    borderRadius: 12,
+  },
+  selectedMethodWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
+  },
+  detailsWrapper: {
+    paddingTop: 4,
+    flexDirection: 'row',
+    gap: 4,
+  },
+  detailsStars: {
+    paddingTop: 4,
+    fontFamily: 'Inter Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    textAlignVertical: 'center',
+  },
+  details: {
+    fontFamily: 'Inter Medium',
+    fontSize: 17,
+    lineHeight: 22,
+  },
+  historyTitle: {
+    fontFamily: 'Inter Medium',
+    fontSize: 18,
+    marginBottom: 10,
   },
   history: {
     flex: 1,
     zIndex: 1,
-  },
-  bottomWindow: {
-    position: 'relative',
-  },
-  paymentScrollViewWrapper: {
-    flex: 0,
-    maxHeight: 250,
-  },
-  paymentScrollView: {
-    marginVertical: 0,
-  },
-  paymentScrollViewContainer: {
-    paddingVertical: 0,
-  },
-  verticalSeparator: {
-    flex: 0,
   },
 });
 
