@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
@@ -9,6 +10,8 @@ import {
   Timer,
   TimerColorModes,
   TimerSizesModes,
+  TrafficIndicator,
+  TrafficLevel,
   useTheme,
 } from 'shuttlex-integration';
 
@@ -39,6 +42,20 @@ const AddressWithMeta = ({ tripPoints, timeForTimer }: AddressWithMetaProps) => 
     },
   });
 
+  //TODO: For test, delete after connect with back
+  const [currentDistance, setCurrentDistance] = useState(0);
+  const totalDistance = 100;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentDistance(prevDistance => {
+        const newDistance = prevDistance + 10;
+        return Math.min(newDistance, totalDistance);
+      });
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <View>
       <View style={styles.timerWrapper}>
@@ -56,6 +73,19 @@ const AddressWithMeta = ({ tripPoints, timeForTimer }: AddressWithMetaProps) => 
           <Text style={styles.address}>{tripPoints[0].address}</Text>
         </View>
       </View>
+      {/*TODO: delete mock data*/}
+      <TrafficIndicator
+        containerStyle={styles.trafficIndicatorContainer}
+        currentPercent={`${currentDistance}%`}
+        segments={[
+          { percent: '15%', level: TrafficLevel.Low },
+          { percent: '15%', level: TrafficLevel.Average },
+          { percent: '30%', level: TrafficLevel.High },
+          { percent: '40%', level: TrafficLevel.Low },
+        ]}
+        startTime={43200}
+        endTime={45000}
+      />
       <Pressable style={[styles.openOnGoogleMapButton, computedStyles.openOnGoogleMapButton]}>
         <ExternalMapIcon />
         <View style={styles.googleMapTextContainer}>
@@ -116,6 +146,9 @@ const styles = StyleSheet.create({
   googleMapText: {
     fontFamily: 'Inter Medium',
     fontSize: 14,
+  },
+  trafficIndicatorContainer: {
+    marginBottom: 14,
   },
 });
 
