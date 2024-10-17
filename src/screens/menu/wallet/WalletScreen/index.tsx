@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
 import {
@@ -85,6 +85,9 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
     safeAreaWrapper: {
       backgroundColor: colors.primaryColor,
     },
+    safeAreaContainer: {
+      paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : 0,
+    },
     balanceTotal: {
       color: colors.textPrimaryColor,
     },
@@ -136,13 +139,17 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
   };
 
   return (
-    <View style={[styles.wallet]}>
-      <SafeAreaView wrapperStyle={computedStyles.safeAreaWrapper} containerStyle={styles.safeAreaWrapper}>
+    <View style={styles.wallet}>
+      <SafeAreaView
+        wrapperStyle={computedStyles.safeAreaWrapper}
+        containerStyle={[styles.safeAreaWrapper, computedStyles.safeAreaContainer]}
+      >
         <MenuHeader
           leftButtonProps={{
             mode: CircleButtonModes.Mode1,
             size: ButtonSizes.S,
             disableShadow: true,
+            circleSubContainerStyle: styles.circleSubContainerStyle,
           }}
           onMenuPress={() => setIsMenuVisible(true)}
           onNotificationPress={() => {}}
@@ -235,6 +242,9 @@ const styles = StyleSheet.create({
   wallet: {
     flex: 1,
   },
+  circleSubContainerStyle: {
+    borderColor: '#0707071A', //TODO: Check on dark theme
+  },
   headerTitle: {
     fontFamily: 'Inter Medium',
     fontSize: 17,
@@ -284,7 +294,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: sizes.paddingHorizontal,
   },
   paymentAndTokensWrapper: {
-    top: -36,
+    top: -32,
     gap: 8,
   },
   mainContentShadow: {

@@ -48,6 +48,7 @@ const PaymentMethodContent = ({ paymentMethod, onSelectMethod }: PaymentMethodPr
     <SliderWithCustomGesture
       key={paymentMethod.method + paymentMethod.details}
       rightToLeftSwipe
+      withWipeBlock={false}
       onSwipeEnd={onSwipeEnd}
       text={t('menu_PaymentMethodPopup_delete')}
       mode={SwipeButtonModes.Finish}

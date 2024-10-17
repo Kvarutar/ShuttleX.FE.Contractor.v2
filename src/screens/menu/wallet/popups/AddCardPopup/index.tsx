@@ -29,7 +29,7 @@ const AddCardPopup = ({ setIsAddCardPopupVisible, setIsPaymentsVariantsVisible }
 
   const computedStyles = StyleSheet.create({
     hiddenPartContainerStyle: {
-      height: windowHeight * 0.85,
+      height: windowHeight * 0.8,
     },
   });
 

@@ -247,7 +247,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Inter Medium',
     borderWidth: 0,
-    paddingHorizontal: 0,
+    height: 90,
+    paddingVertical: 0,
+    backgroundColor: 'red',
   },
 });
 
