@@ -249,7 +249,6 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     height: 90,
     paddingVertical: 0,
-    backgroundColor: 'red',
   },
 });
 
