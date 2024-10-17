@@ -79,6 +79,7 @@ const Menu = ({ onClose }: MenuProps) => {
       userName={profile?.fullName}
       menuNavigation={menuNavigation}
       currentRoute={currentRoute}
+      isContractorMenu
       // label={<LevelLabel />}
     />
   );

@@ -23,12 +23,6 @@ const SplashScreen = ({ navigation }: SplashScreenProps): JSX.Element => {
     startNowText: {
       color: colors.textTertiaryColor,
     },
-    favIconStyle: {
-      color: colors.primaryColor,
-    },
-    favIconInnerStyle: {
-      color: colors.iconPrimaryColor,
-    },
     textIconStyle: {
       color: colors.backgroundPrimaryColor,
     },
@@ -43,11 +37,7 @@ const SplashScreen = ({ navigation }: SplashScreenProps): JSX.Element => {
         resizeMode="cover"
       />
       <View style={styles.groupedBrandIconContainer}>
-        <GroupedBrandIconMini
-          favIconColor={computedStyles.favIconStyle.color}
-          favIconInnerColor={computedStyles.favIconInnerStyle.color}
-          textIconColor={computedStyles.textIconStyle.color}
-        />
+        <GroupedBrandIconMini textIconColor={computedStyles.textIconStyle.color} isContractorIcon />
       </View>
       <View style={styles.titlesContainer}>
         <Text style={[styles.driverText, computedStyles.driverText]}>{t('auth_Splash_title')}</Text>
