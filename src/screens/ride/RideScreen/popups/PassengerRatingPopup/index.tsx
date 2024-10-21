@@ -154,13 +154,11 @@ const styles = StyleSheet.create({
   titleFirst: {
     fontFamily: 'Inter Bold',
     fontSize: 34,
-    maxWidth: '70%',
     letterSpacing: -1.53,
     lineHeight: 34,
     marginBottom: 19,
   },
   description: {
-    maxWidth: '60%',
     fontSize: 16,
     lineHeight: 20,
     marginBottom: 36,

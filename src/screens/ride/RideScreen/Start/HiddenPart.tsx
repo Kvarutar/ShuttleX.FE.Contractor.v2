@@ -3,9 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
-  Like2Icon,
   sizes,
-  SteeringWheelIcon,
+  StatsBlock,
   SwipeButton,
   SwipeButtonModes,
   Text,
@@ -49,9 +48,6 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) =
     levelText: {
       color: colors.textQuadraticColor,
     },
-    dot: {
-      backgroundColor: colors.iconSecondaryColor,
-    },
     carTitleContainer: {
       borderColor: colors.borderColor,
     },
@@ -70,12 +66,6 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) =
     bottomInfoText: {
       color: colors.textPrimaryColor,
     },
-    likesAndRidesCounter: {
-      color: colors.textSecondaryColor,
-    },
-    likesAndRidesText: {
-      color: colors.textQuadraticColor,
-    },
     steeringWheelIcon: {
       color: colors.textQuadraticColor,
     },
@@ -85,13 +75,6 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) =
     await dispatch(updateContractorStatus(mode));
     bottomWindowRef.current?.closeWindow();
   };
-
-  function formatBigNumbers(value: number): string {
-    if (value >= 1000) {
-      return Math.floor(value / 1000) + 'k';
-    }
-    return value.toString();
-  }
 
   if (!isOpened || !profile || !contractorStatistics || !carData) {
     return;
@@ -110,19 +93,11 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) =
         </View>
       </View> */}
       <Text style={styles.namesText}>{profile.fullName}</Text>
-      <View style={styles.rideDataContainer}>
-        <View style={styles.likesContainer}>
-          <Like2Icon style={styles.likeIcon} />
-          <Text style={computedStyles.likesAndRidesCounter}>{formatBigNumbers(contractorStatistics.likes)}</Text>
-          <Text style={[styles.likesAndRidesText, computedStyles.likesAndRidesText]}>{t('ride_Ride_Order_likes')}</Text>
-        </View>
-        <View style={styles.ridesContainer}>
-          <View style={[styles.dot, computedStyles.dot]} />
-          <SteeringWheelIcon color={computedStyles.steeringWheelIcon.color} />
-          <Text style={computedStyles.likesAndRidesCounter}>{formatBigNumbers(contractorStatistics.rides)}</Text>
-          <Text style={[styles.likesAndRidesText, computedStyles.likesAndRidesText]}>{t('ride_Ride_Order_rides')}</Text>
-        </View>
-      </View>
+      <StatsBlock
+        style={styles.rideDataContainer}
+        amountLikes={contractorStatistics.likes}
+        amountRides={contractorStatistics.rides}
+      />
       <View style={styles.carDataContainer}>
         <View style={[styles.carTitleContainer, computedStyles.carTitleContainer]}>
           <Text numberOfLines={1} style={styles.carTitleText}>
@@ -205,34 +180,8 @@ const styles = StyleSheet.create({
   },
   rideDataContainer: {
     justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 4,
     paddingTop: 2,
     marginBottom: 13,
-  },
-  likesContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  likeIcon: {
-    width: 16,
-    height: 16,
-  },
-  ridesContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  likesAndRidesText: {
-    fontFamily: 'Inter Medium',
-    fontSize: 17,
-    lineHeight: 22,
-  },
-  dot: {
-    width: 4,
-    height: 4,
-    borderRadius: 8,
   },
   carDataContainer: {
     flexDirection: 'row',
