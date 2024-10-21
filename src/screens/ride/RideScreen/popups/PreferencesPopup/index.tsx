@@ -248,7 +248,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   roundCheckIconContainer: {
-    flex: 1,
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
