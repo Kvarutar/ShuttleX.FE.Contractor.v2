@@ -14,6 +14,7 @@ export type RootStackParamList = {
   DriversLicense: undefined;
   VehicleInsurance: undefined;
   VehicleRegistration: undefined;
+  Docs: undefined;
   Wallet: undefined;
   AddPayment: undefined;
   Withdraw: undefined;

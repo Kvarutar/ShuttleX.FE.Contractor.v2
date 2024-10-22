@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import {
+  Alert,
   Button,
   ButtonShapes,
   ButtonSizes,
@@ -14,6 +16,7 @@ import {
   NotificationIcon,
   NotificationType,
   sizes,
+  SquareButtonModes,
   Text,
   useTheme,
 } from 'shuttlex-integration';
@@ -39,10 +42,13 @@ import Menu from '../Menu';
 import MapCameraModeButton from './MapCameraModeButton';
 import MapView from './MapView';
 import Order from './Order';
-import { type RideScreenProps } from './props';
+import UnclosablePopupWithModes from './popups/UnclosablePopupWithModes';
+import { UnclosablePopupModes } from './popups/UnclosablePopupWithModes/props';
+import { DocResponseStatus, type RideScreenProps } from './props';
 import Start from './Start';
 
 const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const dispatch = useAppDispatch();
 
@@ -56,7 +62,10 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
   const profile = useSelector(profileSelector);
 
+  //TODO add logic for getting confirmed email
+  const [isEmailVerified, setEmailVerified] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
+  const [docStatus, setDocStatus] = useState<DocResponseStatus | null>(null);
 
   const computedStyles = StyleSheet.create({
     topButtonsContainer: {
@@ -143,6 +152,80 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     );
   }, [dispatch]);
 
+  //TODO add correct logic for get Document status from backend
+  const fetchDocumentStatus = async (): Promise<DocResponseStatus> => {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(DocResponseStatus.Approved);
+        setEmailVerified(true);
+      }, 5000);
+    });
+  };
+
+  useEffect(() => {
+    (async () => {
+      const result = await fetchDocumentStatus();
+      setDocStatus(result);
+    })();
+  }, []);
+
+  const determinePopupMode = (status: DocResponseStatus): UnclosablePopupModes | null => {
+    switch (status) {
+      case DocResponseStatus.None:
+        return UnclosablePopupModes.DocumentRejectedError;
+      case DocResponseStatus.UnderReview:
+        return UnclosablePopupModes.DocumentUnderReview;
+      case DocResponseStatus.RequireUpdate:
+        return UnclosablePopupModes.DocumentRejected;
+      case DocResponseStatus.Expired:
+        return UnclosablePopupModes.CompleteVerification;
+      default:
+        return null;
+    }
+  };
+
+  const determinePopupButton = (status: DocResponseStatus): JSX.Element | null => {
+    switch (status) {
+      case DocResponseStatus.None:
+      case DocResponseStatus.UnderReview:
+        return (
+          <Button
+            style={styles.popupButton}
+            shape={ButtonShapes.Square}
+            mode={SquareButtonModes.Mode2}
+            text={t('ride_Ride_supportButton')}
+            onPress={() => {
+              /* TODO: add logic for navigate */
+            }}
+          />
+        );
+      case DocResponseStatus.RequireUpdate:
+        return (
+          <Button
+            style={styles.popupButton}
+            shape={ButtonShapes.Square}
+            mode={SquareButtonModes.Mode2}
+            text={t('ride_Ride_completeButton')}
+            onPress={() => navigation.navigate('Docs')}
+          />
+        );
+      case DocResponseStatus.Expired:
+        return (
+          <Button
+            style={styles.popupButton}
+            shape={ButtonShapes.Square}
+            text={t('ride_Ride_completeButton')}
+            onPress={() => navigation.navigate('Docs')}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const statusMode = docStatus ? determinePopupMode(docStatus) : null;
+  const popupButton = docStatus ? determinePopupButton(docStatus) : null;
+
   let locationUnavailableProps: LocationUnavailableProps | null = null;
   if (!isPermissionGranted) {
     locationUnavailableProps = {
@@ -206,6 +289,12 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
           >
             <MenuIcon />
           </Button>
+          <Alert
+            isVisible={isEmailVerified}
+            text={t('ride_Ride_EmailAlert')}
+            backgroundColor={colors.errorColor}
+            textColor={colors.textTertiaryColor}
+          />
           <View style={styles.topRightButtonContainer}>
             <View>
               <Button
@@ -232,6 +321,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
         {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
       </SafeAreaView>
       {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
+      {docStatus && statusMode && <UnclosablePopupWithModes mode={statusMode} bottomAdditionalContent={popupButton} />}
     </>
   );
 };
@@ -264,6 +354,9 @@ const styles = StyleSheet.create({
   },
   topRightButtonContainer: {
     alignItems: 'center',
+  },
+  popupButton: {
+    marginTop: 76,
   },
 });
 

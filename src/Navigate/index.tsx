@@ -9,6 +9,7 @@ import LockOutScreen from '../screens/auth/LockOutScreen';
 import SignInCodeScreen from '../screens/auth/SignInCodeScreen';
 import SplashScreen from '../screens/auth/SplashScreen';
 import TermsScreen from '../screens/auth/TermsScreen';
+import DocsScreen from '../screens/docs/DocsScreen';
 import DriversLicenseScreen from '../screens/docs/DriversLicenseScreen';
 import PassportScreen from '../screens/docs/PassportScreen';
 import ProfilePhotoScreen from '../screens/docs/ProfilePhotoScreen';
@@ -54,6 +55,7 @@ const Navigate = (): JSX.Element => {
         <Stack.Screen name="DriversLicense" component={DriversLicenseScreen} />
         <Stack.Screen name="VehicleInsurance" component={VehicleInsuranceScreen} />
         <Stack.Screen name="VehicleRegistration" component={VehicleRegistrationScreen} />
+        <Stack.Screen name="Docs" component={DocsScreen} />
         <Stack.Screen name="Wallet" component={WalletScreen} />
         <Stack.Screen name="Withdraw" component={WithdrawScreen} />
         <Stack.Screen name="Terms" component={TermsScreen} />

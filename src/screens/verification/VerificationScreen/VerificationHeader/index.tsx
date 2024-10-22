@@ -25,7 +25,7 @@ const VerificationHeader = ({
     <View style={containerStyle}>
       <Text style={[styles.windowTitle, computedStyles.windowTitle]}>{windowTitle}</Text>
       <HeaderWithTwoTitles firstTitle={firstHeaderTitle} secondTitle={secondHeaderTitle} />
-      <Text style={[styles.description, computedStyles.description]}>{description}</Text>
+      {description && <Text style={[styles.description, computedStyles.description]}>{description}</Text>}
     </View>
   );
 };

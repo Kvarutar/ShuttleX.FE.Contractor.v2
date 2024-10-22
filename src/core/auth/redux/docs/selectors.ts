@@ -1,5 +1,6 @@
 import { AppState } from '../../../redux/store';
 
+export const requirementDocumentsListSelector = (state: AppState) => state.docs;
 export const isAllDocumentsFilledSelector = (state: AppState) =>
   Object.values(state.docs).every(doc => (Array.isArray(doc) ? doc.length > 0 : doc !== null));
 

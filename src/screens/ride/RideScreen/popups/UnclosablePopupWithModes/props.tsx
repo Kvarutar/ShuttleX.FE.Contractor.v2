@@ -3,6 +3,10 @@ export enum UnclosablePopupModes {
   Banned = 'banned',
   AccountIsNotActive = 'accountIsNotActive',
   PassengerPaidTripViaCash = 'passengerPaidTripViaCash',
+  DocumentUnderReview = 'documentUnderReview',
+  DocumentRejected = 'documentRejected',
+  DocumentRejectedError = 'documentRejectedError',
+  CompleteVerification = 'completeVerification',
 }
 
 export type UnclosablePopupInfo = Record<

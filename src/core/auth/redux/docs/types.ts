@@ -13,3 +13,5 @@ export type DocsFile = {
   type: string;
   uri: string;
 };
+
+export type RequirementDocs = DocsFile[] | DocsFile | null;
