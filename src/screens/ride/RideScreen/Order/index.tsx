@@ -9,6 +9,7 @@ import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { endTrip } from '../../../../core/ride/redux/trip';
 import { orderSelector, tripStatusSelector } from '../../../../core/ride/redux/trip/selectors';
+import { fetchCancelTrip } from '../../../../core/ride/redux/trip/thunks';
 import { TripStatus } from '../../../../core/ride/redux/trip/types';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import PassengerRating from '../popups/PassengerRatingPopup';
@@ -29,7 +30,8 @@ const Order = () => {
     bottomWindowRef.current?.closeWindow();
   }, [tripStatus]);
 
-  const onCancelTrip = () => {
+  const onCancelTrip = async () => {
+    await dispatch(fetchCancelTrip());
     dispatch(endTrip());
   };
 

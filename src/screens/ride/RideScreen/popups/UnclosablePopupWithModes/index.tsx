@@ -10,6 +10,12 @@ const popupInfo: UnclosablePopupInfo = {
     secondTitle: null,
     description: 'ride_Ride_UnclosablePopup_warningDescription',
   },
+  warningForTwoCancels: {
+    subTitle: 'ride_Ride_UnclosablePopup_warningForTwoCancelsSubtitle',
+    title: 'ride_Ride_UnclosablePopup_warningForTwoCancelsTitle',
+    secondTitle: null,
+    description: 'ride_Ride_UnclosablePopup_warningForTwoCancelsDescription',
+  },
   banned: {
     subTitle: 'ride_Ride_UnclosablePopup_bannedSubtitle',
     title: 'ride_Ride_UnclosablePopup_bannedTitle',

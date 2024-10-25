@@ -36,6 +36,8 @@ export type TripState = {
   secondOrder: OrderType | null;
   tripStatus: TripStatus;
   tripPoints: TripPoint[] | null;
+  canceledTripsAmount: number;
+  isCanceledTripsPopupVisible: boolean; // This state is here because it is used in very different components
 };
 
 export enum TripStatus {

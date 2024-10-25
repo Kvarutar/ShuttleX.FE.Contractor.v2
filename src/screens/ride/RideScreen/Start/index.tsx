@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import {
   BottomWindowWithGesture,
   BottomWindowWithGestureRef,
+  Button,
   minToMilSec,
   SquareButtonModes,
   SwipeButtonModes,
@@ -15,14 +16,20 @@ import { getAchievements, getCarData, getPreferences, getTariffs } from '../../.
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
-import { setOrder } from '../../../../core/ride/redux/trip';
-import { responseToOffer } from '../../../../core/ride/redux/trip/thunks';
+import { setIsCanceledTripsPopupVisible, setOrder } from '../../../../core/ride/redux/trip';
+import {
+  canceledTripsAmountSelector,
+  isCanceledTripsPopupVisibleSelector,
+} from '../../../../core/ride/redux/trip/selectors';
+import { getCanceledTripsAmount, responseToOffer } from '../../../../core/ride/redux/trip/thunks';
 import { OfferType, OrderType } from '../../../../core/ride/redux/trip/types';
 import { getContractorStatistics } from '../../../../core/statistics/redux/thunks';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import AchievementsPopup from '../popups/AchievementsPopup';
 import OfferPopup from '../popups/OfferPopup';
 import TariffPreferencesPopup from '../popups/PreferencesPopup';
+import UnclosablePopupWithModes from '../popups/UnclosablePopupWithModes';
+import { UnclosablePopupModes } from '../popups/UnclosablePopupWithModes/props';
 import HiddenPart from './HiddenPart';
 import VisiblePart from './VisiblePart';
 
@@ -140,6 +147,8 @@ const Start = () => {
 
   const contractorStatus = useSelector(contractorStatusSelector);
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
+  const canceledTripsAmount = useSelector(canceledTripsAmountSelector);
+  const isCanceledTripsPopupVisible = useSelector(isCanceledTripsPopupVisibleSelector);
 
   const [offer, setOffer] = useState<OfferType>();
   const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t)[contractorStatus]);
@@ -172,6 +181,7 @@ const Start = () => {
       await dispatch(getTariffs({ contractorId: '' }));
       await dispatch(getContractorStatistics({ contractorId: '' }));
       await dispatch(getCarData({ contractorId: '' }));
+      await dispatch(getCanceledTripsAmount({ contractiorId: '' }));
     })();
   }, [dispatch]);
 
@@ -196,6 +206,64 @@ const Start = () => {
     bottomWindowRef.current?.closeWindow();
     preferencesBottomWindowRef.current?.closeWindow();
     achievementsBottomWindowRef.current?.closeWindow();
+  };
+
+  const onPressConfirmButton = () => {
+    dispatch(setIsCanceledTripsPopupVisible(false));
+  };
+
+  //TODO: Add navigation to support page or same thing and resetting cancels
+  const onPressContactSupportButton = () => {
+    dispatch(setIsCanceledTripsPopupVisible(false));
+  };
+
+  const canceledTripsPopupsContent = () => {
+    let unclosablePopupMode = null;
+    let bottomAdditionalContent = null;
+
+    switch (canceledTripsAmount) {
+      case 1:
+        unclosablePopupMode = UnclosablePopupModes.Warning;
+        bottomAdditionalContent = (
+          <Button
+            style={styles.unclosablePopupConfirmButton}
+            text={t('ride_Ride_UnclosablePopup_confirmButton')}
+            onPress={onPressConfirmButton}
+          />
+        );
+        break;
+      case 2:
+        unclosablePopupMode = UnclosablePopupModes.WarningForTwoCancels;
+        bottomAdditionalContent = (
+          <Button
+            style={styles.unclosablePopupConfirmButton}
+            text={t('ride_Ride_UnclosablePopup_confirmButton')}
+            onPress={onPressConfirmButton}
+          />
+        );
+        break;
+      case 3:
+        unclosablePopupMode = UnclosablePopupModes.Banned;
+        bottomAdditionalContent = (
+          <Button
+            style={styles.unclosablePopupContactSupportButton}
+            text={t('ride_Ride_UnclosablePopup_contactSupportButton')}
+            onPress={onPressContactSupportButton}
+          />
+        );
+        break;
+      default:
+        unclosablePopupMode = UnclosablePopupModes.Banned;
+        bottomAdditionalContent = (
+          <Button
+            style={styles.unclosablePopupContactSupportButton}
+            text={t('ride_Ride_UnclosablePopup_contactSupportButton')}
+            onPress={onPressContactSupportButton}
+          />
+        );
+    }
+
+    return <UnclosablePopupWithModes mode={unclosablePopupMode} bottomAdditionalContent={bottomAdditionalContent} />;
   };
 
   const computedStyles = StyleSheet.create({
@@ -261,6 +329,7 @@ const Start = () => {
           achievementsBottomWindowRef={achievementsBottomWindowRef}
         />
       )}
+      {isCanceledTripsPopupVisible && canceledTripsPopupsContent()}
     </>
   );
 };
@@ -268,6 +337,12 @@ const Start = () => {
 const styles = StyleSheet.create({
   bottomWindowStyle: {
     paddingHorizontal: 0,
+  },
+  unclosablePopupConfirmButton: {
+    marginTop: 190,
+  },
+  unclosablePopupContactSupportButton: {
+    marginTop: 172,
   },
 });
 

@@ -116,3 +116,28 @@ export const fetchPickedUpAtStopPoint = createAppAsyncThunk<void, void>(
     }
   },
 );
+
+export const getCanceledTripsAmount = createAppAsyncThunk<number, { contractiorId: string }>(
+  'trip/getCanceledTripsAmount',
+  async (_, { getState }) => {
+    //TODO: Add networking
+    // await shuttlexContractorInstance.post('/contractor/order/picked-up-passenger-on-stop-point', {
+    //   //TODO: orderId,
+    //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
+    // });
+
+    //TODO: Remove this logic and add a logic for receiving a current state from back-end
+    const tripState = getState().trip;
+
+    return tripState.canceledTripsAmount;
+  },
+);
+
+export const fetchCancelTrip = createAppAsyncThunk<boolean, void>('trip/fetchCancelTrip', async () => {
+  //TODO: Add networking
+  // await shuttlexContractorInstance.post('/contractor/order/picked-up-passenger-on-stop-point', {
+  //   //TODO: orderId,
+  //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
+  // });
+  return true;
+});

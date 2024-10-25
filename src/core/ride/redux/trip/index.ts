@@ -4,8 +4,10 @@ import {
   fetchArrivedToDropOff,
   fetchArrivedToPickUp,
   fetchArrivedToStopPoint,
+  fetchCancelTrip,
   fetchPickedUpAtPickUpPoint,
   fetchPickedUpAtStopPoint,
+  getCanceledTripsAmount,
 } from './thunks';
 import { OrderType, TripState, TripStatus } from './types';
 
@@ -14,6 +16,8 @@ const initialState: TripState = {
   secondOrder: null,
   tripStatus: TripStatus.Idle,
   tripPoints: null,
+  canceledTripsAmount: 0,
+  isCanceledTripsPopupVisible: false,
 };
 
 const slice = createSlice({
@@ -50,6 +54,15 @@ const slice = createSlice({
       }
       state.tripStatus = TripStatus.Idle;
     },
+    setCanceledTripsAmount(state, action: PayloadAction<number>) {
+      state.canceledTripsAmount = action.payload;
+    },
+    setIsCanceledTripsPopupVisible(state, action: PayloadAction<boolean>) {
+      state.isCanceledTripsPopupVisible = action.payload;
+    },
+    addCanceledTrip(state) {
+      state.canceledTripsAmount++;
+    },
     toNextTripPoint(state) {
       if (state.tripPoints) {
         state.tripPoints.shift();
@@ -80,10 +93,31 @@ const slice = createSlice({
       })
       .addCase(fetchPickedUpAtStopPoint.fulfilled, state => {
         slice.caseReducers.toNextTripPoint(state);
+      })
+      .addCase(fetchCancelTrip.fulfilled, (state, action) => {
+        if (action.payload) {
+          slice.caseReducers.addCanceledTrip(state);
+          slice.caseReducers.setIsCanceledTripsPopupVisible(state, slice.actions.setIsCanceledTripsPopupVisible(true));
+        }
+      })
+      .addCase(getCanceledTripsAmount.fulfilled, (state, action) => {
+        slice.caseReducers.setCanceledTripsAmount(state, {
+          payload: action.payload,
+          type: setTripStatus.type,
+        });
       });
   },
 });
 
-export const { setOrder, setTripStatus, rateTrip, toNextTripPoint, endTrip } = slice.actions;
+export const {
+  setOrder,
+  setTripStatus,
+  rateTrip,
+  toNextTripPoint,
+  endTrip,
+  addCanceledTrip,
+  setCanceledTripsAmount,
+  setIsCanceledTripsPopupVisible,
+} = slice.actions;
 
 export default slice.reducer;

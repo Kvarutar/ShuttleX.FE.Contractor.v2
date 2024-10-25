@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import {
   Alert,
@@ -62,6 +63,9 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
   const profile = useSelector(profileSelector);
 
+  const insets = useSafeAreaInsets();
+  const iosPaddingVertical = insets.bottom ? 0 : sizes.paddingVertical / 2;
+
   //TODO add logic for getting confirmed email
   const [isEmailVerified, setEmailVerified] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
@@ -69,7 +73,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
 
   const computedStyles = StyleSheet.create({
     topButtonsContainer: {
-      paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : 0,
+      paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : iosPaddingVertical,
     },
     unreadNotificationsMarker: {
       backgroundColor: colors.errorColor,
