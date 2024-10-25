@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Dimensions, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
 import {
@@ -10,6 +11,8 @@ import {
   CircleButtonModes,
   defaultShadow,
   getPaymentIcon,
+  GroupedButtons,
+  GroupedButtonsMode,
   MenuHeader,
   SafeAreaView,
   ScrollViewWithCustomScroll,
@@ -21,33 +24,83 @@ import {
 import { setSelectedPaymentMethod } from '../../../../core/menu/redux/wallet';
 import {
   avaliablePaymentMethodsListSelector,
+  currencySignCashBalanceSelector,
+  currencySignCryptoBalanceSelector,
+  currencySymbolCashBalanceSelector,
+  emailOrBinanceIdCryptoSelector,
   selectedPaymentMethodSelector,
-  totalWalletBalanceSelector,
-  walletBalanceSelector,
-  withdrawalHistoryListSelector,
+  totalWalletCashBalanceSelector,
+  totalWalletCryptoBalanceSelector,
+  walletCashBalanceSelector,
+  walletCryptoBalanceSelector,
+  withdrawalCashHistoryListSelector,
+  withdrawalCryptoHistoryListSelector,
 } from '../../../../core/menu/redux/wallet/selectors';
 import { getWalletStatistic } from '../../../../core/menu/redux/wallet/thunks';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import Menu from '../../../ride/Menu';
 import AddCardPopup from '../popups/AddCardPopup';
+import AddCryptoMethodPopup from '../popups/AddCryptoMethodPopup';
 import PaymentMethodPopup from '../popups/PaymentMethodPopup';
 import BalancePerDayBlock from './BalancePerDayBlock';
 import BalancePerDayText from './BalancePerDayText';
-import { WalletScreenProps } from './props';
+import { WalletScreenProps, СurrentBalanceInfo } from './types';
 import WithdrawalHistoryItem from './WithdrawalHistoryItem';
 
-const currency = '₴';
+const windowWidth = Dimensions.get('window').width;
 
 const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const insets = useSafeAreaInsets();
 
-  const balance = useSelector(walletBalanceSelector);
-  const totalBalance = useSelector(totalWalletBalanceSelector);
+  const [isSelectedCash, setIsSelectedCash] = useState<boolean>(true);
+
+  const balanceCash = useSelector(walletCashBalanceSelector);
+  const currencyCashSymbol = useSelector(currencySymbolCashBalanceSelector);
+  const currencyCashSign = useSelector(currencySignCashBalanceSelector);
+  const totalBalanceCash = useSelector(totalWalletCashBalanceSelector);
+  const withdrawalCashHistory = useSelector(withdrawalCashHistoryListSelector);
+
+  const balanceCrypto = useSelector(walletCryptoBalanceSelector);
+  const currencyCryptoSign = useSelector(currencySignCryptoBalanceSelector);
+  const totalBalanceCrypto = useSelector(totalWalletCryptoBalanceSelector);
+  const withdrawalCryptoHistory = useSelector(withdrawalCryptoHistoryListSelector);
+
+  const currentWalletInfo: СurrentBalanceInfo = useMemo(() => {
+    const current = {
+      balance: balanceCrypto,
+      currency: currencyCryptoSign,
+      totalBalance: totalBalanceCrypto,
+      withdrawalHistory: withdrawalCryptoHistory,
+      currencySign: currencyCryptoSign,
+    };
+    if (isSelectedCash) {
+      current.balance = balanceCash;
+      current.currency = currencyCashSymbol;
+      current.totalBalance = totalBalanceCash;
+      current.withdrawalHistory = withdrawalCashHistory;
+      current.currencySign = currencyCashSign;
+    }
+    return current;
+  }, [
+    isSelectedCash,
+    balanceCrypto,
+    balanceCash,
+    currencyCryptoSign,
+    currencyCashSign,
+    currencyCashSymbol,
+    totalBalanceCrypto,
+    totalBalanceCash,
+    withdrawalCryptoHistory,
+    withdrawalCashHistory,
+  ]);
+
   const selectedPaymentMethod = useSelector(selectedPaymentMethodSelector);
   const availablePaymentMethods = useSelector(avaliablePaymentMethodsListSelector);
-  const withdrawalHistory = useSelector(withdrawalHistoryListSelector);
+  const emailOrIdCrypto = useSelector(emailOrBinanceIdCryptoSelector);
+
   // Removed from render part in Task-263
   // TODO: Uncomment this components when work with trips or tokens amount
   // const tokensAmount = useSelector(tokensAmountSelector);
@@ -55,11 +108,12 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
 
   const [isPaymentsVariantsVisible, setIsPaymentsVariantsVisible] = useState(false);
   const [isAddCardPopupVisible, setIsAddCardPopupVisible] = useState(false);
+  const [isAddCryptoMethodPopupVisible, setIsAddCryptoMethodPopupVisible] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
 
-  const maxSum = Math.max(...Object.values(balance).filter(sum => sum > 0));
+  const maxSum = Math.max(...Object.values(currentWalletInfo.balance));
 
-  const dayTitles: Record<keyof typeof balance, string> = {
+  const dayTitles: Record<keyof typeof currentWalletInfo.balance, string> = {
     monday: 'menu_Wallet_monday',
     tuesday: 'menu_Wallet_tuesday',
     wednesday: 'menu_Wallet_wednesday',
@@ -86,7 +140,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
       backgroundColor: colors.primaryColor,
     },
     safeAreaContainer: {
-      paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : 0,
+      paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : undefined,
     },
     balanceTotal: {
       color: colors.textPrimaryColor,
@@ -96,6 +150,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
     },
     mainContent: {
       backgroundColor: colors.backgroundSecondaryColor,
+      paddingBottom: insets.bottom === 0 ? sizes.paddingVertical / 2 : insets.bottom,
     },
     tokensAndTrips: {
       backgroundColor: colors.backgroundPrimaryColor,
@@ -112,13 +167,20 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
     detailsStars: {
       color: colors.textQuadraticColor,
     },
+    addCardText: {
+      color: colors.textPrimaryColor,
+    },
   });
 
   let history = null;
 
-  if (withdrawalHistory.length > 0) {
-    const withdrawalHistoryItems = withdrawalHistory.map(historyItem => (
-      <WithdrawalHistoryItem key={historyItem.date} withdrawalHistoryItem={historyItem} />
+  if (currentWalletInfo.withdrawalHistory.length > 0) {
+    const withdrawalHistoryItems = currentWalletInfo.withdrawalHistory.map(historyItem => (
+      <WithdrawalHistoryItem
+        key={historyItem.date}
+        withdrawalHistoryItem={historyItem}
+        itemCurrency={isSelectedCash ? currentWalletInfo.currency : currentWalletInfo.currency + ' '}
+      />
     ));
 
     history = (
@@ -138,6 +200,43 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
     return decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
   };
 
+  const onPaymentBarPress = () => {
+    if (isSelectedCash) {
+      setIsPaymentsVariantsVisible(prevState => !prevState);
+    } else {
+      setIsAddCryptoMethodPopupVisible(true);
+    }
+  };
+
+  const paymentBarInfo = () => {
+    if (isSelectedCash) {
+      if (selectedPaymentMethod?.method) {
+        return (
+          <>
+            {getPaymentIcon(selectedPaymentMethod?.method)}
+            <View style={styles.detailsWrapper}>
+              <Text style={[styles.detailsStars, computedStyles.detailsStars]}>****</Text>
+              <Text style={styles.details}>{selectedPaymentMethod.details}</Text>
+            </View>
+          </>
+        );
+      }
+      return (
+        <>
+          {getPaymentIcon('card')}
+          <Text style={[styles.addCardText, computedStyles.addCardText]}>{t('menu_Wallet_AddCard')}</Text>
+        </>
+      );
+    } else {
+      if (emailOrIdCrypto) {
+        return <Text>{emailOrIdCrypto}</Text>;
+      }
+      return (
+        <Text style={[styles.addCardText, computedStyles.addCardText]}>{t('menu_Wallet_AddEmailOrBinanceID')}</Text>
+      );
+    }
+  };
+
   return (
     <View style={styles.wallet}>
       <SafeAreaView
@@ -154,23 +253,40 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
           onMenuPress={() => setIsMenuVisible(true)}
           onNotificationPress={() => {}}
         >
-          <Text style={[styles.headerTitle]}>{t('menu_Wallet_headerTitle')}</Text>
+          <GroupedButtons
+            setIsFirstButtonSelected={setIsSelectedCash}
+            isFirstButtonSelected={isSelectedCash}
+            width={windowWidth * 0.65}
+            firstButtonText="Cash"
+            secondButtonText="Crypto"
+            mode={GroupedButtonsMode.Dark}
+          />
         </MenuHeader>
         <View style={styles.totalsWrapper}>
-          <Text style={[styles.balanceTotal, computedStyles.balanceTotal]}>
-            {currency + formatNumberWithCommas(totalBalance)}
-          </Text>
+          <View style={styles.balanceTotalContainer}>
+            <Text style={styles.balanceTotalCurrency}>
+              {currentWalletInfo.currency}
+              {!isSelectedCash ? ' ' : ''}
+            </Text>
+            <Text style={[styles.balanceTotal, computedStyles.balanceTotal]}>
+              {formatNumberWithCommas(currentWalletInfo.totalBalance)}
+            </Text>
+          </View>
           <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_balance')}</Text>
         </View>
         <View style={styles.balancePerDay}>
           <View style={styles.balancePerDayBlocks}>
-            {Object.entries(balance).map(([dayTitle, sumPerDay]) => (
-              <BalancePerDayBlock key={dayTitle} sumPerDay={sumPerDay} maxSum={maxSum} />
+            {Object.entries(currentWalletInfo.balance).map(([dayTitle, sumPerDay]) => (
+              <BalancePerDayBlock key={dayTitle} sumPerDay={sumPerDay} maxSum={maxSum > 0 ? maxSum : 0} />
             ))}
           </View>
           <View style={styles.balancePerDayBlocks}>
-            {(Object.keys(balance) as (keyof typeof balance)[]).map(dayTitle => (
-              <BalancePerDayText key={dayTitle} title={t(dayTitles[dayTitle])} sumPerDay={balance[dayTitle]} />
+            {(Object.keys(currentWalletInfo.balance) as (keyof typeof currentWalletInfo.balance)[]).map(dayTitle => (
+              <BalancePerDayText
+                key={dayTitle}
+                title={t(dayTitles[dayTitle])}
+                sumPerDay={currentWalletInfo.balance[dayTitle]}
+              />
             ))}
           </View>
         </View>
@@ -198,25 +314,26 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
             </View>
           </Shadow> */}
 
-          {selectedPaymentMethod?.method && (
-            <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.mainContentShadow}>
-              <Pressable onPress={() => setIsPaymentsVariantsVisible(prevState => !prevState)}>
-                <View style={[styles.selectedMethod, computedStyles.selectedMethod]}>
-                  <View style={styles.selectedMethodWrapper}>
-                    {getPaymentIcon(selectedPaymentMethod.method)}
-                    <View style={styles.detailsWrapper}>
-                      <Text style={[styles.detailsStars, computedStyles.detailsStars]}>****</Text>
-                      <Text style={styles.details}>{selectedPaymentMethod.details}</Text>
-                    </View>
-                  </View>
-                  <ArrowInPrimaryColorIcon />
-                </View>
-              </Pressable>
-            </Shadow>
-          )}
+          <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.mainContentShadow}>
+            <Pressable onPress={onPaymentBarPress}>
+              <View style={[styles.selectedMethod, computedStyles.selectedMethod]}>
+                <View style={styles.selectedMethodWrapper}>{paymentBarInfo()}</View>
+                <ArrowInPrimaryColorIcon />
+              </View>
+            </Pressable>
+          </Shadow>
         </View>
         <View style={styles.history}>{history}</View>
-        <Button text={t('menu_Wallet_withdrawButton')} onPress={() => navigation.navigate('Withdraw')} />
+        <Button
+          text={t('menu_Wallet_withdrawButton')}
+          onPress={() =>
+            navigation.navigate('Withdraw', {
+              selectedTotalBalance: currentWalletInfo.totalBalance,
+              currencySign: currentWalletInfo.currencySign ?? '',
+              withdrawType: isSelectedCash ? 'cash' : 'crypto',
+            })
+          }
+        />
       </View>
       {isPaymentsVariantsVisible && (
         <PaymentMethodPopup
@@ -229,6 +346,9 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
           setIsAddCardPopupVisible={setIsAddCardPopupVisible}
           setIsPaymentsVariantsVisible={setIsPaymentsVariantsVisible}
         />
+      )}
+      {isAddCryptoMethodPopupVisible && (
+        <AddCryptoMethodPopup setIsAddCryptoMethodPopupVisible={setIsAddCryptoMethodPopupVisible} />
       )}
       {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
     </View>
@@ -251,9 +371,21 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   totalsWrapper: {
+    alignItems: 'center',
     gap: 4,
     marginTop: 28,
     marginBottom: 24,
+  },
+  balanceTotalContainer: {
+    flexDirection: 'row',
+  },
+  // TODO: Check "color" on dark theme
+  balanceTotalCurrency: {
+    fontFamily: 'Inter Bold',
+    fontSize: 32,
+    letterSpacing: -0.64,
+    alignSelf: 'center',
+    color: '#7C9718', // This color is used only here
   },
   balanceTotal: {
     fontFamily: 'Inter Bold',
@@ -290,7 +422,6 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     maxHeight: '45%',
-    paddingBottom: 36,
     paddingHorizontal: sizes.paddingHorizontal,
   },
   paymentAndTokensWrapper: {
@@ -355,6 +486,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter Medium',
     fontSize: 17,
     lineHeight: 22,
+  },
+  addCardText: {
+    fontFamily: 'Inter Medium',
+    fontSize: 17,
+    lineHeight: 22,
+    opacity: 0.28,
   },
   historyTitle: {
     fontFamily: 'Inter Medium',

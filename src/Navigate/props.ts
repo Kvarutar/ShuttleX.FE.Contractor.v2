@@ -1,5 +1,7 @@
 import { CountryPhoneMaskDto } from 'shuttlex-integration';
 
+import { WithdrawType } from '../core/menu/redux/wallet/types';
+
 export type RootStackParamList = {
   Splash: undefined;
   Auth: { state: 'SignIn' | 'SignUp' };
@@ -17,7 +19,7 @@ export type RootStackParamList = {
   Docs: undefined;
   Wallet: undefined;
   AddPayment: undefined;
-  Withdraw: undefined;
+  Withdraw: { selectedTotalBalance: number; currencySign: string; withdrawType: WithdrawType };
   PhoneSelect: { initialFlag: CountryPhoneMaskDto; onFlagSelect: (flag: CountryPhoneMaskDto) => void };
   Terms: undefined;
   Verification: undefined;

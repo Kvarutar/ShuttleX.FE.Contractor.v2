@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from 'shuttlex-integration';
 
-import { SliderAmountProps } from './props';
+import { SliderAmountProps } from './types';
 
 const markProperties = {
   width: 1,
@@ -65,7 +65,11 @@ const SliderAmount = ({ balanceTotal, minWithdrawSum, inputAmount, setInputAmoun
     if (offsetValue <= offsets.min && offsetValue > offsets.max + 10) {
       const calculatedAmount =
         minWithdrawSum + (maxSum - minWithdrawSum) * ((offsetValue - offsets.min) / (offsets.max - offsets.min));
-      const roundedCalculatedAmount = Math.round(calculatedAmount / 100) * 100;
+      let roundedCalculatedAmount = Math.round(calculatedAmount / 10) * 10;
+
+      if (maxSum > 1000) {
+        roundedCalculatedAmount = Math.round(calculatedAmount / 100) * 100;
+      }
 
       runOnJS(setInputAmountFromAnimation)(Math.abs(roundedCalculatedAmount));
     } else {

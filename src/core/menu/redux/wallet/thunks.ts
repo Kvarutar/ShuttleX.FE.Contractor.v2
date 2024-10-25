@@ -1,25 +1,27 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Card } from 'shuttlex-integration';
 
+import { WithdrawalHistory } from '../../../../screens/menu/wallet/WalletScreen/types';
 import { AppState } from '../../../redux/store';
-import { WithdrawalHistory } from './../../../../screens/menu/wallet/WalletScreen/props';
-import { PaymentMethodWithoutExpiresAt, WalletBalanceAPIResponse } from './types';
+import { CurrencySigns, EmailOrBinanceId, PaymentMethodWithoutExpiresAt, WalletBalanceAPIResponse } from './types';
 
 //TODO: There's just example! Rewrite when info about it logic will be known
-export const getWalletBalance = createAsyncThunk<WalletBalanceAPIResponse, { contractorId: string }>(
-  'wallet/getWalletBalance',
-  async () => {
-    //TODO: Add networking
-    // try {
-    //   return await shuttlexContractorInstance.get(`/statistic/contractor/${payload.contractorId}`, {});
-    // } catch (error) {
-    //   const { code, message } = getAxiosErrorInfo(error);
-    //   return rejectWithValue({
-    //     code,
-    //     message,
-    //   });
-    // }
-    const walletBalanceFromBack: WalletBalanceAPIResponse = {
+export const getWalletCashBalance = createAsyncThunk<
+  { balance: WalletBalanceAPIResponse; currency: CurrencySigns },
+  { contractorId: string }
+>('wallet/getWalletCashBalance', async () => {
+  //TODO: Add networking
+  // try {
+  //   return await shuttlexContractorInstance.get(`/statistic/contractor/${payload.contractorId}`, {});
+  // } catch (error) {
+  //   const { code, message } = getAxiosErrorInfo(error);
+  //   return rejectWithValue({
+  //     code,
+  //     message,
+  //   });
+  // }
+  const walletBalanceFromBack: { balance: WalletBalanceAPIResponse; currency: CurrencySigns } = {
+    balance: {
       monday: 2200.14,
       tuesday: 300.2,
       wednesday: 500.12,
@@ -27,10 +29,47 @@ export const getWalletBalance = createAsyncThunk<WalletBalanceAPIResponse, { con
       friday: 90,
       saturday: 0,
       sunday: 0,
-    };
-    return walletBalanceFromBack;
-  },
-);
+    },
+    currency: {
+      symbol: '₴',
+      sign: 'UAH',
+    },
+  };
+  return walletBalanceFromBack;
+});
+
+//TODO: There's just example! Rewrite when info about it logic will be known
+export const getWalletCryptoBalance = createAsyncThunk<
+  { balance: WalletBalanceAPIResponse; currency: CurrencySigns },
+  { contractorId: string }
+>('wallet/getWalletCryptoBalance', async () => {
+  //TODO: Add networking
+  // try {
+  //   return await shuttlexContractorInstance.get(`/statistic/contractor/${payload.contractorId}`, {});
+  // } catch (error) {
+  //   const { code, message } = getAxiosErrorInfo(error);
+  //   return rejectWithValue({
+  //     code,
+  //     message,
+  //   });
+  // }
+  const walletCryptoBalanceFromBack: { balance: WalletBalanceAPIResponse; currency: CurrencySigns } = {
+    balance: {
+      monday: 100.14,
+      tuesday: 40.2,
+      wednesday: 50.12,
+      thursday: 20,
+      friday: 9,
+      saturday: 10,
+      sunday: 0,
+    },
+    currency: {
+      sign: 'USDT',
+      symbol: null,
+    },
+  };
+  return walletCryptoBalanceFromBack;
+});
 
 //TODO: There's just example! Rewrite when info about it logic will be known
 export const getTokensAmount = createAsyncThunk<number, { contractorId: string }>(
@@ -104,8 +143,8 @@ export const getAvailablePaymentMethods = createAsyncThunk<PaymentMethodWithoutE
 );
 
 //TODO: There's just example! Rewrite when info about it logic will be known
-export const getWithdrawalHistory = createAsyncThunk<WithdrawalHistory[], { contractorId: string }>(
-  'wallet/getWithdrawalHistory',
+export const getEmailOrBinanceId = createAsyncThunk<EmailOrBinanceId, { contractorId: string }>(
+  'wallet/getEmailOrBinanceId',
   async () => {
     //TODO: Add networking
     // try {
@@ -117,7 +156,70 @@ export const getWithdrawalHistory = createAsyncThunk<WithdrawalHistory[], { cont
     //     message,
     //   });
     // }
-    const withdrawalHistoryFromBack: WithdrawalHistory[] = [
+    const emailOrBinanceIdFromBack: string | null = null;
+    return emailOrBinanceIdFromBack;
+  },
+);
+
+//TODO: There's just example! Rewrite when info about it logic will be known
+export const getWithdrawalCryptoHistory = createAsyncThunk<WithdrawalHistory[], { contractorId: string }>(
+  'wallet/getWithdrawalCryptoHistory',
+  async () => {
+    //TODO: Add networking
+    // try {
+    //   return await shuttlexContractorInstance.get(`/statistic/contractor/${payload.contractorId}`, {});
+    // } catch (error) {
+    //   const { code, message } = getAxiosErrorInfo(error);
+    //   return rejectWithValue({
+    //     code,
+    //     message,
+    //   });
+    // }
+    const withdrawalCashHistoryFromBack: WithdrawalHistory[] = [
+      {
+        quantity: '1.18',
+        date: new Date().getTime(),
+      },
+      {
+        quantity: '2.18',
+        date: new Date().getTime() + 1,
+      },
+      {
+        quantity: '3.18',
+        date: new Date().getTime() + 2,
+      },
+      {
+        quantity: '4.18',
+        date: new Date().getTime() + 3,
+      },
+      {
+        quantity: '5.18',
+        date: new Date().getTime() + 4,
+      },
+      {
+        quantity: '6.18',
+        date: new Date().getTime() + 5,
+      },
+    ];
+    return withdrawalCashHistoryFromBack;
+  },
+);
+
+//TODO: There's just example! Rewrite when info about it logic will be known
+export const getWithdrawalCashHistory = createAsyncThunk<WithdrawalHistory[], { contractorId: string }>(
+  'wallet/getWithdrawalCashHistory',
+  async () => {
+    //TODO: Add networking
+    // try {
+    //   return await shuttlexContractorInstance.get(`/statistic/contractor/${payload.contractorId}`, {});
+    // } catch (error) {
+    //   const { code, message } = getAxiosErrorInfo(error);
+    //   return rejectWithValue({
+    //     code,
+    //     message,
+    //   });
+    // }
+    const withdrawalCryptoHistoryFromBack: WithdrawalHistory[] = [
       {
         quantity: '100.18',
         date: new Date().getTime(),
@@ -143,7 +245,7 @@ export const getWithdrawalHistory = createAsyncThunk<WithdrawalHistory[], { cont
         date: new Date().getTime() + 5,
       },
     ];
-    return withdrawalHistoryFromBack;
+    return withdrawalCryptoHistoryFromBack;
   },
 );
 
@@ -186,6 +288,24 @@ export const sendSelectedPaymentMethod = createAsyncThunk<boolean, { method: Pay
 );
 
 //TODO: There's just example! Rewrite when info about it logic will be known
+export const sendCryptoEmailOrBinanceId = createAsyncThunk<boolean, { emailOrBinanceId: string }>(
+  'wallet/sendCryptoEmailOrBinanceId',
+  async () => {
+    //TODO: Add networking
+    // try {
+    //   return await shuttlexContractorInstance.get(`/statistic/contractor/${cardData}`, {});
+    // } catch (error) {
+    //   const { code, message } = getAxiosErrorInfo(error);
+    //   return rejectWithValue({
+    //     code,
+    //     message,
+    //   });
+    // }
+    return true;
+  },
+);
+
+//TODO: There's just example! Rewrite when info about it logic will be known
 export const fetchWithdraw = createAsyncThunk<boolean, { withdrawSum: number }>('wallet/fetchWithdraw', async () => {
   //TODO: Add networking
   //TODO: Add logic receiving correct responce from back-end
@@ -220,7 +340,7 @@ export const removePaymentMethod = createAsyncThunk<
 
   // This logic will be removed when networking is added
   const state = getState() as AppState;
-  const filteredState: PaymentMethodWithoutExpiresAt[] = state.wallet.payment.avaliableMethods.filter(
+  const filteredState: PaymentMethodWithoutExpiresAt[] = state.wallet.payment.cash.avaliableMethods.filter(
     availableMethod =>
       !(availableMethod.details === methodForRemoving.details && availableMethod.method === methodForRemoving.method),
   );
@@ -232,10 +352,13 @@ export const removePaymentMethod = createAsyncThunk<
 export const getWalletStatistic = createAsyncThunk<void, { contractorId: string }>(
   'wallet/getWalletStatistic',
   async ({ contractorId }, { dispatch }) => {
-    await dispatch(getWalletBalance({ contractorId }));
+    await dispatch(getWalletCashBalance({ contractorId }));
+    await dispatch(getWalletCryptoBalance({ contractorId }));
     await dispatch(getTokensAmount({ contractorId }));
     await dispatch(getTripsAmount({ contractorId }));
     await dispatch(getAvailablePaymentMethods({ contractorId }));
-    await dispatch(getWithdrawalHistory({ contractorId }));
+    await dispatch(getWithdrawalCashHistory({ contractorId }));
+    await dispatch(getWithdrawalCryptoHistory({ contractorId }));
+    await dispatch(getEmailOrBinanceId({ contractorId }));
   },
 );

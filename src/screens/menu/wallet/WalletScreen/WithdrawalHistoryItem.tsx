@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { getLocales } from 'react-native-localize';
 import { Separator, Text, useThemeV1 } from 'shuttlex-integration';
 
-import { WithdrawalHistory } from './props';
+import { WithdrawalHistory } from './types';
 
 const formatDate = (date: Date): string =>
   new Intl.DateTimeFormat(getLocales()[0].languageTag, {
@@ -11,7 +11,13 @@ const formatDate = (date: Date): string =>
     year: 'numeric',
   }).format(date);
 
-const WithdrawalHistoryItem = ({ withdrawalHistoryItem }: { withdrawalHistoryItem: WithdrawalHistory }) => {
+const WithdrawalHistoryItem = ({
+  withdrawalHistoryItem,
+  itemCurrency,
+}: {
+  withdrawalHistoryItem: WithdrawalHistory;
+  itemCurrency: string;
+}) => {
   const { colors } = useThemeV1();
 
   const computedStyles = StyleSheet.create({
@@ -23,7 +29,10 @@ const WithdrawalHistoryItem = ({ withdrawalHistoryItem }: { withdrawalHistoryIte
   return (
     <View>
       <View style={styles.historyItemContainer}>
-        <Text style={styles.historyQuantity}>-${withdrawalHistoryItem.quantity}</Text>
+        <Text style={styles.historyQuantity}>
+          -{itemCurrency}
+          {withdrawalHistoryItem.quantity}
+        </Text>
         <Text style={[styles.historyDate, computedStyles.historyDate]}>
           {formatDate(new Date(withdrawalHistoryItem.date))}
         </Text>

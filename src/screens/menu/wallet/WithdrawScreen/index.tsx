@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import { t } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
@@ -18,30 +19,35 @@ import {
 } from 'shuttlex-integration';
 
 import {
+  emailOrBinanceIdCryptoSelector,
   selectedPaymentMethodSelector,
-  totalWalletBalanceSelector,
 } from '../../../../core/menu/redux/wallet/selectors';
 import { fetchWithdraw } from '../../../../core/menu/redux/wallet/thunks';
 import { useAppDispatch } from '../../../../core/redux/hooks';
-import { WithdrawScreenProps } from './props';
 import SliderAmount from './SliderAmount';
-
-const minWithdrawSum = 100;
-const currency = '₴';
+import { WithdrawScreenProps } from './types';
 
 const animationDuration = 150;
 
 const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
   const dispatch = useAppDispatch();
+  const route = useRoute<WithdrawScreenProps['route']>();
+  const { selectedTotalBalance, currencySign, withdrawType } = route.params;
 
   const { colors } = useTheme();
   const activeBackgroundColor = useSharedValue(colors.backgroundPrimaryColor);
 
-  const balanceTotal = useSelector(totalWalletBalanceSelector);
+  const minWithdrawSum = withdrawType === 'cash' ? 100 : 10;
+
+  const balanceTotal = selectedTotalBalance;
   const selectedPaymentMethod = useSelector(selectedPaymentMethodSelector);
+  const emailOrBinanceId = useSelector(emailOrBinanceIdCryptoSelector);
 
   const [inputAmount, setInputAmount] = useState<number>(minWithdrawSum);
   const [isVisibleSlider, setIsVisibleSlider] = useState(true);
+
+  const isAddedOutputMethod =
+    (withdrawType === 'cash' && selectedPaymentMethod) || (withdrawType === 'crypto' && emailOrBinanceId);
 
   const isError = inputAmount > balanceTotal || inputAmount < minWithdrawSum;
 
@@ -61,6 +67,7 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
       changeBackground(colors.backgroundPrimaryColor);
     }
   }, [
+    minWithdrawSum,
     inputAmount,
     balanceTotal,
     activeBackgroundColor,
@@ -87,7 +94,10 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
       fontSize: inputAmount.toString().length < 5 ? 72 : 54,
     },
     buttonText: {
-      color: isError ? colors.textSecondaryColor : colors.textTertiaryColor,
+      color: isError || !isAddedOutputMethod ? colors.textSecondaryColor : colors.textTertiaryColor,
+    },
+    currencySign: {
+      color: colors.textPrimaryColor,
     },
   });
 
@@ -119,10 +129,17 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
 
     await AsyncAlert(
       t('menu_Withdraw_alertTitle'),
-      t('menu_Withdraw_alertDescription', {
-        withdrawAmount: inputAmount,
-        cardEnding: selectedPaymentMethod?.details,
-      }),
+      withdrawType === 'cash'
+        ? t('menu_Withdraw_alertDescription', {
+            withdrawAmount: inputAmount,
+            cardEnding: selectedPaymentMethod?.details,
+          })
+        : t('menu_Withdraw_alertDescriptionCrypto', {
+            cryptoAmount: inputAmount,
+            cryptoCurrencySign: currencySign,
+            //TODO: Add responsing UID before calling alert(?)
+            cryptoUID: emailOrBinanceId,
+          }),
       t('menu_Withdraw_alertContinueButton'),
     );
   };
@@ -159,8 +176,8 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
             <View style={styles.headerDummy} />
           </View>
           <View>
+            <Text style={[styles.currencySign, computedStyles.currencySign]}>{currencySign}</Text>
             <TextInput
-              currencySymbol="₴"
               inputMode={TextInputInputMode.Money}
               value={inputAmount.toString()}
               onChangeText={onChangeText}
@@ -180,15 +197,15 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
                 {t('menu_Withdraw_avaliable')}
               </Text>
               <Text style={[styles.availableSecondText, computedStyles.availableSecondText]}>
-                {currency + balanceTotal.toString()}
+                {currencySign + ' ' + balanceTotal.toString()}
               </Text>
             </View>
           </View>
           <Button
             text={t('menu_Withdraw_withdrawButton')}
             onPress={onWithdraw}
-            mode={isError ? SquareButtonModes.Mode5 : SquareButtonModes.Mode2}
-            disabled={isError}
+            mode={isError || !isAddedOutputMethod ? SquareButtonModes.Mode5 : SquareButtonModes.Mode2}
+            disabled={isError || !isAddedOutputMethod}
             textStyle={computedStyles.buttonText}
           />
         </SafeAreaView>
@@ -219,6 +236,14 @@ const styles = StyleSheet.create({
   },
   headerDummy: {
     width: 50,
+  },
+  currencySign: {
+    fontFamily: 'Inter Bold',
+    fontSize: 32,
+    lineHeight: 38,
+    alignSelf: 'center',
+    opacity: 0.4,
+    marginBottom: 28, // less than in design due to input
   },
   container: {
     justifyContent: 'space-between',

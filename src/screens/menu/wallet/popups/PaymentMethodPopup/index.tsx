@@ -71,7 +71,10 @@ const PaymentMethodPopup = ({ setIsPaymentsVariantsVisible, onOpenAddCardPopup }
       withHiddenPartScroll
       hiddenPart={
         <View style={[styles.hiddenPartContentWrapper, computedStyles.hiddenPartContentWrapper]}>
-          <ScrollViewWithCustomScroll contentContainerStyle={styles.paymentMethodsContentWrapper} withScroll>
+          <ScrollViewWithCustomScroll
+            contentContainerStyle={styles.paymentMethodsContentWrapper}
+            withScroll={avaliablePaymentMethods.length > 0}
+          >
             {paymentMethodsContent}
           </ScrollViewWithCustomScroll>
           <Button

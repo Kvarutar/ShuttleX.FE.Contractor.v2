@@ -58,7 +58,7 @@ const PaymentMethodContent = ({ paymentMethod, onSelectMethod }: PaymentMethodPr
         <Bar onPress={!isSelected ? onSelectMethod : undefined}>
           <View style={[styles.methodWrapper, computedStyles.methodWrapper]}>
             <View style={styles.methodContainer}>
-              {getPaymentIcon(paymentMethod.method)}
+              {getPaymentIcon(paymentMethod.method !== 'unknown' ? paymentMethod.method : 'card')}
               <View style={styles.detailsWrapper}>
                 <Text style={[styles.detailsStars, computedStyles.detailsStars]}>****</Text>
                 <Text style={styles.details}>{paymentMethod.details}</Text>

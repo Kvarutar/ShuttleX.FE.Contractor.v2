@@ -8,7 +8,9 @@ const animationDuration = 3000;
 
 const windowHeight = Dimensions.get('window').height;
 
-const maxStatisticBlockHeight = windowHeight * 0.2;
+const isSmallDevice = windowHeight < 800;
+
+const maxStatisticBlockHeight = isSmallDevice ? windowHeight * 0.17 : windowHeight * 0.2;
 const minStatisticBlockHeight = 12;
 const zeroStatisticBlockHeight = 10;
 

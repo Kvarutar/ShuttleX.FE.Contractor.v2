@@ -1,6 +1,6 @@
 import { PaymentMethod } from 'shuttlex-integration/lib/typescript/src/utils/payment/types';
 
-import { WithdrawalHistory } from '../../../../screens/menu/wallet/WalletScreen/props';
+import { WithdrawalHistory } from '../../../../screens/menu/wallet/WalletScreen/types';
 
 //TODO: Change this type when we now how it seems on back-end
 export type WalletBalanceAPIResponse = {
@@ -15,12 +15,36 @@ export type WalletBalanceAPIResponse = {
 
 export type PaymentMethodWithoutExpiresAt = Omit<PaymentMethod, 'expiresAt'>;
 
+export type CurrencySigns = {
+  symbol: string | null;
+  sign: string | null;
+};
+
+export type WithdrawType = 'cash' | 'crypto';
+
+export type EmailOrBinanceId = string | null;
+
 export type WalletState = {
-  balance: WalletBalanceAPIResponse;
+  balances: {
+    cash: {
+      balance: WalletBalanceAPIResponse;
+      currency: CurrencySigns;
+    };
+    crypto: {
+      balance: WalletBalanceAPIResponse;
+      currency: CurrencySigns;
+    };
+  };
   payment: {
-    selectedMethod: PaymentMethodWithoutExpiresAt | null;
-    avaliableMethods: PaymentMethodWithoutExpiresAt[];
-    withdrawalHistory: WithdrawalHistory[];
+    cash: {
+      selectedMethod: PaymentMethodWithoutExpiresAt | null;
+      avaliableMethods: PaymentMethodWithoutExpiresAt[];
+      withdrawalHistory: WithdrawalHistory[];
+    };
+    crypto: {
+      emailOrID: EmailOrBinanceId;
+      withdrawalHistory: WithdrawalHistory[];
+    };
   };
   tokensAmount: number;
   tripsAmount: number;
