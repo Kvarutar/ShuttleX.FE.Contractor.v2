@@ -17,18 +17,18 @@ import {
   contractorStatusSelector,
   profileSelector,
   selectedTariffsSelector,
-} from '../../../../core/contractor/redux/selectors';
-import { updateContractorStatus } from '../../../../core/contractor/redux/thunks';
-import { ContractorStatus } from '../../../../core/contractor/redux/types';
-import { useAppDispatch } from '../../../../core/redux/hooks';
-import { statisticsContractorSelector } from '../../../../core/statistics/redux/selectors';
-import { HiddenPartProps } from './props';
+} from '../../../../../core/contractor/redux/selectors';
+import { updateContractorStatus } from '../../../../../core/contractor/redux/thunks';
+import { ContractorStatus } from '../../../../../core/contractor/redux/types';
+import { useAppDispatch } from '../../../../../core/redux/hooks';
+import { statisticsContractorSelector } from '../../../../../core/statistics/redux/selectors';
+import { ProfileInfoProps } from './types';
 
 const animationDuration = 200;
 
 //TODO: Add "setIsAchievementsPopupVisible" prop when we need achievements
 // Details in Task-266
-const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) => {
+const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -76,57 +76,63 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) =
     bottomWindowRef.current?.closeWindow();
   };
 
-  if (!isOpened || !profile || !contractorStatistics || !carData) {
+  if (!profile || !contractorStatistics || !carData) {
     return;
   }
 
   return (
-    <Animated.View entering={FadeIn.duration(animationDuration)} exiting={FadeOut.duration(animationDuration)}>
-      {/* TODO: Add this block when we need a rider level */}
-      {/* Removed from render part in Task-266 */}
-      {/* Details in Task-266 */}
-      {/* <View style={styles.levelContainer}>
+    <Animated.View
+      entering={FadeIn.duration(animationDuration)}
+      exiting={FadeOut.duration(animationDuration)}
+      style={styles.container}
+    >
+      <View>
+        {/* TODO: Add this block when we need a rider level */}
+        {/* Removed from render part in Task-266 */}
+        {/* Details in Task-266 */}
+        {/* <View style={styles.levelContainer}>
         <CrownIcon />
         <View style={styles.levelTextsContainer}>
           <Text style={[styles.levelCounter, computedStyles.levelCounter]}>{contractorStatistics.level}</Text>
           <Text style={[styles.levelText, computedStyles.levelText]}>lvl.</Text>
         </View>
       </View> */}
-      <Text style={styles.namesText}>{profile.fullName}</Text>
-      <StatsBlock
-        style={styles.rideDataContainer}
-        amountLikes={contractorStatistics.likes}
-        amountRides={contractorStatistics.rides}
-      />
-      <View style={styles.carDataContainer}>
-        <View style={[styles.carTitleContainer, computedStyles.carTitleContainer]}>
-          <Text numberOfLines={1} style={styles.carTitleText}>
-            {carData.title}
-          </Text>
+        <Text style={styles.namesText}>{profile.fullName}</Text>
+        <StatsBlock
+          style={styles.rideDataContainer}
+          amountLikes={contractorStatistics.likes}
+          amountRides={contractorStatistics.rides}
+        />
+        <View style={styles.carDataContainer}>
+          <View style={[styles.carTitleContainer, computedStyles.carTitleContainer]}>
+            <Text numberOfLines={1} style={styles.carTitleText}>
+              {carData.title}
+            </Text>
+          </View>
+          <View style={[styles.carIdContainer, computedStyles.carIdContainer]}>
+            <Text style={styles.carIdText}>{carData.id}</Text>
+          </View>
         </View>
-        <View style={[styles.carIdContainer, computedStyles.carIdContainer]}>
-          <Text style={styles.carIdText}>{carData.id}</Text>
-        </View>
-      </View>
-      {/* TODO: Add this block when we need achievements */}
-      {/* Removed from render part in Task-266 */}
-      {/* Details in Task-266 */}
-      {/* <AchievementsCarousel setIsAchievementsPopupVisible={setIsAchievementsPopupVisible} /> */}
-      <View style={[styles.bottomInfoWrapper, computedStyles.bottomInfoWrapper]}>
-        <View style={[styles.tripTypeContainer, computedStyles.bottomInfo]}>
-          <Text numberOfLines={1} style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
-            {t('ride_Ride_Order_tripType')}
-          </Text>
-          <Text elipsizeMode={TextElipsizeMode.Tail} numberOfLines={1} style={styles.bottomInfoText}>
-            {selectedTariffs.map(selectedTariff => selectedTariff.name).join(',')}
-          </Text>
-        </View>
-        <View style={[styles.earnedTodayContainer, computedStyles.bottomInfo]}>
-          <Text style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
-            {t('ride_Ride_Order_earnedToday')}
-          </Text>
-          {/* TODO: Add "Earned today" state when it will be added */}
-          <Text style={[styles.bottomInfoText, computedStyles.bottomInfoText]}>{'$0.0'}</Text>
+        {/* TODO: Add this block when we need achievements */}
+        {/* Removed from render part in Task-266 */}
+        {/* Details in Task-266 */}
+        {/* <AchievementsCarousel setIsAchievementsPopupVisible={setIsAchievementsPopupVisible} /> */}
+        <View style={[styles.bottomInfoWrapper, computedStyles.bottomInfoWrapper]}>
+          <View style={[styles.tripTypeContainer, computedStyles.bottomInfo]}>
+            <Text numberOfLines={1} style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
+              {t('ride_Ride_Order_tripType')}
+            </Text>
+            <Text elipsizeMode={TextElipsizeMode.Tail} numberOfLines={1} style={styles.bottomInfoText}>
+              {selectedTariffs.map(selectedTariff => selectedTariff.name).join(',')}
+            </Text>
+          </View>
+          <View style={[styles.earnedTodayContainer, computedStyles.bottomInfo]}>
+            <Text style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
+              {t('ride_Ride_Order_earnedToday')}
+            </Text>
+            {/* TODO: Add "Earned today" state when it will be added */}
+            <Text style={[styles.bottomInfoText, computedStyles.bottomInfoText]}>{'$0.0'}</Text>
+          </View>
         </View>
       </View>
       {/* //TODO: Add a component which render "remains to work" time  */}
@@ -150,6 +156,12 @@ const HiddenPart = ({ isOpened, bottomWindowRef, lineState }: HiddenPartProps) =
 };
 
 const styles = StyleSheet.create({
+  container: {
+    //TODO: think of clever way(problem is: i can't calculate visible part height in opened state before it's opened. This problem occure because of we don't use hidden part in this component and in opened state height of visible part lesser then 93% of widow height)
+    height: '100%',
+    justifyContent: 'space-between',
+    paddingBottom: sizes.paddingVertical,
+  },
   // Don't remove unused styles. There're some styles for unused component for now
   levelContainer: {
     flexDirection: 'row',
@@ -176,7 +188,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter Medium',
     textAlign: 'center',
     fontSize: 21,
-    paddingTop: 4,
+    paddingTop: 12,
   },
   rideDataContainer: {
     justifyContent: 'center',
@@ -250,4 +262,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HiddenPart;
+export default ProfileInfo;

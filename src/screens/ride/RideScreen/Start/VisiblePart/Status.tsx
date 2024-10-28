@@ -10,31 +10,20 @@ import {
   PreferencesIcon,
   sizes,
   Text,
-  useTariffsIcons,
   useTheme,
 } from 'shuttlex-integration';
 
-import {
-  contractorStatusSelector,
-  primaryTariffSelector,
-  tariffsSelector,
-} from '../../../../core/contractor/redux/selectors';
-import { TariffInfo } from '../../../../core/contractor/redux/types';
-import TariffsCarousel from '../TariffsCarousel';
-import { VisiblePartProps } from './props';
+import { contractorStatusSelector } from '../../../../../core/contractor/redux/selectors';
+import TariffsCarousel from '../../TariffsCarousel';
+import { StatusProps } from './types';
 
 const animationDuration = 200;
 
-const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, lineState }: VisiblePartProps) => {
+const Status = ({ bottomWindowRef, setIsPreferencesPopupVisible, lineState }: StatusProps) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const tariffsIconsData = useTariffsIcons();
 
   const contractorStatus = useSelector(contractorStatusSelector);
-  const tariffs = useSelector(tariffsSelector);
-  const primaryTariff: TariffInfo = useSelector(primaryTariffSelector) || tariffs[0];
-
-  const IconComponent = tariffsIconsData[primaryTariff?.name]?.icon;
 
   const contractorStatusIsOffline = contractorStatus === 'offline';
 
@@ -46,16 +35,6 @@ const VisiblePart = ({ isOpened, bottomWindowRef, setIsPreferencesPopupVisible, 
       color: colors.textPrimaryColor,
     },
   });
-
-  if (isOpened) {
-    return (
-      <Animated.View entering={FadeIn.duration(animationDuration)}>
-        <View style={styles.bigCarImageContainer}>
-          <IconComponent style={styles.bigCarImage} />
-        </View>
-      </Animated.View>
-    );
-  }
 
   if (contractorStatusIsOffline) {
     return (
@@ -131,27 +110,14 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     opacity: 0.6,
   },
-  //TODO: Check image sizes on smaller and bigger devices
-  bigCarImageContainer: {
-    position: 'absolute',
-    top: -100,
-    width: '75%',
-    height: 130,
-    alignSelf: 'center',
-  },
-  bigCarImage: {
-    width: '100%',
-    aspectRatio: 2.5,
-    height: undefined,
-    resizeMode: 'contain',
-  },
   card: {
     flexDirection: 'row',
     marginBottom: 16,
   },
   startStopButton: {
     paddingHorizontal: 16,
+    marginBottom: sizes.paddingVertical,
   },
 });
 
-export default VisiblePart;
+export default Status;

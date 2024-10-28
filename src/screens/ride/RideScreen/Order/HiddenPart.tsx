@@ -1,14 +1,24 @@
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { EmergencyServiceIcon, ReportIcon, Text, useTheme } from 'shuttlex-integration';
+import { EmergencyServiceIcon, ReportIcon, SwipeButton, SwipeButtonModes, Text, useTheme } from 'shuttlex-integration';
 
+import { useAppDispatch } from '../../../../core/redux/hooks';
+import { endTrip } from '../../../../core/ride/redux/trip';
 import { orderSelector } from '../../../../core/ride/redux/trip/selectors';
+import { fetchCancelTrip } from '../../../../core/ride/redux/trip/thunks';
 
 const HiddenPart = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
   const order = useSelector(orderSelector);
+
+  const onCancelTrip = async () => {
+    dispatch(endTrip());
+    await dispatch(fetchCancelTrip());
+  };
 
   const computedStyles = StyleSheet.create({
     hiddenTripInfo: {
@@ -62,6 +72,11 @@ const HiddenPart = () => {
             </Text>
           </Pressable>
         </View>
+        <SwipeButton
+          mode={SwipeButtonModes.Decline}
+          onSwipeEnd={onCancelTrip}
+          text={t('ride_Ride_Order_cancelRideButton')}
+        />
       </View>
     );
   }

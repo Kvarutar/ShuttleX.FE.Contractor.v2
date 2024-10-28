@@ -6,7 +6,7 @@ import { RoundCheckIcon3, sizes, Text, useTheme } from 'shuttlex-integration';
 
 import { achievementsSelector } from '../../../../core/contractor/redux/selectors';
 import { useAchievement } from '../../../../shared/Achievements';
-import { AchievementsCarouselProps, AchievementsSliderItemProps } from './props';
+import { AchievementsCarouselProps, AchievementsSliderItemProps } from './types';
 
 const windowWidth = Dimensions.get('window').width;
 

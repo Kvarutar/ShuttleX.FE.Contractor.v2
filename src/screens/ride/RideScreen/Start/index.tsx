@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
   BottomWindowWithGesture,
@@ -9,11 +10,16 @@ import {
   minToMilSec,
   SquareButtonModes,
   SwipeButtonModes,
+  useTariffsIcons,
 } from 'shuttlex-integration';
 
-import { contractorStatusSelector } from '../../../../core/contractor/redux/selectors';
+import {
+  contractorStatusSelector,
+  primaryTariffSelector,
+  tariffsSelector,
+} from '../../../../core/contractor/redux/selectors';
 import { getAchievements, getCarData, getPreferences, getTariffs } from '../../../../core/contractor/redux/thunks';
-import { ContractorStatus } from '../../../../core/contractor/redux/types';
+import { ContractorStatus, TariffInfo } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { setIsCanceledTripsPopupVisible, setOrder } from '../../../../core/ride/redux/trip';
@@ -30,7 +36,6 @@ import OfferPopup from '../popups/OfferPopup';
 import TariffPreferencesPopup from '../popups/PreferencesPopup';
 import UnclosablePopupWithModes from '../popups/UnclosablePopupWithModes';
 import { UnclosablePopupModes } from '../popups/UnclosablePopupWithModes/props';
-import HiddenPart from './HiddenPart';
 import VisiblePart from './VisiblePart';
 
 type lineStateTypes = {
@@ -41,6 +46,8 @@ type lineStateTypes = {
   buttonMode: SquareButtonModes;
   swipeMode: SwipeButtonModes;
 };
+
+const animationDuration = 200;
 
 // Just example! This data might be changed on backend later
 //TODO: Rewrite this logic to receiving data from backend
@@ -53,16 +60,6 @@ const orderFromBack: OrderType = {
     longitude: 123123123,
   },
   targetPointsPosition: [
-    // {
-    //   address: '241 Harvie Ave, York, ON M6E 4K9',
-    //   latitude: 123123123,
-    //   longitude: 123123123,
-    // },
-    // {
-    //   address: '450 Blythwood Rd, North York, ON M4N 1A9',
-    //   latitude: 123123123,
-    //   longitude: 123123123,
-    // },
     {
       address: '12 Bushbury Dr, North York, ON M3A 2Z7',
       latitude: 12312312,
@@ -97,16 +94,6 @@ const offerFromBack: OfferType = {
     longitude: 123123123,
   },
   targetPointsPosition: [
-    // {
-    //   address: '241 Harvie Ave, York, ON M6E 4K9',
-    //   latitude: 123123123,
-    //   longitude: 123123123,
-    // },
-    // {
-    //   address: '450 Blythwood Rd, North York, ON M4N 1A9',
-    //   latitude: 123123123,
-    //   longitude: 123123123,
-    // },
     {
       address: '12 Bushbury Dr, North York, ON M3A 2Z7',
       latitude: 12312312,
@@ -169,7 +156,7 @@ const Start = () => {
     if (contractorStatus === 'online') {
       setTimeout(() => {
         setIsOfferPopupVisible(true);
-      }, 5000);
+      }, 1000);
     }
   }, [contractorStatus]);
 
@@ -268,19 +255,33 @@ const Start = () => {
 
   const computedStyles = StyleSheet.create({
     bottomWindowStyle: {
-      paddingBottom: isOpened ? 0 : 20,
       paddingTop: isOpened ? 0 : 6,
     },
   });
 
+  const tariffs = useSelector(tariffsSelector);
+  const primaryTariff: TariffInfo = useSelector(primaryTariffSelector) ?? tariffs[0];
+  const tariffsIconsData = useTariffsIcons();
+  const IconComponent = tariffsIconsData[primaryTariff?.name]?.icon;
+
   return (
     <>
       <BottomWindowWithGesture
+        maxHeight={0.7}
         withDraggable={!isOpened}
         withHiddenPartScroll={false}
         bottomWindowStyle={[styles.bottomWindowStyle, computedStyles.bottomWindowStyle]}
         setIsOpened={setIsOpened}
         ref={bottomWindowRef}
+        headerElement={
+          isOpened && (
+            <Animated.View entering={FadeIn.duration(300)}>
+              <View style={styles.bigCarImageContainer}>
+                <IconComponent style={styles.bigCarImage} />
+              </View>
+            </Animated.View>
+          )
+        }
         alerts={alerts.map(alertData => (
           <AlertInitializer
             key={alertData.id}
@@ -291,20 +292,15 @@ const Start = () => {
           />
         ))}
         visiblePart={
-          <VisiblePart
-            isOpened={isOpened}
-            bottomWindowRef={bottomWindowRef}
-            setIsPreferencesPopupVisible={setIsPreferencesPopupVisible}
-            lineState={lineState}
-          />
-        }
-        hiddenPart={
-          <HiddenPart
-            isOpened={isOpened}
-            bottomWindowRef={bottomWindowRef}
-            lineState={lineState}
-            setIsAchievementsPopupVisible={setIsAchievementsPopupVisible}
-          />
+          <Animated.View layout={FadeIn.duration(animationDuration)}>
+            <VisiblePart
+              isOpened={isOpened}
+              bottomWindowRef={bottomWindowRef}
+              setIsPreferencesPopupVisible={setIsPreferencesPopupVisible}
+              setIsAchievementsPopupVisible={setIsAchievementsPopupVisible}
+              lineState={lineState}
+            />
+          </Animated.View>
         }
       />
       {isPreferencesPopupVisible && (
@@ -343,6 +339,18 @@ const styles = StyleSheet.create({
   },
   unclosablePopupContactSupportButton: {
     marginTop: 172,
+  },
+  bigCarImageContainer: {
+    position: 'absolute',
+    top: -80,
+    width: '75%',
+    alignSelf: 'center',
+  },
+  bigCarImage: {
+    width: '100%',
+    aspectRatio: 2.5,
+    height: undefined,
+    resizeMode: 'contain',
   },
 });
 

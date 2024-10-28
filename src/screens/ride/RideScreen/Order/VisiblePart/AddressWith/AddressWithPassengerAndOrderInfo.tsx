@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
 import {
@@ -20,7 +20,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { orderSelector } from '../../../../../../core/ride/redux/trip/selectors';
+import { orderSelector, tripStatusSelector } from '../../../../../../core/ride/redux/trip/selectors';
 import { TripStatus } from '../../../../../../core/ride/redux/trip/types';
 import { AddressWithPassengerAndOrderInfoProps } from './props';
 
@@ -28,11 +28,9 @@ const buttonTextHeight = 18;
 
 const AddressWithPassengerAndOrderInfo = ({
   tripPoints,
-  withAvatar,
   isWaiting,
   withGoogleMapButton = true,
   timeForTimer,
-  contentType,
   setWaitingTime,
 }: AddressWithPassengerAndOrderInfoProps) => {
   const { colors } = useTheme();
@@ -40,19 +38,17 @@ const AddressWithPassengerAndOrderInfo = ({
 
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
+  const order = useSelector(orderSelector);
+  const tripStatus = useSelector(tripStatusSelector);
+
   const [extraWaiting, setExtraWaiting] = useState<boolean>(false);
   const [timerColorMode, setTimerColorMode] = useState<TimerColorModes>(TimerColorModes.Mode1);
   const [extraWaitingSum, setExtraWaitingSum] = useState<number>(0);
-  // const [disabledShadow, setDisabledShadow] = useState(true);
 
-  const order = useSelector(orderSelector);
-
-  // useEffect(() => {
-  //   setDisabledShadow(timerColorMode !== TimerColorModes.Mode2);
-  // }, [timerColorMode, extraWaiting]);
+  const withAvatar = tripStatus === TripStatus.Arrived || tripStatus === TripStatus.Ending;
 
   useEffect(() => {
-    switch (contentType) {
+    switch (tripStatus) {
       case TripStatus.Idle:
         setTimerColorMode(TimerColorModes.Mode1);
         break;
@@ -64,23 +60,23 @@ const AddressWithPassengerAndOrderInfo = ({
         break;
       default:
     }
-  }, [contentType]);
+  }, [tripStatus]);
 
   useEffect(() => {
-    if (order && contentType === TripStatus.Arrived && setWaitingTime) {
+    if (order && tripStatus === TripStatus.Arrived && setWaitingTime) {
       setWaitingTime(Date.now() + minToMilSec(order.waitingTimeInMin));
     }
-  }, [order, contentType, setWaitingTime]);
+  }, [order, tripStatus, setWaitingTime]);
 
   useEffect(() => {
-    if (contentType === TripStatus.Arrived) {
+    if (tripStatus === TripStatus.Arrived) {
       if (extraWaiting) {
         setTimerColorMode(TimerColorModes.Mode5);
       } else {
         setTimerColorMode(TimerColorModes.Mode2);
       }
     }
-  }, [extraWaiting, contentType]);
+  }, [extraWaiting, tripStatus]);
 
   useEffect(() => {
     return () => {
@@ -168,23 +164,7 @@ const AddressWithPassengerAndOrderInfo = ({
   return (
     <View style={[styles.outerContainer, computedStyles.outerContainer]}>
       <View style={styles.innerContainer}>
-        {withAvatar && (
-          <View style={[styles.avatarAndShadowContainer, computedStyles.avatarAndShadowContainer]}>
-            <Shadow {...defaultShadow(colors.weakShadowColor)} style={styles.shadowStyle}>
-              <View style={styles.avatarInnerContainer}>
-                {order.passenger.avatarURL !== '' ? (
-                  <Image source={{ uri: order.passenger.avatarURL }} style={styles.passengerAvatar} />
-                ) : (
-                  <Image
-                    source={require('../../../../../../assets/img/DefaultAvatar.png')}
-                    style={styles.passengerAvatar}
-                  />
-                )}
-              </View>
-            </Shadow>
-          </View>
-        )}
-        {contentType !== TripStatus.Ending ? (
+        {tripStatus !== TripStatus.Ending ? (
           <>
             <View style={[styles.visibleContent, computedStyles.visibleContent]}>
               <Text style={[styles.visiblePickUpText, computedStyles.visiblePickUpText]}>

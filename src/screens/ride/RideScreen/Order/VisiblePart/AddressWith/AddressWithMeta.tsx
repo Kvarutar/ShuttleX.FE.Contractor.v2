@@ -1,23 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Shadow } from 'react-native-shadow-2';
-import {
-  defaultShadow,
-  ExternalMapIcon,
-  PointIcon,
-  Text,
-  Timer,
-  TimerColorModes,
-  TimerSizesModes,
-  TrafficIndicator,
-  TrafficLevel,
-  useTheme,
-} from 'shuttlex-integration';
+import { ExternalMapIcon, PointIcon, Text, TrafficIndicator, TrafficLevel, useTheme } from 'shuttlex-integration';
 
 import { AddressWithMetaProps } from './props';
 
-const AddressWithMeta = ({ tripPoints, timeForTimer }: AddressWithMetaProps) => {
+const AddressWithMeta = ({ tripPoints }: AddressWithMetaProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -58,11 +46,6 @@ const AddressWithMeta = ({ tripPoints, timeForTimer }: AddressWithMetaProps) => 
 
   return (
     <View>
-      <View style={styles.timerWrapper}>
-        <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.shadowStyle}>
-          <Timer time={timeForTimer} sizeMode={TimerSizesModes.S} colorMode={TimerColorModes.Mode3} />
-        </Shadow>
-      </View>
       <View style={styles.metaInfoContainer}>
         <PointIcon
           outerColor={computedStyles.pointOuterColor.color}

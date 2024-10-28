@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import { Button, minToMilSec, SquareButtonModes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
 
@@ -17,6 +18,8 @@ import { TripStatus } from '../../../../../core/ride/redux/trip/types';
 import AddressWithExtendedPassengerInfo from './AddressWith/AddressWithExtendedPassengerInfo';
 import AddressWithMeta from './AddressWith/AddressWithMeta';
 import AddressWithPassengerAndOrderInfo from './AddressWith/AddressWithPassengerAndOrderInfo';
+
+const animationDuration = 200;
 
 const VisiblePart = () => {
   const { t } = useTranslation();
@@ -45,7 +48,6 @@ const VisiblePart = () => {
 
   useEffect(() => {
     // TODO: replace with check is contractor arriving
-    // TODO: Add "tripStatus === TripStatus.Ride ||" when work with stop points for ride imitation
     if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Idle) {
       setTimeout(updateTripStatus, 5000);
     }
@@ -67,49 +69,27 @@ const VisiblePart = () => {
 
   if (order && tripPoints) {
     mainContent = {
-      idle: (
-        <AddressWithPassengerAndOrderInfo
-          tripPoints={tripPoints}
-          timeForTimer={order.timeToOffer}
-          contentType={TripStatus.Idle}
-        />
-      ),
-      arriving: (
-        <AddressWithPassengerAndOrderInfo
-          tripPoints={tripPoints}
-          timeForTimer={order.timeToOffer}
-          contentType={TripStatus.Arriving}
-        />
-      ),
-      arrivingAtStopPoint: (
-        <AddressWithPassengerAndOrderInfo
-          tripPoints={tripPoints}
-          timeForTimer={waitingTime}
-          contentType={TripStatus.ArrivingAtStopPoint}
-        />
-      ),
+      idle: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToOffer} />,
+      arriving: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToOffer} />,
+      arrivingAtStopPoint: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={waitingTime} />,
       arrived: (
         <AddressWithPassengerAndOrderInfo
           tripPoints={tripPoints}
-          withAvatar
           withGoogleMapButton={false}
           timeForTimer={waitingTime}
           isWaiting
           setWaitingTime={setWaitingTime}
-          contentType={TripStatus.Arrived}
         />
       ),
       //TODO: Add this component when work with stop points
       // Note: Not styled for new design
       arrivedAtStopPoint: <AddressWithExtendedPassengerInfo withStopPoint tripPoints={tripPoints} />,
-      ride: <AddressWithMeta tripPoints={tripPoints} timeForTimer={order.fullTimeTimestamp} />,
+      ride: <AddressWithMeta tripPoints={tripPoints} />,
       ending: (
         <AddressWithPassengerAndOrderInfo
           tripPoints={tripPoints}
-          withAvatar
           withGoogleMapButton={false}
           timeForTimer={order.fullTimeTimestamp}
-          contentType={TripStatus.Ending}
         />
       ),
       rating: null,
@@ -151,16 +131,16 @@ const VisiblePart = () => {
     rating: null,
   };
 
-  if (mainContent) {
-    return (
-      <>
-        {mainContent[tripStatus]}
-        {statusSwitchers[tripStatus]}
-      </>
-    );
+  if (!mainContent) {
+    return <></>;
   }
 
-  return <></>;
+  return (
+    <>
+      <Animated.View layout={FadeIn.duration(animationDuration)}>{mainContent[tripStatus]}</Animated.View>
+      <Animated.View layout={FadeIn.duration(animationDuration)}>{statusSwitchers[tripStatus]}</Animated.View>
+    </>
+  );
 };
 
 export default VisiblePart;
