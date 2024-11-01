@@ -6,9 +6,6 @@ import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   AccountSettingsScreen,
-  ArrowInPrimaryColorIcon,
-  Bar,
-  BarModes,
   Button,
   ButtonShapes,
   ButtonSizes,
@@ -19,7 +16,6 @@ import {
   sizes,
   Text,
   UploadPhotoIcon,
-  WarningIcon,
 } from 'shuttlex-integration';
 
 import { profilePhotoSelector } from '../../../core/auth/redux/docs/selectors';
@@ -40,7 +36,6 @@ const AccountSettings = (): JSX.Element => {
   const { t } = useTranslation();
 
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const [isUpdateIcon, setIsUpdateIcon] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   const profile = useSelector(profileSelector);
@@ -100,9 +95,7 @@ const AccountSettings = (): JSX.Element => {
             email: profile?.email ?? '',
             phone: profile?.phone ?? '',
           }}
-          setIsUpdateIcon={setIsUpdateIcon}
           photoBlock={<PhotoBlock onUploadPhoto={onUploadPhoto} />}
-          barBlock={<BarBlock isUpdateIcon={isUpdateIcon} />}
         />
       </SafeAreaView>
       {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
@@ -110,18 +103,6 @@ const AccountSettings = (): JSX.Element => {
   );
 };
 
-const BarBlock = ({ isUpdateIcon }: { isUpdateIcon: boolean }) => {
-  const { t } = useTranslation();
-  const onUdateDocument = () => {
-    //TODO send to update document page
-  };
-  return (
-    <Bar style={styles.bar} mode={BarModes.Default} onPress={onUdateDocument}>
-      <Text style={styles.barText}>{t('AccountSettings_barUpdate')}</Text>
-      {!isUpdateIcon ? <ArrowInPrimaryColorIcon /> : <WarningIcon />}
-    </Bar>
-  );
-};
 const PhotoBlock = ({ onUploadPhoto }: PhotoBlockProps) => {
   const profile = useSelector(profileSelector);
 

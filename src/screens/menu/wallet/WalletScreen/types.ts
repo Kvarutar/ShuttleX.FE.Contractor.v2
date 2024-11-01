@@ -16,4 +16,5 @@ export type СurrentBalanceInfo = {
   totalBalance: number;
   withdrawalHistory: WithdrawalHistory[];
   currencySign: string;
+  minWithdrawSum: number;
 };

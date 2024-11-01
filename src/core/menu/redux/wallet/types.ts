@@ -27,10 +27,12 @@ export type EmailOrBinanceId = string | null;
 export type WalletState = {
   balances: {
     cash: {
+      minWithdrawSum: number;
       balance: WalletBalanceAPIResponse;
       currency: CurrencySigns;
     };
     crypto: {
+      minWithdrawSum: number;
       balance: WalletBalanceAPIResponse;
       currency: CurrencySigns;
     };

@@ -39,6 +39,7 @@ const initialState: WalletState = {
         symbol: '',
         sign: '',
       },
+      minWithdrawSum: 100,
     },
     crypto: {
       balance: {
@@ -54,6 +55,7 @@ const initialState: WalletState = {
         symbol: '',
         sign: '',
       },
+      minWithdrawSum: 0.0000001,
     },
   },
   payment: {
@@ -108,6 +110,12 @@ const slice = createSlice({
     setEmailOrBinanceId(state, action: PayloadAction<EmailOrBinanceId>) {
       state.payment.crypto.emailOrID = action.payload;
     },
+    setMinWithdrawSumCash(state, action: PayloadAction<number>) {
+      state.balances.cash.minWithdrawSum = action.payload;
+    },
+    setMinWithdrawSumCrypto(state, action: PayloadAction<number>) {
+      state.balances.crypto.minWithdrawSum = action.payload;
+    },
   },
 
   extraReducers: builder =>
@@ -121,6 +129,10 @@ const slice = createSlice({
           payload: action.payload.currency,
           type: setCurrencyCash.type,
         });
+        slice.caseReducers.setMinWithdrawSumCash(state, {
+          payload: action.payload.minWithdrawSum,
+          type: setMinWithdrawSumCash.type,
+        });
       })
       .addCase(getWalletCryptoBalance.fulfilled, (state, action) => {
         slice.caseReducers.setCryptoBalance(state, {
@@ -130,6 +142,10 @@ const slice = createSlice({
         slice.caseReducers.setCurrencyCrypto(state, {
           payload: action.payload.currency,
           type: setCurrencyCrypto.type,
+        });
+        slice.caseReducers.setMinWithdrawSumCrypto(state, {
+          payload: action.payload.minWithdrawSum,
+          type: setMinWithdrawSumCrypto.type,
         });
       })
       .addCase(getTokensAmount.fulfilled, (state, action) => {
@@ -228,6 +244,8 @@ export const {
   setWithdrawalCryptoHistoryList,
   setTokensAmount,
   setTripsAmount,
+  setMinWithdrawSumCash,
+  setMinWithdrawSumCrypto,
 } = slice.actions;
 
 export default slice.reducer;

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Dimensions, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
@@ -17,6 +17,7 @@ import {
   SafeAreaView,
   ScrollViewWithCustomScroll,
   sizes,
+  SquareButtonModes,
   Text,
   useTheme,
 } from 'shuttlex-integration';
@@ -28,6 +29,8 @@ import {
   currencySignCryptoBalanceSelector,
   currencySymbolCashBalanceSelector,
   emailOrBinanceIdCryptoSelector,
+  minWithdrawSumCashSelector,
+  minWithdrawSumCryptoSelector,
   selectedPaymentMethodSelector,
   totalWalletCashBalanceSelector,
   totalWalletCryptoBalanceSelector,
@@ -62,11 +65,13 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
   const currencyCashSign = useSelector(currencySignCashBalanceSelector);
   const totalBalanceCash = useSelector(totalWalletCashBalanceSelector);
   const withdrawalCashHistory = useSelector(withdrawalCashHistoryListSelector);
+  const minWithdrawSumCash = useSelector(minWithdrawSumCashSelector);
 
   const balanceCrypto = useSelector(walletCryptoBalanceSelector);
   const currencyCryptoSign = useSelector(currencySignCryptoBalanceSelector);
   const totalBalanceCrypto = useSelector(totalWalletCryptoBalanceSelector);
   const withdrawalCryptoHistory = useSelector(withdrawalCryptoHistoryListSelector);
+  const minWithdrawSumCrypto = useSelector(minWithdrawSumCryptoSelector);
 
   const currentWalletInfo: СurrentBalanceInfo = useMemo(() => {
     const current = {
@@ -75,6 +80,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
       totalBalance: totalBalanceCrypto,
       withdrawalHistory: withdrawalCryptoHistory,
       currencySign: currencyCryptoSign,
+      minWithdrawSum: minWithdrawSumCrypto,
     };
     if (isSelectedCash) {
       current.balance = balanceCash;
@@ -82,6 +88,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
       current.totalBalance = totalBalanceCash;
       current.withdrawalHistory = withdrawalCashHistory;
       current.currencySign = currencyCashSign;
+      current.minWithdrawSum = minWithdrawSumCash;
     }
     return current;
   }, [
@@ -95,6 +102,8 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
     totalBalanceCash,
     withdrawalCryptoHistory,
     withdrawalCashHistory,
+    minWithdrawSumCash,
+    minWithdrawSumCrypto,
   ]);
 
   const selectedPaymentMethod = useSelector(selectedPaymentMethodSelector);
@@ -112,6 +121,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
 
   const maxSum = Math.max(...Object.values(currentWalletInfo.balance));
+  const isTotalBalanceLessThanMinSum = currentWalletInfo.totalBalance < currentWalletInfo.minWithdrawSum;
 
   const dayTitles: Record<keyof typeof currentWalletInfo.balance, string> = {
     monday: 'menu_Wallet_monday',
@@ -170,6 +180,13 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
     addCardText: {
       color: colors.textPrimaryColor,
     },
+    withdrawButton: {
+      borderColor: colors.borderColor,
+      borderWidth: isTotalBalanceLessThanMinSum ? 1 : 0,
+    },
+    withdrawButtonText: {
+      color: isTotalBalanceLessThanMinSum ? colors.textQuadraticColor : colors.textTertiaryColor,
+    },
   });
 
   let history = null;
@@ -208,12 +225,27 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
     }
   };
 
+  const onWithdraw = () => {
+    if (isTotalBalanceLessThanMinSum) {
+      Alert.alert(
+        t('menu_Wallet_alertTitle'),
+        t('menu_Wallet_alertDescription', { minWithdrawSum: currentWalletInfo.minWithdrawSum }),
+      );
+      return;
+    }
+    navigation.navigate('Withdraw', {
+      selectedTotalBalance: currentWalletInfo.totalBalance,
+      currencySign: currentWalletInfo.currencySign ?? '',
+      withdrawType: isSelectedCash ? 'cash' : 'crypto',
+    });
+  };
+
   const paymentBarInfo = () => {
     if (isSelectedCash) {
       if (selectedPaymentMethod?.method) {
         return (
           <>
-            {getPaymentIcon(selectedPaymentMethod?.method)}
+            {getPaymentIcon(selectedPaymentMethod?.method === 'unknown' ? 'card' : selectedPaymentMethod.method)}
             <View style={styles.detailsWrapper}>
               <Text style={[styles.detailsStars, computedStyles.detailsStars]}>****</Text>
               <Text style={styles.details}>{selectedPaymentMethod.details}</Text>
@@ -269,7 +301,9 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
               {!isSelectedCash ? ' ' : ''}
             </Text>
             <Text style={[styles.balanceTotal, computedStyles.balanceTotal]}>
-              {formatNumberWithCommas(currentWalletInfo.totalBalance)}
+              {currentWalletInfo.totalBalance > 1
+                ? formatNumberWithCommas(currentWalletInfo.totalBalance)
+                : currentWalletInfo.totalBalance}
             </Text>
           </View>
           <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('menu_Wallet_balance')}</Text>
@@ -326,13 +360,10 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
         <View style={styles.history}>{history}</View>
         <Button
           text={t('menu_Wallet_withdrawButton')}
-          onPress={() =>
-            navigation.navigate('Withdraw', {
-              selectedTotalBalance: currentWalletInfo.totalBalance,
-              currencySign: currentWalletInfo.currencySign ?? '',
-              withdrawType: isSelectedCash ? 'cash' : 'crypto',
-            })
-          }
+          mode={isTotalBalanceLessThanMinSum ? SquareButtonModes.Mode5 : SquareButtonModes.Mode2}
+          textStyle={computedStyles.withdrawButtonText}
+          style={computedStyles.withdrawButton}
+          onPress={onWithdraw}
         />
       </View>
       {isPaymentsVariantsVisible && (

@@ -7,7 +7,7 @@ import { CurrencySigns, EmailOrBinanceId, PaymentMethodWithoutExpiresAt, WalletB
 
 //TODO: There's just example! Rewrite when info about it logic will be known
 export const getWalletCashBalance = createAsyncThunk<
-  { balance: WalletBalanceAPIResponse; currency: CurrencySigns },
+  { balance: WalletBalanceAPIResponse; currency: CurrencySigns; minWithdrawSum: number },
   { contractorId: string }
 >('wallet/getWalletCashBalance', async () => {
   //TODO: Add networking
@@ -20,27 +20,29 @@ export const getWalletCashBalance = createAsyncThunk<
   //     message,
   //   });
   // }
-  const walletBalanceFromBack: { balance: WalletBalanceAPIResponse; currency: CurrencySigns } = {
-    balance: {
-      monday: 2200.14,
-      tuesday: 300.2,
-      wednesday: 500.12,
-      thursday: 120,
-      friday: 90,
-      saturday: 0,
-      sunday: 0,
-    },
-    currency: {
-      symbol: '₴',
-      sign: 'UAH',
-    },
-  };
+  const walletBalanceFromBack: { balance: WalletBalanceAPIResponse; currency: CurrencySigns; minWithdrawSum: number } =
+    {
+      balance: {
+        monday: 222200.14,
+        tuesday: 0,
+        wednesday: 0,
+        thursday: 0,
+        friday: 0,
+        saturday: 0,
+        sunday: 0,
+      },
+      currency: {
+        symbol: '₴',
+        sign: 'UAH',
+      },
+      minWithdrawSum: 0.0000001,
+    };
   return walletBalanceFromBack;
 });
 
 //TODO: There's just example! Rewrite when info about it logic will be known
 export const getWalletCryptoBalance = createAsyncThunk<
-  { balance: WalletBalanceAPIResponse; currency: CurrencySigns },
+  { balance: WalletBalanceAPIResponse; currency: CurrencySigns; minWithdrawSum: number },
   { contractorId: string }
 >('wallet/getWalletCryptoBalance', async () => {
   //TODO: Add networking
@@ -53,20 +55,25 @@ export const getWalletCryptoBalance = createAsyncThunk<
   //     message,
   //   });
   // }
-  const walletCryptoBalanceFromBack: { balance: WalletBalanceAPIResponse; currency: CurrencySigns } = {
+  const walletCryptoBalanceFromBack: {
+    balance: WalletBalanceAPIResponse;
+    currency: CurrencySigns;
+    minWithdrawSum: number;
+  } = {
     balance: {
-      monday: 100.14,
-      tuesday: 40.2,
-      wednesday: 50.12,
-      thursday: 20,
-      friday: 9,
-      saturday: 10,
+      monday: 0.004,
+      tuesday: 0.02,
+      wednesday: 0.003,
+      thursday: 0.01,
+      friday: 0.0001,
+      saturday: 0,
       sunday: 0,
     },
     currency: {
       sign: 'USDT',
       symbol: null,
     },
+    minWithdrawSum: 0.0000001,
   };
   return walletCryptoBalanceFromBack;
 });
@@ -341,7 +348,7 @@ export const removePaymentMethod = createAsyncThunk<
   // This logic will be removed when networking is added
   const state = getState() as AppState;
   const filteredState: PaymentMethodWithoutExpiresAt[] = state.wallet.payment.cash.avaliableMethods.filter(
-    availableMethod =>
+    (availableMethod: PaymentMethodWithoutExpiresAt) =>
       !(availableMethod.details === methodForRemoving.details && availableMethod.method === methodForRemoving.method),
   );
 

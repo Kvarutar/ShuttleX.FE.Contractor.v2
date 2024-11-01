@@ -1,14 +1,20 @@
 import { useRoute } from '@react-navigation/native';
 import { t } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { Alert, Dimensions, StyleSheet, View } from 'react-native';
+import Animated, {
+  KeyboardState,
+  useAnimatedKeyboard,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
   Button,
   ButtonShapes,
   ButtonSizes,
-  CustomKeyboardAvoidingView,
   SafeAreaView,
   ShortArrowIcon,
   SquareButtonModes,
@@ -20,6 +26,8 @@ import {
 
 import {
   emailOrBinanceIdCryptoSelector,
+  minWithdrawSumCashSelector,
+  minWithdrawSumCryptoSelector,
   selectedPaymentMethodSelector,
 } from '../../../../core/menu/redux/wallet/selectors';
 import { fetchWithdraw } from '../../../../core/menu/redux/wallet/thunks';
@@ -27,7 +35,14 @@ import { useAppDispatch } from '../../../../core/redux/hooks';
 import SliderAmount from './SliderAmount';
 import { WithdrawScreenProps } from './types';
 
+const windowWidth = Dimensions.get('window').width;
+
 const animationDuration = 150;
+
+const keyboardAnimationDuration = {
+  opening: 25,
+  closing: 300,
+};
 
 const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -36,20 +51,34 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
 
   const { colors } = useTheme();
   const activeBackgroundColor = useSharedValue(colors.backgroundPrimaryColor);
+  const bottomButtonMargin = useSharedValue(0);
+  const keyboard = useAnimatedKeyboard();
 
-  const minWithdrawSum = withdrawType === 'cash' ? 100 : 10;
+  const bottomButtonAnimatedStyle = useAnimatedStyle(() => ({
+    marginBottom: bottomButtonMargin.value,
+  }));
 
   const balanceTotal = selectedTotalBalance;
   const selectedPaymentMethod = useSelector(selectedPaymentMethodSelector);
   const emailOrBinanceId = useSelector(emailOrBinanceIdCryptoSelector);
+  const minWithdrawSumCash = useSelector(minWithdrawSumCashSelector);
+  const minWithdrawSumCrypto = useSelector(minWithdrawSumCryptoSelector);
+
+  const minWithdrawSum = withdrawType === 'cash' ? minWithdrawSumCash : minWithdrawSumCrypto;
 
   const [inputAmount, setInputAmount] = useState<number>(minWithdrawSum);
   const [isVisibleSlider, setIsVisibleSlider] = useState(true);
 
   const isAddedOutputMethod =
     (withdrawType === 'cash' && selectedPaymentMethod) || (withdrawType === 'crypto' && emailOrBinanceId);
-
   const isError = inputAmount > balanceTotal || inputAmount < minWithdrawSum;
+
+  const numDigits =
+    selectedTotalBalance >= 1
+      ? Math.floor(Math.log10(selectedTotalBalance))
+      : Math.abs(Math.floor(Math.log10(selectedTotalBalance)));
+
+  const roundStep = Math.pow(10, (selectedTotalBalance >= 1 ? 1 : -1) * numDigits - 1);
 
   const changeBackground = useCallback(
     (color: string) => {
@@ -58,8 +87,22 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
     [activeBackgroundColor],
   );
 
+  useDerivedValue(() => {
+    switch (keyboard.state.value) {
+      case KeyboardState.OPENING:
+        bottomButtonMargin.value = withTiming(keyboard.height.value, {
+          duration: keyboardAnimationDuration.opening,
+        });
+        break;
+      case KeyboardState.CLOSING:
+        bottomButtonMargin.value = withTiming(0, { duration: keyboardAnimationDuration.closing });
+        break;
+      default:
+    }
+  });
+
   useEffect(() => {
-    if (inputAmount > minWithdrawSum + 1 && inputAmount <= balanceTotal) {
+    if (inputAmount > minWithdrawSum && inputAmount <= balanceTotal) {
       changeBackground(colors.primaryColor);
     } else if (isError) {
       changeBackground(colors.errorColor);
@@ -77,7 +120,7 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
     colors.backgroundPrimaryColor,
     colors.primaryColor,
   ]);
-
+  console.log(windowWidth);
   const computedStyles = StyleSheet.create({
     container: {
       backgroundColor: 'transparent',
@@ -91,7 +134,7 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
     },
     input: {
       color: colors.textPrimaryColor,
-      fontSize: inputAmount.toString().length < 5 ? 72 : 54,
+      fontSize: windowWidth < 410 ? 50 : 60,
     },
     buttonText: {
       color: isError || !isAddedOutputMethod ? colors.textSecondaryColor : colors.textTertiaryColor,
@@ -137,7 +180,6 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
         : t('menu_Withdraw_alertDescriptionCrypto', {
             cryptoAmount: inputAmount,
             cryptoCurrencySign: currencySign,
-            //TODO: Add responsing UID before calling alert(?)
             cryptoUID: emailOrBinanceId,
           }),
       t('menu_Withdraw_alertContinueButton'),
@@ -155,52 +197,57 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
   }));
 
   return (
-    <CustomKeyboardAvoidingView>
-      <Animated.View style={[styles.animatedView, animatedViewStyle]}>
-        <SafeAreaView
-          containerStyle={[styles.container, computedStyles.container]}
-          wrapperStyle={computedStyles.container}
-        >
-          <View style={styles.header}>
-            <Button
-              onPress={onBackButtonPress}
-              shape={ButtonShapes.Circle}
-              size={ButtonSizes.S}
-              disableShadow
-              style={styles.headerButtonStyle}
-              circleSubContainerStyle={[styles.headerButtonSubContainerStyle, styles.headerButtonStyle]}
-            >
-              <ShortArrowIcon />
-            </Button>
-            <Text style={styles.headerTitle}>{t('menu_Withdraw_headerTitle')}</Text>
-            <View style={styles.headerDummy} />
-          </View>
-          <View>
-            <Text style={[styles.currencySign, computedStyles.currencySign]}>{currencySign}</Text>
-            <TextInput
-              inputMode={TextInputInputMode.Money}
-              value={inputAmount.toString()}
-              onChangeText={onChangeText}
-              containerStyle={styles.inputContainer}
-              inputStyle={[styles.input, computedStyles.input]}
+    <Animated.View style={[styles.animatedView, animatedViewStyle]}>
+      <SafeAreaView
+        containerStyle={[styles.container, computedStyles.container]}
+        wrapperStyle={computedStyles.container}
+      >
+        <View style={styles.header}>
+          <Button
+            onPress={onBackButtonPress}
+            shape={ButtonShapes.Circle}
+            size={ButtonSizes.S}
+            disableShadow
+            style={styles.headerButtonStyle}
+            circleSubContainerStyle={[styles.headerButtonSubContainerStyle, styles.headerButtonStyle]}
+          >
+            <ShortArrowIcon />
+          </Button>
+          <Text style={styles.headerTitle}>{t('menu_Withdraw_headerTitle')}</Text>
+          <View style={styles.headerDummy} />
+        </View>
+        <View>
+          <Text style={[styles.currencySign, computedStyles.currencySign]}>{currencySign}</Text>
+          <TextInput
+            inputMode={TextInputInputMode.Money}
+            maxSymbolsAfterComma={
+              balanceTotal > 1 ? 2 : minWithdrawSum.toLocaleString(undefined, { maximumFractionDigits: 10 }).length
+            }
+            value={inputAmount.toLocaleString(undefined, { maximumFractionDigits: 10 })}
+            onChangeText={onChangeText}
+            containerStyle={styles.inputContainer}
+            inputStyle={[styles.input, computedStyles.input]}
+          />
+          {isVisibleSlider && (
+            <SliderAmount
+              balanceTotal={balanceTotal}
+              minWithdrawSum={minWithdrawSum}
+              inputAmount={inputAmount}
+              setInputAmount={setInputAmount}
+              numDigits={numDigits}
+              roundStep={roundStep}
             />
-            {isVisibleSlider && (
-              <SliderAmount
-                balanceTotal={balanceTotal}
-                minWithdrawSum={minWithdrawSum}
-                inputAmount={inputAmount}
-                setInputAmount={setInputAmount}
-              />
-            )}
-            <View style={styles.availableTextsWrapper}>
-              <Text style={[styles.availableFirstText, computedStyles.availableFirstText]}>
-                {t('menu_Withdraw_avaliable')}
-              </Text>
-              <Text style={[styles.availableSecondText, computedStyles.availableSecondText]}>
-                {currencySign + ' ' + balanceTotal.toString()}
-              </Text>
-            </View>
+          )}
+          <View style={styles.availableTextsWrapper}>
+            <Text style={[styles.availableFirstText, computedStyles.availableFirstText]}>
+              {t('menu_Withdraw_avaliable')}
+            </Text>
+            <Text style={[styles.availableSecondText, computedStyles.availableSecondText]}>
+              {currencySign} {balanceTotal}
+            </Text>
           </View>
+        </View>
+        <Animated.View style={bottomButtonAnimatedStyle}>
           <Button
             text={t('menu_Withdraw_withdrawButton')}
             onPress={onWithdraw}
@@ -208,9 +255,9 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
             disabled={isError || !isAddedOutputMethod}
             textStyle={computedStyles.buttonText}
           />
-        </SafeAreaView>
-      </Animated.View>
-    </CustomKeyboardAvoidingView>
+        </Animated.View>
+      </SafeAreaView>
+    </Animated.View>
   );
 };
 

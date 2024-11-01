@@ -23,8 +23,15 @@ const offsets = {
   max: -900,
 };
 
-const SliderAmount = ({ balanceTotal, minWithdrawSum, inputAmount, setInputAmount }: SliderAmountProps) => {
-  const maxSum = Math.round(balanceTotal / 100) * 100;
+const SliderAmount = ({
+  balanceTotal,
+  minWithdrawSum,
+  inputAmount,
+  setInputAmount,
+  numDigits,
+  roundStep,
+}: SliderAmountProps) => {
+  const maxSum = balanceTotal;
 
   const { colors } = useTheme();
   const offset = useSharedValue<number>(0);
@@ -65,13 +72,15 @@ const SliderAmount = ({ balanceTotal, minWithdrawSum, inputAmount, setInputAmoun
     if (offsetValue <= offsets.min && offsetValue > offsets.max + 10) {
       const calculatedAmount =
         minWithdrawSum + (maxSum - minWithdrawSum) * ((offsetValue - offsets.min) / (offsets.max - offsets.min));
-      let roundedCalculatedAmount = Math.round(calculatedAmount / 10) * 10;
 
-      if (maxSum > 1000) {
-        roundedCalculatedAmount = Math.round(calculatedAmount / 100) * 100;
+      const unparsedRoundedCalculatedAmount = Math.round(calculatedAmount / roundStep) * roundStep;
+      const roundedCalculatedAmount = parseFloat(unparsedRoundedCalculatedAmount.toFixed(numDigits + 1));
+
+      if (roundedCalculatedAmount > minWithdrawSum) {
+        runOnJS(setInputAmountFromAnimation)(roundedCalculatedAmount);
+      } else {
+        runOnJS(setInputAmountFromAnimation)(minWithdrawSum);
       }
-
-      runOnJS(setInputAmountFromAnimation)(Math.abs(roundedCalculatedAmount));
     } else {
       if (offsetValue > offsets.min) {
         runOnJS(setInputAmountFromAnimation)(minWithdrawSum);

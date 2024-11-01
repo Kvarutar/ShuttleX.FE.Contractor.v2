@@ -9,4 +9,6 @@ export type SliderAmountProps = {
   inputAmount: number;
   setInputAmount: (newState: number) => void;
   minWithdrawSum: number;
+  numDigits: number;
+  roundStep: number;
 };
