@@ -120,7 +120,7 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
     colors.backgroundPrimaryColor,
     colors.primaryColor,
   ]);
-  console.log(windowWidth);
+
   const computedStyles = StyleSheet.create({
     container: {
       backgroundColor: 'transparent',
@@ -240,7 +240,7 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
           )}
           <View style={styles.availableTextsWrapper}>
             <Text style={[styles.availableFirstText, computedStyles.availableFirstText]}>
-              {t('menu_Withdraw_avaliable')}
+              {t('menu_Withdraw_available')}
             </Text>
             <Text style={[styles.availableSecondText, computedStyles.availableSecondText]}>
               {currencySign} {balanceTotal}

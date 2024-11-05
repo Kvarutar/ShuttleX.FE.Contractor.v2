@@ -185,7 +185,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
       borderWidth: isTotalBalanceLessThanMinSum ? 1 : 0,
     },
     withdrawButtonText: {
-      color: isTotalBalanceLessThanMinSum ? colors.textQuadraticColor : colors.textTertiaryColor,
+      color: isTotalBalanceLessThanMinSum ? colors.textQuadraticColor : colors.textPrimaryColor,
     },
   });
 
@@ -289,8 +289,8 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
             setIsFirstButtonSelected={setIsSelectedCash}
             isFirstButtonSelected={isSelectedCash}
             width={windowWidth * 0.65}
-            firstButtonText="Cash"
-            secondButtonText="Crypto"
+            firstButtonText={t('menu_Wallet_groupedButtonsFirstText')}
+            secondButtonText={t('menu_Wallet_groupedButtonsSecondText')}
             mode={GroupedButtonsMode.Dark}
           />
         </MenuHeader>
@@ -360,7 +360,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
         <View style={styles.history}>{history}</View>
         <Button
           text={t('menu_Wallet_withdrawButton')}
-          mode={isTotalBalanceLessThanMinSum ? SquareButtonModes.Mode5 : SquareButtonModes.Mode2}
+          mode={isTotalBalanceLessThanMinSum ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
           textStyle={computedStyles.withdrawButtonText}
           style={computedStyles.withdrawButton}
           onPress={onWithdraw}
