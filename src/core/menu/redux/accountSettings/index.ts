@@ -1,7 +1,13 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const initialState = {
+import { calculateLockoutTime } from '../../../auth/redux/lockout';
+import { VerificationState } from './types';
+
+const initialState: VerificationState = {
   isVerificationDone: false,
+  isBlocked: false,
+  lockoutChangesTimestamp: 0,
+  lockoutChangesAttempts: 0,
 };
 
 const slice = createSlice({
@@ -14,8 +20,33 @@ const slice = createSlice({
     resetVerification(state) {
       state.isVerificationDone = false;
     },
+    setIsBlocked(state, action) {
+      state.isBlocked = action.payload;
+    },
+    resetIsBlocked(state) {
+      state.isVerificationDone = false;
+    },
+    incremenChangestAttempts: state => {
+      state.lockoutChangesAttempts += 1;
+      state.lockoutChangesTimestamp = calculateLockoutTime(state.lockoutChangesAttempts);
+    },
+    setLockoutChangesTimestamp(state, action: PayloadAction<number>) {
+      state.lockoutChangesTimestamp = action.payload;
+    },
+    resetLockoutChanges: state => {
+      state.lockoutChangesTimestamp = 0;
+      state.lockoutChangesAttempts = 0;
+    },
   },
 });
 
-export const { setIsVerificationDone, resetVerification } = slice.actions;
+export const {
+  setIsVerificationDone,
+  resetVerification,
+  incremenChangestAttempts,
+  setLockoutChangesTimestamp,
+  resetLockoutChanges,
+  setIsBlocked,
+  resetIsBlocked,
+} = slice.actions;
 export default slice.reducer;

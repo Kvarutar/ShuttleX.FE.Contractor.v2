@@ -2,17 +2,36 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CodeVerificationScreen, minToMilSec, SafeAreaView } from 'shuttlex-integration';
+import { useSelector } from 'react-redux';
+import { CodeVerificationScreen, SafeAreaView } from 'shuttlex-integration';
 
-import { setIsVerificationDone } from '../../../core/menu/redux/accountSettings';
+import { calculateLockoutTime } from '../../../core/auth/redux/lockout';
+import {
+  incremenChangestAttempts,
+  resetIsBlocked,
+  //TODO get to know if we need this
+  // resetLockoutChanges,
+  setIsBlocked,
+  setIsVerificationDone,
+  setLockoutChangesTimestamp,
+} from '../../../core/menu/redux/accountSettings';
+import {
+  selectIsBlocked,
+  selectLockoutChangesAttempts,
+  selectLockoutChangesTimestamp,
+} from '../../../core/menu/redux/accountSettings/selectors';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 
 const AccountVerificateCodeScreen = (): JSX.Element => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
-
+  const changesAttempts = useSelector(selectLockoutChangesAttempts);
+  const isBlocked = useSelector(selectIsBlocked);
+  const lockouChangesTimestamp = useSelector(selectLockoutChangesTimestamp);
   const [isCorrectCode, setIsCorrectCode] = useState<boolean>(false);
+  const [lockOutTime, setLockOutTime] = useState<number>(0);
+
   const { t } = useTranslation();
 
   //TODO Add logic to send data on backend
@@ -29,7 +48,15 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
   };
 
   const onRequestAgain = () => {
-    //TODO Request code again
+    dispatch(incremenChangestAttempts());
+
+    const newLockoutTime = calculateLockoutTime(changesAttempts + 1);
+    setLockOutTime(newLockoutTime);
+
+    if (newLockoutTime > 0 && newLockoutTime !== lockouChangesTimestamp) {
+      dispatch(setLockoutChangesTimestamp(newLockoutTime));
+      dispatch(setIsBlocked(true));
+    }
   };
 
   return (
@@ -37,17 +64,15 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
       <CodeVerificationScreen
         headerFirstText={t('menu_AccountVerificateCode_firstHeader')}
         headerSecondText={t('menu_AccountVerificateCode_secondHeader')}
-        onBackButtonPress={onRequestAgain}
+        onBackButtonPress={navigation.goBack}
         onAgainButtonPress={onRequestAgain}
         onCodeChange={handleCodeChange}
         titleText={t('menu_AccountVerificateCode_change')}
-        isBlocked={false}
+        isBlocked={isBlocked}
         isError={isCorrectCode}
-        lockOutTime={minToMilSec(3)}
-        lockOutTimeForText={'3'}
-        onBannedAgainButtonPress={() => {
-          // TODO: onSupportPress
-        }}
+        lockOutTime={lockOutTime}
+        lockOutTimeForText={'5'}
+        onBannedAgainButtonPress={() => dispatch(resetIsBlocked())}
         onSupportButtonPress={() => {
           // TODO: onSupportPress
         }}

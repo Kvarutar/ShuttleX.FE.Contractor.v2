@@ -66,7 +66,7 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
   });
 
   const renderItem: ListRenderItem<[RequirementDocsType, RequirementDocs]> = ({ item }) => {
-    const isComplete = Array.isArray(item[1]) ? item[1].length > 0 : item[0] !== null;
+    const isComplete = Array.isArray(item[1]) ? item[1].length > 0 : item[1] !== null;
     return (
       <Bar style={styles.bar} mode={BarModes.Active} onPress={() => !isComplete && screensContent[item[0]].navFunc()}>
         <Text style={[styles.contentText, computedStyles.textStyle]}>{screensContent[item[0]].title}</Text>

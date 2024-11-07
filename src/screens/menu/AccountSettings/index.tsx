@@ -2,10 +2,13 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   AccountSettingsScreen,
+  ArrowInPrimaryColorIcon,
+  Bar,
+  BarModes,
   Button,
   ButtonShapes,
   ButtonSizes,
@@ -16,9 +19,11 @@ import {
   sizes,
   Text,
   UploadPhotoIcon,
+  WarningIcon,
 } from 'shuttlex-integration';
 
-import { profilePhotoSelector } from '../../../core/auth/redux/docs/selectors';
+import { updateRequirementDocuments } from '../../../core/auth/redux/docs';
+import { isAllDocumentsFilledSelector, profilePhotoSelector } from '../../../core/auth/redux/docs/selectors';
 import { contractorIdSelector, profileSelector } from '../../../core/contractor/redux/selectors';
 import { getProfile, updateProfileData } from '../../../core/contractor/redux/thunks';
 import { resetVerification } from '../../../core/menu/redux/accountSettings';
@@ -27,9 +32,6 @@ import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 import Menu from '../../ride/Menu';
 import { AccountProfileDataProps, PhotoBlockProps } from './types';
-
-const windowSizes = Dimensions.get('window');
-const isPhoneSmall = windowSizes.height < 700;
 
 const AccountSettings = (): JSX.Element => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -42,13 +44,6 @@ const AccountSettings = (): JSX.Element => {
   const profilePhoto = useSelector(profilePhotoSelector);
   const isVerificationDone = useSelector(isVerificationDoneSelector);
   const contractorId = useSelector(contractorIdSelector);
-
-  const computedStyles = StyleSheet.create({
-    wrapper: {
-      gap: isPhoneSmall ? 0 : 24,
-      paddingTop: isPhoneSmall ? 0 : 8,
-    },
-  });
 
   useFocusEffect(
     useCallback(() => {
@@ -74,17 +69,21 @@ const AccountSettings = (): JSX.Element => {
     navigation.navigate('ProfilePhoto');
   };
 
+  const onNameChanged = () => {
+    dispatch(
+      updateRequirementDocuments({ passport: [], driversLicense: [], vehicleRegistration: [], vehicleInsurance: [] }),
+    );
+  };
+
   return (
     <>
-      <SafeAreaView containerStyle={[styles.wrapper, computedStyles.wrapper]}>
-        <View style={styles.headerStyle}>
-          <MenuHeader
-            onMenuPress={() => setIsMenuVisible(true)}
-            onNotificationPress={() => navigation.navigate('Notifications')}
-          >
-            <Text>{t('ride_Menu_navigationAccountSettings')}</Text>
-          </MenuHeader>
-        </View>
+      <SafeAreaView containerStyle={styles.wrapper}>
+        <MenuHeader
+          onMenuPress={() => setIsMenuVisible(true)}
+          onNotificationPress={() => navigation.navigate('Notifications')}
+        >
+          <Text>{t('ride_Menu_navigationAccountSettings')}</Text>
+        </MenuHeader>
 
         <AccountSettingsScreen
           handleOpenVerification={handleOpenVerification}
@@ -95,7 +94,10 @@ const AccountSettings = (): JSX.Element => {
             email: profile?.email ?? '',
             phone: profile?.phone ?? '',
           }}
+          onNameChanged={onNameChanged}
+          isContractor={true}
           photoBlock={<PhotoBlock onUploadPhoto={onUploadPhoto} />}
+          barBlock={<BarBlock onUpdateDocument={() => navigation.navigate('Docs')} />}
         />
       </SafeAreaView>
       {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
@@ -103,8 +105,22 @@ const AccountSettings = (): JSX.Element => {
   );
 };
 
+const BarBlock = ({ onUpdateDocument }: { onUpdateDocument: () => void }) => {
+  const { t } = useTranslation();
+  const isAllFilled = useSelector(isAllDocumentsFilledSelector);
+
+  //TODO check the update document logic, it doesnt work properly
+  return (
+    <Bar style={styles.bar} mode={BarModes.Default} onPress={onUpdateDocument}>
+      <Text style={styles.barText}>{t('AccountSettings_barUpdate')}</Text>
+      {isAllFilled ? <ArrowInPrimaryColorIcon /> : <WarningIcon />}
+    </Bar>
+  );
+};
+
 const PhotoBlock = ({ onUploadPhoto }: PhotoBlockProps) => {
-  const profile = useSelector(profileSelector);
+  //TODO decide where shoud we get the image
+  const photo = useSelector(profilePhotoSelector);
 
   const [imageHeight, setImageHeight] = useState(0);
 
@@ -130,7 +146,7 @@ const PhotoBlock = ({ onUploadPhoto }: PhotoBlockProps) => {
         <UploadPhotoIcon />
       </Button>
       <View onLayout={handleImageLayout}>
-        <MenuUserImage2 url={profile?.imageUri} />
+        <MenuUserImage2 url={photo?.uri} />
       </View>
     </View>
   );
@@ -138,10 +154,8 @@ const PhotoBlock = ({ onUploadPhoto }: PhotoBlockProps) => {
 
 const styles = StyleSheet.create({
   wrapper: {
-    paddingHorizontal: 0,
-  },
-  headerStyle: {
-    paddingHorizontal: sizes.paddingHorizontal,
+    gap: 24,
+    paddingTop: 8,
   },
   icon: {
     position: 'absolute',
