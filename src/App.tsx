@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { ThemeProvider, ThemeProviderV1 } from 'shuttlex-integration';
 
 import { store } from './core/redux/store';
+import InitialSetup from './InitialSetup';
 import Navigate from './Navigate';
 
 if (__DEV__) {
@@ -15,7 +16,9 @@ const App = (): JSX.Element => (
     <ThemeProvider>
       <Provider store={store}>
         <GestureHandlerRootView style={styles.gestureHandlerRootView}>
-          <Navigate />
+          <InitialSetup>
+            <Navigate />
+          </InitialSetup>
         </GestureHandlerRootView>
       </Provider>
     </ThemeProvider>
