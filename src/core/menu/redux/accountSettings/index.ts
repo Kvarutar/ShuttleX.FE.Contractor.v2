@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { calculateLockoutTime } from '../../../auth/redux/lockout';
 import { VerificationState } from './types';
 
 const initialState: VerificationState = {
@@ -28,7 +27,6 @@ const slice = createSlice({
     },
     incremenChangestAttempts: state => {
       state.lockoutChangesAttempts += 1;
-      state.lockoutChangesTimestamp = calculateLockoutTime(state.lockoutChangesAttempts);
     },
     setLockoutChangesTimestamp(state, action: PayloadAction<number>) {
       state.lockoutChangesTimestamp = action.payload;

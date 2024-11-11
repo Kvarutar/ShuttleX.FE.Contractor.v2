@@ -5,32 +5,22 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { CodeVerificationScreen, SafeAreaView } from 'shuttlex-integration';
 
-import { calculateLockoutTime } from '../../../core/auth/redux/lockout';
 import {
   incremenChangestAttempts,
   resetIsBlocked,
   //TODO get to know if we need this
   // resetLockoutChanges,
-  setIsBlocked,
   setIsVerificationDone,
-  setLockoutChangesTimestamp,
 } from '../../../core/menu/redux/accountSettings';
-import {
-  selectIsBlocked,
-  selectLockoutChangesAttempts,
-  selectLockoutChangesTimestamp,
-} from '../../../core/menu/redux/accountSettings/selectors';
+import { selectIsBlocked } from '../../../core/menu/redux/accountSettings/selectors';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 
 const AccountVerificateCodeScreen = (): JSX.Element => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
-  const changesAttempts = useSelector(selectLockoutChangesAttempts);
   const isBlocked = useSelector(selectIsBlocked);
-  const lockouChangesTimestamp = useSelector(selectLockoutChangesTimestamp);
   const [isCorrectCode, setIsCorrectCode] = useState<boolean>(false);
-  const [lockOutTime, setLockOutTime] = useState<number>(0);
 
   const { t } = useTranslation();
 
@@ -49,14 +39,6 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
 
   const onRequestAgain = () => {
     dispatch(incremenChangestAttempts());
-
-    const newLockoutTime = calculateLockoutTime(changesAttempts + 1);
-    setLockOutTime(newLockoutTime);
-
-    if (newLockoutTime > 0 && newLockoutTime !== lockouChangesTimestamp) {
-      dispatch(setLockoutChangesTimestamp(newLockoutTime));
-      dispatch(setIsBlocked(true));
-    }
   };
 
   return (
@@ -70,7 +52,7 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
         titleText={t('menu_AccountVerificateCode_change')}
         isBlocked={isBlocked}
         isError={isCorrectCode}
-        lockOutTime={lockOutTime}
+        lockOutTime={10000}
         lockOutTimeForText={'5'}
         onBannedAgainButtonPress={() => dispatch(resetIsBlocked())}
         onSupportButtonPress={() => {

@@ -1,8 +1,8 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 import reactotron from '../../../ReactotronConfig';
+import authReducer from '../auth/redux';
 import docsReducer from '../auth/redux/docs';
-import lockoutReducer from '../auth/redux/lockout';
 import contractorReducer from '../contractor/redux';
 import accountSettingsReducer from '../menu/redux/accountSettings';
 import notificationsReducer from '../menu/redux/notifications';
@@ -15,8 +15,8 @@ import statisticsReducer from '../statistics/redux';
 import signalRReducer from './signalr';
 
 const rootReducer = combineReducers({
+  auth: authReducer,
   docs: docsReducer,
-  lockout: lockoutReducer,
   notifications: notificationsReducer,
   wallet: walletReducer,
   statistics: statisticsReducer,

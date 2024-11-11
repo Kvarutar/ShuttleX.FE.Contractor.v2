@@ -1,22 +1,22 @@
-import { getAxiosErrorInfo, minToMilSec } from 'shuttlex-integration';
+import { getNetworkErrorInfo, minToMilSec } from 'shuttlex-integration';
 
-import shuttlexContractorInstance from '../../../client';
 import { createAppAsyncThunk } from '../../../redux/hooks';
 
 export const responseToOffer = createAppAsyncThunk<void, boolean>(
   'trip/responseToOffer',
-  async (payload, { rejectWithValue }) => {
+  async (payload, { rejectWithValue, shuttlexContractorAxios }) => {
     try {
-      await shuttlexContractorInstance.post('/contractor/make-decision-about-offer', {
+      await shuttlexContractorAxios.post('/contractor/make-decision-about-offer', {
         //TODO: receivedOfferId,
         offerId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
         decision: payload,
       });
     } catch (error) {
-      const { code, message } = getAxiosErrorInfo(error);
+      const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({
         code,
-        message,
+        body,
+        status,
       });
     }
   },
@@ -31,10 +31,11 @@ export const fetchArrivedToPickUp = createAppAsyncThunk<void, void>(
       //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
       // });
     } catch (error) {
-      const { code, message } = getAxiosErrorInfo(error);
+      const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({
         code,
-        message,
+        body,
+        status,
       });
     }
   },
@@ -49,10 +50,11 @@ export const fetchArrivedToStopPoint = createAppAsyncThunk<void, void>(
       //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
       // });
     } catch (error) {
-      const { code, message } = getAxiosErrorInfo(error);
+      const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({
         code,
-        message,
+        body,
+        status,
       });
     }
   },
@@ -67,10 +69,11 @@ export const fetchArrivedToDropOff = createAppAsyncThunk<void, void>(
       //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
       // });
     } catch (error) {
-      const { code, message } = getAxiosErrorInfo(error);
+      const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({
         code,
-        message,
+        body,
+        status,
       });
     }
   },
@@ -90,10 +93,11 @@ export const fetchPickedUpAtPickUpPoint = createAppAsyncThunk<{ fulltime: number
         fulltime: Date.now() + minToMilSec(25),
       };
     } catch (error) {
-      const { code, message } = getAxiosErrorInfo(error);
+      const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({
         code,
-        message,
+        body,
+        status,
       });
     }
   },
@@ -101,17 +105,18 @@ export const fetchPickedUpAtPickUpPoint = createAppAsyncThunk<{ fulltime: number
 
 export const fetchPickedUpAtStopPoint = createAppAsyncThunk<void, void>(
   'trip/fetchPickedUpAtStopPoint',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, shuttlexContractorAxios }) => {
     try {
-      await shuttlexContractorInstance.post('/contractor/order/picked-up-passenger-on-stop-point', {
+      await shuttlexContractorAxios.post('/contractor/order/picked-up-passenger-on-stop-point', {
         //TODO: orderId,
         orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
       });
     } catch (error) {
-      const { code, message } = getAxiosErrorInfo(error);
+      const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({
         code,
-        message,
+        body,
+        status,
       });
     }
   },

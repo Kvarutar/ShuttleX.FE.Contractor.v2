@@ -2,10 +2,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect } from 'react';
 import BootSplash from 'react-native-bootsplash';
-import { useTheme } from 'shuttlex-integration';
+import { useSelector } from 'react-redux';
+import { getTokens } from 'shuttlex-integration';
 
+import { setIsLoggedIn } from '../core/auth/redux';
+import { isLoggedInSelector } from '../core/auth/redux/selectors';
+import { useAppDispatch } from '../core/redux/hooks';
 import AuthScreen from '../screens/auth/AuthScreen';
-import LockOutScreen from '../screens/auth/LockOutScreen';
 import SignInCodeScreen from '../screens/auth/SignInCodeScreen';
 import SplashScreen from '../screens/auth/SplashScreen';
 import TermsScreen from '../screens/auth/TermsScreen';
@@ -29,11 +32,20 @@ import { RootStackParamList } from './props';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const Navigate = (): JSX.Element => {
-  const { setThemeMode } = useTheme();
+  const isLoggedIn = useSelector(isLoggedInSelector);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setThemeMode('light');
-  }, [setThemeMode]);
+    (async () => {
+      const { accessToken } = await getTokens();
+
+      if (accessToken) {
+        //dispatch(setIsLoggedIn(true));
+      } else {
+        dispatch(setIsLoggedIn(false));
+      }
+    })();
+  }, [dispatch]);
 
   return (
     <NavigationContainer onReady={() => BootSplash.hide({ fade: true })}>
@@ -43,26 +55,32 @@ const Navigate = (): JSX.Element => {
           headerShown: false,
         }}
       >
-        <Stack.Screen name="Splash" component={SplashScreen} />
-        <Stack.Screen name="Auth" component={AuthScreen} />
-        <Stack.Screen name="Ride" component={RideScreen} />
-        <Stack.Screen name="SignInCode" component={SignInCodeScreen} />
-        <Stack.Screen name="Notifications" component={NotificationScreen} />
-        <Stack.Screen name="Rating" component={RatingScreen} />
-        <Stack.Screen name="Zone" component={ZoneScreen} />
-        <Stack.Screen name="ProfilePhoto" component={ProfilePhotoScreen} />
-        <Stack.Screen name="Passport" component={PassportScreen} />
-        <Stack.Screen name="DriversLicense" component={DriversLicenseScreen} />
-        <Stack.Screen name="VehicleInsurance" component={VehicleInsuranceScreen} />
-        <Stack.Screen name="VehicleRegistration" component={VehicleRegistrationScreen} />
-        <Stack.Screen name="Docs" component={DocsScreen} />
-        <Stack.Screen name="Wallet" component={WalletScreen} />
-        <Stack.Screen name="Withdraw" component={WithdrawScreen} />
+        {isLoggedIn ? (
+          <>
+            <Stack.Screen name="Ride" component={RideScreen} />
+            <Stack.Screen name="Notifications" component={NotificationScreen} />
+            <Stack.Screen name="Rating" component={RatingScreen} />
+            <Stack.Screen name="Zone" component={ZoneScreen} />
+            <Stack.Screen name="ProfilePhoto" component={ProfilePhotoScreen} />
+            <Stack.Screen name="Passport" component={PassportScreen} />
+            <Stack.Screen name="DriversLicense" component={DriversLicenseScreen} />
+            <Stack.Screen name="VehicleInsurance" component={VehicleInsuranceScreen} />
+            <Stack.Screen name="VehicleRegistration" component={VehicleRegistrationScreen} />
+            <Stack.Screen name="Docs" component={DocsScreen} />
+            <Stack.Screen name="Wallet" component={WalletScreen} />
+            <Stack.Screen name="Withdraw" component={WithdrawScreen} />
+            <Stack.Screen name="Verification" component={VerificationScreen} />
+            <Stack.Screen name="AccountSettings" component={AccountSettings} />
+            <Stack.Screen name="AccountVerificateCode" component={AccountVerificateCodeScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Splash" component={SplashScreen} />
+            <Stack.Screen name="Auth" component={AuthScreen} />
+            <Stack.Screen name="SignInCode" component={SignInCodeScreen} />
+          </>
+        )}
         <Stack.Screen name="Terms" component={TermsScreen} />
-        <Stack.Screen name="Verification" component={VerificationScreen} />
-        <Stack.Screen name="LockOut" component={LockOutScreen} />
-        <Stack.Screen name="AccountSettings" component={AccountSettings} />
-        <Stack.Screen name="AccountVerificateCode" component={AccountVerificateCodeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
