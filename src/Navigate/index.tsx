@@ -40,7 +40,7 @@ const Navigate = (): JSX.Element => {
       const { accessToken } = await getTokens();
 
       if (accessToken) {
-        //dispatch(setIsLoggedIn(true));
+        dispatch(setIsLoggedIn(true));
       } else {
         dispatch(setIsLoggedIn(false));
       }
