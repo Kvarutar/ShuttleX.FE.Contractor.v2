@@ -223,7 +223,11 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
             maxSymbolsAfterComma={
               balanceTotal > 1 ? 2 : minWithdrawSum.toLocaleString(undefined, { maximumFractionDigits: 10 }).length
             }
-            value={inputAmount.toLocaleString(undefined, { maximumFractionDigits: 10 })}
+            value={
+              balanceTotal > 1
+                ? inputAmount.toString()
+                : inputAmount.toLocaleString(undefined, { maximumFractionDigits: 10 })
+            }
             onChangeText={onChangeText}
             containerStyle={styles.inputContainer}
             inputStyle={[styles.input, computedStyles.input]}

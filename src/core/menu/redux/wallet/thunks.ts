@@ -35,7 +35,7 @@ export const getWalletCashBalance = createAsyncThunk<
         symbol: '₴',
         sign: 'UAH',
       },
-      minWithdrawSum: 0.0000001,
+      minWithdrawSum: 100,
     };
   return walletBalanceFromBack;
 });
