@@ -6,7 +6,7 @@ import { createAxiosInstance, defaultAxiosRetryConfig, InitCreateAppAsyncThunkDi
 import { signOut } from '../auth/redux/thunks';
 import { AppDispatch } from '../redux/store';
 
-const shuttlexContractorInstanceInitializer = (
+const contractorInstanceInitializer = (
   dispatch: InitCreateAppAsyncThunkDispatch<AppState, AppDispatch>,
 ): AxiosInstance => {
   return createAxiosInstance({
@@ -16,4 +16,4 @@ const shuttlexContractorInstanceInitializer = (
   });
 };
 
-export default shuttlexContractorInstanceInitializer;
+export default contractorInstanceInitializer;

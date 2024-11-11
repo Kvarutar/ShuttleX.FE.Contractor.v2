@@ -1,9 +1,9 @@
-import shuttlexAuthInstanceInitializer from './authClient';
-import shuttlexContractorInstanceInitializer from './contractorClient';
+import authInstanceInitializer from './authClient';
+import contractorInstanceInitializer from './contractorClient';
 
 const axiosInitilizers = {
-  shuttlexAuthAxios: shuttlexAuthInstanceInitializer,
-  shuttlexContractorAxios: shuttlexContractorInstanceInitializer,
+  authAxios: authInstanceInitializer,
+  contractorAxios: contractorInstanceInitializer,
 };
 
 export default axiosInitilizers;

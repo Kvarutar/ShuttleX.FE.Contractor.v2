@@ -4,9 +4,9 @@ import { createAppAsyncThunk } from '../../../redux/hooks';
 
 export const responseToOffer = createAppAsyncThunk<void, boolean>(
   'trip/responseToOffer',
-  async (payload, { rejectWithValue, shuttlexContractorAxios }) => {
+  async (payload, { rejectWithValue, contractorAxios }) => {
     try {
-      await shuttlexContractorAxios.post('/contractor/make-decision-about-offer', {
+      await contractorAxios.post('/contractor/make-decision-about-offer', {
         //TODO: receivedOfferId,
         offerId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
         decision: payload,
@@ -105,9 +105,9 @@ export const fetchPickedUpAtPickUpPoint = createAppAsyncThunk<{ fulltime: number
 
 export const fetchPickedUpAtStopPoint = createAppAsyncThunk<void, void>(
   'trip/fetchPickedUpAtStopPoint',
-  async (_, { rejectWithValue, shuttlexContractorAxios }) => {
+  async (_, { rejectWithValue, contractorAxios }) => {
     try {
-      await shuttlexContractorAxios.post('/contractor/order/picked-up-passenger-on-stop-point', {
+      await contractorAxios.post('/contractor/order/picked-up-passenger-on-stop-point', {
         //TODO: orderId,
         orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
       });
