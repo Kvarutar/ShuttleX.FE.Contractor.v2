@@ -253,26 +253,28 @@ const Start = () => {
     return <UnclosablePopupWithModes mode={unclosablePopupMode} bottomAdditionalContent={bottomAdditionalContent} />;
   };
 
-  const computedStyles = StyleSheet.create({
-    bottomWindowStyle: {
-      paddingTop: isOpened ? 0 : 6,
-    },
-  });
-
   const tariffs = useSelector(tariffsSelector);
   const primaryTariff: TariffInfo = useSelector(primaryTariffSelector) ?? tariffs[0];
   const tariffsIconsData = useTariffsIcons();
   const IconComponent = tariffsIconsData[primaryTariff?.name]?.icon;
 
+  const computedStyles = StyleSheet.create({
+    headerWrapperStyle: {
+      height: isOpened ? 30 : 'auto',
+      justifyContent: 'flex-end',
+      marginHorizontal: 16,
+    },
+  });
+
   return (
     <>
       <BottomWindowWithGesture
         maxHeight={0.7}
-        withDraggable={!isOpened}
         withHiddenPartScroll={false}
-        bottomWindowStyle={[styles.bottomWindowStyle, computedStyles.bottomWindowStyle]}
+        bottomWindowStyle={styles.bottomWindowStyle}
         setIsOpened={setIsOpened}
         ref={bottomWindowRef}
+        headerWrapperStyle={computedStyles.headerWrapperStyle}
         headerElement={
           isOpened && (
             <Animated.View entering={FadeIn.duration(300)}>
@@ -342,7 +344,7 @@ const styles = StyleSheet.create({
   },
   bigCarImageContainer: {
     position: 'absolute',
-    top: -80,
+    top: -108,
     width: '75%',
     alignSelf: 'center',
   },

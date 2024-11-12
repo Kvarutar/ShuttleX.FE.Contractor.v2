@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import {
   sizes,
@@ -32,6 +33,8 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const insets = useSafeAreaInsets();
+  const iosPaddingVertical = insets.bottom === 0 ? sizes.paddingVertical : insets.bottom;
 
   const profile = useSelector(profileSelector);
   const contractorStatistics = useSelector(statisticsContractorSelector);
@@ -42,6 +45,9 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
   const contractorStatusIsOffline = contractorStatus === 'offline';
 
   const computedStyles = StyleSheet.create({
+    container: {
+      paddingBottom: iosPaddingVertical,
+    },
     levelCounter: {
       color: colors.textSecondaryColor,
     },
@@ -84,7 +90,7 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
     <Animated.View
       entering={FadeIn.duration(animationDuration)}
       exiting={FadeOut.duration(animationDuration)}
-      style={styles.container}
+      style={[styles.container, computedStyles.container]}
     >
       <View>
         {/* TODO: Add this block when we need a rider level */}
@@ -160,7 +166,6 @@ const styles = StyleSheet.create({
     //TODO: think of clever way(problem is: i can't calculate visible part height in opened state before it's opened. This problem occure because of we don't use hidden part in this component and in opened state height of visible part lesser then 93% of widow height)
     height: '100%',
     justifyContent: 'space-between',
-    paddingBottom: sizes.paddingVertical,
   },
   // Don't remove unused styles. There're some styles for unused component for now
   levelContainer: {

@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { ExternalMapIcon, PointIcon, Text, TrafficIndicator, TrafficLevel, useTheme } from 'shuttlex-integration';
+import {
+  ExternalMapIcon,
+  PointIcon,
+  sizes,
+  Text,
+  TrafficIndicator,
+  TrafficLevel,
+  useTheme,
+} from 'shuttlex-integration';
 
 import { AddressWithMetaProps } from './props';
 
@@ -81,18 +89,10 @@ const AddressWithMeta = ({ tripPoints }: AddressWithMetaProps) => {
 };
 
 const styles = StyleSheet.create({
-  //TODO: Check image sizes on smaller and bigger devices
-  timerWrapper: {
-    position: 'absolute',
-    top: -64,
-    alignSelf: 'center',
-  },
-  shadowStyle: {
-    borderRadius: 100,
-  },
   metaInfoContainer: {
     flexDirection: 'row',
-    paddingTop: 48,
+    paddingTop: 16,
+    paddingBottom: sizes.paddingVertical,
     gap: 12,
   },
   dropOffTextsContainer: {

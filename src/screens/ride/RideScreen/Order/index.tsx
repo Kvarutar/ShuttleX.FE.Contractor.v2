@@ -5,13 +5,14 @@ import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
 import {
   BottomWindowWithGesture,
+  BottomWindowWithGestureRef,
   defaultShadow,
+  sizes,
   Timer,
   TimerColorModes,
   TimerSizesModes,
   useTheme,
 } from 'shuttlex-integration';
-import { BottomWindowWithGestureRef } from 'shuttlex-integration/lib/typescript/src/shared/molecules/BottomWindowWithGesture/props';
 
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { orderSelector, tripStatusSelector } from '../../../../core/ride/redux/trip/selectors';
@@ -40,6 +41,10 @@ const Order = () => {
   }, [tripStatus]);
 
   const computedStyles = StyleSheet.create({
+    headerWrapperStyle: {
+      height: withAvatar ? 50 : withHeaderTimer ? 70 : 'auto',
+      justifyContent: 'flex-end',
+    },
     avatarAndShadowContainer: {
       backgroundColor: colors.backgroundPrimaryColor,
     },
@@ -82,9 +87,9 @@ const Order = () => {
       <BottomWindowWithGesture
         withAllPartsScroll
         withHiddenPartScroll={false}
-        withDraggable={!withAvatar && !withHeaderTimer}
         visiblePartStyle={styles.bottomWindowVisiblePartStyle}
         hiddenPartContainerStyle={styles.bottomWindowHiddenContainer}
+        headerWrapperStyle={computedStyles.headerWrapperStyle}
         ref={bottomWindowRef}
         alerts={alerts.map(alertData => (
           <AlertInitializer
@@ -109,10 +114,11 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   bottomWindowVisiblePartStyle: {
-    paddingBottom: 24,
+    paddingBottom: sizes.paddingVertical,
   },
   avatarAndShadowContainer: {
-    top: -31,
+    position: 'absolute',
+    top: -75,
     alignSelf: 'center',
     borderRadius: 50,
   },
@@ -128,7 +134,7 @@ const styles = StyleSheet.create({
   },
   timerWrapper: {
     position: 'absolute',
-    top: -45,
+    top: -105,
     alignSelf: 'center',
   },
 });
