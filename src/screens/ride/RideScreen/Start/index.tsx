@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
+  BigHeader,
   BottomWindowWithGesture,
   BottomWindowWithGestureRef,
   Button,
+  ButtonShapes,
   minToMilSec,
   SquareButtonModes,
   SwipeButtonModes,
@@ -15,6 +17,7 @@ import {
 
 import {
   contractorStatusSelector,
+  contractorSubscriptionStatusSelector,
   primaryTariffSelector,
   tariffsSelector,
 } from '../../../../core/contractor/redux/selectors';
@@ -136,12 +139,14 @@ const Start = () => {
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
   const canceledTripsAmount = useSelector(canceledTripsAmountSelector);
   const isCanceledTripsPopupVisible = useSelector(isCanceledTripsPopupVisibleSelector);
+  const contractorSubscriptionStatus = useSelector(contractorSubscriptionStatusSelector);
 
   const [offer, setOffer] = useState<OfferType>();
   const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t)[contractorStatus]);
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
   const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
   const [isAchievementsPopupVisible, setIsAchievementsPopupVisible] = useState<boolean>(false);
+  const [isAccountIsNotActivePopupVisible, setIsAccountIsNotActivePopupVisible] = useState<boolean>(false);
   const [isOpened, setIsOpened] = useState<boolean>(false);
 
   useEffect(() => {
@@ -151,6 +156,14 @@ const Start = () => {
   useEffect(() => {
     setOffer(offerFromBack);
   }, []);
+
+  useEffect(() => {
+    if (isOpened && contractorStatus === 'offline' && !contractorSubscriptionStatus) {
+      setIsAccountIsNotActivePopupVisible(true);
+    } else if (!isOpened) {
+      setIsAccountIsNotActivePopupVisible(false);
+    }
+  }, [contractorStatus, contractorSubscriptionStatus, isOpened]);
 
   useEffect(() => {
     if (contractorStatus === 'online') {
@@ -197,6 +210,11 @@ const Start = () => {
 
   const onPressConfirmButton = () => {
     dispatch(setIsCanceledTripsPopupVisible(false));
+  };
+
+  const onPressAccountIsNotActivePopupConfirmButton = () => {
+    Linking.openURL('https://www.shuttlex.com').catch(err => console.error(err));
+    setIsAccountIsNotActivePopupVisible(false);
   };
 
   //TODO: Add navigation to support page or same thing and resetting cancels
@@ -328,6 +346,38 @@ const Start = () => {
         />
       )}
       {isCanceledTripsPopupVisible && canceledTripsPopupsContent()}
+      {isAccountIsNotActivePopupVisible && (
+        <BottomWindowWithGesture
+          withShade
+          opened
+          setIsOpened={setIsAccountIsNotActivePopupVisible}
+          hiddenPart={
+            <View>
+              <BigHeader
+                windowTitle={t('ride_Ride_Start_accountIsNotActiveSubtitle')}
+                firstHeaderTitle={t('ride_Ride_Start_accountIsNotActiveTitle')}
+                secondHeaderTitle={t('ride_Ride_Start_accountIsNotActiveSecondTitle')}
+                description={t('ride_Ride_Start_accountIsNotActiveDescription')}
+              />
+              <View style={styles.popupButtonWrapper}>
+                <Button
+                  shape={ButtonShapes.Square}
+                  containerStyle={styles.popupButton}
+                  text={t('ride_Ride_Start_accountIsNotActiveFirstButton')}
+                  onPress={onPressAccountIsNotActivePopupConfirmButton}
+                />
+                <Button
+                  containerStyle={styles.popupButton}
+                  shape={ButtonShapes.Square}
+                  mode={SquareButtonModes.Mode2}
+                  text={t('ride_Ride_Start_accountIsNotActiveSecondButton')}
+                  onPress={() => setIsAccountIsNotActivePopupVisible(false)}
+                />
+              </View>
+            </View>
+          }
+        />
+      )}
     </>
   );
 };
@@ -353,6 +403,14 @@ const styles = StyleSheet.create({
     aspectRatio: 2.5,
     height: undefined,
     resizeMode: 'contain',
+  },
+  popupButton: {
+    flex: 1,
+  },
+  popupButtonWrapper: {
+    marginTop: 76,
+    gap: 8,
+    flexDirection: 'row',
   },
 });
 

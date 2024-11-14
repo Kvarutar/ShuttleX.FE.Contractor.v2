@@ -288,3 +288,21 @@ export const getCarData = createAppAsyncThunk<CarDataAPIResponse, { contractorId
     return carDataFromBack;
   },
 );
+
+//TODO: There's just example! Rewrite when info about "subscription status" logic will be known
+export const getSubscriptionStatus = createAppAsyncThunk<boolean, { contractorId: string }>(
+  'contractor/getSubscriptionStatus',
+  async () => {
+    //TODO: Add networking
+    // try {
+    //   return await shuttlexContractorInstance.get(`/contractor/subscriptionStatus/${payload.contractorId}`, {});
+    // } catch (error) {
+    //   const { code, message } = getAxiosErrorInfo(error);
+    //   return rejectWithValue({
+    //     code,
+    //     message,
+    //   });
+    // }
+    return false;
+  },
+);

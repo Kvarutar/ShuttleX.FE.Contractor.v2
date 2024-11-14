@@ -2,7 +2,6 @@ export enum UnclosablePopupModes {
   Warning = 'warning',
   WarningForTwoCancels = 'warningForTwoCancels',
   Banned = 'banned',
-  AccountIsNotActive = 'accountIsNotActive',
   PassengerPaidTripViaCash = 'passengerPaidTripViaCash',
   DocumentUnderReview = 'documentUnderReview',
   DocumentRejected = 'documentRejected',

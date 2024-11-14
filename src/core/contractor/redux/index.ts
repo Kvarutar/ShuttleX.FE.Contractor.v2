@@ -5,6 +5,7 @@ import {
   getCarData,
   getPreferences,
   getProfile,
+  getSubscriptionStatus,
   getTariffs,
   sendSelectedPreferences,
   sendSelectedTariffs,
@@ -29,6 +30,7 @@ const initialState: ContractorState = {
   carData: null,
   zone: null,
   status: 'offline',
+  subscriptionStatus: false,
 };
 
 const slice = createSlice({
@@ -84,6 +86,9 @@ const slice = createSlice({
 
     setContractorZone(state, action: PayloadAction<string>) {
       state.zone = action.payload;
+    },
+    setSubscriptionStatus(state, action: PayloadAction<boolean>) {
+      state.subscriptionStatus = action.payload;
     },
   },
 
@@ -143,6 +148,12 @@ const slice = createSlice({
           type: setCarData.type,
         });
       })
+      .addCase(getSubscriptionStatus.fulfilled, (state, action) => {
+        slice.caseReducers.setSubscriptionStatus(state, {
+          payload: action.payload,
+          type: setSubscriptionStatus.type,
+        });
+      })
       .addCase(updateContractorStatus.rejected, (_, action) => {
         console.log(action.payload);
       })
@@ -151,6 +162,9 @@ const slice = createSlice({
       })
       .addCase(updateProfileData.rejected, (_, action) => {
         console.error('Profile update failed:', action.payload);
+      })
+      .addCase(getSubscriptionStatus.rejected, (_, action) => {
+        console.error('Error fetching SubscriptionStatus:', action.payload);
       });
   },
 });
@@ -167,6 +181,7 @@ export const {
   setContractorState,
   setContractorZone,
   updateProfile,
+  setSubscriptionStatus,
 } = slice.actions;
 
 export default slice.reducer;

@@ -50,4 +50,5 @@ export type ContractorState = {
   carData: CarDataAPIResponse | null;
   status: ContractorStatus;
   zone: string | null;
+  subscriptionStatus: boolean;
 };

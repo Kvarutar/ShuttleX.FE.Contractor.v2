@@ -22,12 +22,6 @@ const popupInfo: UnclosablePopupInfo = {
     secondTitle: null,
     description: 'ride_Ride_UnclosablePopup_bannedDescription',
   },
-  accountIsNotActive: {
-    subTitle: 'ride_Ride_UnclosablePopup_accountIsNotActiveSubtitle',
-    title: 'ride_Ride_UnclosablePopup_accountIsNotActiveTitle',
-    secondTitle: 'ride_Ride_UnclosablePopup_accountIsNotActiveSecondTitle',
-    description: 'ride_Ride_UnclosablePopup_accountIsNotActiveDescription',
-  },
   passengerPaidTripViaCash: {
     subTitle: null,
     title: 'ride_Ride_UnclosablePopup_paidViaCashTitle',
