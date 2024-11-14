@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { t } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Dimensions, StyleSheet, View } from 'react-native';
+import { Alert, Dimensions, Linking, StyleSheet, View } from 'react-native';
 import Animated, {
   KeyboardState,
   useAnimatedKeyboard,
@@ -148,7 +148,7 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
     setInputAmount(Number(text.replace(/[^+\d.]/g, '')));
   };
 
-  const AsyncAlert = async (title: string, description: string, buttonText: string) =>
+  const AsyncAlert = async (title: string, description: string, buttonText: string, url?: string) =>
     new Promise(() => {
       Alert.alert(
         title,
@@ -157,8 +157,12 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
           {
             text: buttonText,
             onPress: () => {
-              setIsVisibleSlider(false);
-              navigation.goBack();
+              if (url) {
+                Linking.openURL(url).catch(err => console.error(err));
+              } else {
+                setIsVisibleSlider(false);
+                navigation.goBack();
+              }
             },
           },
         ],
@@ -170,20 +174,32 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
   const onWithdraw = async () => {
     await dispatch(fetchWithdraw({ withdrawSum: inputAmount }));
 
-    await AsyncAlert(
-      t('menu_Withdraw_alertTitle'),
-      withdrawType === 'cash'
-        ? t('menu_Withdraw_alertDescription', {
-            withdrawAmount: inputAmount,
-            cardEnding: selectedPaymentMethod?.details,
-          })
-        : t('menu_Withdraw_alertDescriptionCrypto', {
-            cryptoAmount: inputAmount,
-            cryptoCurrencySign: currencySign,
-            cryptoUID: emailOrBinanceId,
-          }),
-      t('menu_Withdraw_alertContinueButton'),
-    );
+    //TODO: Just for testing, change to correct data from back-end
+    const debtWarning = Math.random() < 0.5;
+
+    if (debtWarning) {
+      await AsyncAlert(
+        t('menu_Withdraw_alertTitleWarning'),
+        t('menu_Withdraw_alertDescriptionWarning'),
+        t('menu_Withdraw_alertWarningButton'),
+        'https://www.shuttlex.com',
+      );
+    } else {
+      await AsyncAlert(
+        t('menu_Withdraw_alertTitle'),
+        withdrawType === 'cash'
+          ? t('menu_Withdraw_alertDescription', {
+              withdrawAmount: inputAmount,
+              cardEnding: selectedPaymentMethod?.details,
+            })
+          : t('menu_Withdraw_alertDescriptionCrypto', {
+              cryptoAmount: inputAmount,
+              cryptoCurrencySign: currencySign,
+              cryptoUID: emailOrBinanceId,
+            }),
+        t('menu_Withdraw_alertContinueButton'),
+      );
+    }
   };
 
   // To properly hide the slider component before the "goBack" function starts
