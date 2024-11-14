@@ -35,6 +35,11 @@ const AuthScreen = ({ navigation, route }: AuthScreenProps): JSX.Element => {
     dispatch(signUp({ email: dataForm.email, firstName: dataForm.firstName, phone: dataForm.phone, method: 'phone' }));
   };
 
+  const handleSendingSignInData = (body: string) => {
+    setData(body);
+    dispatch(signIn({ method: signMethod, data: body }));
+  };
+
   useEffect(() => {
     if (!isLoading && !signError && data) {
       navigation.navigate('SignInCode', { verificationType: signMethod, data });
@@ -50,12 +55,6 @@ const AuthScreen = ({ navigation, route }: AuthScreenProps): JSX.Element => {
       }
     }
   }, [isLoading, signError, navigation, data, signMethod]);
-
-  const handleSendingSignInData = (body: string) => {
-    setData(body);
-
-    dispatch(signIn({ method: signMethod, data: body }));
-  };
 
   return (
     <CustomKeyboardAvoidingView>
