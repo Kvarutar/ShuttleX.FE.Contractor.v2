@@ -1,6 +1,41 @@
 import { getNetworkErrorInfo, minToMilSec } from 'shuttlex-integration';
 
 import { createAppAsyncThunk } from '../../../redux/hooks';
+import { OfferAPIResponse, OfferDropOffAPIResponse, OfferPickUpAPIResponse } from './types';
+
+export const fetchOfferInfo = createAppAsyncThunk<OfferAPIResponse, string>(
+  'trip/fetchOfferInfo',
+  async (offerId, { rejectWithValue, offersAxios }) => {
+    try {
+      const response = await offersAxios.get<OfferAPIResponse>(`/${offerId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
+
+export const fetchWayPointsRoute = createAppAsyncThunk<
+  { pickup: OfferPickUpAPIResponse; dropoff: OfferDropOffAPIResponse },
+  { pickUpRouteId: string; dropOffRouteId: string }
+>(
+  'trip/fetchWayPointsRoute',
+  async ({ pickUpRouteId, dropOffRouteId }, { rejectWithValue, offersAxios, ordersAxios }) => {
+    try {
+      const [pickupResponse, dropoffResponse] = await Promise.all([
+        offersAxios.get<OfferPickUpAPIResponse>(`/routes/${pickUpRouteId}/to-pick-up`),
+        ordersAxios.get<OfferDropOffAPIResponse>(`/routes/${dropOffRouteId}/to-drop-off`),
+      ]);
+
+      return {
+        pickup: pickupResponse.data,
+        dropoff: dropoffResponse.data,
+      };
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
 
 export const responseToOffer = createAppAsyncThunk<void, boolean>(
   'trip/responseToOffer',
@@ -12,12 +47,7 @@ export const responseToOffer = createAppAsyncThunk<void, boolean>(
         decision: payload,
       });
     } catch (error) {
-      const { code, body, status } = getNetworkErrorInfo(error);
-      return rejectWithValue({
-        code,
-        body,
-        status,
-      });
+      return rejectWithValue(getNetworkErrorInfo(error));
     }
   },
 );
@@ -31,12 +61,7 @@ export const fetchArrivedToPickUp = createAppAsyncThunk<void, void>(
       //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
       // });
     } catch (error) {
-      const { code, body, status } = getNetworkErrorInfo(error);
-      return rejectWithValue({
-        code,
-        body,
-        status,
-      });
+      return rejectWithValue(getNetworkErrorInfo(error));
     }
   },
 );
@@ -50,12 +75,7 @@ export const fetchArrivedToStopPoint = createAppAsyncThunk<void, void>(
       //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
       // });
     } catch (error) {
-      const { code, body, status } = getNetworkErrorInfo(error);
-      return rejectWithValue({
-        code,
-        body,
-        status,
-      });
+      return rejectWithValue(getNetworkErrorInfo(error));
     }
   },
 );
@@ -69,12 +89,7 @@ export const fetchArrivedToDropOff = createAppAsyncThunk<void, void>(
       //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
       // });
     } catch (error) {
-      const { code, body, status } = getNetworkErrorInfo(error);
-      return rejectWithValue({
-        code,
-        body,
-        status,
-      });
+      return rejectWithValue(getNetworkErrorInfo(error));
     }
   },
 );
@@ -93,12 +108,7 @@ export const fetchPickedUpAtPickUpPoint = createAppAsyncThunk<{ fulltime: number
         fulltime: Date.now() + minToMilSec(25),
       };
     } catch (error) {
-      const { code, body, status } = getNetworkErrorInfo(error);
-      return rejectWithValue({
-        code,
-        body,
-        status,
-      });
+      return rejectWithValue(getNetworkErrorInfo(error));
     }
   },
 );
@@ -112,12 +122,7 @@ export const fetchPickedUpAtStopPoint = createAppAsyncThunk<void, void>(
         orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
       });
     } catch (error) {
-      const { code, body, status } = getNetworkErrorInfo(error);
-      return rejectWithValue({
-        code,
-        body,
-        status,
-      });
+      return rejectWithValue(getNetworkErrorInfo(error));
     }
   },
 );

@@ -28,10 +28,13 @@ import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/al
 import { setIsCanceledTripsPopupVisible, setOrder } from '../../../../core/ride/redux/trip';
 import {
   canceledTripsAmountSelector,
+  dropOffRouteIdSelector,
   isCanceledTripsPopupVisibleSelector,
+  offerSelector,
+  pickUpRouteIdSelector,
 } from '../../../../core/ride/redux/trip/selectors';
-import { getCanceledTripsAmount, responseToOffer } from '../../../../core/ride/redux/trip/thunks';
-import { OfferType, OrderType } from '../../../../core/ride/redux/trip/types';
+import { fetchWayPointsRoute, getCanceledTripsAmount, responseToOffer } from '../../../../core/ride/redux/trip/thunks';
+import { OrderType } from '../../../../core/ride/redux/trip/types';
 import { getContractorStatistics } from '../../../../core/statistics/redux/thunks';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import AchievementsPopup from '../popups/AchievementsPopup';
@@ -87,27 +90,6 @@ const orderFromBack: OrderType = {
   tripTariff: 'BasicX',
 };
 
-// Just example! This data might be changed on backend later
-//TODO: Rewrite this logic to receiving data from backend
-//TODO: Add latitude and longtude keys (maybe it will be separate request to backend)
-const offerFromBack: OfferType = {
-  startPosition: {
-    address: '123 Queen St W, Toronto, ON M5H 2M9',
-    latitude: 12312312,
-    longitude: 123123123,
-  },
-  targetPointsPosition: [
-    {
-      address: '12 Bushbury Dr, North York, ON M3A 2Z7',
-      latitude: 12312312,
-      longitude: 123123123,
-    },
-  ],
-  fullTimeMinutes: Date.now() + minToMilSec(25), // 25 min
-  price: '100',
-  pricePerKm: 0.3,
-};
-
 const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record<ContractorStatus, lineStateTypes> => ({
   online: {
     popupTitle: t('ride_Ride_Popup_onlineTitle'),
@@ -141,21 +123,19 @@ const Start = () => {
   const isCanceledTripsPopupVisible = useSelector(isCanceledTripsPopupVisibleSelector);
   const contractorSubscriptionStatus = useSelector(contractorSubscriptionStatusSelector);
 
-  const [offer, setOffer] = useState<OfferType>();
   const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t)[contractorStatus]);
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
   const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
   const [isAchievementsPopupVisible, setIsAchievementsPopupVisible] = useState<boolean>(false);
   const [isAccountIsNotActivePopupVisible, setIsAccountIsNotActivePopupVisible] = useState<boolean>(false);
   const [isOpened, setIsOpened] = useState<boolean>(false);
+  const offer = useSelector(offerSelector);
+  const pickUpRouteId = useSelector(pickUpRouteIdSelector);
+  const dropOffRouteId = useSelector(dropOffRouteIdSelector);
 
   useEffect(() => {
     setLineState(getRideBuilderRecord(t)[contractorStatus]);
   }, [contractorStatus, t]);
-
-  useEffect(() => {
-    setOffer(offerFromBack);
-  }, []);
 
   useEffect(() => {
     if (isOpened && contractorStatus === 'offline' && !contractorSubscriptionStatus) {
@@ -172,6 +152,12 @@ const Start = () => {
       }, 1000);
     }
   }, [contractorStatus]);
+
+  useEffect(() => {
+    if (pickUpRouteId && dropOffRouteId) {
+      dispatch(fetchWayPointsRoute({ pickUpRouteId, dropOffRouteId }));
+    }
+  }, [dispatch, pickUpRouteId, dropOffRouteId]);
 
   useEffect(() => {
     (async () => {

@@ -1,23 +1,30 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { NetworkErrorDetailsWithBody } from 'shuttlex-integration';
 
 import {
   fetchArrivedToDropOff,
   fetchArrivedToPickUp,
   fetchArrivedToStopPoint,
   fetchCancelTrip,
+  fetchOfferInfo,
   fetchPickedUpAtPickUpPoint,
   fetchPickedUpAtStopPoint,
+  fetchWayPointsRoute,
   getCanceledTripsAmount,
 } from './thunks';
-import { OrderType, TripState, TripStatus } from './types';
+import { OfferAPIResponse, OfferWayPointsDataAPIResponse, OrderType, TripState, TripStatus } from './types';
 
 const initialState: TripState = {
   order: null,
+  offer: null,
   secondOrder: null,
   tripStatus: TripStatus.Idle,
   tripPoints: null,
   canceledTripsAmount: 0,
   isCanceledTripsPopupVisible: false,
+  error: null,
+  //TODO create selector and place where it needed
+  isLoading: false,
 };
 
 const slice = createSlice({
@@ -30,6 +37,26 @@ const slice = createSlice({
       } else if (!state.order) {
         state.order = action.payload;
         state.tripPoints = [action.payload.startPosition, ...action.payload.targetPointsPosition];
+      }
+    },
+    setTripOffer(state, action: PayloadAction<OfferAPIResponse>) {
+      if (state.offer) {
+        state.offer.offerInfo = action.payload;
+      }
+    },
+    setTripOfferError(state, action: PayloadAction<NetworkErrorDetailsWithBody<any> | null>) {
+      state.error = action.payload;
+    },
+    setTripIsLoading(state, action: PayloadAction<boolean>) {
+      state.isLoading = action.payload;
+    },
+    setWayPointsRoute(
+      state,
+      action: PayloadAction<{ pickup: OfferWayPointsDataAPIResponse; dropoff: OfferWayPointsDataAPIResponse }>,
+    ) {
+      if (state.offer) {
+        state.offer.pickUpPoint = action.payload.pickup;
+        state.offer.dropOffPoint = action.payload.dropoff;
       }
     },
     setOrderFullTime(state, action: PayloadAction<number>) {
@@ -105,12 +132,81 @@ const slice = createSlice({
           payload: action.payload,
           type: setTripStatus.type,
         });
+      })
+      .addCase(fetchOfferInfo.pending, state => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: true,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripOfferError(state, {
+          payload: initialState.error,
+          type: setTripOfferError.type,
+        });
+      })
+      .addCase(fetchOfferInfo.fulfilled, (state, action) => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripOfferError(state, {
+          payload: initialState.error,
+          type: setTripOfferError.type,
+        });
+        slice.caseReducers.setTripOffer(state, {
+          payload: action.payload,
+          type: setTripOffer.type,
+        });
+      })
+      .addCase(fetchOfferInfo.rejected, (state, action) => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripOfferError(state, {
+          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
+          type: setTripOfferError.type,
+        });
+      })
+      .addCase(fetchWayPointsRoute.pending, state => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: true,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripOfferError(state, {
+          payload: initialState.error,
+          type: setTripOfferError.type,
+        });
+      })
+      .addCase(fetchWayPointsRoute.fulfilled, (state, action) => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripOfferError(state, {
+          payload: initialState.error,
+          type: setTripOfferError.type,
+        });
+        slice.caseReducers.setWayPointsRoute(state, {
+          payload: { pickup: action.payload.pickup, dropoff: action.payload.dropoff },
+          type: setWayPointsRoute.type,
+        });
+      })
+      .addCase(fetchWayPointsRoute.rejected, (state, action) => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripOfferError(state, {
+          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
+          type: setTripOfferError.type,
+        });
       });
   },
 });
 
 export const {
   setOrder,
+  setTripOffer,
   setTripStatus,
   rateTrip,
   toNextTripPoint,
@@ -118,6 +214,9 @@ export const {
   addCanceledTrip,
   setCanceledTripsAmount,
   setIsCanceledTripsPopupVisible,
+  setWayPointsRoute,
+  setTripIsLoading,
+  setTripOfferError,
 } = slice.actions;
 
 export default slice.reducer;

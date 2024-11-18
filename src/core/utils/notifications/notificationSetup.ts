@@ -1,6 +1,8 @@
 import notifee, { AndroidImportance, AndroidVisibility } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 
+import { sendFirebaseToken } from '../../notificator/thunks';
+import { store } from '../../redux/store';
 import { requestNotificationsPermission } from '../permissions';
 import { handleMessage } from './notificationHandlers';
 
@@ -9,6 +11,7 @@ export const setupNotifications = async () => {
   await requestNotificationsPermission();
   await createChannels();
   subscribeToMessages();
+  setupFirebaseRefreshToken();
 };
 
 //channels
@@ -25,4 +28,22 @@ const createChannels = async () => {
 const subscribeToMessages = () => {
   messaging().setBackgroundMessageHandler(handleMessage);
   messaging().onMessage(handleMessage);
+};
+
+export const getFirebaseDeviceToken = async () => {
+  try {
+    const token = await messaging().getToken();
+    //TODO delete console after all tests
+    console.log('Firebase Token:', token);
+
+    store.dispatch(sendFirebaseToken(token));
+  } catch (error) {
+    console.error('Cannot get firebase devise token:', error);
+  }
+};
+
+const setupFirebaseRefreshToken = async () => {
+  messaging().onTokenRefresh(async newToken => {
+    store.dispatch(sendFirebaseToken(newToken));
+  });
 };

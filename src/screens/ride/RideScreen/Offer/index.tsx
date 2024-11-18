@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ListRenderItem, StyleSheet, View } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
+import { useSelector } from 'react-redux';
 import {
   Button,
   defaultShadow,
   FlatListWithCustomScroll,
+  milSecToHours,
+  milSecToMin,
   PointIcon,
   ScrollViewWithCustomScroll,
+  secToMilSec,
   Separator,
   SquareButtonModes,
   Text,
@@ -17,20 +21,75 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { wayPointsDropOffSelector, wayPointsPickUpSelector } from '../../../../core/ride/redux/trip/selectors';
 import { TripPoint } from '../../../../core/ride/redux/trip/types';
 import { OfferItemProps, OfferProps } from './props';
 
 const addressGap = 40;
 
+const calculateTravelTime = (timeToPickUp: string, timeToDropOff: string) => {
+  const pickUpTime = new Date(timeToPickUp);
+  const dropOffTime = new Date(timeToDropOff);
+
+  const differenceInMs = dropOffTime.getTime() - pickUpTime.getTime();
+
+  const minutes = milSecToMin(differenceInMs);
+  const hours = Math.floor(milSecToHours(differenceInMs));
+
+  return { hours, minutes };
+};
+
 const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottomWindows }: OfferProps) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const makeDecisionTime = Date.now() + 0.5 * 60 * 1000;
-
   const [isShowMorePoints, setIsShowMorePoints] = useState<boolean>(false);
 
-  const offerPoints = [offer.startPosition, ...offer.targetPointsPosition];
+  const timeToAnswer = Date.now() + secToMilSec(offer.offerInfo.timeToAnswerSec);
+  const travelTime = calculateTravelTime(offer.offerInfo.timeToPickUp, offer.offerInfo.timeToDropOff);
+
+  const wayPointsPickUp = useSelector(wayPointsPickUpSelector);
+  const wayPointsDropOff = useSelector(wayPointsDropOffSelector);
+
+  const [pickUpData, setPickUpData] = useState<TripPoint[]>([]);
+  const [dropOffData, setDropOffData] = useState<TripPoint[]>([]);
+
+  useEffect(() => {
+    if (wayPointsPickUp && wayPointsPickUp.length > 0) {
+      const pickUpCoordinates = wayPointsPickUp.map(waypoint => ({
+        address: offer.offerInfo.pickUpAddress,
+        latitude: waypoint.location.latitude,
+        longitude: waypoint.location.longitude,
+      }));
+      setPickUpData(pickUpCoordinates);
+    }
+
+    if (wayPointsDropOff && wayPointsDropOff.length > 0) {
+      const dropOffCoordinates = wayPointsDropOff.map(waypoint => ({
+        address: offer.offerInfo.stopPointAddresses.join(', '),
+        latitude: waypoint.location.latitude,
+        longitude: waypoint.location.longitude,
+      }));
+      setDropOffData(dropOffCoordinates);
+    }
+  }, [wayPointsPickUp, wayPointsDropOff, offer.offerInfo.stopPointAddresses, offer.offerInfo.pickUpAddress]);
+
+  const startPosition =
+    pickUpData.length > 0
+      ? {
+          address: pickUpData[0].address,
+          latitude: pickUpData[0].latitude,
+          longitude: pickUpData[0].longitude,
+        }
+      : { address: '', latitude: 0, longitude: 0 };
+
+  const targetPointsPosition = dropOffData.map(data => ({
+    address: data.address && Array.isArray(data.address) ? data.address[0] : data.address,
+    latitude: data.latitude,
+    longitude: data.longitude,
+  }));
+
+  const offerPoints = [startPosition, ...targetPointsPosition];
 
   useEffect(() => {
     onCloseAllBottomWindows();
@@ -54,8 +113,8 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
     },
   });
 
-  const renderTarifs: ListRenderItem<TripPoint> = ({ item, index }) => {
-    let pointName = `${t('ride_Ride_Offer_stopTitle')}  ${index}`;
+  const renderOffers: ListRenderItem<TripPoint> = ({ item, index }) => {
+    let pointName = `${t('ride_Ride_Offer_stopTitle')} ${index}`;
     let isDropOff = false;
     let isStopPoint = false;
 
@@ -85,7 +144,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
     content = (
       <FlatListWithCustomScroll
         wrapperStyle={styles.flatListWrapper}
-        renderItem={renderTarifs}
+        renderItem={renderOffers}
         items={offerPoints}
         withScroll
       />
@@ -94,7 +153,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
     content = (
       <ScrollViewWithCustomScroll wrapperStyle={styles.scrollViewWrapper}>
         <OfferItem
-          address={offerPoints[0].address}
+          address={offer.offerInfo.pickUpAddress}
           pointName={t('ride_Ride_Offer_pickUpTitle')}
           isDropOff={false}
           style={computedStyles.offerItemTitle}
@@ -102,7 +161,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
           setIsShowMorePoints={setIsShowMorePoints}
         />
         <OfferItem
-          address={offerPoints[offerPoints.length - 1].address}
+          address={offer.offerInfo.dropOffAddress}
           pointName={t('ride_Ride_Offer_dropOffTitle')}
           isDropOff
           style={computedStyles.offerItemTitle}
@@ -111,20 +170,13 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
     );
   }
 
-  const fullTimeMinutes = offer.fullTimeMinutes - Date.now();
-
-  const travelTime = {
-    hours: Math.floor(fullTimeMinutes / (1000 * 60 * 60)),
-    minutes: Math.floor((fullTimeMinutes % (1000 * 60 * 60)) / (1000 * 60)),
-  };
-
   return (
     <>
       {
         <View style={styles.timerContainer}>
           <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.shadowStyle}>
             <Timer
-              time={makeDecisionTime}
+              time={timeToAnswer}
               sizeMode={TimerSizesModes.S}
               colorMode={TimerColorModes.Mode4}
               onAfterCountdownEnds={onClose}
@@ -151,12 +203,12 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
         <View style={[styles.offerInfoItem, computedStyles.offerInfoItem]}>
           <Text style={[styles.offerInfoTitle, computedStyles.offerInfoText]}>{t('ride_Ride_Offer_pricePerKm')}</Text>
           <Text style={[styles.offerInfoCounter, computedStyles.offerInfoCounter]}>
-            ${t('ride_Ride_Offer_kilometers', { count: offer.pricePerKm })}
+            ${t('ride_Ride_Offer_kilometers', { count: offer.offerInfo.pricePerKm })}
           </Text>
         </View>
         <View style={[styles.offerInfoItem, computedStyles.offerInfoItem]}>
           <Text style={[styles.offerInfoTitle, computedStyles.offerInfoText]}>{t('ride_Ride_Offer_price')}</Text>
-          <Text style={[styles.offerInfoCounter, computedStyles.offerInfoCounter]}>${offer.price}</Text>
+          <Text style={[styles.offerInfoCounter, computedStyles.offerInfoCounter]}>${offer.offerInfo.price}</Text>
         </View>
       </View>
       {content}
