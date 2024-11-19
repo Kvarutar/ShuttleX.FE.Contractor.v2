@@ -26,8 +26,13 @@ import { updateRequirementDocuments } from '../../../core/auth/redux/docs';
 import { isAllDocumentsFilledSelector, profilePhotoSelector } from '../../../core/auth/redux/docs/selectors';
 import { contractorIdSelector, profileSelector } from '../../../core/contractor/redux/selectors';
 import { getProfile, updateProfileData } from '../../../core/contractor/redux/thunks';
-import { resetVerification } from '../../../core/menu/redux/accountSettings';
-import { isVerificationDoneSelector } from '../../../core/menu/redux/accountSettings/selectors';
+import { resetAccountSettingsVerification } from '../../../core/menu/redux/accountSettings';
+import {
+  accountSettingsErrorSelector,
+  isAccountSettingsLoadingSelector,
+  isAccountSettingsVerificationDoneSelector,
+} from '../../../core/menu/redux/accountSettings/selectors';
+import { changeAccountContactData } from '../../../core/menu/redux/accountSettings/thunks';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 import Menu from '../../ride/Menu';
@@ -42,12 +47,14 @@ const AccountSettings = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const profile = useSelector(profileSelector);
   const profilePhoto = useSelector(profilePhotoSelector);
-  const isVerificationDone = useSelector(isVerificationDoneSelector);
+  const isVerificationDone = useSelector(isAccountSettingsVerificationDoneSelector);
+  const changeDataError = useSelector(accountSettingsErrorSelector);
+  const isLoading = useSelector(isAccountSettingsLoadingSelector);
   const contractorId = useSelector(contractorIdSelector);
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(resetVerification());
+      dispatch(resetAccountSettingsVerification());
     }, [dispatch]),
   );
   useEffect(() => {
@@ -58,9 +65,13 @@ const AccountSettings = (): JSX.Element => {
     dispatch(updateProfileData({ contractorId, updatedData: { imageUri: profilePhoto?.uri } }));
   }, [dispatch, navigation, profilePhoto?.uri, contractorId]);
 
-  const handleOpenVerification = () => {
-    navigation.navigate('AccountVerificateCode');
+  const handleOpenVerification = (mode: 'phone' | 'email', newValue: string) => {
+    if (!isLoading && !changeDataError) {
+      dispatch(changeAccountContactData({ method: mode, data: { oldData: profile?.[mode] ?? '', newData: newValue } }));
+      navigation.navigate('AccountVerificateCode', { mode, newValue });
+    }
   };
+
   const handleProfileDataSave = (profileData: AccountProfileDataProps) => {
     dispatch(updateProfileData({ contractorId, updatedData: profileData }));
   };

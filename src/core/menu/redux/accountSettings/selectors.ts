@@ -1,6 +1,5 @@
 import { AppState } from '../../../redux/store';
 
-export const isVerificationDoneSelector = (state: AppState) => state.accountSettings.isVerificationDone;
-export const selectLockoutChangesTimestamp = (state: AppState) => state.accountSettings.lockoutChangesTimestamp;
-export const selectLockoutChangesAttempts = (state: AppState) => state.accountSettings.lockoutChangesAttempts;
-export const selectIsBlocked = (state: AppState) => state.accountSettings.isBlocked;
+export const isAccountSettingsVerificationDoneSelector = (state: AppState) => state.accountSettings.isVerificationDone;
+export const isAccountSettingsLoadingSelector = (state: AppState) => state.accountSettings.isLoading;
+export const accountSettingsErrorSelector = (state: AppState) => state.accountSettings.error;

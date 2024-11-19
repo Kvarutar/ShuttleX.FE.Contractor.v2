@@ -1,44 +1,87 @@
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { CodeVerificationScreen, SafeAreaView } from 'shuttlex-integration';
+import { CodeVerificationScreen, isLockedError, milSecToTime, SafeAreaView } from 'shuttlex-integration';
 
+import { profileSelector } from '../../../core/contractor/redux/selectors';
+import { setIsAccountSettingsVerificationDone } from '../../../core/menu/redux/accountSettings';
 import {
-  incremenChangestAttempts,
-  resetIsBlocked,
-  //TODO get to know if we need this
-  // resetLockoutChanges,
-  setIsVerificationDone,
-} from '../../../core/menu/redux/accountSettings';
-import { selectIsBlocked } from '../../../core/menu/redux/accountSettings/selectors';
+  accountSettingsErrorSelector,
+  isAccountSettingsLoadingSelector,
+} from '../../../core/menu/redux/accountSettings/selectors';
+import { changeAccountContactData, verifyChangeDataCode } from '../../../core/menu/redux/accountSettings/thunks';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 
 const AccountVerificateCodeScreen = (): JSX.Element => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'AccountVerificateCode'>>();
+  const { mode, newValue } = route.params;
+
   const dispatch = useAppDispatch();
-  const isBlocked = useSelector(selectIsBlocked);
-  const [isCorrectCode, setIsCorrectCode] = useState<boolean>(false);
+
+  const [verificationCode, setVerificationCode] = useState<string | null>(null);
+  const [isIncorrectCode, setIsIncorrectCode] = useState<boolean>(false);
+  const [lockoutMinutes, setLockoutMinutes] = useState('');
+  const [lockoutEndTimestamp, setLockoutEndTimestamp] = useState(0);
+  const [isBlocked, setIsBlocked] = useState(false);
+
+  const profile = useSelector(profileSelector);
+
+  const changeDataError = useSelector(accountSettingsErrorSelector);
+  const isLoading = useSelector(isAccountSettingsLoadingSelector);
 
   const { t } = useTranslation();
 
-  //TODO Add logic to send data on backend
-  const handleCodeChange = (newCode: string) => {
-    setIsCorrectCode(false);
+  const handleCodeChange = async (newCode: string) => {
+    //TODO: fix inputs: this function triggers when error state changes
+    if (!changeDataError) {
+      setIsIncorrectCode(false);
+    }
+
     if (newCode.length === 4) {
-      if (newCode === '4444') {
-        setIsCorrectCode(true);
-      } else {
-        dispatch(setIsVerificationDone(true));
-        navigation.goBack();
-      }
+      setVerificationCode(newCode);
+    } else {
+      setVerificationCode(null);
     }
   };
 
-  const onRequestAgain = () => {
-    dispatch(incremenChangestAttempts());
+  useEffect(() => {
+    if (verificationCode) {
+      dispatch(verifyChangeDataCode({ method: mode, code: verificationCode, body: newValue })); //TODO: move logic to handle code change after bug with wron function trigger will be solved
+    }
+  }, [verificationCode, mode, newValue, dispatch]);
+
+  useEffect(() => {
+    if (!isLoading && !changeDataError) {
+      dispatch(setIsAccountSettingsVerificationDone(true));
+      navigation.goBack();
+    }
+
+    if (changeDataError) {
+      setIsIncorrectCode(true);
+      if (isLockedError(changeDataError)) {
+        setIsIncorrectCode(true);
+        const lockoutEndDate = new Date(changeDataError.body.lockOutEndTime).getTime() - Date.now();
+
+        setLockoutMinutes(Math.round(milSecToTime(lockoutEndDate)).toString());
+        setLockoutEndTimestamp(lockoutEndDate);
+        setIsBlocked(true);
+      }
+    }
+  }, [changeDataError, navigation, isLoading, dispatch]);
+
+  const isOldPhone = mode === 'phone' ? profile?.phone : profile?.email;
+
+  const handleRequestAgain = () => {
+    dispatch(changeAccountContactData({ method: mode, data: { oldData: isOldPhone ?? '', newData: newValue } }));
+  };
+
+  const onBannedAgainPress = () => {
+    handleRequestAgain();
+    setIsBlocked(false);
   };
 
   return (
@@ -47,14 +90,14 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
         headerFirstText={t('menu_AccountVerificateCode_firstHeader')}
         headerSecondText={t('menu_AccountVerificateCode_secondHeader')}
         onBackButtonPress={navigation.goBack}
-        onAgainButtonPress={onRequestAgain}
+        onAgainButtonPress={handleRequestAgain}
         onCodeChange={handleCodeChange}
         titleText={t('menu_AccountVerificateCode_change')}
         isBlocked={isBlocked}
-        isError={isCorrectCode}
-        lockOutTime={10000}
-        lockOutTimeForText={'5'}
-        onBannedAgainButtonPress={() => dispatch(resetIsBlocked())}
+        isError={isIncorrectCode}
+        lockOutTime={lockoutEndTimestamp}
+        lockOutTimeForText={lockoutMinutes}
+        onBannedAgainButtonPress={onBannedAgainPress}
         onSupportButtonPress={() => {
           // TODO: onSupportPress
         }}

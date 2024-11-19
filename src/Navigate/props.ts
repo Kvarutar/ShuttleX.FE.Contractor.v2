@@ -25,5 +25,5 @@ export type RootStackParamList = {
   Verification: undefined;
   LockOut: undefined;
   AccountSettings: undefined;
-  AccountVerificateCode: undefined;
+  AccountVerificateCode: { mode: 'phone' | 'email'; newValue: string };
 };

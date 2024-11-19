@@ -1,50 +1,101 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { NetworkErrorDetailsWithBody } from 'shuttlex-integration';
 
+import { changeAccountContactData, verifyChangeDataCode } from './thunks';
 import { VerificationState } from './types';
 
 const initialState: VerificationState = {
   isVerificationDone: false,
-  isBlocked: false,
-  lockoutChangesTimestamp: 0,
-  lockoutChangesAttempts: 0,
+  isLoading: false,
+  error: null,
 };
 
 const slice = createSlice({
   name: 'accountSettings',
   initialState,
   reducers: {
-    setIsVerificationDone(state, action) {
+    setIsAccountSettingsVerificationDone(state, action) {
       state.isVerificationDone = action.payload;
     },
-    resetVerification(state) {
+    setAccountSettingsIsLoading(state, action: PayloadAction<boolean>) {
+      state.isLoading = action.payload;
+    },
+    setAccountSettingsError(state, action: PayloadAction<NetworkErrorDetailsWithBody<any> | null>) {
+      state.error = action.payload;
+    },
+    resetAccountSettingsVerification(state) {
       state.isVerificationDone = false;
     },
-    setIsBlocked(state, action) {
-      state.isBlocked = action.payload;
-    },
-    resetIsBlocked(state) {
-      state.isVerificationDone = false;
-    },
-    incremenChangestAttempts: state => {
-      state.lockoutChangesAttempts += 1;
-    },
-    setLockoutChangesTimestamp(state, action: PayloadAction<number>) {
-      state.lockoutChangesTimestamp = action.payload;
-    },
-    resetLockoutChanges: state => {
-      state.lockoutChangesTimestamp = 0;
-      state.lockoutChangesAttempts = 0;
-    },
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(changeAccountContactData.pending, state => {
+        slice.caseReducers.setAccountSettingsIsLoading(state, {
+          payload: true,
+          type: setAccountSettingsIsLoading.type,
+        });
+        slice.caseReducers.setAccountSettingsError(state, {
+          payload: initialState.error,
+          type: setAccountSettingsError.type,
+        });
+      })
+      .addCase(changeAccountContactData.fulfilled, state => {
+        slice.caseReducers.setAccountSettingsIsLoading(state, {
+          payload: false,
+          type: setAccountSettingsIsLoading.type,
+        });
+        slice.caseReducers.setAccountSettingsError(state, {
+          payload: initialState.error,
+          type: setAccountSettingsError.type,
+        });
+      })
+      .addCase(changeAccountContactData.rejected, (state, action) => {
+        slice.caseReducers.setAccountSettingsIsLoading(state, {
+          payload: false,
+          type: setAccountSettingsIsLoading.type,
+        });
+        slice.caseReducers.setAccountSettingsError(state, {
+          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
+          type: setAccountSettingsError.type,
+        });
+      })
+      .addCase(verifyChangeDataCode.pending, state => {
+        slice.caseReducers.setAccountSettingsIsLoading(state, {
+          payload: true,
+          type: setAccountSettingsIsLoading.type,
+        });
+        slice.caseReducers.setAccountSettingsError(state, {
+          payload: initialState.error,
+          type: setAccountSettingsError.type,
+        });
+      })
+      .addCase(verifyChangeDataCode.fulfilled, state => {
+        slice.caseReducers.setAccountSettingsIsLoading(state, {
+          payload: false,
+          type: setAccountSettingsIsLoading.type,
+        });
+        slice.caseReducers.setAccountSettingsError(state, {
+          payload: initialState.error,
+          type: setAccountSettingsError.type,
+        });
+      })
+      .addCase(verifyChangeDataCode.rejected, (state, action) => {
+        slice.caseReducers.setAccountSettingsIsLoading(state, {
+          payload: false,
+          type: setAccountSettingsIsLoading.type,
+        });
+        slice.caseReducers.setAccountSettingsError(state, {
+          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
+          type: setAccountSettingsError.type,
+        });
+      });
   },
 });
 
 export const {
-  setIsVerificationDone,
-  resetVerification,
-  incremenChangestAttempts,
-  setLockoutChangesTimestamp,
-  resetLockoutChanges,
-  setIsBlocked,
-  resetIsBlocked,
+  setIsAccountSettingsVerificationDone,
+  resetAccountSettingsVerification,
+  setAccountSettingsIsLoading,
+  setAccountSettingsError,
 } = slice.actions;
 export default slice.reducer;
