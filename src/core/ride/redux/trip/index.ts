@@ -12,7 +12,6 @@ import {
   fetchPickedUpAtPickUpPoint,
   fetchPickedUpAtStopPoint,
   fetchWayPointsRoute,
-  getCanceledTripsAmount,
   updatePassengerRating,
 } from './thunks';
 import {
@@ -212,9 +211,6 @@ const slice = createSlice({
         state.tripPoints = initialState.tripPoints;
       }
       state.tripStatus = TripStatus.Idle;
-    },
-    setCanceledTripsAmount(state, action: PayloadAction<number>) {
-      state.canceledTripsAmount = action.payload;
     },
     setIsCanceledTripsPopupVisible(state, action: PayloadAction<boolean>) {
       state.isCanceledTripsPopupVisible = action.payload;
@@ -524,12 +520,6 @@ const slice = createSlice({
           payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
           type: setTripError.type,
         });
-      })
-      .addCase(getCanceledTripsAmount.fulfilled, (state, action) => {
-        slice.caseReducers.setCanceledTripsAmount(state, {
-          payload: action.payload,
-          type: setCanceledTripsAmount.type,
-        });
       });
   },
 });
@@ -543,7 +533,6 @@ export const {
   toNextTripPoint,
   endTrip,
   addCanceledTrip,
-  setCanceledTripsAmount,
   setIsCanceledTripsPopupVisible,
   setWayPointsRoute,
   setTripIsLoading,

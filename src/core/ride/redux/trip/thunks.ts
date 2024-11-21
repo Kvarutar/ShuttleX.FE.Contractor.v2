@@ -75,7 +75,7 @@ export const acceptOffer = createAppAsyncThunk<
 
     //TODO: Rewrite with correct data
     const acceptOfferResponseData: AcceptOfferAPIResponse = {
-      orderId: 'ac3ed13c-d761-4b53-b396-6f212c29dec1',
+      orderId: 'a094885f-e05f-46dd-846a-0c9d9818bae9',
     };
 
     //TODO: Add passengerAvatarResponse when fix problems with avatar
@@ -251,21 +251,5 @@ export const fetchPickedUpAtStopPoint = createAppAsyncThunk<void, void>(
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
     }
-  },
-);
-
-export const getCanceledTripsAmount = createAppAsyncThunk<number, { contractiorId: string }>(
-  'trip/getCanceledTripsAmount',
-  async (_, { getState }) => {
-    //TODO: Add networking
-    // await shuttlexContractorInstance.post('/contractor/order/picked-up-passenger-on-stop-point', {
-    //   //TODO: orderId,
-    //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
-    // });
-
-    //TODO: Remove this logic and add a logic for receiving a current state from back-end
-    const tripState = getState().trip;
-
-    return tripState.canceledTripsAmount;
   },
 );

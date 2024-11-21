@@ -9,12 +9,14 @@ import {
   BottomWindowWithGestureRef,
   Button,
   ButtonShapes,
+  isIncorrectFieldsError,
   SquareButtonModes,
   SwipeButtonModes,
   useTariffsIcons,
 } from 'shuttlex-integration';
 
 import {
+  contractorGeneralErrorSelector,
   contractorStatusSelector,
   contractorSubscriptionStatusSelector,
   primaryTariffSelector,
@@ -25,18 +27,12 @@ import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { setIsCanceledTripsPopupVisible } from '../../../../core/ride/redux/trip';
 import {
-  canceledTripsAmountSelector,
   dropOffRouteIdSelector,
   isCanceledTripsPopupVisibleSelector,
   offerSelector,
   pickUpRouteIdSelector,
 } from '../../../../core/ride/redux/trip/selectors';
-import {
-  acceptOffer,
-  declineOffer,
-  fetchWayPointsRoute,
-  getCanceledTripsAmount,
-} from '../../../../core/ride/redux/trip/thunks';
+import { acceptOffer, declineOffer, fetchWayPointsRoute } from '../../../../core/ride/redux/trip/thunks';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import AchievementsPopup from '../popups/AchievementsPopup';
 import OfferPopup from '../popups/OfferPopup';
@@ -85,9 +81,9 @@ const Start = () => {
 
   const contractorStatus = useSelector(contractorStatusSelector);
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
-  const canceledTripsAmount = useSelector(canceledTripsAmountSelector);
   const isCanceledTripsPopupVisible = useSelector(isCanceledTripsPopupVisibleSelector);
   const contractorSubscriptionStatus = useSelector(contractorSubscriptionStatusSelector);
+  const generalError = useSelector(contractorGeneralErrorSelector);
 
   const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t)[contractorStatus]);
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
@@ -130,9 +126,14 @@ const Start = () => {
       //TODO: Change contractorId when we know how it seems
       await dispatch(getAchievements({ contractorId: '' }));
       await dispatch(getPreferences({ contractorId: '' }));
-      await dispatch(getCanceledTripsAmount({ contractiorId: '' }));
     })();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (generalError && isIncorrectFieldsError(generalError)) {
+      dispatch(setIsCanceledTripsPopupVisible(true));
+    }
+  }, [generalError, dispatch]);
 
   const onOfferPopupClose = () => {
     setIsOfferPopupVisible(false);
@@ -176,46 +177,25 @@ const Start = () => {
     let unclosablePopupMode = null;
     let bottomAdditionalContent = null;
 
-    switch (canceledTripsAmount) {
-      case 1:
-        unclosablePopupMode = UnclosablePopupModes.Warning;
-        bottomAdditionalContent = (
-          <Button
-            style={styles.unclosablePopupConfirmButton}
-            text={t('ride_Ride_UnclosablePopup_confirmButton')}
-            onPress={onPressConfirmButton}
-          />
-        );
-        break;
-      case 2:
-        unclosablePopupMode = UnclosablePopupModes.WarningForTwoCancels;
-        bottomAdditionalContent = (
-          <Button
-            style={styles.unclosablePopupConfirmButton}
-            text={t('ride_Ride_UnclosablePopup_confirmButton')}
-            onPress={onPressConfirmButton}
-          />
-        );
-        break;
-      case 3:
-        unclosablePopupMode = UnclosablePopupModes.Banned;
-        bottomAdditionalContent = (
-          <Button
-            style={styles.unclosablePopupContactSupportButton}
-            text={t('ride_Ride_UnclosablePopup_contactSupportButton')}
-            onPress={onPressContactSupportButton}
-          />
-        );
-        break;
-      default:
-        unclosablePopupMode = UnclosablePopupModes.Banned;
-        bottomAdditionalContent = (
-          <Button
-            style={styles.unclosablePopupContactSupportButton}
-            text={t('ride_Ride_UnclosablePopup_contactSupportButton')}
-            onPress={onPressContactSupportButton}
-          />
-        );
+    //TODO: Rewrite with the correct typeGuard function
+    if ((generalError && !isIncorrectFieldsError(generalError)) || !generalError) {
+      unclosablePopupMode = UnclosablePopupModes.Warning;
+      bottomAdditionalContent = (
+        <Button
+          style={styles.unclosablePopupConfirmButton}
+          text={t('ride_Ride_UnclosablePopup_confirmButton')}
+          onPress={onPressConfirmButton}
+        />
+      );
+    } else {
+      unclosablePopupMode = UnclosablePopupModes.Banned;
+      bottomAdditionalContent = (
+        <Button
+          style={styles.unclosablePopupContactSupportButton}
+          text={t('ride_Ride_UnclosablePopup_contactSupportButton')}
+          onPress={onPressContactSupportButton}
+        />
+      );
     }
 
     return <UnclosablePopupWithModes mode={unclosablePopupMode} bottomAdditionalContent={bottomAdditionalContent} />;

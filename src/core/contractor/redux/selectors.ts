@@ -3,6 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { AppState } from '../../redux/store';
 
 export const tariffsSelector = (state: AppState) => state.contractor.tariffs;
+export const contractorGeneralErrorSelector = (state: AppState) => state.contractor.error.general;
 export const selectedTariffsSelector = createSelector([tariffsSelector], tariffs =>
   tariffs.filter(tariff => tariff.isSelected),
 );

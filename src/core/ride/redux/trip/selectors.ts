@@ -5,7 +5,6 @@ export const offerSelector = (state: AppState) => state.trip.offer;
 export const secondOrderSelector = (state: AppState) => state.trip.secondOrder;
 export const tripStatusSelector = (state: AppState) => state.trip.tripStatus;
 export const tripPointsSelector = (state: AppState) => state.trip.tripPoints;
-export const canceledTripsAmountSelector = (state: AppState) => state.trip.canceledTripsAmount;
 export const isCanceledTripsPopupVisibleSelector = (state: AppState) => state.trip.isCanceledTripsPopupVisible;
 export const pickUpRouteIdSelector = (state: AppState) => state.trip.offer?.offerInfo.pickUpRouteId;
 export const dropOffRouteIdSelector = (state: AppState) => state.trip.offer?.offerInfo.dropOffRouteId;
