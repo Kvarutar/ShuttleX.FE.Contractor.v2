@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { NetworkErrorDetailsWithBody } from 'shuttlex-integration';
 
-import { changeAccountContactData, verifyChangeDataCode } from './thunks';
+import { changeAccountContactData, verifyChangeAccountDataCode } from './thunks';
 import { VerificationState } from './types';
 
 const initialState: VerificationState = {
@@ -58,8 +58,9 @@ const slice = createSlice({
           payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
           type: setAccountSettingsError.type,
         });
+        console.error(changeAccountContactData.typePrefix, action.payload);
       })
-      .addCase(verifyChangeDataCode.pending, state => {
+      .addCase(verifyChangeAccountDataCode.pending, state => {
         slice.caseReducers.setAccountSettingsIsLoading(state, {
           payload: true,
           type: setAccountSettingsIsLoading.type,
@@ -69,7 +70,7 @@ const slice = createSlice({
           type: setAccountSettingsError.type,
         });
       })
-      .addCase(verifyChangeDataCode.fulfilled, state => {
+      .addCase(verifyChangeAccountDataCode.fulfilled, state => {
         slice.caseReducers.setAccountSettingsIsLoading(state, {
           payload: false,
           type: setAccountSettingsIsLoading.type,
@@ -79,7 +80,7 @@ const slice = createSlice({
           type: setAccountSettingsError.type,
         });
       })
-      .addCase(verifyChangeDataCode.rejected, (state, action) => {
+      .addCase(verifyChangeAccountDataCode.rejected, (state, action) => {
         slice.caseReducers.setAccountSettingsIsLoading(state, {
           payload: false,
           type: setAccountSettingsIsLoading.type,

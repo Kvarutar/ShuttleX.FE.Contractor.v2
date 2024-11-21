@@ -9,8 +9,8 @@ import {
   VerifyChangeAccountContactDataCodePayload,
 } from './types';
 
-export const verifyChangeDataCode = createAppAsyncThunk<void, VerifyChangeAccountContactDataCodePayload>(
-  'accountSettings/verifyChangeDataCode',
+export const verifyChangeAccountDataCode = createAppAsyncThunk<void, VerifyChangeAccountContactDataCodePayload>(
+  'accountSettings/verifyChangeAccountDataCode',
   async (payload, { rejectWithValue, authAxios }) => {
     //TODO get deviceId from back
     const deviceId = 'string';

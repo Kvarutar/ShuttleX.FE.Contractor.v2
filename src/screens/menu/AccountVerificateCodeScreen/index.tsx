@@ -1,6 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { CodeVerificationScreen, isLockedError, milSecToTime, SafeAreaView } from 'shuttlex-integration';
@@ -11,7 +11,7 @@ import {
   accountSettingsErrorSelector,
   isAccountSettingsLoadingSelector,
 } from '../../../core/menu/redux/accountSettings/selectors';
-import { changeAccountContactData, verifyChangeDataCode } from '../../../core/menu/redux/accountSettings/thunks';
+import { changeAccountContactData, verifyChangeAccountDataCode } from '../../../core/menu/redux/accountSettings/thunks';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 
@@ -22,7 +22,6 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
 
   const dispatch = useAppDispatch();
 
-  const [verificationCode, setVerificationCode] = useState<string | null>(null);
   const [isIncorrectCode, setIsIncorrectCode] = useState<boolean>(false);
   const [lockoutMinutes, setLockoutMinutes] = useState('');
   const [lockoutEndTimestamp, setLockoutEndTimestamp] = useState(0);
@@ -35,31 +34,16 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
 
   const { t } = useTranslation();
 
-  const handleCodeChange = async (newCode: string) => {
-    //TODO: fix inputs: this function triggers when error state changes
-    if (!changeDataError) {
-      setIsIncorrectCode(false);
-    }
-
-    if (newCode.length === 4) {
-      setVerificationCode(newCode);
-    } else {
-      setVerificationCode(null);
-    }
-  };
+  const handleCodeChange = useCallback(
+    (newCode: string) => {
+      if (newCode.length === 4) {
+        dispatch(verifyChangeAccountDataCode({ method: mode, code: newCode, body: newValue }));
+      }
+    },
+    [dispatch, mode, newValue],
+  );
 
   useEffect(() => {
-    if (verificationCode) {
-      dispatch(verifyChangeDataCode({ method: mode, code: verificationCode, body: newValue })); //TODO: move logic to handle code change after bug with wron function trigger will be solved
-    }
-  }, [verificationCode, mode, newValue, dispatch]);
-
-  useEffect(() => {
-    if (!isLoading && !changeDataError) {
-      dispatch(setIsAccountSettingsVerificationDone(true));
-      navigation.goBack();
-    }
-
     if (changeDataError) {
       setIsIncorrectCode(true);
       if (isLockedError(changeDataError)) {
@@ -70,6 +54,15 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
         setLockoutEndTimestamp(lockoutEndDate);
         setIsBlocked(true);
       }
+    } else {
+      setIsIncorrectCode(false);
+    }
+  }, [changeDataError]);
+
+  useEffect(() => {
+    if (!isLoading && !changeDataError) {
+      dispatch(setIsAccountSettingsVerificationDone(true));
+      navigation.goBack();
     }
   }, [changeDataError, navigation, isLoading, dispatch]);
 
