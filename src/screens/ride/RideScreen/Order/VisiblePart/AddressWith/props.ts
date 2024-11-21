@@ -1,11 +1,9 @@
-import { TripPoint } from '../../../../../../core/ride/redux/trip/types';
-
 export type AddressWithMetaProps = {
-  tripPoints: TripPoint[];
+  tripPoints: string[];
 };
 
 export type AddressWithPassengerAndOrderInfoProps = {
-  tripPoints: TripPoint[];
+  tripPoints: string[];
   withGoogleMapButton?: boolean;
   isWaiting?: boolean;
   timeForTimer: number;

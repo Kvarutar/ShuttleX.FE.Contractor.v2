@@ -7,7 +7,7 @@ import { Bar, BarModes, MenuBase, MenuNavigation, Text, useTheme } from 'shuttle
 
 // TODO Uncomment all code whe we need it
 // import CrownIcon from 'shuttlex-integration';
-import { profileSelector } from '../../../core/contractor/redux/selectors';
+import { contractorAvatarSelector, contractorInfoSelector } from '../../../core/contractor/redux/selectors';
 import { RootStackParamList } from '../../../Navigate/props';
 import { MenuProps } from './props';
 
@@ -16,7 +16,8 @@ const Menu = ({ onClose }: MenuProps) => {
 
   const { t } = useTranslation();
 
-  const profile = useSelector(profileSelector);
+  const contractorInfo = useSelector(contractorInfoSelector);
+  const contractorAvatar = useSelector(contractorAvatarSelector);
 
   const currentRoute = useNavigationState(state => state.routes[state.index].name);
 
@@ -75,8 +76,8 @@ const Menu = ({ onClose }: MenuProps) => {
     <MenuBase
       onClose={onClose}
       additionalContent={<AdditionalContent />}
-      userImageUri={profile?.imageUri ?? undefined}
-      userName={profile?.fullName}
+      userImageUri={contractorAvatar ?? undefined}
+      userName={contractorInfo?.name}
       menuNavigation={menuNavigation}
       currentRoute={currentRoute}
       isContractorMenu

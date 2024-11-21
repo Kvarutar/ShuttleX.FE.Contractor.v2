@@ -21,7 +21,6 @@
   "ride_Ride_Offer_price": "Price",
   "ride_Ride_Offer_hours": "{{hours}} h",
   "ride_Ride_Offer_minutes": "{{minutes}} min",
-  "ride_Ride_Offer_kilometers": "{{count}}",
   "ride_Ride_Order_arrivedButton": "Arrived",
   "ride_Ride_Order_arrivedToStopButton": "Arrived to stop point",
   "ride_Ride_Order_pickUpButton": "Pick up and Go",

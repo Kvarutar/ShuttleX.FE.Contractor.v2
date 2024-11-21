@@ -11,7 +11,6 @@ import alertsReducer from '../ride/redux/alerts';
 import geolocationReducer from '../ride/redux/geolocation';
 import mapReducer from '../ride/redux/map';
 import tripReducer from '../ride/redux/trip';
-import statisticsReducer from '../statistics/redux';
 import signalRReducer from './signalr';
 
 const rootReducer = combineReducers({
@@ -19,7 +18,6 @@ const rootReducer = combineReducers({
   docs: docsReducer,
   notifications: notificationsReducer,
   wallet: walletReducer,
-  statistics: statisticsReducer,
   alerts: alertsReducer,
   geolocation: geolocationReducer,
   map: mapReducer,

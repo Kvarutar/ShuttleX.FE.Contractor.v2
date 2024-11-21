@@ -3,31 +3,27 @@ import { Dimensions, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Button, FlatListWithCustomScroll, Text, useTheme } from 'shuttlex-integration';
 
-import {
-  contractorIdSelector,
-  selectedTariffsSelector,
-  sortedTariffsSelector,
-} from '../../../../../core/contractor/redux/selectors';
+import { contractorInfoSelector } from '../../../../../core/contractor/redux/selectors';
 import { sendSelectedTariffs } from '../../../../../core/contractor/redux/thunks';
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { HiddenPartProps } from './props';
 
 const windowHeight = Dimensions.get('window').height;
 
-const HiddenPart = ({ onClose, renderTariffs }: HiddenPartProps) => {
+const HiddenPart = ({ onClose, renderTariffs, isTariffsLoaded, localTariffsSorted }: HiddenPartProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
   const dispatch = useAppDispatch();
-  const contractorId = useSelector(contractorIdSelector);
-  const tariffsSorted = useSelector(sortedTariffsSelector);
-  const selectedTariffs = useSelector(selectedTariffsSelector);
+  const localSelectedTariffs = localTariffsSorted.filter(localTariff => localTariff.isSelected);
+  const contractorInfo = useSelector(contractorInfoSelector);
+
   //TODO: Uncomment this constant when we need to add preferences
   // const preferences = useSelector(preferencesSelector);
   // const selectedPreferences = useSelector(selectedPreferencesSelector);
 
   const onConfirmHandler = async () => {
-    await dispatch(sendSelectedTariffs({ selectedTariffs, contractorId }));
+    await dispatch(sendSelectedTariffs({ selectedTariffs: localSelectedTariffs, contractorId: contractorInfo.id }));
     // await dispatch(sendSelectedPreferences({ selectedPreferences, contractorId }));
     onClose();
   };
@@ -58,12 +54,15 @@ const HiddenPart = ({ onClose, renderTariffs }: HiddenPartProps) => {
         {t('ride_Ride_PreferencesPopup_secondTitle')}
       </Text>
       <Text style={[styles.tariffsText, computedStyles.tariffsText]}>{t('ride_Ride_PreferencesPopup_tariffs')}</Text>
-      <FlatListWithCustomScroll
-        wrapperStyle={styles.flatListWrapper}
-        contentContainerStyle={styles.flatListContentContainer}
-        renderItem={renderTariffs}
-        items={tariffsSorted}
-      />
+      {/* TODO: Rewtire with skeletons */}
+      {isTariffsLoaded && (
+        <FlatListWithCustomScroll
+          wrapperStyle={styles.flatListWrapper}
+          contentContainerStyle={styles.flatListContentContainer}
+          renderItem={renderTariffs}
+          items={localTariffsSorted}
+        />
+      )}
       {/* TODO: Uncomment these components when we need to add preferences */}
       {/* <View style={[styles.preferencesContainer, computedStyles.preferencesContainer]}>
         <Text style={[styles.preferencesTitle, computedStyles.preferencesTitle]}>

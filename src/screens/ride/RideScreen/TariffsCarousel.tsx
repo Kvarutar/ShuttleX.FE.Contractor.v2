@@ -15,7 +15,6 @@ const carouselAnimationDurations = {
   scroll: 500,
   opacity: 200,
 };
-
 const TariffsCarousel = () => {
   const tariffsIconsData = useTariffsIcons();
   const carouselRef = useRef<ICarouselInstance>(null);
@@ -32,6 +31,7 @@ const TariffsCarousel = () => {
     },
   });
 
+  //TODO: Add skeletons
   if (tariffsForRender.length === 0) {
     return;
   }

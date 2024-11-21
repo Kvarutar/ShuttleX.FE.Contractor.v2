@@ -23,7 +23,7 @@ import {
   requirementDocumentsListSelector,
 } from '../../../core/auth/redux/docs/selectors';
 import { DocsState, RequirementDocs, RequirementDocsType } from '../../../core/auth/redux/docs/types';
-import { profileSelector } from '../../../core/contractor/redux/selectors';
+import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
 import VerificationHeader from '../../verification/VerificationScreen/VerificationHeader';
 import { DocsScreenProps } from './types';
 
@@ -32,7 +32,7 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const profile = useSelector(profileSelector);
+  const contractorInfo = useSelector(contractorInfoSelector);
   const isPresentAllDocuments = useSelector(isAllDocumentsFilledSelector);
   const requirementDocumentsList = useSelector(requirementDocumentsListSelector);
 
@@ -89,7 +89,7 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
         containerStyle={styles.verificationHeader}
         windowTitle={t('docs_Docs_headerTitle')}
         firstHeaderTitle={t('docs_Docs_explanationTitle')}
-        secondHeaderTitle={profile?.fullName ?? ''}
+        secondHeaderTitle={contractorInfo?.name ?? ''}
       />
 
       <FlatListWithCustomScroll

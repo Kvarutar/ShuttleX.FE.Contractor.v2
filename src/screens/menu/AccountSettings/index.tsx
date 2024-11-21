@@ -24,8 +24,8 @@ import {
 
 import { updateRequirementDocuments } from '../../../core/auth/redux/docs';
 import { isAllDocumentsFilledSelector, profilePhotoSelector } from '../../../core/auth/redux/docs/selectors';
-import { contractorIdSelector, profileSelector } from '../../../core/contractor/redux/selectors';
-import { getProfile, updateProfileData } from '../../../core/contractor/redux/thunks';
+import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
+import { getContractorInfo, updateProfileData } from '../../../core/contractor/redux/thunks';
 import { resetAccountSettingsVerification } from '../../../core/menu/redux/accountSettings';
 import {
   accountSettingsErrorSelector,
@@ -45,12 +45,11 @@ const AccountSettings = (): JSX.Element => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const dispatch = useAppDispatch();
-  const profile = useSelector(profileSelector);
+  const contractorInfo = useSelector(contractorInfoSelector);
   const profilePhoto = useSelector(profilePhotoSelector);
   const isVerificationDone = useSelector(isAccountSettingsVerificationDoneSelector);
   const changeDataError = useSelector(accountSettingsErrorSelector);
   const isLoading = useSelector(isAccountSettingsLoadingSelector);
-  const contractorId = useSelector(contractorIdSelector);
 
   useFocusEffect(
     useCallback(() => {
@@ -58,27 +57,33 @@ const AccountSettings = (): JSX.Element => {
     }, [dispatch]),
   );
   useEffect(() => {
-    dispatch(getProfile({ contractorId }));
-  }, [dispatch, contractorId]);
+    dispatch(getContractorInfo());
+  }, [dispatch]);
 
+  //TODO: Rewrite this logic
+  // Khrystyna will rewrite it
   useEffect(() => {
-    dispatch(updateProfileData({ contractorId, updatedData: { imageUri: profilePhoto?.uri } }));
-  }, [dispatch, navigation, profilePhoto?.uri, contractorId]);
+    dispatch(updateProfileData({ contractorId: contractorInfo.id, updatedData: { avatar: profilePhoto?.uri } }));
+  }, [dispatch, navigation, profilePhoto?.uri, contractorInfo.id]);
 
   const handleOpenVerification = async (mode: 'phone' | 'email', newValue: string) => {
     if (!isLoading && !changeDataError) {
       try {
         await dispatch(
-          changeAccountContactData({ method: mode, data: { oldData: profile?.[mode] ?? '', newData: newValue } }),
+          changeAccountContactData({
+            method: mode,
+            data: { oldData: contractorInfo?.[mode] ?? '', newData: newValue },
+          }),
         ).unwrap();
         // If there is an error, then try catch will catch it and the next line will not be executed
         navigation.navigate('AccountVerificateCode', { mode, newValue });
       } catch (_) {}
     }
   };
-
+  //TODO: Rewrite this logic
+  // Khrystyna will rewrite it
   const handleProfileDataSave = (profileData: AccountProfileDataProps) => {
-    dispatch(updateProfileData({ contractorId, updatedData: profileData }));
+    dispatch(updateProfileData({ contractorId: contractorInfo.id, updatedData: profileData }));
   };
 
   const onUploadPhoto = () => {
@@ -106,9 +111,9 @@ const AccountSettings = (): JSX.Element => {
           isVerificationDone={isVerificationDone}
           onProfileDataSave={handleProfileDataSave}
           profile={{
-            fullName: profile?.fullName ?? '',
-            email: profile?.email ?? '',
-            phone: profile?.phone ?? '',
+            fullName: contractorInfo.name ?? '',
+            email: contractorInfo?.email ?? '',
+            phone: contractorInfo?.phone ?? '',
           }}
           onNameChanged={onNameChanged}
           isContractor={true}

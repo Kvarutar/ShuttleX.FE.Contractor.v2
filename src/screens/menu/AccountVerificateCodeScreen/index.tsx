@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { CodeVerificationScreen, isLockedError, milSecToTime, SafeAreaView } from 'shuttlex-integration';
 
-import { profileSelector } from '../../../core/contractor/redux/selectors';
+import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
 import { setIsAccountSettingsVerificationDone } from '../../../core/menu/redux/accountSettings';
 import {
   accountSettingsErrorSelector,
@@ -27,7 +27,7 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
   const [lockoutEndTimestamp, setLockoutEndTimestamp] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
 
-  const profile = useSelector(profileSelector);
+  const contractorInfo = useSelector(contractorInfoSelector);
 
   const changeDataError = useSelector(accountSettingsErrorSelector);
   const isLoading = useSelector(isAccountSettingsLoadingSelector);
@@ -66,7 +66,7 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
     }
   }, [changeDataError, navigation, isLoading, dispatch]);
 
-  const isOldPhone = mode === 'phone' ? profile?.phone : profile?.email;
+  const isOldPhone = mode === 'phone' ? contractorInfo?.phone : contractorInfo?.email;
 
   const handleRequestAgain = () => {
     dispatch(changeAccountContactData({ method: mode, data: { oldData: isOldPhone ?? '', newData: newValue } }));

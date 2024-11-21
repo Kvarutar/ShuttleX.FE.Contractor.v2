@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ListRenderItem, StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import {
   BaggageIcon,
   Bar,
@@ -12,9 +13,8 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { revertTariffFieldById } from '../../../../../core/contractor/redux';
+import { sortedTariffsSelector } from '../../../../../core/contractor/redux/selectors';
 import { TariffInfo } from '../../../../../core/contractor/redux/types';
-import { useAppDispatch } from '../../../../../core/redux/hooks';
 import HiddenPart from './HiddenPart';
 import { PreferencesPopupProps } from './props';
 
@@ -40,7 +40,12 @@ const TariffPreferencesPopup = ({
   const { colors } = useTheme();
   const tariffsIconsData = useTariffsIcons();
 
-  const dispatch = useAppDispatch();
+  const tariffsSorted = useSelector(sortedTariffsSelector);
+
+  //TODO: Rewrite with pending and skeletons
+  const isTariffsLoaded = true;
+
+  const [localTariffsSorted, setLocalTariffsSorted] = useState<TariffInfo[]>(tariffsSorted);
 
   // Uncomment if for working with preferences
   // const preferencesTexts = {
@@ -54,7 +59,9 @@ const TariffPreferencesPopup = ({
 
   const onTariffPressHandler = (tariff: TariffInfo) => {
     if (!tariff.isPrimary) {
-      dispatch(revertTariffFieldById({ tariffId: tariff.id, field: 'isSelected' }));
+      setLocalTariffsSorted(prevState =>
+        prevState.map(t => (t.id === tariff.id ? { ...t, isSelected: !t.isSelected } : t)),
+      );
     }
   };
 
@@ -95,12 +102,12 @@ const TariffPreferencesPopup = ({
                 <View style={styles.tariffSeatsAndBaggageContainer}>
                   <ProfileIconMini />
                   <Text style={[styles.tariffInfoText, computedStyles.tariffInfoText]}>
-                    {formatSeatsAmount(item.seatsAmount)}
+                    {formatSeatsAmount(item.maxSeatsCount)}
                   </Text>
                 </View>
                 <View style={styles.tariffSeatsAndBaggageContainer}>
                   <BaggageIcon />
-                  <Text style={[styles.tariffInfoText, computedStyles.tariffInfoText]}>{item.baggageAmount}</Text>
+                  <Text style={[styles.tariffInfoText, computedStyles.tariffInfoText]}>{item.maxLuggagesCount}</Text>
                 </View>
               </View>
             </View>
@@ -195,7 +202,14 @@ const TariffPreferencesPopup = ({
       withHiddenPartScroll={false}
       setIsOpened={setIsPreferencesPopupVisible}
       ref={preferencesBottomWindowRef}
-      hiddenPart={<HiddenPart onClose={onClose} renderTariffs={renderTariffs} />}
+      hiddenPart={
+        <HiddenPart
+          onClose={onClose}
+          renderTariffs={renderTariffs}
+          isTariffsLoaded={isTariffsLoaded}
+          localTariffsSorted={localTariffsSorted}
+        />
+      }
     />
   );
 };

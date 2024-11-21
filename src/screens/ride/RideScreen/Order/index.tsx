@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Shadow } from 'react-native-shadow-2';
@@ -7,6 +7,7 @@ import {
   BottomWindowWithGesture,
   BottomWindowWithGestureRef,
   defaultShadow,
+  minToMilSec,
   sizes,
   Timer,
   TimerColorModes,
@@ -33,6 +34,8 @@ const Order = () => {
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
   const order = useSelector(orderSelector);
 
+  const [timeToDropOff, setTimeToDropOff] = useState(0);
+
   const withAvatar = tripStatus === TripStatus.Arrived || tripStatus === TripStatus.Ending;
   const withHeaderTimer = tripStatus === TripStatus.Ride;
 
@@ -48,7 +51,16 @@ const Order = () => {
     avatarAndShadowContainer: {
       backgroundColor: colors.backgroundPrimaryColor,
     },
+    passengerAvatarContainer: {
+      borderColor: colors.backgroundPrimaryColor,
+    },
   });
+
+  useEffect(() => {
+    if (withHeaderTimer && order) {
+      setTimeToDropOff(Date.now() + minToMilSec(order.timeToDropOffInMin));
+    }
+  }, [withHeaderTimer, order]);
 
   if (!order) {
     return;
@@ -58,8 +70,8 @@ const Order = () => {
     if (withAvatar) {
       return (
         <View style={[styles.avatarAndShadowContainer, computedStyles.avatarAndShadowContainer]}>
-          <Shadow {...defaultShadow(colors.weakShadowColor)} style={styles.shadowStyle}>
-            <View style={styles.avatarInnerContainer}>
+          <Shadow {...defaultShadow(colors.weakShadowColor)}>
+            <View style={[styles.passengerAvatarContainer, computedStyles.passengerAvatarContainer]}>
               {order.passenger.avatarURL === '' ? (
                 <Image source={require('../../../../assets/img/DefaultAvatar.png')} style={styles.passengerAvatar} />
               ) : (
@@ -73,8 +85,8 @@ const Order = () => {
     if (withHeaderTimer) {
       return (
         <View style={styles.timerWrapper}>
-          <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.shadowStyle}>
-            <Timer time={order.fullTimeTimestamp} sizeMode={TimerSizesModes.S} colorMode={TimerColorModes.Mode3} />
+          <Shadow {...defaultShadow(colors.strongShadowColor)}>
+            <Timer time={timeToDropOff} sizeMode={TimerSizesModes.S} colorMode={TimerColorModes.Mode3} />
           </Shadow>
         </View>
       );
@@ -101,7 +113,7 @@ const Order = () => {
           />
         ))}
         headerElement={<Animated.View layout={FadeIn.duration(animationDuration)}>{headerElement()}</Animated.View>}
-        visiblePart={<VisiblePart />}
+        visiblePart={<VisiblePart timeToDropOff={timeToDropOff} />}
         hiddenPart={<HiddenPart />}
       />
       {tripStatus === TripStatus.Rating && order && <PassengerRating />}
@@ -120,17 +132,18 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -75,
     alignSelf: 'center',
-    borderRadius: 50,
+    borderRadius: 100,
   },
-  shadowStyle: {
-    borderRadius: 30,
-  },
-  avatarInnerContainer: {
-    padding: 4,
+  passengerAvatarContainer: {
+    width: 72,
+    height: 72,
+    borderRadius: 100,
+    borderWidth: 4,
+    overflow: 'hidden',
   },
   passengerAvatar: {
-    width: 62,
-    height: 62,
+    flex: 1,
+    alignSelf: 'stretch',
   },
   timerWrapper: {
     position: 'absolute',

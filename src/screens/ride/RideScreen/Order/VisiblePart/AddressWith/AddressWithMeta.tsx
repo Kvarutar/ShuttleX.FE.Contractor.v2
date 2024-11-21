@@ -61,7 +61,7 @@ const AddressWithMeta = ({ tripPoints }: AddressWithMetaProps) => {
         />
         <View style={styles.dropOffTextsContainer}>
           <Text style={[styles.dropOffText, computedStyles.dropOffText]}>{t('ride_Ride_Order_dropOff')}</Text>
-          <Text style={styles.address}>{tripPoints[0].address}</Text>
+          <Text style={styles.address}>{tripPoints[0]}</Text>
         </View>
       </View>
       {/*TODO: delete mock data*/}

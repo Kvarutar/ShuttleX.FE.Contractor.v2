@@ -9,7 +9,6 @@ import {
   BottomWindowWithGestureRef,
   Button,
   ButtonShapes,
-  minToMilSec,
   SquareButtonModes,
   SwipeButtonModes,
   useTariffsIcons,
@@ -19,13 +18,12 @@ import {
   contractorStatusSelector,
   contractorSubscriptionStatusSelector,
   primaryTariffSelector,
-  tariffsSelector,
 } from '../../../../core/contractor/redux/selectors';
-import { getAchievements, getCarData, getPreferences, getTariffs } from '../../../../core/contractor/redux/thunks';
-import { ContractorStatus, TariffInfo } from '../../../../core/contractor/redux/types';
+import { getAchievements, getPreferences } from '../../../../core/contractor/redux/thunks';
+import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
-import { setIsCanceledTripsPopupVisible, setOrder } from '../../../../core/ride/redux/trip';
+import { setIsCanceledTripsPopupVisible } from '../../../../core/ride/redux/trip';
 import {
   canceledTripsAmountSelector,
   dropOffRouteIdSelector,
@@ -33,9 +31,12 @@ import {
   offerSelector,
   pickUpRouteIdSelector,
 } from '../../../../core/ride/redux/trip/selectors';
-import { fetchWayPointsRoute, getCanceledTripsAmount, responseToOffer } from '../../../../core/ride/redux/trip/thunks';
-import { OrderType } from '../../../../core/ride/redux/trip/types';
-import { getContractorStatistics } from '../../../../core/statistics/redux/thunks';
+import {
+  acceptOffer,
+  declineOffer,
+  fetchWayPointsRoute,
+  getCanceledTripsAmount,
+} from '../../../../core/ride/redux/trip/thunks';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import AchievementsPopup from '../popups/AchievementsPopup';
 import OfferPopup from '../popups/OfferPopup';
@@ -54,41 +55,6 @@ type lineStateTypes = {
 };
 
 const animationDuration = 200;
-
-// Just example! This data might be changed on backend later
-//TODO: Rewrite this logic to receiving data from backend
-//TODO: Add latitude and longtude keys (maybe it will be separate request to backend)
-const orderFromBack: OrderType = {
-  id: '4503c782-35f4-470b-8f8b-fb0796d5af40',
-  startPosition: {
-    address: '123 Queen St W, Toronto, ON M5H 2M9',
-    latitude: 12312312,
-    longitude: 123123123,
-  },
-  targetPointsPosition: [
-    {
-      address: '12 Bushbury Dr, North York, ON M3A 2Z7',
-      latitude: 12312312,
-      longitude: 123123123,
-    },
-  ],
-  fullTimeTimestamp: Date.now() + minToMilSec(25), // 25 min
-  fullTimeMinutes: 25, // min
-  timeToOffer: Date.now() + minToMilSec(2), // 2 min
-  fullDistance: 20.4,
-  price: '100',
-  pricePerKm: 0.3,
-  waitingTimeInMin: 0.1,
-  pricePerMin: 3.5,
-  passengerId: '0',
-  passenger: {
-    name: 'Arnold',
-    lastName: 'Scharzenegger',
-    phone: '0432342342',
-    avatarURL: '',
-  },
-  tripTariff: 'BasicX',
-};
 
 const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record<ContractorStatus, lineStateTypes> => ({
   online: {
@@ -164,9 +130,6 @@ const Start = () => {
       //TODO: Change contractorId when we know how it seems
       await dispatch(getAchievements({ contractorId: '' }));
       await dispatch(getPreferences({ contractorId: '' }));
-      await dispatch(getTariffs({ contractorId: '' }));
-      await dispatch(getContractorStatistics({ contractorId: '' }));
-      await dispatch(getCarData({ contractorId: '' }));
       await dispatch(getCanceledTripsAmount({ contractiorId: '' }));
     })();
   }, [dispatch]);
@@ -177,14 +140,15 @@ const Start = () => {
 
   const onOfferDecline = () => {
     onOfferPopupClose();
-    dispatch(responseToOffer(false));
+    if (offer) {
+      dispatch(declineOffer({ offerId: offer.offerInfo.id }));
+    }
   };
 
-  const onOfferAccept = () => {
-    setIsOfferPopupVisible(false);
-    dispatch(responseToOffer(true));
-    if (offer) {
-      dispatch(setOrder(orderFromBack));
+  const onOfferAccept = async () => {
+    if (offer?.offerInfo && pickUpRouteId && dropOffRouteId) {
+      await dispatch(acceptOffer({ offerId: offer.offerInfo.id }));
+      setIsOfferPopupVisible(false);
     }
   };
 
@@ -257,10 +221,15 @@ const Start = () => {
     return <UnclosablePopupWithModes mode={unclosablePopupMode} bottomAdditionalContent={bottomAdditionalContent} />;
   };
 
-  const tariffs = useSelector(tariffsSelector);
-  const primaryTariff: TariffInfo = useSelector(primaryTariffSelector) ?? tariffs[0];
+  const primaryTariff = useSelector(primaryTariffSelector);
   const tariffsIconsData = useTariffsIcons();
-  const IconComponent = tariffsIconsData[primaryTariff?.name]?.icon;
+
+  //TODO: Add a skeletons
+  if (!primaryTariff) {
+    return;
+  }
+
+  const IconComponent = tariffsIconsData[primaryTariff.name].icon;
 
   const computedStyles = StyleSheet.create({
     headerWrapperStyle: {

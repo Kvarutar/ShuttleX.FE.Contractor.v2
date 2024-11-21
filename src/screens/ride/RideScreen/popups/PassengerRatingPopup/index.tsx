@@ -20,6 +20,7 @@ import {
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { endTrip } from '../../../../../core/ride/redux/trip';
 import { orderSelector } from '../../../../../core/ride/redux/trip/selectors';
+import { updatePassengerRating } from '../../../../../core/ride/redux/trip/thunks';
 import { PassengerRate } from './props';
 
 const PassengerRating = () => {
@@ -70,7 +71,10 @@ const PassengerRating = () => {
   };
 
   //TODO: Add logic for sending data to backend
-  const onPressPaidViaCash = () => {
+  const onPressPaidViaCash = async () => {
+    if (passengerRate) {
+      await dispatch(updatePassengerRating({ orderId: order.id, rate: passengerRate === 'like' }));
+    }
     dispatch(endTrip());
   };
 

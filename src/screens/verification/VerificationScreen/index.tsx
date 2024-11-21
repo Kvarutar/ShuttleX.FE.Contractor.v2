@@ -24,7 +24,7 @@ import {
   vehicleInsuranceSelector,
   vehicleRegistrationSelector,
 } from '../../../core/auth/redux/docs/selectors';
-import { contractorZoneSelector, profileSelector } from '../../../core/contractor/redux/selectors';
+import { contractorInfoSelector, contractorZoneSelector } from '../../../core/contractor/redux/selectors';
 import { VerificationScreenProps } from './props';
 import VerificationHeader from './VerificationHeader';
 import VerificationStepBar from './VerificationStepBar';
@@ -35,7 +35,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
 
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
 
-  const profile = useSelector(profileSelector);
+  const contractorInfo = useSelector(contractorInfoSelector);
   const isZoneSelected = useSelector(contractorZoneSelector) !== null;
   const isPresentPersonalDocuments = useSelector(isPersonalDocumentsFilledSelector);
   const isPresentVehicleDocuments = useSelector(isDriverDocumentsFilledSelector);
@@ -213,7 +213,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
         containerStyle={styles.verificationHeader}
         windowTitle={t('verification_Verification_headerTitle')}
         firstHeaderTitle={t('verification_Verification_explanationTitle')}
-        secondHeaderTitle={profile?.fullName ?? 'Vladyslav'}
+        secondHeaderTitle={contractorInfo?.name ?? 'Vladyslav'}
         description={t('verification_Verification_explanationDescription')}
       />
       <View style={styles.content}>{renderSection}</View>

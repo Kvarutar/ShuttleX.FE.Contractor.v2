@@ -22,8 +22,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { setProfile } from '../../../core/contractor/redux';
-import { profileSelector } from '../../../core/contractor/redux/selectors';
+import { getFullTariffsInfo } from '../../../core/contractor/redux/thunks';
 import { setNotificationList } from '../../../core/menu/redux/notifications';
 import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
 import { useAppDispatch } from '../../../core/redux/hooks';
@@ -61,7 +60,6 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const isLocationEnabled = useSelector(geolocationIsLocationEnabledSelector);
   const geolocationAccuracy = useSelector(geolocationAccuracySelector);
   const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
-  const profile = useSelector(profileSelector);
 
   const insets = useSafeAreaInsets();
   const iosPaddingVertical = insets.bottom ? 0 : sizes.paddingVertical / 2;
@@ -84,20 +82,8 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   });
 
   useEffect(() => {
-    if (!profile) {
-      dispatch(
-        setProfile({
-          fullName: 'John Smith',
-          email: 'mail@mail.ru',
-          phone: '+79990622720',
-          imageUri:
-            'https://sun9-34.userapi.com/impg/ZGuJiFBAp-93En3yLK7LWZNPxTGmncHrrtVgbg/hd6uHaUv1zE.jpg?size=1200x752&quality=96&sign=e79799e4b75c839d0ddb1a2232fe5d60&type=album',
-        }),
-      );
-    }
-  }, [dispatch, profile]);
-
-  useEffect(() => {
+    //TODO: Add receiving zones and zoneId
+    dispatch(getFullTariffsInfo());
     dispatch(
       setNotificationList([
         {

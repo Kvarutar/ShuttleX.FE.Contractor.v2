@@ -1,36 +1,49 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
 
 import {
   getAchievements,
-  getCarData,
+  getContractorInfo,
+  getFullTariffsInfo,
   getPreferences,
-  getProfile,
   getSubscriptionStatus,
-  getTariffs,
   sendSelectedPreferences,
   sendSelectedTariffs,
   updateContractorStatus,
   updateProfileData,
 } from './thunks';
-import { CarDataAPIResponse, type Profile } from './types';
+import { type ContractorInfo, ContractorStateErrorKey, ContractorStateLoadingKey, VehicleData } from './types';
 import { AchievementsAPIResponse, ContractorState, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
 
 const initialState: ContractorState = {
   //TODO: Remove contractorId and Profile value when logic for receiving it will be added
-  contractorId: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // Random value
   tariffs: [],
   preferences: [],
   achievements: [],
-  profile: {
-    fullName: 'John Smith',
-    email: 'mail@mail.ru',
-    phone: '+380(50)924-50-61',
-    imageUri: '',
+  info: {
+    id: '',
+    name: '',
+    email: '',
+    phone: '',
+    state: 'offline',
+    level: 0,
+    totalRidesCount: 0,
+    totalLikesCount: 0,
+    vehicle: null,
   },
-  carData: null,
+  avatarURL: '',
   zone: null,
-  status: 'offline',
   subscriptionStatus: false,
+  error: {
+    general: null, // for all for non-parallel errors
+    contractorInfo: null,
+    tariffsInfo: null,
+  },
+  loading: {
+    general: false, // for all for non-parallel loadings
+    contractorInfo: false,
+    tariffsInfo: false,
+  },
 };
 
 const slice = createSlice({
@@ -38,20 +51,24 @@ const slice = createSlice({
   initialState,
   reducers: {
     setContractorId(state, action: PayloadAction<string>) {
-      state.contractorId = action.payload;
+      state.info.id = action.payload;
     },
     setTariffs(state, action: PayloadAction<TariffInfo[]>) {
       state.tariffs = action.payload;
     },
-    revertTariffFieldById(
+    setError(
       state,
-      action: PayloadAction<{ tariffId: string; field: keyof Omit<TariffInfo, 'id' | 'name'> }>,
+      action: PayloadAction<{ errorKey: ContractorStateErrorKey; value: Nullable<NetworkErrorDetailsWithBody<any>> }>,
     ) {
-      const { tariffId, field } = action.payload;
-      state.tariffs = state.tariffs.map(trf => (trf.id === tariffId ? { ...trf, [field]: !trf[field] } : trf));
+      state.error[action.payload.errorKey] = action.payload.value;
+    },
+    setLoading(state, action: PayloadAction<{ loadingKey: ContractorStateLoadingKey; value: boolean }>) {
+      state.loading[action.payload.loadingKey] = action.payload.value;
     },
     setContractorState(state, action: PayloadAction<ContractorStatus>) {
-      state.status = action.payload;
+      if (state.info) {
+        state.info.state = action.payload;
+      }
     },
     setPreferences(state, action: PayloadAction<PreferenceInfo[]>) {
       state.preferences = action.payload;
@@ -59,8 +76,10 @@ const slice = createSlice({
     setAchievements(state, action: PayloadAction<AchievementsAPIResponse[]>) {
       state.achievements = action.payload;
     },
-    setCarData(state, action: PayloadAction<CarDataAPIResponse>) {
-      state.carData = action.payload;
+    setVehicleData(state, action: PayloadAction<VehicleData>) {
+      if (state.info) {
+        state.info.vehicle = action.payload;
+      }
     },
     revertPreferenceFieldById(
       state,
@@ -71,14 +90,20 @@ const slice = createSlice({
         preference.id === preferenceId ? { ...preference, [field]: !preference[field] } : preference,
       );
     },
-    setProfile(state, action: PayloadAction<Profile>) {
-      state.profile = action.payload;
+    setContractorInfo(state, action: PayloadAction<Omit<ContractorInfo, 'email' | 'phone'>>) {
+      state.info = {
+        ...action.payload,
+        phone: state.info.phone,
+        email: state.info.email,
+      };
     },
-
-    updateProfile(state, action: PayloadAction<Partial<Profile>>) {
-      if (state.profile) {
-        state.profile = {
-          ...state.profile,
+    setContractorAvatar(state, action: PayloadAction<string>) {
+      state.avatarURL = action.payload;
+    },
+    updateContractorInfo(state, action: PayloadAction<Partial<ContractorInfo>>) {
+      if (state.info) {
+        state.info = {
+          ...state.info,
           ...action.payload,
         };
       }
@@ -94,28 +119,86 @@ const slice = createSlice({
 
   extraReducers: builder => {
     builder
-      .addCase(getProfile.fulfilled, (state, action) => {
-        slice.caseReducers.setProfile(state, {
-          payload: action.payload,
-          type: setProfile.type,
+      .addCase(getContractorInfo.pending, state => {
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'contractorInfo', value: true },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'contractorInfo', value: initialState.error.tariffsInfo },
+          type: setError.type,
         });
       })
-      .addCase(updateProfileData.fulfilled, (state, action) => {
-        slice.caseReducers.updateProfile(state, {
-          payload: action.payload,
-          type: updateProfile.type,
+      .addCase(getContractorInfo.fulfilled, (state, action) => {
+        slice.caseReducers.setContractorInfo(state, {
+          payload: action.payload.contractorInfo,
+          type: setContractorInfo.type,
+        });
+        slice.caseReducers.setContractorAvatar(state, {
+          payload: action.payload.avatar,
+          type: setContractorAvatar.type,
+        });
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'contractorInfo', value: false },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'contractorInfo', value: initialState.error.tariffsInfo },
+          type: setError.type,
         });
       })
-      .addCase(sendSelectedTariffs.fulfilled, (state, action) => {
+      .addCase(getContractorInfo.rejected, (state, action) => {
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'contractorInfo', value: false },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'contractorInfo', value: action.payload as NetworkErrorDetailsWithBody<any> }, //TODO: remove this cast after fix with rejectedValue
+          type: setError.type,
+        });
+      })
+      .addCase(getFullTariffsInfo.pending, state => {
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'tariffsInfo', value: true },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'tariffsInfo', value: initialState.error.tariffsInfo },
+          type: setError.type,
+        });
+      })
+      .addCase(getFullTariffsInfo.fulfilled, (state, action) => {
         slice.caseReducers.setTariffs(state, {
-          payload: action.meta.arg.selectedTariffs,
+          payload: action.payload,
           type: setTariffs.type,
         });
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'tariffsInfo', value: false },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'tariffsInfo', value: initialState.error.tariffsInfo },
+          type: setError.type,
+        });
       })
-      .addCase(sendSelectedPreferences.fulfilled, (state, action) => {
-        slice.caseReducers.setPreferences(state, {
-          payload: action.meta.arg.selectedPreferences,
-          type: setPreferences.type,
+      .addCase(getFullTariffsInfo.rejected, (state, action) => {
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'tariffsInfo', value: false },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'tariffsInfo', value: action.payload as NetworkErrorDetailsWithBody<any> }, //TODO: remove this cast after fix with rejectedValue
+          type: setError.type,
+        });
+      })
+      .addCase(updateContractorStatus.pending, state => {
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'general', value: true },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'general', value: initialState.error.general },
+          type: setError.type,
         });
       })
       .addCase(updateContractorStatus.fulfilled, (state, action) => {
@@ -123,29 +206,92 @@ const slice = createSlice({
           payload: action.meta.arg,
           type: setContractorState.type,
         });
-      })
-      .addCase(getTariffs.fulfilled, (state, action) => {
-        slice.caseReducers.setTariffs(state, {
-          payload: action.payload,
-          type: setTariffs.type,
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'general', value: false },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'general', value: initialState.error.general },
+          type: setError.type,
         });
       })
+      .addCase(updateContractorStatus.rejected, (state, action) => {
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'general', value: false },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'general', value: action.payload as NetworkErrorDetailsWithBody<any> }, //TODO: remove this cast after fix with rejectedValue
+          type: setError.type,
+        });
+      })
+      .addCase(sendSelectedTariffs.pending, state => {
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'general', value: true },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'general', value: initialState.error.general },
+          type: setError.type,
+        });
+      })
+      .addCase(sendSelectedTariffs.fulfilled, (state, action) => {
+        const updatedTariffs = state.tariffs.map(tariff => {
+          const matchingTariff = action.payload.find(selectedTariff => selectedTariff.id === tariff.id);
+
+          return {
+            ...tariff,
+            isSelected: matchingTariff ? matchingTariff.isSelected : false,
+          };
+        });
+
+        state.tariffs = updatedTariffs;
+      })
+      .addCase(sendSelectedTariffs.rejected, (state, action) => {
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'general', value: false },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'general', value: action.payload as NetworkErrorDetailsWithBody<any> }, //TODO: remove this cast after fix with rejectedValue
+          type: setError.type,
+        });
+      })
+      //TODO: Rewrite this case
+      // Khrystyna will rewrite it
+      .addCase(updateProfileData.fulfilled, (state, action) => {
+        slice.caseReducers.updateContractorInfo(state, {
+          payload: action.payload,
+          type: updateContractorInfo.type,
+        });
+      })
+      //TODO: Rewrite this case
+      // Khrystyna will rewrite it
+      .addCase(updateProfileData.rejected, (_, action) => {
+        console.error('Profile update failed:', action.payload);
+      })
+      //TODO: Use this case when work with preferences
+      // Not needed for now
+      .addCase(sendSelectedPreferences.fulfilled, (state, action) => {
+        slice.caseReducers.setPreferences(state, {
+          payload: action.meta.arg.selectedPreferences,
+          type: setPreferences.type,
+        });
+      })
+      //TODO: Use this case when work with preferences
+      // Not needed for now
       .addCase(getPreferences.fulfilled, (state, action) => {
         slice.caseReducers.setPreferences(state, {
           payload: action.payload,
           type: setPreferences.type,
         });
       })
+      //TODO: Use this case when work with achievements
+      // Not needed for now
       .addCase(getAchievements.fulfilled, (state, action) => {
         slice.caseReducers.setAchievements(state, {
           payload: action.payload,
           type: setAchievements.type,
-        });
-      })
-      .addCase(getCarData.fulfilled, (state, action) => {
-        slice.caseReducers.setCarData(state, {
-          payload: action.payload,
-          type: setCarData.type,
         });
       })
       .addCase(getSubscriptionStatus.fulfilled, (state, action) => {
@@ -153,18 +299,6 @@ const slice = createSlice({
           payload: action.payload,
           type: setSubscriptionStatus.type,
         });
-      })
-      .addCase(updateContractorStatus.rejected, (_, action) => {
-        console.log(action.payload);
-      })
-      .addCase(getProfile.rejected, (_, action) => {
-        console.error('Error fetching profile:', action.payload);
-      })
-      .addCase(updateProfileData.rejected, (_, action) => {
-        console.error('Profile update failed:', action.payload);
-      })
-      .addCase(getSubscriptionStatus.rejected, (_, action) => {
-        console.error('Error fetching SubscriptionStatus:', action.payload);
       });
   },
 });
@@ -172,15 +306,17 @@ const slice = createSlice({
 export const {
   setContractorId,
   setTariffs,
-  revertTariffFieldById,
+  setLoading,
+  setError,
   setPreferences,
   setAchievements,
   revertPreferenceFieldById,
-  setProfile,
-  setCarData,
+  setContractorInfo,
+  setContractorAvatar,
+  setVehicleData,
   setContractorState,
   setContractorZone,
-  updateProfile,
+  updateContractorInfo,
   setSubscriptionStatus,
 } = slice.actions;
 

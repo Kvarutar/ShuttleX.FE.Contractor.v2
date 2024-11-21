@@ -3,13 +3,12 @@ import { useSelector } from 'react-redux';
 import { DropOffIcon, PickUpIcon, Text, useTheme } from 'shuttlex-integration';
 
 import { orderSelector } from '../../../../../../core/ride/redux/trip/selectors';
-import { TripPoint } from '../../../../../../core/ride/redux/trip/types';
 
 const AddressWithExtendedPassengerInfo = ({
   tripPoints,
   withStopPoint = false,
 }: {
-  tripPoints: TripPoint[];
+  tripPoints: string[];
   withStopPoint?: boolean;
 }) => {
   const { colors } = useTheme();
@@ -26,7 +25,7 @@ const AddressWithExtendedPassengerInfo = ({
     },
   });
 
-  const isPickUp = tripPoints.length === order.targetPointsPosition.length + 1;
+  const isPickUp = tripPoints.length === order.stopPointAddresses.length + 1;
 
   return (
     <View style={styles.passangerInfoWrapper}>
@@ -38,12 +37,12 @@ const AddressWithExtendedPassengerInfo = ({
           </Text>
           <View style={styles.addressMiniWrapper}>
             {withStopPoint ? <PickUpIcon /> : <DropOffIcon />}
-            <Text style={[styles.addressMini, computedStyles.addressMini]}>{tripPoints[0].address}</Text>
+            <Text style={[styles.addressMini, computedStyles.addressMini]}>{tripPoints[0]}</Text>
           </View>
           {(isPickUp || withStopPoint) && (
             <View style={[styles.addressMiniWrapper, styles.withoutMarginTop]}>
               <DropOffIcon />
-              <Text style={[styles.addressMini, computedStyles.addressMini]}>{tripPoints[1].address}</Text>
+              <Text style={[styles.addressMini, computedStyles.addressMini]}>{tripPoints[1]}</Text>
             </View>
           )}
         </View>

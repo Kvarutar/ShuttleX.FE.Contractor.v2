@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
@@ -21,7 +21,7 @@ import AddressWithPassengerAndOrderInfo from './AddressWith/AddressWithPassenger
 
 const animationDuration = 200;
 
-const VisiblePart = () => {
+const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -29,11 +29,9 @@ const VisiblePart = () => {
   const tripStatus = useSelector(tripStatusSelector);
   const tripPoints = useSelector(tripPointsSelector);
 
-  const [waitingTime, setWaitingTime] = useState(Date.now() + minToMilSec(1)); // random date in a future for correct working
-
   const updateTripStatus = useCallback(() => {
-    if (order && tripPoints) {
-      const isPickUp = tripPoints.length === order.targetPointsPosition.length + 1;
+    if (order && tripPoints.length !== 0) {
+      const isPickUp = tripPoints.length === order.stopPointAddresses.length + 1;
       const isLastPoint = tripPoints.length <= 1;
 
       if (isPickUp) {
@@ -53,32 +51,22 @@ const VisiblePart = () => {
     }
   }, [updateTripStatus, tripStatus]);
 
-  const onArrived = () => {
-    if (tripPoints) {
-      dispatch(fetchArrivedToPickUp());
-    }
-  };
-
-  const onArrivedAtStopPoint = () => {
-    if (tripPoints) {
-      dispatch(fetchArrivedToStopPoint());
-    }
-  };
-
   let mainContent = null;
+  let statusSwitchers = null;
 
-  if (order && tripPoints) {
+  if (order && tripPoints.length !== 0) {
     mainContent = {
-      idle: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToOffer} />,
-      arriving: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToOffer} />,
-      arrivingAtStopPoint: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={waitingTime} />,
+      idle: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToPickUp} />,
+      arriving: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToPickUp} />,
+      //TODO: Add this component when work with stop points
+      //TODO: Change timeForTimer when work with stop points
+      arrivingAtStopPoint: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={0} />,
       arrived: (
         <AddressWithPassengerAndOrderInfo
           tripPoints={tripPoints}
           withGoogleMapButton={false}
-          timeForTimer={waitingTime}
+          timeForTimer={Date.now() + minToMilSec(order.waitingTimeInMin)}
           isWaiting
-          setWaitingTime={setWaitingTime}
         />
       ),
       //TODO: Add this component when work with stop points
@@ -89,49 +77,54 @@ const VisiblePart = () => {
         <AddressWithPassengerAndOrderInfo
           tripPoints={tripPoints}
           withGoogleMapButton={false}
-          timeForTimer={order.fullTimeTimestamp}
+          timeForTimer={timeToDropOff}
+        />
+      ),
+      rating: null,
+    };
+    statusSwitchers = {
+      idle: null,
+      arriving: (
+        <Button
+          mode={SquareButtonModes.Mode2}
+          text={t('ride_Ride_Order_arrivedButton')}
+          onPress={() => dispatch(fetchArrivedToPickUp({ orderId: order.id }))}
+        />
+      ),
+      arrivingAtStopPoint: (
+        <Button
+          mode={SquareButtonModes.Mode1}
+          text={t('ride_Ride_Order_arrivedToStopButton')}
+          onPress={() => dispatch(fetchArrivedToStopPoint())}
+        />
+      ),
+      arrived: (
+        <SwipeButton
+          mode={SwipeButtonModes.Confirm}
+          onSwipeEnd={() => dispatch(fetchPickedUpAtPickUpPoint({ orderId: order.id }))}
+          text={t('ride_Ride_Order_pickUpButton')}
+        />
+      ),
+      arrivedAtStopPoint: (
+        <SwipeButton
+          mode={SwipeButtonModes.Confirm}
+          onSwipeEnd={() => dispatch(fetchPickedUpAtStopPoint())}
+          text={t('ride_Ride_Order_pickUpButton')}
+        />
+      ),
+      ride: null,
+      ending: (
+        <SwipeButton
+          mode={SwipeButtonModes.Finish}
+          onSwipeEnd={() => dispatch(fetchArrivedToDropOff({ orderId: order.id }))}
+          text={t('ride_Ride_Order_finishRideButton')}
         />
       ),
       rating: null,
     };
   }
 
-  const statusSwitchers = {
-    idle: null,
-    arriving: <Button mode={SquareButtonModes.Mode2} text={t('ride_Ride_Order_arrivedButton')} onPress={onArrived} />,
-    arrivingAtStopPoint: (
-      <Button
-        mode={SquareButtonModes.Mode1}
-        text={t('ride_Ride_Order_arrivedToStopButton')}
-        onPress={onArrivedAtStopPoint}
-      />
-    ),
-    arrived: (
-      <SwipeButton
-        mode={SwipeButtonModes.Confirm}
-        onSwipeEnd={() => dispatch(fetchPickedUpAtPickUpPoint())}
-        text={t('ride_Ride_Order_pickUpButton')}
-      />
-    ),
-    arrivedAtStopPoint: (
-      <SwipeButton
-        mode={SwipeButtonModes.Confirm}
-        onSwipeEnd={() => dispatch(fetchPickedUpAtStopPoint())}
-        text={t('ride_Ride_Order_pickUpButton')}
-      />
-    ),
-    ride: null,
-    ending: (
-      <SwipeButton
-        mode={SwipeButtonModes.Finish}
-        onSwipeEnd={() => dispatch(fetchArrivedToDropOff())}
-        text={t('ride_Ride_Order_finishRideButton')}
-      />
-    ),
-    rating: null,
-  };
-
-  if (!mainContent) {
+  if (!mainContent || !statusSwitchers) {
     return <></>;
   }
 

@@ -11,6 +11,7 @@ import {
   CircleButtonModes,
   defaultShadow,
   ExternalMapIcon,
+  formatCurrency,
   minToMilSec,
   PhoneIcon,
   Text,
@@ -100,8 +101,8 @@ const AddressWithPassengerAndOrderInfo = ({
   };
 
   const travelTime = {
-    hours: Math.floor(order.fullTimeMinutes / 60),
-    minutes: order.fullTimeMinutes % 60,
+    hours: Math.floor(order.timeToDropOffInMin / 60),
+    minutes: order.timeToDropOffInMin % 60,
   };
 
   const computedStyles = StyleSheet.create({
@@ -174,11 +175,11 @@ const AddressWithPassengerAndOrderInfo = ({
                 {order.passenger.name} {order.passenger.lastName}
               </Text>
             </View>
-            <Text style={styles.address}>{tripPoints[0].address}</Text>
+            <Text style={styles.address}>{tripPoints[0]}</Text>
           </>
         ) : (
           <View style={styles.endingAdressAndNames}>
-            <Text style={[styles.endingAddress, computedStyles.endingAddress]}>{tripPoints[0].address}</Text>
+            <Text style={[styles.endingAddress, computedStyles.endingAddress]}>{tripPoints[0]}</Text>
             <Text style={[styles.endingPassengerNames, computedStyles.endingPassengerNames]}>
               {order.passenger.name} {order.passenger.lastName}
             </Text>
@@ -201,17 +202,23 @@ const AddressWithPassengerAndOrderInfo = ({
           <View style={[styles.orderInfo, computedStyles.orderInfo]}>
             <Text style={[styles.orderTitle, computedStyles.orderTitle]}>{t('ride_Ride_Order_travelTimeTitle')}</Text>
             <Text style={[styles.orderValue, computedStyles.orderValue]}>
-              {travelTime.hours ? t('ride_Ride_Order_travelTimeHours', { hours: travelTime.hours }) : null}
-              {t('ride_Ride_Order_travelTimeMinutes', { minutes: travelTime.minutes })}
+              {travelTime.hours && travelTime.hours > 0
+                ? t('ride_Ride_Order_travelTimeHours', { hours: travelTime.hours })
+                : null}
+              {t('ride_Ride_Order_travelTimeMinutes', { minutes: travelTime.minutes > 0 ? travelTime.minutes : 0 })}
             </Text>
           </View>
           <View style={[styles.orderInfo, computedStyles.orderInfo]}>
             <Text style={[styles.orderTitle, computedStyles.orderTitle]}>{t('ride_Ride_Order_pricePerKmTitle')}</Text>
-            <Text style={[styles.orderValue, computedStyles.orderValue]}>${order.pricePerKm}</Text>
+            <Text style={[styles.orderValue, computedStyles.orderValue]}>
+              {formatCurrency(order.currencyCode, order.pricePerKm)}
+            </Text>
           </View>
           <View style={[styles.orderInfo, computedStyles.orderInfo]}>
             <Text style={[styles.orderTitle, computedStyles.orderTitle]}>{t('ride_Ride_Order_priceTitle')}</Text>
-            <Text style={[styles.orderValue, computedStyles.orderValue]}>${order.price}</Text>
+            <Text style={[styles.orderValue, computedStyles.orderValue]}>
+              {formatCurrency(order.currencyCode, order.price)}
+            </Text>
           </View>
         </View>
         <View style={styles.bottomButtonsAndTimer}>
@@ -230,7 +237,6 @@ const AddressWithPassengerAndOrderInfo = ({
                 timerColorMode !== TimerColorModes.Mode2 ? colors.strongShadowColor : colors.weakShadowColor,
               )}
               style={styles.shadowStyle}
-              // disabled={disabledShadow}
             >
               <Timer
                 time={timeForTimer}
@@ -250,7 +256,9 @@ const AddressWithPassengerAndOrderInfo = ({
                 </View>
               ) : (
                 <View style={[styles.timerStatusContainer, computedStyles.timerStatusContainer]}>
-                  <Text style={[styles.timerStatusText, computedStyles.timerStatusText]}>{`+$${extraWaitingSum}`}</Text>
+                  <Text
+                    style={[styles.timerStatusText, computedStyles.timerStatusText]}
+                  >{`+${formatCurrency(order.currencyCode, extraWaitingSum)}`}</Text>
                 </View>
               ))}
           </View>

@@ -1,14 +1,64 @@
 import { LatLng } from 'react-native-maps';
 import { NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
 
+export type TripPoint = { address: string } & LatLng;
+
+export type PassengerInfoAPIResponse = {
+  id: string;
+  name: string;
+  lastName: string;
+  phone: string;
+};
+
+export type PassengerAvatarAPIResponse = string;
+
 export type PassengerInfoType = {
+  id: string;
   name: string;
   lastName: string;
   phone: string;
   avatarURL: string;
 };
 
-export type TripPoint = { address: string } & LatLng;
+export type AcceptOrDeclineOfferPayload = {
+  offerId: string;
+};
+
+export type AcceptOfferAPIResponse = {
+  orderId: string;
+};
+
+export type PassengerInfoPayload = AcceptOfferAPIResponse;
+export type PassengerAvatarPayload = AcceptOfferAPIResponse;
+
+export type ArrivedToPickUpPayload = {
+  orderId: string;
+};
+
+export type ArrivedToPickUpAPIRequest = LatLng;
+
+export type PickedUpAtPickUpPointPayload = {
+  orderId: string;
+};
+
+export type ArrivedToDropOffPayload = {
+  orderId: string;
+};
+
+export type ArrivedToDropOffAPIRequest = LatLng;
+
+export type UpdatePassengerRatingPayload = {
+  orderId: string;
+  rate: boolean;
+};
+
+export type UpdatePassengerRatingAPIRequest = {
+  rate: boolean;
+};
+
+export type FetchCancelTripPayload = {
+  orderId: string;
+};
 
 export type OfferAPIResponse = {
   id: string;
@@ -33,10 +83,7 @@ export type OfferWayPointsDataAPIResponse = {
   totalDurationSec: number;
   waypoints: [
     {
-      location: {
-        latitude: number;
-        longitude: number;
-      };
+      location: LatLng;
     },
   ];
   accurateGeometries: [
@@ -61,19 +108,57 @@ export type OfferType = {
 
 export type OrderType = {
   id: string;
-  startPosition: TripPoint;
-  targetPointsPosition: TripPoint[];
-  passengerId: string;
+  pickUpAddress: string;
+  stopPointAddresses: string[];
   passenger: PassengerInfoType;
-  tripTariff: string;
-  price: string;
-  fullDistance: number;
-  fullTimeTimestamp: number;
-  fullTimeMinutes: number;
-  timeToOffer: number;
+  tariffId: string;
+  price: number;
+  timeToPickUp: number;
+  timeToDropOffInMin: number;
   waitingTimeInMin: number;
   pricePerMin: number;
   pricePerKm: number;
+  distanceKm: number;
+  currencyCode: string;
+  pickUpRouteId: string;
+  dropOffRouteId: string;
+};
+
+export type OfferInfo = {
+  id: string;
+  pickUpAddress: string;
+  stopPointAddresses: string[];
+  dropOffAddress: string;
+  timeToPickUp: string;
+  timeToDropOff: string;
+  timeToAnswerSec: number;
+  tariffId: string;
+  distanceKm: number;
+  price: number;
+  pricePerKm: number;
+  currency: string;
+  pickUpRouteId: string;
+  dropOffRouteId: string;
+};
+
+export type OfferWayPointsData = {
+  routeId: string;
+  totalDistanceMtr: number;
+  totalDurationSec: number;
+  waypoints: [
+    {
+      location: LatLng;
+    },
+  ];
+  accurateGeometries: [
+    {
+      polylineStartIndex: number;
+      polylineEndIndex: number;
+      trafficLoad: string;
+    },
+  ];
+  geometry: string;
+  trafficLoad: string;
 };
 
 export type TripState = {
@@ -81,7 +166,7 @@ export type TripState = {
   offer: Nullable<OfferType>;
   secondOrder: Nullable<OrderType>;
   tripStatus: TripStatus;
-  tripPoints: Nullable<TripPoint[]>;
+  tripPoints: string[];
   canceledTripsAmount: number;
   isCanceledTripsPopupVisible: boolean; // This state is here because it is used in very different components
   error: Nullable<NetworkErrorDetailsWithBody<any>>;

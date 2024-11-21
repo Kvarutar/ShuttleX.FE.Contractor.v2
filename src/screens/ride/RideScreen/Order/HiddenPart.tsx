@@ -3,6 +3,7 @@ import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { EmergencyServiceIcon, ReportIcon, SwipeButton, SwipeButtonModes, Text, useTheme } from 'shuttlex-integration';
 
+import { tariffsSelector } from '../../../../core/contractor/redux/selectors';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { endTrip } from '../../../../core/ride/redux/trip';
 import { orderSelector } from '../../../../core/ride/redux/trip/selectors';
@@ -14,10 +15,14 @@ const HiddenPart = () => {
   const dispatch = useAppDispatch();
 
   const order = useSelector(orderSelector);
+  const tariffs = useSelector(tariffsSelector);
+  const tripTariff = tariffs.find(tariff => tariff.id === order?.tariffId)?.name;
 
   const onCancelTrip = async () => {
-    dispatch(endTrip());
-    await dispatch(fetchCancelTrip());
+    if (order) {
+      await dispatch(fetchCancelTrip({ orderId: order.id }));
+      dispatch(endTrip());
+    }
   };
 
   const computedStyles = StyleSheet.create({
@@ -53,7 +58,7 @@ const HiddenPart = () => {
           <Text style={[styles.hiddenTripInfoTitle, computedStyles.hiddenTripInfoTitle]}>
             {t('ride_Ride_Order_tripType')}
           </Text>
-          <Text style={[styles.hiddenTripInfoContent, computedStyles.hiddenTripInfoContent]}>{order.tripTariff}</Text>
+          <Text style={[styles.hiddenTripInfoContent, computedStyles.hiddenTripInfoContent]}>{tripTariff}</Text>
         </View>
         <View style={styles.hiddenSafety}>
           <Pressable

@@ -1,7 +1,26 @@
-import { getNetworkErrorInfo, minToMilSec } from 'shuttlex-integration';
+import { getNetworkErrorInfo } from 'shuttlex-integration';
 
+import { TariffInfo } from '../../../contractor/redux/types';
 import { createAppAsyncThunk } from '../../../redux/hooks';
-import { OfferAPIResponse, OfferDropOffAPIResponse, OfferPickUpAPIResponse } from './types';
+import { geolocationCoordinatesSelector } from '../geolocation/selectors';
+import { getOfferNetworkErrorInfo } from './errors';
+import {
+  AcceptOfferAPIResponse,
+  AcceptOrDeclineOfferPayload,
+  ArrivedToDropOffAPIRequest,
+  ArrivedToDropOffPayload,
+  ArrivedToPickUpAPIRequest,
+  ArrivedToPickUpPayload,
+  FetchCancelTripPayload,
+  OfferAPIResponse,
+  OfferDropOffAPIResponse,
+  OfferPickUpAPIResponse,
+  PassengerAvatarAPIResponse,
+  PassengerInfoAPIResponse,
+  PickedUpAtPickUpPointPayload,
+  UpdatePassengerRatingAPIRequest,
+  UpdatePassengerRatingPayload,
+} from './types';
 
 export const fetchOfferInfo = createAppAsyncThunk<OfferAPIResponse, string>(
   'trip/fetchOfferInfo',
@@ -37,35 +56,169 @@ export const fetchWayPointsRoute = createAppAsyncThunk<
   },
 );
 
-export const responseToOffer = createAppAsyncThunk<void, boolean>(
-  'trip/responseToOffer',
-  async (payload, { rejectWithValue, contractorAxios }) => {
+export const acceptOffer = createAppAsyncThunk<
+  AcceptOfferAPIResponse & {
+    passenger: {
+      info: PassengerInfoAPIResponse;
+      avatarURL: PassengerAvatarAPIResponse;
+    };
+    tariffs: TariffInfo[];
+  },
+  AcceptOrDeclineOfferPayload
+>('trip/acceptOffer', async (payload, { rejectWithValue, ordersAxios, getState }) => {
+  try {
+    //TODO: Test on the real offer
+    // const response = await offersAxios.post<ResponseToOfferAPIResponse>(
+    //   `${payload.offerId}/accept`,
+    // );
+    // return response.data;
+
+    //TODO: Rewrite with correct data
+    const acceptOfferResponseData: AcceptOfferAPIResponse = {
+      orderId: 'ac3ed13c-d761-4b53-b396-6f212c29dec1',
+    };
+
+    //TODO: Add passengerAvatarResponse when fix problems with avatar
+    const [passengerInfoResponse] = await Promise.all([
+      ordersAxios.get<PassengerInfoAPIResponse>(`/${acceptOfferResponseData.orderId}/passenger/info`),
+      // contractorAxios.get<PassengerAvatarAPIResponse>(`/${acceptOfferResponseData.orderId}/passenger/avatar`),
+    ]);
+
+    // const avatarBlob: PassengerAvatarAPIResponse = passengerAvatarResponse.data;
+    // const src = URL.createObjectURL(blob);
+    const src = 'https://cdn-icons-png.flaticon.com/512/147/147144.png';
+
+    const state = getState();
+
+    return {
+      orderId: acceptOfferResponseData.orderId,
+      passenger: {
+        info: passengerInfoResponse.data,
+        avatarURL: src,
+      },
+      tariffs: state.contractor.tariffs,
+    };
+  } catch (error) {
+    const { code, body, status } = getOfferNetworkErrorInfo(error);
+    return rejectWithValue({
+      code,
+      body,
+      status,
+    });
+  }
+});
+
+export const declineOffer = createAppAsyncThunk<void, AcceptOrDeclineOfferPayload>(
+  'trip/declineOffer',
+  async (payload, { rejectWithValue }) => {
     try {
-      await contractorAxios.post('/contractor/make-decision-about-offer', {
-        //TODO: receivedOfferId,
-        offerId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
-        decision: payload,
+      //TODO: Test on the real offer
+      // await offersAxios.post<ResponseToOfferAPIResponse>(`${payload.offerId}/decline`);
+    } catch (error) {
+      const { code, body, status } = getNetworkErrorInfo(error);
+      return rejectWithValue({
+        code,
+        body,
+        status,
       });
-    } catch (error) {
-      return rejectWithValue(getNetworkErrorInfo(error));
     }
   },
 );
 
-export const fetchArrivedToPickUp = createAppAsyncThunk<void, void>(
+export const fetchArrivedToPickUp = createAppAsyncThunk<void, ArrivedToPickUpPayload>(
   'trip/fetchArrivedToPickUp',
-  async (_, { rejectWithValue }) => {
+  async (payload, { rejectWithValue, ordersAxios, getState }) => {
     try {
-      //TODO: Add networking,
-      // await shuttlexContractorInstance.post('/contractor/order/arrived-to-pick-up', {
-      //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
-      // });
+      const bodyPart: ArrivedToPickUpAPIRequest = geolocationCoordinatesSelector(getState()) ?? {
+        latitude: 0,
+        longitude: 0,
+      };
+
+      await ordersAxios.post(`/${payload.orderId}/arrived-to-pick-up`, bodyPart);
     } catch (error) {
-      return rejectWithValue(getNetworkErrorInfo(error));
+      const { code, body, status } = getNetworkErrorInfo(error);
+      return rejectWithValue({
+        code,
+        body,
+        status,
+      });
     }
   },
 );
 
+export const fetchPickedUpAtPickUpPoint = createAppAsyncThunk<void, PickedUpAtPickUpPointPayload>(
+  'trip/fetchPickedUpAtPickUpPoint',
+  async (payload, { rejectWithValue, ordersAxios }) => {
+    try {
+      await ordersAxios.post(`/${payload.orderId}/picked-up`);
+    } catch (error) {
+      const { code, body, status } = getNetworkErrorInfo(error);
+      return rejectWithValue({
+        code,
+        body,
+        status,
+      });
+    }
+  },
+);
+
+export const fetchArrivedToDropOff = createAppAsyncThunk<void, ArrivedToDropOffPayload>(
+  'trip/fetchArrivedToDropOff',
+  async (payload, { rejectWithValue, ordersAxios, getState }) => {
+    try {
+      const bodyPart: ArrivedToDropOffAPIRequest = geolocationCoordinatesSelector(getState()) ?? {
+        latitude: 0,
+        longitude: 0,
+      };
+
+      await ordersAxios.post(`/${payload.orderId}/arrived-to-drop-off`, bodyPart);
+    } catch (error) {
+      const { code, body, status } = getNetworkErrorInfo(error);
+      return rejectWithValue({
+        code,
+        body,
+        status,
+      });
+    }
+  },
+);
+
+export const updatePassengerRating = createAppAsyncThunk<void, UpdatePassengerRatingPayload>(
+  'trip/updatePassengerRating',
+  async (payload, { rejectWithValue, ordersAxios }) => {
+    try {
+      await ordersAxios.post(`/${payload.orderId}/update-passenger-rating`, {
+        rate: payload.rate,
+      } as UpdatePassengerRatingAPIRequest);
+    } catch (error) {
+      const { code, body, status } = getNetworkErrorInfo(error);
+      return rejectWithValue({
+        code,
+        body,
+        status,
+      });
+    }
+  },
+);
+
+export const fetchCancelTrip = createAppAsyncThunk<void, FetchCancelTripPayload>(
+  'trip/fetchCancelTrip',
+  async (payload, { rejectWithValue, ordersAxios }) => {
+    try {
+      await ordersAxios.post(`/${payload.orderId}/cancel`);
+    } catch (error) {
+      const { code, body, status } = getNetworkErrorInfo(error);
+      return rejectWithValue({
+        code,
+        body,
+        status,
+      });
+    }
+  },
+);
+
+// This request is not needed for now
+// Just example
 export const fetchArrivedToStopPoint = createAppAsyncThunk<void, void>(
   'trip/fetchArrivedToStopPoint',
   async (_, { rejectWithValue }) => {
@@ -75,44 +228,18 @@ export const fetchArrivedToStopPoint = createAppAsyncThunk<void, void>(
       //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
       // });
     } catch (error) {
-      return rejectWithValue(getNetworkErrorInfo(error));
+      const { code, body, status } = getNetworkErrorInfo(error);
+      return rejectWithValue({
+        code,
+        body,
+        status,
+      });
     }
   },
 );
 
-export const fetchArrivedToDropOff = createAppAsyncThunk<void, void>(
-  'trip/fetchArrivedToDropOff',
-  async (_, { rejectWithValue }) => {
-    try {
-      //TODO: Add networking,
-      // await shuttlexContractorInstance.post('/contractor/order/arrived-to-drop-off', {
-      //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
-      // });
-    } catch (error) {
-      return rejectWithValue(getNetworkErrorInfo(error));
-    }
-  },
-);
-
-export const fetchPickedUpAtPickUpPoint = createAppAsyncThunk<{ fulltime: number }, void>(
-  'trip/fetchPickedUpAtPickUpPoint',
-  async (_, { rejectWithValue }) => {
-    try {
-      //TODO: Add networking,
-      // await shuttlexContractorInstance.post('/contractor/order/picked-up-passenger-on-pick-up-point', {
-      //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
-      // });
-
-      // Returning for rendering a correct time for trip
-      return {
-        fulltime: Date.now() + minToMilSec(25),
-      };
-    } catch (error) {
-      return rejectWithValue(getNetworkErrorInfo(error));
-    }
-  },
-);
-
+// This request is not needed for now
+// Just example
 export const fetchPickedUpAtStopPoint = createAppAsyncThunk<void, void>(
   'trip/fetchPickedUpAtStopPoint',
   async (_, { rejectWithValue, contractorAxios }) => {
@@ -142,12 +269,3 @@ export const getCanceledTripsAmount = createAppAsyncThunk<number, { contractiorI
     return tripState.canceledTripsAmount;
   },
 );
-
-export const fetchCancelTrip = createAppAsyncThunk<boolean, void>('trip/fetchCancelTrip', async () => {
-  //TODO: Add networking
-  // await shuttlexContractorInstance.post('/contractor/order/picked-up-passenger-on-stop-point', {
-  //   //TODO: orderId,
-  //   orderId: '5D9C4BD6-A9B5-42C1-AD2B-1ACD369FB426',
-  // });
-  return true;
-});

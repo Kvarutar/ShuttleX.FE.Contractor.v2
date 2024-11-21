@@ -14,15 +14,13 @@ import {
 } from 'shuttlex-integration';
 
 import {
-  carDataSelector,
+  contractorInfoSelector,
   contractorStatusSelector,
-  profileSelector,
   selectedTariffsSelector,
 } from '../../../../../core/contractor/redux/selectors';
 import { updateContractorStatus } from '../../../../../core/contractor/redux/thunks';
 import { ContractorStatus } from '../../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../../core/redux/hooks';
-import { statisticsContractorSelector } from '../../../../../core/statistics/redux/selectors';
 import { ProfileInfoProps } from './types';
 
 const animationDuration = 200;
@@ -36,9 +34,7 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
   const insets = useSafeAreaInsets();
   const iosPaddingVertical = insets.bottom === 0 ? sizes.paddingVertical : insets.bottom;
 
-  const profile = useSelector(profileSelector);
-  const contractorStatistics = useSelector(statisticsContractorSelector);
-  const carData = useSelector(carDataSelector);
+  const contractorInfo = useSelector(contractorInfoSelector);
   const contractorStatus = useSelector(contractorStatusSelector);
   const selectedTariffs = useSelector(selectedTariffsSelector);
 
@@ -82,7 +78,8 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
     bottomWindowRef.current?.closeWindow();
   };
 
-  if (!profile || !contractorStatistics || !carData) {
+  //TODO: Rewrite with skeletons
+  if (!contractorInfo || !contractorInfo.vehicle) {
     return;
   }
 
@@ -103,20 +100,20 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
           <Text style={[styles.levelText, computedStyles.levelText]}>lvl.</Text>
         </View>
       </View> */}
-        <Text style={styles.namesText}>{profile.fullName}</Text>
+        <Text style={styles.namesText}>{contractorInfo.name}</Text>
         <StatsBlock
           style={styles.rideDataContainer}
-          amountLikes={contractorStatistics.likes}
-          amountRides={contractorStatistics.rides}
+          amountLikes={contractorInfo.totalLikesCount}
+          amountRides={contractorInfo.totalRidesCount}
         />
         <View style={styles.carDataContainer}>
           <View style={[styles.carTitleContainer, computedStyles.carTitleContainer]}>
             <Text numberOfLines={1} style={styles.carTitleText}>
-              {carData.title}
+              {contractorInfo.vehicle.brand}
             </Text>
           </View>
           <View style={[styles.carIdContainer, computedStyles.carIdContainer]}>
-            <Text style={styles.carIdText}>{carData.id}</Text>
+            <Text style={styles.carIdText}>{contractorInfo.vehicle.number}</Text>
           </View>
         </View>
         {/* TODO: Add this block when we need achievements */}
