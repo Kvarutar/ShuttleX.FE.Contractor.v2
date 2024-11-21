@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { Text, useTheme } from 'shuttlex-integration';
+import { MediaAmount, MediaCore, Text, useTheme } from 'shuttlex-integration';
 
-import DocsPhotoCore from '../DocsPhotoCore';
-import { ProfilePhotoScreenProps } from './props';
+import { ProfilePhotoScreenProps } from './types';
 
 const ProfilePhotoScreen = ({ navigation }: ProfilePhotoScreenProps): JSX.Element => {
   const { colors } = useTheme();
@@ -25,23 +24,24 @@ const ProfilePhotoScreen = ({ navigation }: ProfilePhotoScreenProps): JSX.Elemen
     </View>
   );
 
+  //TODO add save photo
   return (
-    <DocsPhotoCore
-      photoWidth={374}
-      photoHeight={376}
+    <MediaCore
       windowTitle={t('docs_ProfilePhoto_headerTitle')}
       firstHeaderTitle={t('docs_ProfilePhoto_explanationFirstTitle')}
       secondHeaderTitle={t('docs_ProfilePhoto_explanationSecondTitle')}
       headerDescription={t('docs_ProfilePhoto_explanationDescription')}
       goBack={navigation.goBack}
-      documentType="profilePhoto"
+      mediaAmount={MediaAmount.Single}
+      cropperCircleOverlay
+      onSaveFiles={() => {}}
     >
       <View style={styles.tips}>
         {tip(t('docs_ProfilePhoto_tip1'))}
         {tip(t('docs_ProfilePhoto_tip2'))}
         {tip(t('docs_ProfilePhoto_tip3'))}
       </View>
-    </DocsPhotoCore>
+    </MediaCore>
   );
 };
 

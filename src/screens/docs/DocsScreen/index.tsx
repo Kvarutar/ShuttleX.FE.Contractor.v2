@@ -42,19 +42,19 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
       title: t('docs_Docs_profilePhoto'),
     },
     passport: {
-      navFunc: () => navigation.navigate('Passport'),
+      navFunc: () => {},
       title: t('docs_Docs_passport'),
     },
     driversLicense: {
-      navFunc: () => navigation.navigate('DriversLicense'),
+      navFunc: () => {},
       title: t('docs_Docs_driversLicense'),
     },
     vehicleInsurance: {
-      navFunc: () => navigation.navigate('VehicleInsurance'),
+      navFunc: () => {},
       title: t('docs_Docs_vehicleInsurance'),
     },
     vehicleRegistration: {
-      navFunc: () => navigation.navigate('VehicleRegistration'),
+      navFunc: () => {},
       title: t('docs_Docs_vehicleRegistration'),
     },
   };

@@ -121,7 +121,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           isSelected={isVehicleInsurance}
           barMode={isVehicleInsurance ? BarModes.Active : BarModes.Default}
           buttonMode={CircleButtonModes.Mode4}
-          onPress={() => navigation.navigate('VehicleInsurance')}
+          onPress={() => {}}
           text={t('verification_Verification_vehicleDocumentStepOne')}
           textStyle={getStyleForText(isVehicleInsurance)}
         />
@@ -129,7 +129,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           isSelected={isVehicleRegistration}
           barMode={isVehicleRegistration ? BarModes.Active : BarModes.Default}
           buttonMode={CircleButtonModes.Mode4}
-          onPress={() => navigation.navigate('VehicleRegistration')}
+          onPress={() => {}}
           text={t('verification_Verification_vehicleDocumentStepTwo')}
           textStyle={getStyleForText(isVehicleRegistration)}
         />
@@ -162,7 +162,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           isSelected={isPresentPassport}
           barMode={isPresentPassport ? BarModes.Active : BarModes.Default}
           buttonMode={CircleButtonModes.Mode4}
-          onPress={() => navigation.navigate('Passport')}
+          onPress={() => {}}
           text={t('verification_Verification_personalDocumentStepTwo')}
           textStyle={getStyleForText(isPresentPassport)}
         />
@@ -171,7 +171,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           isSelected={isPresentDriversLicense}
           barMode={isPresentDriversLicense ? BarModes.Active : BarModes.Default}
           buttonMode={CircleButtonModes.Mode4}
-          onPress={() => navigation.navigate('DriversLicense')}
+          onPress={() => {}}
           text={t('verification_Verification_personalDocumentStepThree')}
           textStyle={getStyleForText(isPresentDriversLicense)}
         />

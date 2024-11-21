@@ -12,10 +12,6 @@ export type RootStackParamList = {
   Zone: undefined;
   BackgroundCheck: undefined;
   ProfilePhoto: undefined;
-  Passport: undefined;
-  DriversLicense: undefined;
-  VehicleInsurance: undefined;
-  VehicleRegistration: undefined;
   Docs: undefined;
   Wallet: undefined;
   AddPayment: undefined;
