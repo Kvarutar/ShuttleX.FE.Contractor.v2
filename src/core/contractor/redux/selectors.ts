@@ -36,5 +36,6 @@ export const doneAchievementsSelector = createSelector([achievementsSelector], a
 );
 
 export const contractorZoneSelector = (state: AppState) => state.contractor.zone;
-export const contractorStatusSelector = (state: AppState) => state.contractor.info?.state;
+export const contractorInfoStateSelector = (state: AppState) => state.contractor.info.state;
+export const contractorStatusSelector = (state: AppState) => state.contractor.info.status;
 export const contractorSubscriptionStatusSelector = (state: AppState) => state.contractor.subscriptionStatus;

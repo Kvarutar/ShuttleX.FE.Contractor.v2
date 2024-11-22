@@ -11,8 +11,17 @@ import {
   sendSelectedTariffs,
   updateContractorStatus,
 } from './thunks';
-import { type ContractorInfo, ContractorStateErrorKey, ContractorStateLoadingKey, VehicleData } from './types';
-import { AchievementsAPIResponse, ContractorState, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
+import {
+  AchievementsAPIResponse,
+  type ContractorInfo,
+  ContractorState,
+  ContractorStateErrorKey,
+  ContractorStateLoadingKey,
+  ContractorStatus,
+  PreferenceInfo,
+  TariffInfo,
+  VehicleData,
+} from './types';
 
 const initialState: ContractorState = {
   //TODO: Remove contractorId and Profile value when logic for receiving it will be added
@@ -24,7 +33,8 @@ const initialState: ContractorState = {
     name: '',
     email: '',
     phone: '',
-    state: 'offline',
+    state: 'None',
+    status: 'offline',
     level: 0,
     totalRidesCount: 0,
     totalLikesCount: 0,
@@ -57,16 +67,19 @@ const slice = createSlice({
     },
     setError(
       state,
-      action: PayloadAction<{ errorKey: ContractorStateErrorKey; value: Nullable<NetworkErrorDetailsWithBody<any>> }>,
+      action: PayloadAction<{
+        errorKey: ContractorStateErrorKey;
+        value: Nullable<NetworkErrorDetailsWithBody<any>>;
+      }>,
     ) {
       state.error[action.payload.errorKey] = action.payload.value;
     },
     setLoading(state, action: PayloadAction<{ loadingKey: ContractorStateLoadingKey; value: boolean }>) {
       state.loading[action.payload.loadingKey] = action.payload.value;
     },
-    setContractorState(state, action: PayloadAction<ContractorStatus>) {
+    setContractorStatus(state, action: PayloadAction<ContractorStatus>) {
       if (state.info) {
-        state.info.state = action.payload;
+        state.info.status = action.payload;
       }
     },
     setPreferences(state, action: PayloadAction<PreferenceInfo[]>) {
@@ -201,9 +214,9 @@ const slice = createSlice({
         });
       })
       .addCase(updateContractorStatus.fulfilled, (state, action) => {
-        slice.caseReducers.setContractorState(state, {
+        slice.caseReducers.setContractorStatus(state, {
           payload: action.meta.arg,
-          type: setContractorState.type,
+          type: setContractorStatus.type,
         });
         slice.caseReducers.setLoading(state, {
           payload: { loadingKey: 'general', value: false },
@@ -300,7 +313,7 @@ export const {
   setContractorInfo,
   setContractorAvatar,
   setVehicleData,
-  setContractorState,
+  setContractorStatus,
   setContractorZone,
   updateContractorInfo,
   setSubscriptionStatus,

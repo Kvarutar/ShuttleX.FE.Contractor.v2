@@ -8,18 +8,31 @@ export type PreferenceType = 'CryptoPayment' | 'CashPayment';
 
 export type ContractorStatus = 'online' | 'offline';
 
+export type ContractorStatusAPIResponse =
+  | 'None'
+  | 'RequireVerification'
+  | 'UnderReview'
+  | 'RequireDocumentUpdate'
+  | 'UnavailableForWork'
+  | 'WaitingOrder'
+  | 'InOrderProcessingWithNextStopPoint'
+  | 'InOrderProcessingWithNextDropOff'
+  | 'OutOfWork';
+
 export type VehicleData = {
   id: string;
   brand: string;
   number: string;
 };
 
+//TODO: maybe it would be better to come up with another title for the "state"
 export type ContractorInfo = {
   id: string;
   name: string;
   email: string;
   phone: string;
-  state: ContractorStatus;
+  state: ContractorStatusAPIResponse;
+  status: ContractorStatus;
   level: number;
   totalRidesCount: number;
   totalLikesCount: number;
@@ -35,16 +48,7 @@ export type ContractorInfoAPIResponse = {
   totalRidesCount: number;
   totalLikesCount: number;
   vehicle: VehicleData | null;
-  state:
-    | 'None'
-    | 'RequireVerification'
-    | 'UnderReview'
-    | 'RequireDocumentUpdate'
-    | 'UnavailableForWork'
-    | 'WaitingOrder'
-    | 'InOrderProcessingWithNextStopPoint'
-    | 'InOrderProcessingWithNextDropOff'
-    | 'OutOfWork';
+  state: ContractorStatusAPIResponse;
 };
 
 export type GetContractorAvatarAPIResponse = Blob;

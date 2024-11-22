@@ -6,9 +6,6 @@ import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   AccountSettingsScreen,
-  // ArrowInPrimaryColorIcon,
-  // Bar,
-  // BarModes,
   Button,
   ButtonShapes,
   ButtonSizes,
@@ -19,7 +16,6 @@ import {
   sizes,
   Text,
   UploadPhotoIcon,
-  // WarningIcon,
 } from 'shuttlex-integration';
 
 // import { updateRequirementDocuments } from '../../../core/auth/redux/docs';
@@ -37,8 +33,7 @@ import { RootStackParamList } from '../../../Navigate/props';
 import Menu from '../../ride/Menu';
 import { PhotoBlockProps } from './types';
 
-//////TODO uncoment all changeName related code when we need changeName popup///////
-
+//TODO: uncoment all changeName related code when we need changeName popup///////
 const AccountSettings = (): JSX.Element => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'AccountSettings'>>();
   const { t } = useTranslation();

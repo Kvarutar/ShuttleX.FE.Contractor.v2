@@ -33,17 +33,17 @@ export const getContractorInfo = createAppAsyncThunk<
     if (contractorInfoResponse.status === 'fulfilled') {
       contractorInfo = {
         ...contractorInfoResponse.value.data,
-        state: 'offline',
+        status: 'offline',
       };
 
       switch (contractorInfoResponse.value.data.state) {
         case 'WaitingOrder':
         case 'InOrderProcessingWithNextStopPoint':
         case 'InOrderProcessingWithNextDropOff':
-          contractorInfo.state = 'online';
+          contractorInfo.status = 'online';
           break;
         default:
-          contractorInfo.state = 'offline';
+          contractorInfo.status = 'offline';
       }
     } else {
       return rejectWithValue(getNetworkErrorInfo(contractorInfoResponse.reason));

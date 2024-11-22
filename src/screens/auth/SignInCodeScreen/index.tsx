@@ -56,7 +56,7 @@ const SignInCodeScreen = ({ navigation, route }: SignInCodeScreenProps): JSX.Ele
 
   useEffect(() => {
     if (isLoggedIn && !isLoading && !signError) {
-      navigation.replace('Ride');
+      navigation.replace('Verification');
     }
   }, [isLoggedIn, isLoading, signError, navigation, dispatch]);
 

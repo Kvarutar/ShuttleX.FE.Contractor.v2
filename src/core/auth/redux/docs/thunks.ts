@@ -2,6 +2,7 @@ import { getNetworkErrorInfo } from 'shuttlex-integration';
 
 import { createAppAsyncThunk } from '../../../redux/hooks';
 import { setSelectedZone, setTemplateIdToDocId, updateDocTemplateIsFilled } from './index';
+import { selectedZoneSelector } from './selectors';
 import {
   CreateDocAPIResponse,
   DocsState,
@@ -66,7 +67,7 @@ export const saveDocBlob = createAppAsyncThunk<string, SaveDocAPIRequest>(
     formData.append('File', file);
 
     try {
-      const response = await docsAxios.post<string>(`docs/${docId}/blob`, formData, {
+      const response = await docsAxios.post<string>(`/docs/${docId}/blob`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -87,7 +88,7 @@ export const saveProfilePhoto = createAppAsyncThunk<SaveProfilePhotoAPIResponse,
     formData.append('Avatar', file);
 
     try {
-      const response = await profileAxios.post<SaveProfilePhotoAPIResponse>('profile/avatars/blob', formData, {
+      const response = await profileAxios.post<SaveProfilePhotoAPIResponse>('/profile/avatars/blob', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -99,9 +100,10 @@ export const saveProfilePhoto = createAppAsyncThunk<SaveProfilePhotoAPIResponse,
 
 export const verifyDocs = createAppAsyncThunk<void, void>(
   'docs/verifyDocs',
-  async (_, { rejectWithValue, docsAxios }) => {
+  async (_, { rejectWithValue, docsAxios, getState }) => {
     try {
-      const response = await docsAxios.post('/contractor/complete');
+      const zoneId = selectedZoneSelector(getState());
+      const response = await docsAxios.post(`/zones/${zoneId}/contractors/complete`);
       return response.data;
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));

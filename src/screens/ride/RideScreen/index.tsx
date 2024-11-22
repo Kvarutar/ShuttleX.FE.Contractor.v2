@@ -22,7 +22,9 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { contractorInfoStateSelector } from '../../../core/contractor/redux/selectors';
 import { getFullTariffsInfo } from '../../../core/contractor/redux/thunks';
+import { ContractorStatusAPIResponse } from '../../../core/contractor/redux/types';
 import { setNotificationList } from '../../../core/menu/redux/notifications';
 import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
 import { useAppDispatch } from '../../../core/redux/hooks';
@@ -44,9 +46,10 @@ import MapView from './MapView';
 import Order from './Order';
 import UnclosablePopupWithModes from './popups/UnclosablePopupWithModes';
 import { UnclosablePopupModes } from './popups/UnclosablePopupWithModes/props';
-import { DocResponseStatus, type RideScreenProps } from './props';
+import { type RideScreenProps } from './props';
 import Start from './Start';
 
+//TODO: add logic for repeat request on contractorInfo
 const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -60,14 +63,14 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const isLocationEnabled = useSelector(geolocationIsLocationEnabledSelector);
   const geolocationAccuracy = useSelector(geolocationAccuracySelector);
   const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
+  const contractorDocsStatus = useSelector(contractorInfoStateSelector);
 
   const insets = useSafeAreaInsets();
   const iosPaddingVertical = insets.bottom ? 0 : sizes.paddingVertical / 2;
 
   //TODO add logic for getting confirmed email
-  const [isEmailVerified, setEmailVerified] = useState(false);
+  const isEmailVerified = false;
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
-  const [docStatus, setDocStatus] = useState<DocResponseStatus | null>(null);
 
   const computedStyles = StyleSheet.create({
     topButtonsContainer: {
@@ -80,6 +83,12 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       color: colors.backgroundPrimaryColor,
     },
   });
+
+  useEffect(() => {
+    if (contractorDocsStatus === 'None') {
+      navigation.replace('Verification');
+    }
+  }, [contractorDocsStatus, navigation]);
 
   useEffect(() => {
     //TODO: Add receiving zones and zoneId
@@ -142,42 +151,25 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     );
   }, [dispatch]);
 
-  //TODO add correct logic for get Document status from backend
-  const fetchDocumentStatus = async (): Promise<DocResponseStatus> => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(DocResponseStatus.Approved);
-        setEmailVerified(true);
-      }, 5000);
-    });
-  };
-
-  useEffect(() => {
-    (async () => {
-      const result = await fetchDocumentStatus();
-      setDocStatus(result);
-    })();
-  }, []);
-
-  const determinePopupMode = (status: DocResponseStatus): UnclosablePopupModes | null => {
+  const determinePopupMode = (status: ContractorStatusAPIResponse): UnclosablePopupModes | null => {
     switch (status) {
-      case DocResponseStatus.None:
-        return UnclosablePopupModes.DocumentRejectedError;
-      case DocResponseStatus.UnderReview:
-        return UnclosablePopupModes.DocumentUnderReview;
-      case DocResponseStatus.RequireUpdate:
-        return UnclosablePopupModes.DocumentRejected;
-      case DocResponseStatus.Expired:
+      case 'RequireVerification':
         return UnclosablePopupModes.CompleteVerification;
+      case 'UnderReview':
+        return UnclosablePopupModes.DocumentUnderReview;
+      case 'RequireDocumentUpdate':
+        return UnclosablePopupModes.DocumentRejected;
+      case 'UnavailableForWork':
+        return UnclosablePopupModes.DocumentRejectedError;
       default:
         return null;
     }
   };
 
-  const determinePopupButton = (status: DocResponseStatus): JSX.Element | null => {
+  const determinePopupButton = (status: ContractorStatusAPIResponse): JSX.Element | null => {
     switch (status) {
-      case DocResponseStatus.None:
-      case DocResponseStatus.UnderReview:
+      case 'UnavailableForWork':
+      case 'UnderReview':
         return (
           <Button
             style={styles.popupButton}
@@ -189,17 +181,17 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
             }}
           />
         );
-      case DocResponseStatus.RequireUpdate:
+      case 'RequireDocumentUpdate':
         return (
           <Button
             style={styles.popupButton}
             shape={ButtonShapes.Square}
             mode={SquareButtonModes.Mode2}
-            text={t('ride_Ride_completeButton')}
+            text={t('ride_Ride_tryAgainButton')}
             onPress={() => navigation.navigate('Docs')}
           />
         );
-      case DocResponseStatus.Expired:
+      case 'RequireVerification':
         return (
           <Button
             style={styles.popupButton}
@@ -213,8 +205,8 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     }
   };
 
-  const statusMode = docStatus ? determinePopupMode(docStatus) : null;
-  const popupButton = docStatus ? determinePopupButton(docStatus) : null;
+  const unclosablePopupMode = determinePopupMode(contractorDocsStatus);
+  const unclosablePopupContent = determinePopupButton(contractorDocsStatus);
 
   let locationUnavailableProps: LocationUnavailableProps | null = null;
   if (!isPermissionGranted) {
@@ -311,7 +303,9 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
         {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
       </SafeAreaView>
       {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
-      {docStatus && statusMode && <UnclosablePopupWithModes mode={statusMode} bottomAdditionalContent={popupButton} />}
+      {unclosablePopupMode && (
+        <UnclosablePopupWithModes mode={unclosablePopupMode} bottomAdditionalContent={unclosablePopupContent} />
+      )}
     </>
   );
 };
