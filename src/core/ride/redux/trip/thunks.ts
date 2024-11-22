@@ -1,4 +1,4 @@
-import { getNetworkErrorInfo } from 'shuttlex-integration';
+import { convertBlobToImgUri, getNetworkErrorInfo } from 'shuttlex-integration';
 
 import { TariffInfo } from '../../../contractor/redux/types';
 import { createAppAsyncThunk } from '../../../redux/hooks';
@@ -60,7 +60,7 @@ export const acceptOffer = createAppAsyncThunk<
   AcceptOfferAPIResponse & {
     passenger: {
       info: PassengerInfoAPIResponse;
-      avatarURL: PassengerAvatarAPIResponse;
+      avatarURL: string;
     };
     tariffs: TariffInfo[];
   },
@@ -75,26 +75,35 @@ export const acceptOffer = createAppAsyncThunk<
 
     //TODO: Rewrite with correct data
     const acceptOfferResponseData: AcceptOfferAPIResponse = {
-      orderId: 'a094885f-e05f-46dd-846a-0c9d9818bae9',
+      orderId: '9cec4b31-4d92-45e9-9381-1878608796fd',
     };
 
-    //TODO: Add passengerAvatarResponse when fix problems with avatar
-    const [passengerInfoResponse] = await Promise.all([
+    const [passengerInfoResponse, passengerAvatarResponse] = await Promise.allSettled([
       ordersAxios.get<PassengerInfoAPIResponse>(`/${acceptOfferResponseData.orderId}/passenger/info`),
-      // contractorAxios.get<PassengerAvatarAPIResponse>(`/${acceptOfferResponseData.orderId}/passenger/avatar`),
+      ordersAxios.get<PassengerAvatarAPIResponse>(`/${acceptOfferResponseData.orderId}/passenger/avatar`, {
+        responseType: 'blob',
+      }),
     ]);
 
-    // const avatarBlob: PassengerAvatarAPIResponse = passengerAvatarResponse.data;
-    // const src = URL.createObjectURL(blob);
-    const src = 'https://cdn-icons-png.flaticon.com/512/147/147144.png';
+    let info: PassengerInfoAPIResponse;
+    let avatarURL = '';
+
+    if (passengerInfoResponse.status === 'fulfilled') {
+      info = passengerInfoResponse.value.data;
+    } else {
+      return rejectWithValue(getOfferNetworkErrorInfo(passengerInfoResponse.reason));
+    }
+    if (passengerAvatarResponse.status === 'fulfilled') {
+      avatarURL = await convertBlobToImgUri(passengerAvatarResponse.value.data);
+    }
 
     const state = getState();
 
     return {
       orderId: acceptOfferResponseData.orderId,
       passenger: {
-        info: passengerInfoResponse.data,
-        avatarURL: src,
+        info: info,
+        avatarURL,
       },
       tariffs: state.contractor.tariffs,
     };

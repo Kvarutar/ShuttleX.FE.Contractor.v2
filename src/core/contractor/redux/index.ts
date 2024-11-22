@@ -135,7 +135,7 @@ const slice = createSlice({
           type: setContractorInfo.type,
         });
         slice.caseReducers.setContractorAvatar(state, {
-          payload: action.payload.avatar,
+          payload: action.payload.avatarURL,
           type: setContractorAvatar.type,
         });
         slice.caseReducers.setLoading(state, {

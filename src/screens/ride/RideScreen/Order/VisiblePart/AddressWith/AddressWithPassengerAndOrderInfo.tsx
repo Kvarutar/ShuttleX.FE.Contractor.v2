@@ -109,9 +109,6 @@ const AddressWithPassengerAndOrderInfo = ({
     outerContainer: {
       paddingTop: withAvatar ? 0 : 16,
     },
-    avatarAndShadowContainer: {
-      backgroundColor: colors.backgroundPrimaryColor,
-    },
     visibleContent: {
       paddingTop: withAvatar ? 24 : 0,
     },
@@ -291,20 +288,6 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     flex: 1,
-  },
-  //TODO: Check image sizes on smaller and bigger devices
-  avatarAndShadowContainer: {
-    position: 'absolute',
-    top: -55,
-    alignSelf: 'center',
-    borderRadius: 50,
-  },
-  avatarInnerContainer: {
-    padding: 4,
-  },
-  passengerAvatar: {
-    width: 62,
-    height: 62,
   },
   visibleContent: {
     flexDirection: 'row',

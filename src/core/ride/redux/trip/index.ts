@@ -20,7 +20,6 @@ import {
   OfferWayPointsData,
   OfferWayPointsDataAPIResponse,
   OrderType,
-  PassengerAvatarAPIResponse,
   PassengerInfoAPIResponse,
   TripState,
   TripStatus,
@@ -111,7 +110,7 @@ const slice = createSlice({
         tariffs: TariffInfo[];
         orderId: string;
         passengerInfo: PassengerInfoAPIResponse;
-        passengerAvatarURL: PassengerAvatarAPIResponse;
+        passengerAvatarURL: string;
       }>,
     ) {
       if (state.offer) {
@@ -190,7 +189,7 @@ const slice = createSlice({
         state.offer.dropOffPoint = action.payload.dropoff;
       }
     },
-    setPassengerAvatar(state, action: PayloadAction<PassengerAvatarAPIResponse>) {
+    setPassengerAvatar(state, action: PayloadAction<string>) {
       if (state.order) {
         state.order.passenger.avatarURL = action.payload;
       }

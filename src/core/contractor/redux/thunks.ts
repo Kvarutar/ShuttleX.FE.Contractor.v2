@@ -1,5 +1,5 @@
 import Config from 'react-native-config';
-import { getNetworkErrorInfo } from 'shuttlex-integration';
+import { convertBlobToImgUri, getNetworkErrorInfo } from 'shuttlex-integration';
 
 import { createAppAsyncThunk } from '../../redux/hooks';
 import {
@@ -7,6 +7,7 @@ import {
   ContractorInfo,
   ContractorInfoAPIResponse,
   ContractorStatus,
+  GetContractorAvatarAPIResponse,
   PreferenceInfo,
   TariffAdditionalInfoAPIResponse,
   TariffInfo,
@@ -17,46 +18,44 @@ import { tariffsNamesByFeKey } from './utils/getTariffNamesByFeKey';
 
 //TODO: Add popup when request is rejected
 export const getContractorInfo = createAppAsyncThunk<
-  { contractorInfo: Omit<ContractorInfo, 'email' | 'phone'>; avatar: string },
+  { contractorInfo: Omit<ContractorInfo, 'email' | 'phone'>; avatarURL: string },
   void
 >('contractor/getContractorInfo', async (_, { rejectWithValue, contractorAxios }) => {
   try {
-    //TODO: Return second value 'contractorAvatarResponse', when rewrite logic for avatar
-    const [contractorInfoResponse] = await Promise.all([
+    const [contractorInfoResponse, contractorAvatarResponse] = await Promise.allSettled([
       contractorAxios.get<ContractorInfoAPIResponse>('/info'),
-      // contractorAxios.get<GetContractorAvatarAPIResponse>('/avatar'),
+      contractorAxios.get<GetContractorAvatarAPIResponse>('/avatar', { responseType: 'blob' }),
     ]);
 
-    const contractorInfo: Omit<ContractorInfo, 'email' | 'phone'> = {
-      ...contractorInfoResponse.data,
-      state: 'offline',
-    };
+    let contractorInfo: Omit<ContractorInfo, 'email' | 'phone'>;
+    let avatarURL = '';
 
-    switch (contractorInfoResponse.data.state) {
-      case 'WaitingOrder':
-      case 'InOrderProcessingWithNextStopPoint':
-      case 'InOrderProcessingWithNextDropOff':
-        contractorInfo.state = 'online';
-        break;
-      default:
-        contractorInfo.state = 'offline';
+    if (contractorInfoResponse.status === 'fulfilled') {
+      contractorInfo = {
+        ...contractorInfoResponse.value.data,
+        state: 'offline',
+      };
+
+      switch (contractorInfoResponse.value.data.state) {
+        case 'WaitingOrder':
+        case 'InOrderProcessingWithNextStopPoint':
+        case 'InOrderProcessingWithNextDropOff':
+          contractorInfo.state = 'online';
+          break;
+        default:
+          contractorInfo.state = 'offline';
+      }
+    } else {
+      return rejectWithValue(getNetworkErrorInfo(contractorInfoResponse.reason));
     }
 
-    //TODO: Rewrite with a correct data
+    if (contractorAvatarResponse.status === 'fulfilled') {
+      avatarURL = await convertBlobToImgUri(contractorAvatarResponse.value.data);
+    }
 
-    // const avatarBlob: contractorAvatarResponse.data;
-    // const src = URL.createObjectURL(blob);
-
-    const src = '';
-
-    return { contractorInfo, avatar: src };
+    return { contractorInfo, avatarURL };
   } catch (error) {
-    const { code, body, status } = getNetworkErrorInfo(error);
-    return rejectWithValue({
-      code,
-      body,
-      status,
-    });
+    return rejectWithValue(getNetworkErrorInfo(error));
   }
 });
 
@@ -119,12 +118,7 @@ export const getFullTariffsInfo = createAppAsyncThunk<TariffInfo[], void>(
 
       return updatedTariffs;
     } catch (error) {
-      const { code, body, status } = getNetworkErrorInfo(error);
-      return rejectWithValue({
-        code,
-        body,
-        status,
-      });
+      return rejectWithValue(getNetworkErrorInfo(error));
     }
   },
 );
@@ -142,12 +136,7 @@ export const sendSelectedTariffs = createAppAsyncThunk<
 
     return payload.selectedTariffs;
   } catch (error) {
-    const { code, body, status } = getNetworkErrorInfo(error);
-    return rejectWithValue({
-      code,
-      body,
-      status,
-    });
+    return rejectWithValue(getNetworkErrorInfo(error));
   }
 });
 

@@ -135,6 +135,8 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   passengerAvatarContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
     width: 72,
     height: 72,
     borderRadius: 100,
@@ -142,8 +144,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   passengerAvatar: {
-    flex: 1,
-    alignSelf: 'stretch',
+    width: '100%',
+    height: '100%',
   },
   timerWrapper: {
     position: 'absolute',

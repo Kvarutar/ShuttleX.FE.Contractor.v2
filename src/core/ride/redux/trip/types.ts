@@ -10,7 +10,7 @@ export type PassengerInfoAPIResponse = {
   phone: string;
 };
 
-export type PassengerAvatarAPIResponse = string;
+export type PassengerAvatarAPIResponse = Blob;
 
 export type PassengerInfoType = {
   id: string;
