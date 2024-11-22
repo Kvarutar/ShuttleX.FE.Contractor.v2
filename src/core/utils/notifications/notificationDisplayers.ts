@@ -2,43 +2,64 @@ import notifee from '@notifee/react-native';
 
 import { store } from '../../redux/store';
 import { fetchOfferInfo } from '../../ride/redux/trip/thunks';
-import { NotificationRemoteMessage } from './types';
+import { NotificationPayload, NotificationRemoteMessage, NotificationType, NotificationWithPayload } from './types';
 
-type NotificationTitle = 'new_offer' | 'passenger_rejected';
+const isValidNotificationType = (key: string): key is NotificationType => {
+  return Object.values(NotificationType).includes(key as NotificationType);
+};
 
-//TODO change logic of render keys
-const isNotificationTitle = (key: string): key is NotificationTitle =>
-  ['new_offer', 'passenger_rejected'].includes(key);
+const isPayloadRequired = (type: NotificationType): type is NotificationWithPayload => {
+  return [NotificationType.NewOffer].includes(type);
+};
+
+const notificationHandlers: Record<NotificationType, (payload?: NotificationPayload) => void> = {
+  [NotificationType.NewOffer]: payload => {
+    if (payload?.offerId) {
+      store.dispatch(fetchOfferInfo(payload.offerId));
+    }
+  },
+  [NotificationType.PassengerRejected]: () => {
+    // TODO add case
+  },
+};
 
 //display notiff without buttons
 export const displayNotificationForAll = async (remoteMessage: NotificationRemoteMessage) => {
-  const { key, payload } = remoteMessage.data;
-  const payloadData = payload && JSON.parse(payload);
+  const { key, payload, title, body } = remoteMessage.data;
 
-  if (isNotificationTitle(key)) {
-    if (key === 'new_offer') {
-      const offerId = payloadData.OfferInfo;
-      store.dispatch(fetchOfferInfo(offerId));
-    }
+  if (!isValidNotificationType(key)) {
+    console.error(`Invalid notification type: ${key}`);
+    return;
   }
 
-  await notifee.displayNotification({
-    title: remoteMessage.data.title,
-    body: remoteMessage.data.body,
+  try {
+    let payloadData: NotificationPayload | undefined;
 
-    android: {
-      channelId: 'general-channel',
-      smallIcon: 'bootsplash_logo',
-      pressAction: {
-        id: 'default',
+    if (payload && isPayloadRequired(key)) {
+      payloadData = JSON.parse(payload);
+    }
+
+    await notificationHandlers[key](payloadData);
+
+    await notifee.displayNotification({
+      title,
+      body,
+      android: {
+        channelId: 'general-channel',
+        smallIcon: 'bootsplash_logo',
+        pressAction: {
+          id: 'default',
+        },
       },
-    },
-    ios: {
-      foregroundPresentationOptions: {
-        alert: true,
-        badge: true,
-        sound: true,
+      ios: {
+        foregroundPresentationOptions: {
+          alert: true,
+          badge: true,
+          sound: true,
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error('Error processing notification:', error);
+  }
 };

@@ -10,7 +10,6 @@ import {
   sendSelectedPreferences,
   sendSelectedTariffs,
   updateContractorStatus,
-  updateProfileData,
 } from './thunks';
 import { type ContractorInfo, ContractorStateErrorKey, ContractorStateLoadingKey, VehicleData } from './types';
 import { AchievementsAPIResponse, ContractorState, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
@@ -256,19 +255,6 @@ const slice = createSlice({
           payload: { errorKey: 'general', value: action.payload as NetworkErrorDetailsWithBody<any> }, //TODO: remove this cast after fix with rejectedValue
           type: setError.type,
         });
-      })
-      //TODO: Rewrite this case
-      // Khrystyna will rewrite it
-      .addCase(updateProfileData.fulfilled, (state, action) => {
-        slice.caseReducers.updateContractorInfo(state, {
-          payload: action.payload,
-          type: updateContractorInfo.type,
-        });
-      })
-      //TODO: Rewrite this case
-      // Khrystyna will rewrite it
-      .addCase(updateProfileData.rejected, (_, action) => {
-        console.error('Profile update failed:', action.payload);
       })
       //TODO: Use this case when work with preferences
       // Not needed for now

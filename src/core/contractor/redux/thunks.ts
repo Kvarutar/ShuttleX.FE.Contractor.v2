@@ -140,32 +140,6 @@ export const sendSelectedTariffs = createAppAsyncThunk<
   }
 });
 
-//TODO: There's just example! Rewrite when info about "profile" logic will be known
-export const updateProfileData = createAppAsyncThunk<
-  ContractorInfo,
-  { contractorId: string; updatedData: Partial<ContractorInfo> & { avatar?: string } }
->('contractor/updateProfileData', async (payload, { rejectWithValue }) => {
-  try {
-    const response = await fetch(`${Config.API_URL_HTTPS}/contractor/update-profile/${payload.contractorId}`, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...payload.updatedData }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Error occurred during profile update');
-    }
-
-    const updatedProfile = await response.json();
-    return updatedProfile;
-  } catch (error) {
-    return rejectWithValue(error);
-  }
-});
-
 //TODO: There's just example! Rewrite when info about "preferences" logic is known
 export const sendSelectedPreferences = createAppAsyncThunk<
   void,
