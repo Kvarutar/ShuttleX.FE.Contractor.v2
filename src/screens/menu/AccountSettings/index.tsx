@@ -22,8 +22,7 @@ import {
   WarningIcon,
 } from 'shuttlex-integration';
 
-import { updateRequirementDocuments } from '../../../core/auth/redux/docs';
-import { isAllDocumentsFilledSelector, profilePhotoSelector } from '../../../core/auth/redux/docs/selectors';
+import { profilePhotoSelector } from '../../../core/auth/redux/docs/selectors';
 import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
 import { getContractorInfo, updateProfileData } from '../../../core/contractor/redux/thunks';
 import { resetAccountSettingsVerification } from '../../../core/menu/redux/accountSettings';
@@ -39,7 +38,7 @@ import Menu from '../../ride/Menu';
 import { AccountProfileDataProps, PhotoBlockProps } from './types';
 
 const AccountSettings = (): JSX.Element => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'AccountSettings'>>();
   const { t } = useTranslation();
 
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -63,8 +62,8 @@ const AccountSettings = (): JSX.Element => {
   //TODO: Rewrite this logic
   // Khrystyna will rewrite it
   useEffect(() => {
-    dispatch(updateProfileData({ contractorId: contractorInfo.id, updatedData: { avatar: profilePhoto?.uri } }));
-  }, [dispatch, navigation, profilePhoto?.uri, contractorInfo.id]);
+    dispatch(updateProfileData({ contractorId: contractorInfo.id, updatedData: { avatar: profilePhoto ?? '' } }));
+  }, [dispatch, navigation, profilePhoto, contractorInfo.id]);
 
   const handleOpenVerification = async (mode: 'phone' | 'email', newValue: string) => {
     if (!isLoading && !changeDataError) {
@@ -90,11 +89,9 @@ const AccountSettings = (): JSX.Element => {
     navigation.navigate('ProfilePhoto');
   };
 
-  const onNameChanged = () => {
-    dispatch(
-      updateRequirementDocuments({ passport: [], driversLicense: [], vehicleRegistration: [], vehicleInsurance: [] }),
-    );
-  };
+  //TODO: Rewrite this logic
+  // Khrystyna will rewrite it
+  const onNameChanged = () => {};
 
   return (
     <>
@@ -126,9 +123,10 @@ const AccountSettings = (): JSX.Element => {
   );
 };
 
+//TODO Mock 'isAllFilled'
 const BarBlock = ({ onUpdateDocument }: { onUpdateDocument: () => void }) => {
   const { t } = useTranslation();
-  const isAllFilled = useSelector(isAllDocumentsFilledSelector);
+  const isAllFilled = true;
 
   //TODO check the update document logic, it doesnt work properly
   return (
@@ -167,7 +165,7 @@ const PhotoBlock = ({ onUploadPhoto }: PhotoBlockProps) => {
         <UploadPhotoIcon />
       </Button>
       <View onLayout={handleImageLayout}>
-        <MenuUserImage2 url={photo?.uri} />
+        <MenuUserImage2 url={photo ?? ''} />
       </View>
     </View>
   );

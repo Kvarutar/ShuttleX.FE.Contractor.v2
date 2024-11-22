@@ -1,5 +1,6 @@
 import { CountryPhoneMaskDto } from 'shuttlex-integration';
 
+import { DocsFeKeyFromAPI } from '../core/auth/redux/docs/types';
 import { WithdrawType } from '../core/menu/redux/wallet/types';
 
 export type RootStackParamList = {
@@ -22,4 +23,5 @@ export type RootStackParamList = {
   LockOut: undefined;
   AccountSettings: undefined;
   AccountVerificateCode: { mode: 'phone' | 'email'; newValue: string };
+  DocMedia: { feKey: DocsFeKeyFromAPI; templateId: string };
 };

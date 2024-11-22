@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -8,6 +10,7 @@ import {
   ButtonShapes,
   ButtonSizes,
   CircleButtonModes,
+  Nullable,
   SafeAreaView,
   ShortArrowIcon,
   SquareButtonModes,
@@ -15,41 +18,56 @@ import {
 } from 'shuttlex-integration';
 
 import {
-  driversLicenseSelector,
-  isAllDocumentsFilledSelector,
-  isDriverDocumentsFilledSelector,
-  isPersonalDocumentsFilledSelector,
-  passportSelector,
+  docsTemplatesSelector,
   profilePhotoSelector,
-  vehicleInsuranceSelector,
-  vehicleRegistrationSelector,
+  selectedZoneSelector,
+  zonesSelector,
 } from '../../../core/auth/redux/docs/selectors';
-import { contractorInfoSelector, contractorZoneSelector } from '../../../core/contractor/redux/selectors';
-import { VerificationScreenProps } from './props';
+import { fetchAllZone, verifyDocs } from '../../../core/auth/redux/docs/thunks';
+import { DocsType, DocTemplate } from '../../../core/auth/redux/docs/types';
+import { getDocTitlesByFeKey } from '../../../core/auth/redux/docs/utils/docsFeKey';
+import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
+import { useAppDispatch } from '../../../core/redux/hooks';
+import { RootStackParamList } from '../../../Navigate/props';
 import VerificationHeader from './VerificationHeader';
 import VerificationStepBar from './VerificationStepBar';
 
-const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
-  const { t } = useTranslation();
-  const { colors } = useTheme();
+const VerificationScreen = (): JSX.Element => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Verification'>>();
 
-  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
   const contractorInfo = useSelector(contractorInfoSelector);
-  const isZoneSelected = useSelector(contractorZoneSelector) !== null;
-  const isPresentPersonalDocuments = useSelector(isPersonalDocumentsFilledSelector);
-  const isPresentVehicleDocuments = useSelector(isDriverDocumentsFilledSelector);
-  const isPresentAllDocuments = useSelector(isAllDocumentsFilledSelector);
+  const zones = useSelector(zonesSelector);
+  const docsTemplates = useSelector(docsTemplatesSelector);
+  const isZoneSelected = useSelector(selectedZoneSelector) !== null;
+  const isProfilePhotoSelected = useSelector(profilePhotoSelector) !== null;
 
-  const isVehicleInsurance = Boolean(useSelector(vehicleInsuranceSelector).length);
-  const isVehicleRegistration = Boolean(useSelector(vehicleRegistrationSelector).length);
+  const [selectedSection, setSelectedSection] = useState<Nullable<DocsType>>(null);
 
-  const isPresentProfile = useSelector(profilePhotoSelector) !== null;
-  const isPresentPassport = Boolean(useSelector(passportSelector).length);
-  const isPresentDriversLicense = Boolean(useSelector(driversLicenseSelector).length);
+  useEffect(() => {
+    if (zones.length === 0) {
+      dispatch(fetchAllZone());
+    }
+  }, [dispatch, zones.length]);
+
+  const getTemplatesByDocsType = (type: DocsType) => docsTemplates.filter(template => template.type === type);
+  const isFilledTemplates = (templates: DocTemplate[]) =>
+    templates.length > 0 && templates.every(template => template.isFilled);
+
+  const getStyleForText = (isSelected: boolean | undefined) => ({
+    color: isSelected ? colors.textPrimaryColor : colors.textQuadraticColor,
+  });
+
+  const isPresentPersonalDocuments =
+    isFilledTemplates(getTemplatesByDocsType(DocsType.Personal)) && isProfilePhotoSelected;
+  const isPresentVehicleDocuments = isFilledTemplates(getTemplatesByDocsType(DocsType.Vehicle));
 
   const handleNextPress = () => {
-    if (isZoneSelected && isPresentAllDocuments) {
+    if (isZoneSelected && isPresentPersonalDocuments && isPresentVehicleDocuments) {
+      dispatch(verifyDocs());
       navigation.navigate('Ride');
     } else {
       setSelectedSection(null);
@@ -64,9 +82,27 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
     }
   };
 
-  const getStyleForText = (isSelected: boolean) => ({
-    color: isSelected ? colors.textPrimaryColor : colors.textQuadraticColor,
-  });
+  const renderStepForDocTemplate = (template: DocTemplate) => {
+    const { id, isFilled, feKey } = template;
+
+    if (!feKey) {
+      return <></>;
+    }
+
+    const { title } = getDocTitlesByFeKey[feKey];
+
+    return (
+      <VerificationStepBar
+        key={id}
+        isSelected={isFilled}
+        barMode={isFilled ? BarModes.Active : BarModes.Default}
+        buttonMode={CircleButtonModes.Mode4}
+        onPress={() => navigation.navigate('DocMedia', { feKey: feKey, templateId: id })}
+        text={t(title)}
+        textStyle={getStyleForText(isFilled)}
+      />
+    );
+  };
 
   const defaultState = {
     content: (
@@ -76,7 +112,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           barMode={isZoneSelected ? BarModes.Active : BarModes.Default}
           buttonMode={isZoneSelected ? CircleButtonModes.Mode2 : CircleButtonModes.Mode4}
           onPress={() => navigation.navigate('Zone')}
-          text={t('verification_Verification_stepOne')}
+          text={t('verification_Verification_selectZone')}
           textStyle={getStyleForText(isZoneSelected)}
         />
         <VerificationStepBar
@@ -85,8 +121,8 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
             isPresentPersonalDocuments ? BarModes.Active : !isZoneSelected ? BarModes.Disabled : BarModes.Default
           }
           buttonMode={!isZoneSelected ? CircleButtonModes.Mode2 : CircleButtonModes.Mode4}
-          onPress={() => setSelectedSection('PersonalDocument')}
-          text={t('verification_Verification_stepTwo')}
+          onPress={() => setSelectedSection(DocsType.Personal)}
+          text={t('verification_Verification_personalDocs')}
           textStyle={getStyleForText(isPresentPersonalDocuments)}
           isDisabled={!isZoneSelected}
         />
@@ -95,8 +131,8 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
           isSelected={isPresentVehicleDocuments}
           barMode={isPresentVehicleDocuments ? BarModes.Active : !isZoneSelected ? BarModes.Disabled : BarModes.Default}
           buttonMode={!isZoneSelected ? CircleButtonModes.Mode2 : CircleButtonModes.Mode4}
-          onPress={() => setSelectedSection('VehicleDocument')}
-          text={t('verification_Verification_stepThree')}
+          onPress={() => setSelectedSection(DocsType.Vehicle)}
+          text={t('verification_Verification_vehicleDocs')}
           textStyle={getStyleForText(isPresentVehicleDocuments)}
           isDisabled={!isZoneSelected}
         />
@@ -104,10 +140,10 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
     ),
     button: (
       <Button
-        disabled={!(isZoneSelected && isPresentAllDocuments)}
+        disabled={!(isZoneSelected && isFilledTemplates(docsTemplates))}
         text={t('verification_Zone_buttonNext')}
         style={styles.nextButton}
-        mode={!(isZoneSelected && isPresentAllDocuments) ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
+        mode={!(isZoneSelected && isFilledTemplates(docsTemplates)) ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
         textStyle={styles.buttonText}
         onPress={handleNextPress}
       />
@@ -115,26 +151,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
   };
 
   const vehicleDocument = {
-    content: (
-      <>
-        <VerificationStepBar
-          isSelected={isVehicleInsurance}
-          barMode={isVehicleInsurance ? BarModes.Active : BarModes.Default}
-          buttonMode={CircleButtonModes.Mode4}
-          onPress={() => {}}
-          text={t('verification_Verification_vehicleDocumentStepOne')}
-          textStyle={getStyleForText(isVehicleInsurance)}
-        />
-        <VerificationStepBar
-          isSelected={isVehicleRegistration}
-          barMode={isVehicleRegistration ? BarModes.Active : BarModes.Default}
-          buttonMode={CircleButtonModes.Mode4}
-          onPress={() => {}}
-          text={t('verification_Verification_vehicleDocumentStepTwo')}
-          textStyle={getStyleForText(isVehicleRegistration)}
-        />
-      </>
-    ),
+    content: <>{getTemplatesByDocsType(DocsType.Vehicle).map(renderStepForDocTemplate)}</>,
     button: (
       <Button
         disabled={!isPresentVehicleDocuments}
@@ -147,34 +164,18 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
     ),
   };
 
-  const personalDocument = {
+  const personalDocumentsSection = {
     content: (
       <>
         <VerificationStepBar
-          isSelected={isPresentProfile}
-          barMode={isPresentProfile ? BarModes.Active : BarModes.Default}
+          isSelected={isProfilePhotoSelected}
+          barMode={isProfilePhotoSelected ? BarModes.Active : BarModes.Default}
           buttonMode={CircleButtonModes.Mode4}
           onPress={() => navigation.navigate('ProfilePhoto')}
-          text={t('verification_Verification_personalDocumentStepOne')}
-          textStyle={getStyleForText(isPresentProfile)}
+          text={t('verification_Verification_profilePhoto')}
+          textStyle={getStyleForText(isProfilePhotoSelected)}
         />
-        <VerificationStepBar
-          isSelected={isPresentPassport}
-          barMode={isPresentPassport ? BarModes.Active : BarModes.Default}
-          buttonMode={CircleButtonModes.Mode4}
-          onPress={() => {}}
-          text={t('verification_Verification_personalDocumentStepTwo')}
-          textStyle={getStyleForText(isPresentPassport)}
-        />
-
-        <VerificationStepBar
-          isSelected={isPresentDriversLicense}
-          barMode={isPresentDriversLicense ? BarModes.Active : BarModes.Default}
-          buttonMode={CircleButtonModes.Mode4}
-          onPress={() => {}}
-          text={t('verification_Verification_personalDocumentStepThree')}
-          textStyle={getStyleForText(isPresentDriversLicense)}
-        />
+        {getTemplatesByDocsType(DocsType.Personal).map(renderStepForDocTemplate)}
       </>
     ),
     button: (
@@ -195,15 +196,14 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
   if (selectedSection == null) {
     renderSection = defaultState.content;
     renderButton = defaultState.button;
-  } else if (selectedSection === 'PersonalDocument') {
-    renderSection = personalDocument.content;
-    renderButton = personalDocument.button;
-  } else if (selectedSection === 'VehicleDocument') {
+  } else if (selectedSection === DocsType.Personal) {
+    renderSection = personalDocumentsSection.content;
+    renderButton = personalDocumentsSection.button;
+  } else if (selectedSection === DocsType.Vehicle) {
     renderSection = vehicleDocument.content;
     renderButton = vehicleDocument.button;
   }
 
-  //TODO delete name Vladyslav  after connection with backend
   return (
     <SafeAreaView>
       <Button onPress={handleBackPress} shape={ButtonShapes.Circle} mode={CircleButtonModes.Mode2} size={ButtonSizes.S}>
@@ -213,7 +213,7 @@ const VerificationScreen = ({ navigation }: VerificationScreenProps) => {
         containerStyle={styles.verificationHeader}
         windowTitle={t('verification_Verification_headerTitle')}
         firstHeaderTitle={t('verification_Verification_explanationTitle')}
-        secondHeaderTitle={contractorInfo?.name ?? 'Vladyslav'}
+        secondHeaderTitle={contractorInfo?.name ?? ''}
         description={t('verification_Verification_explanationDescription')}
       />
       <View style={styles.content}>{renderSection}</View>

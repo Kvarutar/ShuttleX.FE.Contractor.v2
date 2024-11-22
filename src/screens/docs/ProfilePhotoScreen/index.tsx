@@ -1,12 +1,19 @@
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { MediaAmount, MediaCore, Text, useTheme } from 'shuttlex-integration';
 
-import { ProfilePhotoScreenProps } from './types';
+import { saveProfilePhoto } from '../../../core/auth/redux/docs/thunks';
+import { useAppDispatch } from '../../../core/redux/hooks';
+import { RootStackParamList } from '../../../Navigate/props';
 
-const ProfilePhotoScreen = ({ navigation }: ProfilePhotoScreenProps): JSX.Element => {
+const ProfilePhotoScreen = (): JSX.Element => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'ProfilePhoto'>>();
+
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
   const computedStyles = StyleSheet.create({
     tipText: {
@@ -24,7 +31,6 @@ const ProfilePhotoScreen = ({ navigation }: ProfilePhotoScreenProps): JSX.Elemen
     </View>
   );
 
-  //TODO add save photo
   return (
     <MediaCore
       windowTitle={t('docs_ProfilePhoto_headerTitle')}
@@ -34,7 +40,7 @@ const ProfilePhotoScreen = ({ navigation }: ProfilePhotoScreenProps): JSX.Elemen
       goBack={navigation.goBack}
       mediaAmount={MediaAmount.Single}
       cropperCircleOverlay
-      onSaveFiles={() => {}}
+      onSaveFiles={files => dispatch(saveProfilePhoto({ file: files[0] }))}
     >
       <View style={styles.tips}>
         {tip(t('docs_ProfilePhoto_tip1'))}

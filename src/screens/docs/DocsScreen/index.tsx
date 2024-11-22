@@ -18,11 +18,7 @@ import {
   WarningIcon,
 } from 'shuttlex-integration';
 
-import {
-  isAllDocumentsFilledSelector,
-  requirementDocumentsListSelector,
-} from '../../../core/auth/redux/docs/selectors';
-import { DocsState, RequirementDocs, RequirementDocsType } from '../../../core/auth/redux/docs/types';
+import { DocsState } from '../../../core/auth/redux/docs/types';
 import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
 import VerificationHeader from '../../verification/VerificationScreen/VerificationHeader';
 import { DocsScreenProps } from './types';
@@ -32,11 +28,16 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
+  //TODO add logic for get docs status from backend, now MOCK!
   const contractorInfo = useSelector(contractorInfoSelector);
-  const isPresentAllDocuments = useSelector(isAllDocumentsFilledSelector);
-  const requirementDocumentsList = useSelector(requirementDocumentsListSelector);
+  const isPresentAllDocuments = true;
+  const requirementDocumentsList = true;
 
-  const screensContent: Record<RequirementDocsType, { navFunc: () => void; title: string }> = {
+  const screensContent: Record<string, { navFunc: () => void; title: string }> = {
+    templates: {
+      navFunc: () => ({}),
+      title: t('docs_Docs_profilePhoto'),
+    },
     profilePhoto: {
       navFunc: () => navigation.navigate('ProfilePhoto'),
       title: t('docs_Docs_profilePhoto'),
@@ -65,7 +66,7 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
     },
   });
 
-  const renderItem: ListRenderItem<[RequirementDocsType, RequirementDocs]> = ({ item }) => {
+  const renderItem: ListRenderItem<[string, string]> = ({ item }) => {
     const isComplete = Array.isArray(item[1]) ? item[1].length > 0 : item[1] !== null;
     return (
       <Bar style={styles.bar} mode={BarModes.Active} onPress={() => !isComplete && screensContent[item[0]].navFunc()}>
@@ -93,7 +94,7 @@ const DocsScreen = ({ navigation }: DocsScreenProps): JSX.Element => {
       />
 
       <FlatListWithCustomScroll
-        items={Object.entries(requirementDocumentsList) as [keyof DocsState, RequirementDocs][]}
+        items={Object.entries(requirementDocumentsList) as [keyof DocsState, string][]}
         renderItem={renderItem}
         wrapperStyle={styles.documentsWrapper}
         contentContainerStyle={styles.flatListContainer}

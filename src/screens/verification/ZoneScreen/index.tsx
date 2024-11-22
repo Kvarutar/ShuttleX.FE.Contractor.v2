@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import {
   BarModes,
   Button,
@@ -12,43 +15,56 @@ import {
   SquareButtonModes,
 } from 'shuttlex-integration';
 
-import { setContractorZone } from '../../../core/contractor/redux';
+import { zonesSelector } from '../../../core/auth/redux/docs/selectors';
+import { fetchDocsTemplates } from '../../../core/auth/redux/docs/thunks';
+import { ZoneAPIResponse } from '../../../core/auth/redux/docs/types';
 import { useAppDispatch } from '../../../core/redux/hooks';
+import { RootStackParamList } from '../../../Navigate/props';
 import VerificationHeader from '../VerificationScreen/VerificationHeader';
 import VerificationStepBar from '../VerificationScreen/VerificationStepBar';
-import { zoneData } from './mockData';
-import { Zone, ZoneScreenProps } from './props';
 
-const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
+const ZoneScreen = (): JSX.Element => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Zone'>>();
+
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const [zone, setZone] = useState('');
-  const [data, setData] = useState(zoneData);
-  const [history, setHistory] = useState<Zone[][]>([]);
+  const allZones = useSelector(zonesSelector);
 
-  const isLastZone = data[0].next.length === 0;
+  const [currentZones, setCurrentZones] = useState<ZoneAPIResponse[]>([]);
+  const [zoneToSelect, setZoneToSelect] = useState<ZoneAPIResponse | null>(null);
+
+  useEffect(() => {
+    const topLevelZones = allZones.filter(zone => zone.parentZoneId === null);
+    setCurrentZones(topLevelZones);
+  }, [allZones]);
 
   const onSubmit = () => {
-    dispatch(setContractorZone(zone));
+    if (zoneToSelect) {
+      dispatch(fetchDocsTemplates(zoneToSelect.id));
+    }
     navigation.navigate('Verification');
   };
 
-  const handlePressOnZone = (item: Zone) => {
-    if (isLastZone) {
-      setZone(item.name);
+  const handlePressOnZone = (zone: ZoneAPIResponse) => {
+    if (zoneToSelect?.id === zone.id) {
+      setZoneToSelect(null);
+      return;
+    }
+    const childZones = allZones.filter(tmZone => zone.childZoneIds?.includes(tmZone.id));
+
+    if (childZones.length === 0) {
+      setZoneToSelect(zone);
       return;
     }
 
-    setHistory([...history, data]);
-    setData(item.next);
+    setCurrentZones(childZones);
   };
 
   const handleBackPress = () => {
-    if (history.length > 0) {
-      const previousData = history[history.length - 1];
-      setHistory(history.slice(0, -1));
-      setData(previousData);
+    if (currentZones[0].parentZoneId) {
+      const parentZones = allZones.filter(tmZone => tmZone.id === currentZones[0].parentZoneId);
+      setCurrentZones(parentZones);
     } else {
       navigation.goBack();
     }
@@ -91,10 +107,10 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
   //   </>
   // );
 
-  const renderItem = ({ item }: { item: Zone }) => (
+  const renderItem = ({ item }: { item: ZoneAPIResponse }) => (
     <VerificationStepBar
-      text={item.name}
-      isSelected={zone === item.name}
+      text={item.name ?? ''}
+      isSelected={zoneToSelect?.id === item.id}
       onPress={() => handlePressOnZone(item)}
       barMode={BarModes.Default}
     />
@@ -117,16 +133,16 @@ const ZoneScreen = ({ navigation }: ZoneScreenProps): JSX.Element => {
         <FlatListWithCustomScroll
           withScroll={true}
           contentContainerStyle={styles.zoneList}
-          items={data}
+          items={currentZones}
           renderItem={renderItem}
           withShadow
         />
       </View>
       <Button
-        disabled={!zone}
+        disabled={!zoneToSelect}
         text={t('verification_Zone_buttonNext')}
         style={styles.nextButton}
-        mode={!zone ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
+        mode={!zoneToSelect ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
         textStyle={styles.buttonText}
         onPress={onSubmit}
       />

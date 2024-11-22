@@ -16,7 +16,7 @@ import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 
 const AccountVerificateCodeScreen = (): JSX.Element => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'AccountVerificateCode'>>();
   const route = useRoute<RouteProp<RootStackParamList, 'AccountVerificateCode'>>();
   const { mode, newValue } = route.params;
 
