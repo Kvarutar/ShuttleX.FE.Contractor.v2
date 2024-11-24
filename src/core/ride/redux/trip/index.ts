@@ -16,7 +16,6 @@ import {
 } from './thunks';
 import {
   OfferAPIResponse,
-  OfferInfo,
   OfferWayPointsData,
   OfferWayPointsDataAPIResponse,
   OrderType,
@@ -27,69 +26,9 @@ import {
 
 const initialState: TripState = {
   order: null,
-  offer: {
-    //TODO: Just for test
-    offerInfo: {
-      id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      pickUpAddress: 'Kharkiv, Sumska street 10A',
-      stopPointAddresses: ['Kharkiv, Maydan Nezalejnosti 10B'],
-      dropOffAddress: 'Kharkiv, Maydan Nezalejnosti 5B',
-      timeToPickUp: '2024-11-19T17:36:28.303023+02:00',
-      timeToDropOff: '2024-11-19T17:40:26.640436+02:00',
-      timeToAnswerSec: 15,
-      tariffId: '0cb16278-bf7c-4a42-b30e-2b1aee25b306',
-      distanceKm: 5,
-      price: 150,
-      pricePerKm: 30,
-      currency: 'UAH',
-      pickUpRouteId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      dropOffRouteId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    },
-    pickUpPoint: {
-      routeId: 'string',
-      totalDistanceMtr: 0,
-      totalDurationSec: 0,
-      waypoints: [
-        {
-          location: {
-            latitude: 0,
-            longitude: 0,
-          },
-        },
-      ],
-      accurateGeometries: [
-        {
-          polylineStartIndex: 0,
-          polylineEndIndex: 0,
-          trafficLoad: 'string',
-        },
-      ],
-      geometry: 'string',
-      trafficLoad: 'string',
-    },
-    dropOffPoint: {
-      routeId: 'string',
-      totalDistanceMtr: 0,
-      totalDurationSec: 0,
-      waypoints: [
-        {
-          location: {
-            latitude: 0,
-            longitude: 0,
-          },
-        },
-      ],
-      accurateGeometries: [
-        {
-          polylineStartIndex: 0,
-          polylineEndIndex: 0,
-          trafficLoad: 'string',
-        },
-      ],
-      geometry: 'string',
-      trafficLoad: 'string',
-    },
-  },
+  offer: null,
+  pickUpPoint: null,
+  dropOffPoint: null,
   secondOrder: null,
   tripStatus: TripStatus.Idle,
   tripPoints: [],
@@ -125,7 +64,7 @@ const slice = createSlice({
           distanceKm,
           pickUpRouteId,
           dropOffRouteId,
-        } = state.offer.offerInfo;
+        } = state.offer;
         const { orderId, passengerAvatarURL, passengerInfo, tariffs } = action.payload;
 
         const orderTariff = tariffs.find(tariff => tariff.id === tariffId);
@@ -169,10 +108,8 @@ const slice = createSlice({
         }
       }
     },
-    setTripOffer(state, action: PayloadAction<OfferAPIResponse>) {
-      if (state.offer) {
-        state.offer.offerInfo = action.payload;
-      }
+    setTripOffer(state, action: PayloadAction<OfferAPIResponse | null>) {
+      state.offer = action.payload;
     },
     setTripError(state, action: PayloadAction<NetworkErrorDetailsWithBody<any> | null>) {
       state.error = action.payload;
@@ -185,8 +122,8 @@ const slice = createSlice({
       action: PayloadAction<{ pickup: OfferWayPointsDataAPIResponse; dropoff: OfferWayPointsDataAPIResponse }>,
     ) {
       if (state.offer) {
-        state.offer.pickUpPoint = action.payload.pickup;
-        state.offer.dropOffPoint = action.payload.dropoff;
+        state.pickUpPoint = action.payload.pickup;
+        state.dropOffPoint = action.payload.dropoff;
       }
     },
     setPassengerAvatar(state, action: PayloadAction<string>) {
@@ -223,19 +160,14 @@ const slice = createSlice({
         state.tripStatus = TripStatus.Ride;
       }
     },
-    setOffer(state, action: PayloadAction<OfferInfo>) {
-      if (state.offer) {
-        state.offer.offerInfo = action.payload;
-      }
-    },
     setWayPointsPickUp(state, action: PayloadAction<OfferWayPointsData>) {
       if (state.offer) {
-        state.offer.pickUpPoint = action.payload;
+        state.pickUpPoint = action.payload;
       }
     },
     setWayPointsDropOff(state, action: PayloadAction<OfferWayPointsData>) {
       if (state.offer) {
-        state.offer.dropOffPoint = action.payload;
+        state.dropOffPoint = action.payload;
       }
     },
   },
@@ -328,6 +260,10 @@ const slice = createSlice({
           slice.caseReducers.setOrder(state, {
             payload: { tariffs, orderId, passengerInfo: passenger.info, passengerAvatarURL: passenger.avatarURL },
             type: setOrder.type,
+          });
+          slice.caseReducers.setTripOffer(state, {
+            payload: initialState.offer,
+            type: setTripOffer.type,
           });
           slice.caseReducers.setTripIsLoading(state, {
             payload: false,

@@ -5,6 +5,7 @@ import {
   getAchievements,
   getContractorInfo,
   getFullTariffsInfo,
+  getOrUpdateZone,
   getPreferences,
   getSubscriptionStatus,
   sendSelectedPreferences,
@@ -12,16 +13,13 @@ import {
   updateContractorStatus,
 } from './thunks';
 import {
-  AchievementsAPIResponse,
   type ContractorInfo,
-  ContractorState,
   ContractorStateErrorKey,
   ContractorStateLoadingKey,
-  ContractorStatus,
-  PreferenceInfo,
-  TariffInfo,
+  GetOrUpdateZoneAPIResponse,
   VehicleData,
 } from './types';
+import { AchievementsAPIResponse, ContractorState, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
 
 const initialState: ContractorState = {
   //TODO: Remove contractorId and Profile value when logic for receiving it will be added
@@ -38,6 +36,8 @@ const initialState: ContractorState = {
     level: 0,
     totalRidesCount: 0,
     totalLikesCount: 0,
+    earnedToday: 0,
+    previousOrderEarned: 0,
     vehicle: null,
   },
   avatarURL: '',
@@ -121,7 +121,7 @@ const slice = createSlice({
       }
     },
 
-    setContractorZone(state, action: PayloadAction<string>) {
+    setContractorZone(state, action: PayloadAction<GetOrUpdateZoneAPIResponse>) {
       state.zone = action.payload;
     },
     setSubscriptionStatus(state, action: PayloadAction<boolean>) {
@@ -131,6 +131,14 @@ const slice = createSlice({
 
   extraReducers: builder => {
     builder
+      .addCase(getOrUpdateZone.fulfilled, (state, action) => {
+        if (action.payload) {
+          slice.caseReducers.setContractorZone(state, {
+            payload: action.payload,
+            type: setContractorZone.type,
+          });
+        }
+      })
       .addCase(getContractorInfo.pending, state => {
         slice.caseReducers.setLoading(state, {
           payload: { loadingKey: 'contractorInfo', value: true },

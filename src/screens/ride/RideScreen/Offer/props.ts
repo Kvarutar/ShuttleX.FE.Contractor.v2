@@ -1,9 +1,9 @@
 import { StyleProp, TextStyle } from 'react-native';
 
-import { OfferType } from '../../../../core/ride/redux/trip/types';
+import { OfferInfo } from '../../../../core/ride/redux/trip/types';
 
 export type OfferProps = {
-  offer: OfferType;
+  offer: OfferInfo;
   onOfferAccept: () => void;
   onOfferDecline: () => void;
   onClose: () => void;

@@ -46,10 +46,10 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
 
   const [isShowMorePoints, setIsShowMorePoints] = useState<boolean>(false);
 
-  const travelTime = calculateTravelTime(offer.offerInfo.timeToDropOff);
+  const travelTime = calculateTravelTime(offer.timeToDropOff);
   const timeToAnswer = useMemo(() => {
-    return Date.now() + secToMilSec(offer.offerInfo.timeToAnswerSec);
-  }, [offer.offerInfo.timeToAnswerSec]);
+    return Date.now() + secToMilSec(offer.timeToAnswerSec);
+  }, [offer.timeToAnswerSec]);
 
   const wayPointsPickUp = useSelector(wayPointsPickUpSelector);
   const wayPointsDropOff = useSelector(wayPointsDropOffSelector);
@@ -60,7 +60,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
   useEffect(() => {
     if (wayPointsPickUp && wayPointsPickUp.length > 0) {
       const pickUpCoordinates = wayPointsPickUp.map<{ address: string } & LatLng>(waypoint => ({
-        address: offer.offerInfo.pickUpAddress,
+        address: offer.pickUpAddress,
         latitude: waypoint.location.latitude,
         longitude: waypoint.location.longitude,
       }));
@@ -69,13 +69,13 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
 
     if (wayPointsDropOff && wayPointsDropOff.length > 0) {
       const dropOffCoordinates = wayPointsDropOff.map<{ address: string } & LatLng>(waypoint => ({
-        address: offer.offerInfo.stopPointAddresses.join(', '),
+        address: offer.stopPointAddresses.join(', '),
         latitude: waypoint.location.latitude,
         longitude: waypoint.location.longitude,
       }));
       setDropOffData(dropOffCoordinates);
     }
-  }, [wayPointsPickUp, wayPointsDropOff, offer.offerInfo.stopPointAddresses, offer.offerInfo.pickUpAddress]);
+  }, [wayPointsPickUp, wayPointsDropOff, offer.stopPointAddresses, offer.pickUpAddress]);
 
   const startPosition: { address: string } & LatLng =
     pickUpData.length > 0
@@ -156,7 +156,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
     content = (
       <ScrollViewWithCustomScroll wrapperStyle={styles.scrollViewWrapper}>
         <OfferItem
-          address={offer.offerInfo.pickUpAddress}
+          address={offer.pickUpAddress}
           pointName={t('ride_Ride_Offer_pickUpTitle')}
           isDropOff={false}
           style={computedStyles.offerItemTitle}
@@ -164,7 +164,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
           setIsShowMorePoints={setIsShowMorePoints}
         />
         <OfferItem
-          address={offerPoints[offerPoints.length - 1].address}
+          address={offer.stopPointAddresses[offer.stopPointAddresses.length - 1]}
           pointName={t('ride_Ride_Offer_dropOffTitle')}
           isDropOff
           style={computedStyles.offerItemTitle}
@@ -206,13 +206,13 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
         <View style={[styles.offerInfoItem, computedStyles.offerInfoItem]}>
           <Text style={[styles.offerInfoTitle, computedStyles.offerInfoText]}>{t('ride_Ride_Offer_pricePerKm')}</Text>
           <Text style={[styles.offerInfoCounter, computedStyles.offerInfoCounter]}>
-            {formatCurrency(offer.offerInfo.currency, offer.offerInfo.pricePerKm)}
+            {formatCurrency(offer.currency, offer.pricePerKm)}
           </Text>
         </View>
         <View style={[styles.offerInfoItem, computedStyles.offerInfoItem]}>
           <Text style={[styles.offerInfoTitle, computedStyles.offerInfoText]}>{t('ride_Ride_Offer_price')}</Text>
           <Text style={[styles.offerInfoCounter, computedStyles.offerInfoCounter]}>
-            {formatCurrency(offer.offerInfo.currency, offer.offerInfo.price)}
+            {formatCurrency(offer.currency, offer.price)}
           </Text>
         </View>
       </View>

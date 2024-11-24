@@ -65,22 +65,13 @@ export const acceptOffer = createAppAsyncThunk<
     tariffs: TariffInfo[];
   },
   AcceptOrDeclineOfferPayload
->('trip/acceptOffer', async (payload, { rejectWithValue, ordersAxios, getState }) => {
+>('trip/acceptOffer', async (payload, { rejectWithValue, offersAxios, ordersAxios, getState }) => {
   try {
-    //TODO: Test on the real offer
-    // const response = await offersAxios.post<ResponseToOfferAPIResponse>(
-    //   `${payload.offerId}/accept`,
-    // );
-    // return response.data;
-
-    //TODO: Rewrite with correct data
-    const acceptOfferResponseData: AcceptOfferAPIResponse = {
-      orderId: '9cec4b31-4d92-45e9-9381-1878608796fd',
-    };
+    const acceptOfferResponseData = await offersAxios.post<AcceptOfferAPIResponse>(`${payload.offerId}/accept`);
 
     const [passengerInfoResponse, passengerAvatarResponse] = await Promise.allSettled([
-      ordersAxios.get<PassengerInfoAPIResponse>(`/${acceptOfferResponseData.orderId}/passenger/info`),
-      ordersAxios.get<PassengerAvatarAPIResponse>(`/${acceptOfferResponseData.orderId}/passenger/avatar`, {
+      ordersAxios.get<PassengerInfoAPIResponse>(`/${acceptOfferResponseData.data.orderId}/passenger/info`),
+      ordersAxios.get<PassengerAvatarAPIResponse>(`/${acceptOfferResponseData.data.orderId}/passenger/avatar`, {
         responseType: 'blob',
       }),
     ]);
@@ -100,7 +91,7 @@ export const acceptOffer = createAppAsyncThunk<
     const state = getState();
 
     return {
-      orderId: acceptOfferResponseData.orderId,
+      orderId: acceptOfferResponseData.data.orderId,
       passenger: {
         info: info,
         avatarURL,

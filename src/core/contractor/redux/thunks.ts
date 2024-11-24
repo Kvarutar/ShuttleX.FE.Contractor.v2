@@ -1,20 +1,46 @@
 import Config from 'react-native-config';
-import { convertBlobToImgUri, getNetworkErrorInfo } from 'shuttlex-integration';
+import { convertBlobToImgUri, getNetworkErrorInfo, Nullable } from 'shuttlex-integration';
 
 import { createAppAsyncThunk } from '../../redux/hooks';
+import { contractorZoneSelector } from './selectors';
 import {
   AchievementsAPIResponse,
   ContractorInfo,
   ContractorInfoAPIResponse,
   ContractorStatus,
   GetContractorAvatarAPIResponse,
+  GetOrUpdateZoneAPIResponse,
   PreferenceInfo,
   TariffAdditionalInfoAPIResponse,
   TariffInfo,
   TariffInfoByTariffsAPIResponse,
   UpdateSelectedTariffsAPIRequest,
+  Zone,
 } from './types';
 import { tariffsNamesByFeKey } from './utils/getTariffNamesByFeKey';
+
+export const getOrUpdateZone = createAppAsyncThunk<Nullable<Zone>, void>(
+  'contractor/getOrUpdateZone',
+  async (_, { rejectWithValue, profileAxios }) => {
+    //const state = getState();
+    //const defaultLocation = state.geolocation.coordinates;
+    // if (defaultLocation) {
+    //   urlPart = `${urlPart}?Latitude=48.450001&Longitude=34.983334`;
+    // }
+    try {
+      const response = await profileAxios.post<GetOrUpdateZoneAPIResponse[]>(
+        '/zone/up-to-date?Latitude=48.450001&Longitude=34.98333',
+      );
+
+      const zone =
+        response.data.find(el => el.locationType === 'City') ?? response.data.find(el => el.locationType === 'Country');
+
+      return zone ?? null;
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
 
 //TODO: Add popup when request is rejected
 export const getContractorInfo = createAppAsyncThunk<
@@ -84,10 +110,10 @@ export const updateContractorStatus = createAppAsyncThunk<ContractorStatus, Cont
 
 export const getFullTariffsInfo = createAppAsyncThunk<TariffInfo[], void>(
   'contractor/getFullTariffsInfo',
-  async (_, { rejectWithValue, contractorAxios, configAxios }) => {
+  async (_, { rejectWithValue, contractorAxios, configAxios, getState }) => {
     try {
-      //TODO: Rewrite with the current zoneId
-      const zoneId = '5c203285-eba2-41c8-b8f1-0543510480f2';
+      const zone = contractorZoneSelector(getState());
+      const zoneId = zone?.id;
 
       const [primaryTariffsInfoResponse, additionalTariffsInfoResponse] = await Promise.all([
         contractorAxios.get<TariffInfoByTariffsAPIResponse[]>('/tariffs'),
@@ -115,7 +141,6 @@ export const getFullTariffsInfo = createAppAsyncThunk<TariffInfo[], void>(
           });
         }
       });
-
       return updatedTariffs;
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));

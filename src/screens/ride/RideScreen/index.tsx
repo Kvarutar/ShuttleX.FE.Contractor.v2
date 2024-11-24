@@ -23,7 +23,6 @@ import {
 } from 'shuttlex-integration';
 
 import { contractorInfoStateSelector } from '../../../core/contractor/redux/selectors';
-import { getFullTariffsInfo } from '../../../core/contractor/redux/thunks';
 import { ContractorStatusAPIResponse } from '../../../core/contractor/redux/types';
 import { setNotificationList } from '../../../core/menu/redux/notifications';
 import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
@@ -92,7 +91,6 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
 
   useEffect(() => {
     //TODO: Add receiving zones and zoneId
-    dispatch(getFullTariffsInfo());
     dispatch(
       setNotificationList([
         {

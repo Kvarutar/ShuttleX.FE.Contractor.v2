@@ -1,6 +1,18 @@
+import { LatLng } from 'react-native-maps';
 import { NetworkErrorDetailsWithBody, Nullable, TariffType } from 'shuttlex-integration';
 
 import { AchievementsKeys } from '../../../shared/Achievements/types';
+
+export type GetOrUpdateZoneAPIResponse = {
+  id: string;
+  name: string;
+  isoName: string;
+  parentZoneId: string;
+  locationType: string;
+  centerPoint: LatLng;
+};
+
+export type Zone = GetOrUpdateZoneAPIResponse;
 
 export type TariffFeKeyFromAPI = 'basicx' | 'basicxl' | 'comfortplus' | 'premiumx' | 'premiumxl' | 'teslax';
 
@@ -36,6 +48,8 @@ export type ContractorInfo = {
   level: number;
   totalRidesCount: number;
   totalLikesCount: number;
+  earnedToday: number;
+  previousOrderEarned: number;
   vehicle: VehicleData | null;
 };
 
@@ -47,6 +61,8 @@ export type ContractorInfoAPIResponse = {
   level: number;
   totalRidesCount: number;
   totalLikesCount: number;
+  earnedToday: number;
+  previousOrderEarned: number;
   vehicle: VehicleData | null;
   state: ContractorStatusAPIResponse;
 };
@@ -111,7 +127,7 @@ export type ContractorState = {
   achievements: AchievementsAPIResponse[];
   info: ContractorInfo;
   avatarURL: string;
-  zone: Nullable<string>;
+  zone: Nullable<Zone>;
   subscriptionStatus: boolean;
   error: {
     contractorInfo: Nullable<NetworkErrorDetailsWithBody<any>>;

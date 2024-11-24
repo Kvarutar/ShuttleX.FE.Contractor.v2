@@ -77,6 +77,8 @@ export type OfferAPIResponse = {
   dropOffRouteId: string;
 };
 
+export type OfferInfo = OfferAPIResponse;
+
 export type OfferWayPointsDataAPIResponse = {
   routeId: string;
   totalDistanceMtr: number;
@@ -100,12 +102,6 @@ export type OfferWayPointsDataAPIResponse = {
 export type OfferPickUpAPIResponse = OfferWayPointsDataAPIResponse;
 export type OfferDropOffAPIResponse = OfferWayPointsDataAPIResponse;
 
-export type OfferType = {
-  offerInfo: OfferAPIResponse;
-  pickUpPoint: OfferPickUpAPIResponse;
-  dropOffPoint: OfferDropOffAPIResponse;
-};
-
 export type OrderType = {
   id: string;
   pickUpAddress: string;
@@ -120,23 +116,6 @@ export type OrderType = {
   pricePerKm: number;
   distanceKm: number;
   currencyCode: string;
-  pickUpRouteId: string;
-  dropOffRouteId: string;
-};
-
-export type OfferInfo = {
-  id: string;
-  pickUpAddress: string;
-  stopPointAddresses: string[];
-  dropOffAddress: string;
-  timeToPickUp: string;
-  timeToDropOff: string;
-  timeToAnswerSec: number;
-  tariffId: string;
-  distanceKm: number;
-  price: number;
-  pricePerKm: number;
-  currency: string;
   pickUpRouteId: string;
   dropOffRouteId: string;
 };
@@ -163,7 +142,9 @@ export type OfferWayPointsData = {
 
 export type TripState = {
   order: Nullable<OrderType>;
-  offer: Nullable<OfferType>;
+  pickUpPoint: Nullable<OfferWayPointsDataAPIResponse>;
+  dropOffPoint: Nullable<OfferWayPointsDataAPIResponse>;
+  offer: Nullable<OfferInfo>;
   secondOrder: Nullable<OrderType>;
   tripStatus: TripStatus;
   tripPoints: string[];

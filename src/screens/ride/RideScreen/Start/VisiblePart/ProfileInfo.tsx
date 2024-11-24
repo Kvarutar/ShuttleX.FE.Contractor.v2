@@ -4,6 +4,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import {
+  formatCurrency,
   sizes,
   StatsBlock,
   SwipeButton,
@@ -16,6 +17,7 @@ import {
 import {
   contractorInfoSelector,
   contractorStatusSelector,
+  primaryTariffSelector,
   selectedTariffsSelector,
 } from '../../../../../core/contractor/redux/selectors';
 import { updateContractorStatus } from '../../../../../core/contractor/redux/thunks';
@@ -37,6 +39,7 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
   const contractorInfo = useSelector(contractorInfoSelector);
   const contractorStatus = useSelector(contractorStatusSelector);
   const selectedTariffs = useSelector(selectedTariffsSelector);
+  const primaryTariff = useSelector(primaryTariffSelector);
 
   const contractorStatusIsOffline = contractorStatus === 'offline';
 
@@ -79,7 +82,7 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
   };
 
   //TODO: Rewrite with skeletons
-  if (!contractorInfo || !contractorInfo.vehicle) {
+  if (!contractorInfo || !contractorInfo.vehicle || !primaryTariff) {
     return;
   }
 
@@ -134,7 +137,9 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
               {t('ride_Ride_Order_earnedToday')}
             </Text>
             {/* TODO: Add "Earned today" state when it will be added */}
-            <Text style={[styles.bottomInfoText, computedStyles.bottomInfoText]}>{'$0.0'}</Text>
+            <Text style={[styles.bottomInfoText, computedStyles.bottomInfoText]}>
+              {formatCurrency(primaryTariff.currencyCode, contractorInfo.earnedToday)}
+            </Text>
           </View>
         </View>
       </View>

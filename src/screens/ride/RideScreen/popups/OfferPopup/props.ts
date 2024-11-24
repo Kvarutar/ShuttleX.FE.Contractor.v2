@@ -1,7 +1,7 @@
-import { OfferType } from '../../../../../core/ride/redux/trip/types';
+import { OfferInfo } from '../../../../../core/ride/redux/trip/types';
 
 export type OfferPopupProps = {
-  offer: OfferType;
+  offer: OfferInfo;
   onOfferAccept: () => void;
   onOfferDecline: () => void;
   onClose: () => void;

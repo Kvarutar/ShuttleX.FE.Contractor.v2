@@ -108,12 +108,10 @@ const Start = () => {
   }, [contractorStatus, contractorSubscriptionStatus, isOpened]);
 
   useEffect(() => {
-    if (contractorStatus === 'online') {
-      setTimeout(() => {
-        setIsOfferPopupVisible(true);
-      }, 1000);
+    if (offer) {
+      setIsOfferPopupVisible(true);
     }
-  }, [contractorStatus]);
+  }, [offer]);
 
   useEffect(() => {
     if (pickUpRouteId && dropOffRouteId) {
@@ -142,13 +140,13 @@ const Start = () => {
   const onOfferDecline = () => {
     onOfferPopupClose();
     if (offer) {
-      dispatch(declineOffer({ offerId: offer.offerInfo.id }));
+      dispatch(declineOffer({ offerId: offer.id }));
     }
   };
 
   const onOfferAccept = async () => {
-    if (offer?.offerInfo && pickUpRouteId && dropOffRouteId) {
-      await dispatch(acceptOffer({ offerId: offer.offerInfo.id }));
+    if (offer && pickUpRouteId && dropOffRouteId) {
+      await dispatch(acceptOffer({ offerId: offer.id }));
       setIsOfferPopupVisible(false);
     }
   };
