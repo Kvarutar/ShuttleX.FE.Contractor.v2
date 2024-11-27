@@ -1,10 +1,17 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getTokens, useTheme } from 'shuttlex-integration';
 
 import { setIsLoggedIn } from '../core/auth/redux';
 import { isLoggedInSelector } from '../core/auth/redux/selectors';
-import { getContractorInfo, getFullTariffsInfo, getOrUpdateZone } from '../core/contractor/redux/thunks';
+import { contractorZoneSelector } from '../core/contractor/redux/selectors';
+import {
+  getContractorInfo,
+  getFullTariffsInfo,
+  getOrUpdateZone,
+  updateProfileLanguage,
+} from '../core/contractor/redux/thunks';
 import { useAppDispatch } from '../core/redux/hooks';
 import { signalRThunks, updateSignalRAccessToken } from '../core/redux/signalr';
 import { geolocationCoordinatesSelector } from '../core/ride/redux/geolocation/selectors';
@@ -14,18 +21,21 @@ import { InitialSetupProps } from './types';
 const InitialSetup = ({ children }: InitialSetupProps) => {
   const dispatch = useAppDispatch();
   const { setThemeMode } = useTheme();
+  const { i18n } = useTranslation();
 
   const isLoggedin = useSelector(isLoggedInSelector);
   const defaultLocation = useSelector(geolocationCoordinatesSelector);
+  const contractorZone = useSelector(contractorZoneSelector);
 
   useEffect(() => {
     (async () => {
       const { accessToken } = await getTokens();
 
       if (accessToken) {
-        dispatch(setIsLoggedIn(true));
         getFirebaseDeviceToken();
-        dispatch(getContractorInfo());
+        //TODO temporary solution
+        await dispatch(getContractorInfo());
+        dispatch(setIsLoggedIn(true));
       } else {
         dispatch(setIsLoggedIn(false));
       }
@@ -45,6 +55,10 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   useEffect(() => {
     setThemeMode('light');
   }, [setThemeMode]);
+
+  useEffect(() => {
+    dispatch(updateProfileLanguage(i18n.language));
+  }, [contractorZone, i18n.language, dispatch]);
 
   useEffect(() => {
     setupNotifications();

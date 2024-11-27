@@ -10,6 +10,7 @@ export interface NotificationRemoteMessage {
 export enum NotificationType {
   NewOffer = 'offer_received',
   PassengerRejected = 'passenger_rejected',
+  DocsApproved = 'docs_approved',
 }
 
 export type NotificationPayload = {

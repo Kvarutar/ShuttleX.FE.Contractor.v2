@@ -1,5 +1,6 @@
-import notifee from '@notifee/react-native';
+import notifee, { AndroidColor } from '@notifee/react-native';
 
+import { getContractorInfo } from '../../contractor/redux/thunks';
 import { store } from '../../redux/store';
 import { fetchOfferInfo } from '../../ride/redux/trip/thunks';
 import { NotificationPayload, NotificationRemoteMessage, NotificationType, NotificationWithPayload } from './types';
@@ -20,6 +21,9 @@ const notificationHandlers: Record<NotificationType, (payload?: NotificationPayl
   },
   [NotificationType.PassengerRejected]: () => {
     // TODO add case
+  },
+  [NotificationType.DocsApproved]: () => {
+    store.dispatch(getContractorInfo());
   },
 };
 
@@ -46,7 +50,9 @@ export const displayNotificationForAll = async (remoteMessage: NotificationRemot
       body,
       android: {
         channelId: 'general-channel',
-        smallIcon: 'bootsplash_logo',
+        color: AndroidColor.BLACK,
+        smallIcon: 'ic_notification',
+        largeIcon: 'ic_launcher',
         pressAction: {
           id: 'default',
         },

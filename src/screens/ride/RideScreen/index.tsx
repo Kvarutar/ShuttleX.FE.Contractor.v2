@@ -1,3 +1,4 @@
+//TODO uncoment all notification related code when we will need it
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, SafeAreaView, StyleSheet, View } from 'react-native';
@@ -8,24 +9,19 @@ import {
   Alert,
   Button,
   ButtonShapes,
-  ButtonSizes,
-  CircleButtonModes,
   IntegrationModule,
   LocationUnavailable,
   LocationUnavailableProps,
-  MenuIcon,
-  NotificationIcon,
-  NotificationType,
+  MenuHeader,
   sizes,
   SquareButtonModes,
-  Text,
   useTheme,
 } from 'shuttlex-integration';
 
 import { contractorInfoStateSelector } from '../../../core/contractor/redux/selectors';
 import { ContractorStatusAPIResponse } from '../../../core/contractor/redux/types';
-import { setNotificationList } from '../../../core/menu/redux/notifications';
-import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
+// import { setNotificationList } from '../../../core/menu/redux/notifications';
+// import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { useGeolocationStartWatch, useNetworkConnectionStartWatch } from '../../../core/ride/hooks';
 import {
@@ -61,7 +57,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const isPermissionGranted = useSelector(geolocationIsPermissionGrantedSelector);
   const isLocationEnabled = useSelector(geolocationIsLocationEnabledSelector);
   const geolocationAccuracy = useSelector(geolocationAccuracySelector);
-  const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
+  // const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
   const contractorDocsStatus = useSelector(contractorInfoStateSelector);
 
   const insets = useSafeAreaInsets();
@@ -83,71 +79,14 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     },
   });
 
+  //TODO for test
+  console.log('contractorDocsStatus', contractorDocsStatus);
+
   useEffect(() => {
     if (contractorDocsStatus === 'None') {
       navigation.replace('Verification');
     }
   }, [contractorDocsStatus, navigation]);
-
-  useEffect(() => {
-    //TODO: Add receiving zones and zoneId
-    dispatch(
-      setNotificationList([
-        {
-          type: NotificationType.TripWasRated,
-          title: 'Jack Johnson',
-          description: 'rated the trip with you',
-          isRead: true,
-          time: '5m ago',
-          image: {
-            uri: 'https://sun9-34.userapi.com/impg/ZGuJiFBAp-93En3yLK7LWZNPxTGmncHrrtVgbg/hd6uHaUv1zE.jpg?size=1200x752&quality=96&sign=e79799e4b75c839d0ddb1a2232fe5d60&type=album',
-          },
-        },
-        {
-          type: NotificationType.RatingIncreased,
-          title: 'Rating increased',
-          description: 'Your rating was increased to 4.6',
-          isRead: false,
-          time: '5m ago',
-        },
-        {
-          type: NotificationType.PlannedTrip,
-          title: 'Booked time',
-          description: 'You have to make booked trip right now',
-          isRead: true,
-          time: '5m ago',
-        },
-        {
-          type: NotificationType.RatingIncreased,
-          title: 'Jack Johnson',
-          description: 'rated the trip with you',
-          isRead: true,
-          time: '5m ago',
-        },
-        {
-          type: NotificationType.RatingIncreased,
-          title: 'Jack Johnson',
-          description: 'rated the trip with you',
-          isRead: false,
-          time: '5m ago',
-        },
-        {
-          type: NotificationType.RatingIncreased,
-          title: 'Jack Johnson',
-          description: 'rated the trip with you',
-          isRead: true,
-          time: '5m ago',
-        },
-        {
-          type: NotificationType.RatingIncreased,
-          title: 'Jack Johnson',
-          description: 'rated the trip with you',
-          isRead: true,
-          time: '5m ago',
-        },
-      ]),
-    );
-  }, [dispatch]);
 
   const determinePopupMode = (status: ContractorStatusAPIResponse): UnclosablePopupModes | null => {
     switch (status) {
@@ -237,59 +176,41 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     };
   }
 
-  let unreadNotificationsMarker = null;
-  if (unreadNotifications > 0) {
-    unreadNotificationsMarker = (
-      <View style={[styles.unreadNotificationsMarker, computedStyles.unreadNotificationsMarker]}>
-        <Text style={[styles.unreadNotificationsText, computedStyles.unreadNotificationsText]}>
-          {unreadNotifications}
-        </Text>
-      </View>
-    );
-  } else if (unreadNotifications > 99) {
-    unreadNotificationsMarker = (
-      <View style={[styles.unreadNotificationsMarker, computedStyles.unreadNotificationsMarker]}>
-        <Text style={[styles.unreadNotificationsText, computedStyles.unreadNotificationsText]}>99+</Text>
-      </View>
-    );
-  }
+  // let unreadNotificationsMarker = null;
+  // if (unreadNotifications > 0) {
+  //   unreadNotificationsMarker = (
+  //     <View style={[styles.unreadNotificationsMarker, computedStyles.unreadNotificationsMarker]}>
+  //       <Text style={[styles.unreadNotificationsText, computedStyles.unreadNotificationsText]}>
+  //         {unreadNotifications}
+  //       </Text>
+  //     </View>
+  //   );
+  // } else if (unreadNotifications > 99) {
+  //   unreadNotificationsMarker = (
+  //     <View style={[styles.unreadNotificationsMarker, computedStyles.unreadNotificationsMarker]}>
+  //       <Text style={[styles.unreadNotificationsText, computedStyles.unreadNotificationsText]}>99+</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <>
       <SafeAreaView style={styles.wrapper}>
         <MapView />
-        <View style={[styles.topButtonsContainer, computedStyles.topButtonsContainer]}>
-          <Button
-            circleSubContainerStyle={styles.topButton}
-            onPress={() => setIsMenuVisible(true)}
-            shape={ButtonShapes.Circle}
-            mode={CircleButtonModes.Mode2}
-            size={ButtonSizes.S}
-            disableShadow
-          >
-            <MenuIcon />
-          </Button>
+
+        <MenuHeader
+          onMenuPress={() => setIsMenuVisible(true)}
+          onNotificationPress={() => navigation.navigate('Notifications')}
+          style={styles.menuHeader}
+        >
           <Alert
             isVisible={isEmailVerified}
             text={t('ride_Ride_EmailAlert')}
             backgroundColor={colors.errorColor}
             textColor={colors.textTertiaryColor}
           />
-          <View style={styles.topRightButtonContainer}>
-            <View>
-              <Button
-                circleSubContainerStyle={styles.topButton}
-                onPress={() => navigation.navigate('Notifications')}
-                shape={ButtonShapes.Circle}
-                mode={CircleButtonModes.Mode2}
-                size={ButtonSizes.S}
-              >
-                <NotificationIcon />
-              </Button>
-              {unreadNotificationsMarker}
-            </View>
-          </View>
-        </View>
+        </MenuHeader>
+        <View style={[styles.topButtonsContainer, computedStyles.topButtonsContainer]} />
         {order ? (
           <>
             <MapCameraModeButton />
@@ -309,15 +230,19 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
 };
 
 const styles = StyleSheet.create({
-  unreadNotificationsMarker: {
-    position: 'absolute',
-    right: -4,
-    bottom: -4,
-    width: 20,
-    height: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 100,
+  // unreadNotificationsMarker: {
+  //   position: 'absolute',
+  //   right: -4,
+  //   bottom: -4,
+  //   width: 20,
+  //   height: 20,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   borderRadius: 100,
+  // },
+  menuHeader: {
+    paddingHorizontal: sizes.paddingHorizontal,
+    paddingTop: 8,
   },
   unreadNotificationsText: {
     fontFamily: 'Inter Medium',

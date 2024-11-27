@@ -73,6 +73,11 @@ export type UpdateSelectedTariffsAPIRequest = {
   tariffIds: string[];
 };
 
+export type UpdateProfileLanguageAPIRequest = {
+  type: number;
+  value: string;
+};
+
 export type TariffAdditionalInfoAPIResponse = {
   id: string;
   name: string;

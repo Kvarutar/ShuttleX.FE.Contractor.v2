@@ -14,6 +14,7 @@ import {
   TariffAdditionalInfoAPIResponse,
   TariffInfo,
   TariffInfoByTariffsAPIResponse,
+  UpdateProfileLanguageAPIRequest,
   UpdateSelectedTariffsAPIRequest,
   Zone,
 } from './types';
@@ -164,6 +165,20 @@ export const sendSelectedTariffs = createAppAsyncThunk<
     return rejectWithValue(getNetworkErrorInfo(error));
   }
 });
+
+export const updateProfileLanguage = createAppAsyncThunk<void, string>(
+  'contractor/updateProfileLanguage',
+  async (payload, { rejectWithValue, profileAxios }) => {
+    try {
+      profileAxios.post<void>('/profile/languages', {
+        type: 0,
+        value: payload,
+      } as UpdateProfileLanguageAPIRequest);
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
 
 //TODO: There's just example! Rewrite when info about "preferences" logic is known
 export const sendSelectedPreferences = createAppAsyncThunk<
