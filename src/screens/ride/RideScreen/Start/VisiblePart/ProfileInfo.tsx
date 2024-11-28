@@ -17,6 +17,7 @@ import {
 import {
   contractorInfoSelector,
   contractorStatusSelector,
+  contractorZoneSelector,
   primaryTariffSelector,
   selectedTariffsSelector,
 } from '../../../../../core/contractor/redux/selectors';
@@ -40,6 +41,7 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
   const contractorStatus = useSelector(contractorStatusSelector);
   const selectedTariffs = useSelector(selectedTariffsSelector);
   const primaryTariff = useSelector(primaryTariffSelector);
+  const contractorZone = useSelector(contractorZoneSelector);
 
   const contractorStatusIsOffline = contractorStatus === 'offline';
 
@@ -147,7 +149,7 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
       <View style={styles.swipeButtonContainer}>
         {contractorStatusIsOffline ? (
           <SwipeButton
-            mode={SwipeButtonModes.Confirm}
+            mode={contractorZone ? SwipeButtonModes.Confirm : SwipeButtonModes.Disabled}
             onSwipeEnd={() => swipeHandler(lineState.toLineState)}
             text={t('ride_Ride_Start_startRideButton')}
           />

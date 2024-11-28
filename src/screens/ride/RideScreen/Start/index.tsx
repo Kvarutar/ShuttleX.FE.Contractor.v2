@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
-  BigHeader,
   BottomWindowWithGesture,
   BottomWindowWithGestureRef,
   Button,
-  ButtonShapes,
   isIncorrectFieldsError,
   SquareButtonModes,
   SwipeButtonModes,
+  UnsupportedCityPopup,
   useTariffsIcons,
 } from 'shuttlex-integration';
 
@@ -19,6 +18,7 @@ import {
   contractorGeneralErrorSelector,
   contractorStatusSelector,
   contractorSubscriptionStatusSelector,
+  contractorZoneSelector,
   primaryTariffSelector,
 } from '../../../../core/contractor/redux/selectors';
 import { getAchievements, getPreferences } from '../../../../core/contractor/redux/thunks';
@@ -34,6 +34,7 @@ import {
 } from '../../../../core/ride/redux/trip/selectors';
 import { acceptOffer, declineOffer, fetchWayPointsRoute } from '../../../../core/ride/redux/trip/thunks';
 import AlertInitializer from '../../../../shared/AlertInitializer';
+import AccountIsNotActivePopup from '../popups/AccountIsNotActivePopup';
 import AchievementsPopup from '../popups/AchievementsPopup';
 import OfferPopup from '../popups/OfferPopup';
 import TariffPreferencesPopup from '../popups/PreferencesPopup';
@@ -90,10 +91,12 @@ const Start = () => {
   const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
   const [isAchievementsPopupVisible, setIsAchievementsPopupVisible] = useState<boolean>(false);
   const [isAccountIsNotActivePopupVisible, setIsAccountIsNotActivePopupVisible] = useState<boolean>(false);
+  const [isUnsupportedCityPopupVisible, setIsUnsupportedCityPopupVisible] = useState<boolean>(false);
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const offer = useSelector(offerSelector);
   const pickUpRouteId = useSelector(pickUpRouteIdSelector);
   const dropOffRouteId = useSelector(dropOffRouteIdSelector);
+  const contractorZone = useSelector(contractorZoneSelector);
 
   useEffect(() => {
     setLineState(getRideBuilderRecord(t)[contractorStatus]);
@@ -106,6 +109,14 @@ const Start = () => {
       setIsAccountIsNotActivePopupVisible(false);
     }
   }, [contractorStatus, contractorSubscriptionStatus, isOpened]);
+
+  useEffect(() => {
+    if (isOpened && contractorStatus === 'offline' && !contractorZone) {
+      setIsUnsupportedCityPopupVisible(true);
+    } else if (!isOpened) {
+      setIsUnsupportedCityPopupVisible(false);
+    }
+  }, [contractorStatus, contractorZone, isOpened]);
 
   useEffect(() => {
     if (offer) {
@@ -159,11 +170,6 @@ const Start = () => {
 
   const onPressConfirmButton = () => {
     dispatch(setIsCanceledTripsPopupVisible(false));
-  };
-
-  const onPressAccountIsNotActivePopupConfirmButton = () => {
-    Linking.openURL('https://www.shuttlex.com').catch(err => console.error(err));
-    setIsAccountIsNotActivePopupVisible(false);
   };
 
   //TODO: Add navigation to support page or same thing and resetting cancels
@@ -280,35 +286,13 @@ const Start = () => {
       )}
       {isCanceledTripsPopupVisible && canceledTripsPopupsContent()}
       {isAccountIsNotActivePopupVisible && (
-        <BottomWindowWithGesture
-          withShade
-          opened
-          setIsOpened={setIsAccountIsNotActivePopupVisible}
-          hiddenPart={
-            <View>
-              <BigHeader
-                windowTitle={t('ride_Ride_Start_accountIsNotActiveSubtitle')}
-                firstHeaderTitle={t('ride_Ride_Start_accountIsNotActiveTitle')}
-                secondHeaderTitle={t('ride_Ride_Start_accountIsNotActiveSecondTitle')}
-                description={t('ride_Ride_Start_accountIsNotActiveDescription')}
-              />
-              <View style={styles.popupButtonWrapper}>
-                <Button
-                  shape={ButtonShapes.Square}
-                  containerStyle={styles.popupButton}
-                  text={t('ride_Ride_Start_accountIsNotActiveFirstButton')}
-                  onPress={onPressAccountIsNotActivePopupConfirmButton}
-                />
-                <Button
-                  containerStyle={styles.popupButton}
-                  shape={ButtonShapes.Square}
-                  mode={SquareButtonModes.Mode2}
-                  text={t('ride_Ride_Start_accountIsNotActiveSecondButton')}
-                  onPress={() => setIsAccountIsNotActivePopupVisible(false)}
-                />
-              </View>
-            </View>
-          }
+        <AccountIsNotActivePopup setIsAccountIsNotActivePopupVisible={setIsAccountIsNotActivePopupVisible} />
+      )}
+      {isUnsupportedCityPopupVisible && (
+        <UnsupportedCityPopup
+          //TODO: swap console.log('Support') to navigation on Support
+          onSupportPressHandler={() => console.log('Support')}
+          setIsUnsupportedCityPopupVisible={setIsUnsupportedCityPopupVisible}
         />
       )}
     </>
