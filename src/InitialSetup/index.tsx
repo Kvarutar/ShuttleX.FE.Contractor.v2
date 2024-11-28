@@ -23,7 +23,7 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   const { setThemeMode } = useTheme();
   const { i18n } = useTranslation();
 
-  const isLoggedin = useSelector(isLoggedInSelector);
+  const isLoggedIn = useSelector(isLoggedInSelector);
   const defaultLocation = useSelector(geolocationCoordinatesSelector);
   const contractorZone = useSelector(contractorZoneSelector);
 
@@ -40,7 +40,19 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
         dispatch(setIsLoggedIn(false));
       }
     })();
-  }, [dispatch, isLoggedin]);
+  }, [dispatch, isLoggedIn]);
+
+  useEffect(() => {
+    (async () => {
+      const { accessToken } = await getTokens();
+      if (accessToken) {
+        console.log('accessToken', accessToken);
+
+        dispatch(updateSignalRAccessToken(accessToken));
+        dispatch(signalRThunks.connect());
+      }
+    })();
+  }, [dispatch, isLoggedIn]);
 
   useEffect(() => {
     (async () => {
@@ -62,12 +74,6 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
 
   useEffect(() => {
     setupNotifications();
-
-    (async () => {
-      // TODO: use actual access token
-      dispatch(updateSignalRAccessToken('access token'));
-      await dispatch(signalRThunks.connect());
-    })();
   }, [dispatch]);
 
   return children;

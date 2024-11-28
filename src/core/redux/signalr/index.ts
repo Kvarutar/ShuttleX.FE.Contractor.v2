@@ -4,7 +4,7 @@ import { createSignalRSlice } from 'shuttlex-integration';
 import { AppState } from '../store';
 import { UpdateContractorGeoSignalRRequest, UpdateContractorGeoSignalRResponse } from './types';
 
-const { slice, signalRThunks, createSignalRMethodThunk } = createSignalRSlice({
+const { slice, signalRThunks, createSignalRMethodThunk, isSignalRConnectedSelector } = createSignalRSlice({
   options: {
     url: (() => {
       if (Config.SIGNALR_URL === undefined) {
@@ -32,4 +32,4 @@ export default slice.reducer;
 
 const { updateSignalRAccessToken } = slice.actions;
 
-export { signalRThunks, updateContractorGeo, updateSignalRAccessToken };
+export { isSignalRConnectedSelector, signalRThunks, updateContractorGeo, updateSignalRAccessToken };
