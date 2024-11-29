@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
-import { getNetworkErrorInfo, saveTokens } from 'shuttlex-integration';
+import Keychain from 'react-native-keychain';
+import { getNetworkErrorInfo, getTokens, saveTokens } from 'shuttlex-integration';
 
 import { createAppAsyncThunk } from '../../redux/hooks';
 import { setIsLoggedIn } from '.';
@@ -7,7 +8,6 @@ import {
   SignInAPIRequest,
   SignInPayload,
   SignOutAPIRequest,
-  SignOutPayload,
   SignUpAPIRequest,
   SignUpPayload,
   VerifyCodeAPIRequest,
@@ -70,17 +70,20 @@ export const signUp = createAppAsyncThunk<void, SignUpPayload>(
   },
 );
 
-export const signOut = createAppAsyncThunk<void, SignOutPayload>(
+export const signOut = createAppAsyncThunk<void, void>(
   'auth/signOut',
-  async (payload, { rejectWithValue, authAxios, dispatch }) => {
+  async (_, { rejectWithValue, authAxios, dispatch }) => {
     //TODO: do firebase init
     //const deviceId = await getNotificationToken();
     const deviceId = 'string';
+    const { refreshToken } = await getTokens();
 
     try {
-      if (payload.refreshToken !== null) {
+      await Keychain.resetGenericPassword();
+
+      if (refreshToken !== null) {
         await authAxios.post<SignOutAPIRequest>('/sign-out', {
-          ...payload,
+          refreshToken,
           deviceId,
           allOpenSessions: false,
         });

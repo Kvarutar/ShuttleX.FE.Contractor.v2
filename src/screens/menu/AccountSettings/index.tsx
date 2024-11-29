@@ -20,6 +20,7 @@ import {
 
 // import { updateRequirementDocuments } from '../../../core/auth/redux/docs';
 import { profilePhotoSelector } from '../../../core/auth/redux/docs/selectors';
+import { signOut } from '../../../core/auth/redux/thunks';
 import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
 import { resetAccountSettingsVerification } from '../../../core/menu/redux/accountSettings';
 import {
@@ -92,6 +93,7 @@ const AccountSettings = (): JSX.Element => {
         </MenuHeader>
 
         <AccountSettingsScreen
+          onSignOut={() => dispatch(signOut())}
           handleOpenVerification={handleOpenVerification}
           isVerificationDone={isVerificationDone}
           // onProfileDataSave={handleProfileDataSave}
