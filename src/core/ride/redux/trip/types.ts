@@ -83,18 +83,15 @@ export type OfferWayPointsDataAPIResponse = {
   routeId: string;
   totalDistanceMtr: number;
   totalDurationSec: number;
-  waypoints: [
-    {
-      location: LatLng;
-    },
-  ];
-  accurateGeometries: [
-    {
-      polylineStartIndex: number;
-      polylineEndIndex: number;
-      trafficLoad: string;
-    },
-  ];
+  waypoints: {
+    geo: LatLng;
+    index: number;
+  }[];
+  accurateGeometries: {
+    polylineStartIndex: number;
+    polylineEndIndex: number;
+    trafficLoad: string;
+  }[];
   geometry: string;
   trafficLoad: string;
 };
@@ -118,26 +115,6 @@ export type OrderType = {
   currencyCode: string;
   pickUpRouteId: string;
   dropOffRouteId: string;
-};
-
-export type OfferWayPointsData = {
-  routeId: string;
-  totalDistanceMtr: number;
-  totalDurationSec: number;
-  waypoints: [
-    {
-      location: LatLng;
-    },
-  ];
-  accurateGeometries: [
-    {
-      polylineStartIndex: number;
-      polylineEndIndex: number;
-      trafficLoad: string;
-    },
-  ];
-  geometry: string;
-  trafficLoad: string;
 };
 
 export type TripState = {

@@ -27,6 +27,7 @@ import { fetchAllZone, verifyDocs } from '../../../core/auth/redux/docs/thunks';
 import { DocsType, DocTemplate } from '../../../core/auth/redux/docs/types';
 import { getDocTitlesByFeKey } from '../../../core/auth/redux/docs/utils/docsFeKey';
 import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
+import { getContractorInfo } from '../../../core/contractor/redux/thunks';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 import VerificationHeader from './VerificationHeader';
@@ -68,6 +69,8 @@ const VerificationScreen = (): JSX.Element => {
   const handleNextPress = () => {
     if (isZoneSelected && isPresentPersonalDocuments && isPresentVehicleDocuments) {
       dispatch(verifyDocs());
+      dispatch(getContractorInfo());
+
       navigation.navigate('Ride');
     } else {
       setSelectedSection(null);

@@ -5,7 +5,7 @@ import { getTokens, useTheme } from 'shuttlex-integration';
 
 import { setIsLoggedIn } from '../core/auth/redux';
 import { isLoggedInSelector } from '../core/auth/redux/selectors';
-import { contractorZoneSelector } from '../core/contractor/redux/selectors';
+import { contractorInfoSelector, contractorZoneSelector } from '../core/contractor/redux/selectors';
 import {
   getContractorInfo,
   getFullTariffsInfo,
@@ -26,6 +26,11 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   const isLoggedIn = useSelector(isLoggedInSelector);
   const defaultLocation = useSelector(geolocationCoordinatesSelector);
   const contractorZone = useSelector(contractorZoneSelector);
+  const contractor = useSelector(contractorInfoSelector);
+
+  useEffect(() => {
+    dispatch(getFullTariffsInfo());
+  }, [contractor, dispatch]);
 
   useEffect(() => {
     (async () => {

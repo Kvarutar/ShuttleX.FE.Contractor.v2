@@ -16,7 +16,8 @@ import {
 } from './thunks';
 import {
   OfferAPIResponse,
-  OfferWayPointsData,
+  OfferDropOffAPIResponse,
+  OfferPickUpAPIResponse,
   OfferWayPointsDataAPIResponse,
   OrderType,
   PassengerInfoAPIResponse,
@@ -160,12 +161,12 @@ const slice = createSlice({
         state.tripStatus = TripStatus.Ride;
       }
     },
-    setWayPointsPickUp(state, action: PayloadAction<OfferWayPointsData>) {
+    setWayPointsPickUp(state, action: PayloadAction<OfferPickUpAPIResponse>) {
       if (state.offer) {
         state.pickUpPoint = action.payload;
       }
     },
-    setWayPointsDropOff(state, action: PayloadAction<OfferWayPointsData>) {
+    setWayPointsDropOff(state, action: PayloadAction<OfferDropOffAPIResponse>) {
       if (state.offer) {
         state.dropOffPoint = action.payload;
       }

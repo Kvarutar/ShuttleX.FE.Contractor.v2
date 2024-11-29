@@ -22,16 +22,16 @@ import { tariffsNamesByFeKey } from './utils/getTariffNamesByFeKey';
 
 export const getOrUpdateZone = createAppAsyncThunk<Nullable<Zone>, void>(
   'contractor/getOrUpdateZone',
-  async (_, { rejectWithValue, profileAxios }) => {
-    //const state = getState();
-    //const defaultLocation = state.geolocation.coordinates;
-    // if (defaultLocation) {
-    //   urlPart = `${urlPart}?Latitude=48.450001&Longitude=34.983334`;
-    // }
+  async (_, { rejectWithValue, profileAxios, getState }) => {
+    const state = getState();
+    let urlPart = '/zone/up-to-date';
+
+    const defaultLocation = state.geolocation.coordinates;
+    if (defaultLocation) {
+      urlPart = `${urlPart}?Latitude=${defaultLocation.latitude}&Longitude=${defaultLocation.longitude}`;
+    }
     try {
-      const response = await profileAxios.post<GetOrUpdateZoneAPIResponse[]>(
-        '/zone/up-to-date?Latitude=48.450001&Longitude=34.98333',
-      );
+      const response = await profileAxios.post<GetOrUpdateZoneAPIResponse[]>(urlPart);
 
       const zone =
         response.data.find(el => el.locationType === 'City') ?? response.data.find(el => el.locationType === 'Country');

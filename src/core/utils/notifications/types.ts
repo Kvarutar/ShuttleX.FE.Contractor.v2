@@ -3,6 +3,7 @@ export interface NotificationRemoteMessage {
     title: string;
     body: string;
     key: string;
+    sendTime: string;
     payload: string;
   };
 }

@@ -61,8 +61,8 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
     if (wayPointsPickUp && wayPointsPickUp.length > 0) {
       const pickUpCoordinates = wayPointsPickUp.map<{ address: string } & LatLng>(waypoint => ({
         address: offer.pickUpAddress,
-        latitude: waypoint.location.latitude,
-        longitude: waypoint.location.longitude,
+        latitude: waypoint.geo.latitude,
+        longitude: waypoint.geo.longitude,
       }));
       setPickUpData(pickUpCoordinates);
     }
@@ -70,8 +70,8 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
     if (wayPointsDropOff && wayPointsDropOff.length > 0) {
       const dropOffCoordinates = wayPointsDropOff.map<{ address: string } & LatLng>(waypoint => ({
         address: offer.stopPointAddresses.join(', '),
-        latitude: waypoint.location.latitude,
-        longitude: waypoint.location.longitude,
+        latitude: waypoint.geo.latitude,
+        longitude: waypoint.geo.longitude,
       }));
       setDropOffData(dropOffCoordinates);
     }
