@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { getTokens, useTheme } from 'shuttlex-integration';
@@ -28,6 +28,8 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   const contractorZone = useSelector(contractorZoneSelector);
   const contractor = useSelector(contractorInfoSelector);
 
+  const [isLocationLoaded, setIsLocationLoaded] = useState(false);
+
   useEffect(() => {
     dispatch(getFullTariffsInfo());
   }, [contractor, dispatch]);
@@ -41,6 +43,11 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
         //TODO temporary solution
         await dispatch(getContractorInfo());
         dispatch(setIsLoggedIn(true));
+
+        if (isLoggedIn) {
+          await dispatch(getOrUpdateZone());
+          dispatch(getFullTariffsInfo());
+        }
       } else {
         dispatch(setIsLoggedIn(false));
       }
@@ -60,14 +67,19 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   }, [dispatch, isLoggedIn]);
 
   useEffect(() => {
-    (async () => {
-      const { accessToken } = await getTokens();
-      if (accessToken) {
+    if (isLocationLoaded) {
+      (async () => {
         await dispatch(getOrUpdateZone());
         dispatch(getFullTariffsInfo());
-      }
-    })();
-  }, [defaultLocation, dispatch]);
+      })();
+    }
+  }, [isLocationLoaded, dispatch]);
+
+  useEffect(() => {
+    if (defaultLocation && !isLocationLoaded) {
+      setIsLocationLoaded(true);
+    }
+  }, [defaultLocation, isLocationLoaded]);
 
   useEffect(() => {
     setThemeMode('light');

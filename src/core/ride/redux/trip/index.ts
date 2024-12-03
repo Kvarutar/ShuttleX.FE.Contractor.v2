@@ -360,6 +360,7 @@ const slice = createSlice({
           payload: initialState.error,
           type: setTripError.type,
         });
+        slice.caseReducers.endTrip(state);
       })
       .addCase(updatePassengerRating.fulfilled, state => {
         slice.caseReducers.setTripIsLoading(state, {

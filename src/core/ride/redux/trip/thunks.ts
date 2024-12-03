@@ -187,7 +187,7 @@ export const updatePassengerRating = createAppAsyncThunk<void, UpdatePassengerRa
   'trip/updatePassengerRating',
   async (payload, { rejectWithValue, ordersAxios }) => {
     try {
-      await ordersAxios.post(`/${payload.orderId}/update-passenger-rating`, {
+      await ordersAxios.patch(`/${payload.orderId}/update-passenger-rating`, {
         rate: payload.rate,
       } as UpdatePassengerRatingAPIRequest);
     } catch (error) {
