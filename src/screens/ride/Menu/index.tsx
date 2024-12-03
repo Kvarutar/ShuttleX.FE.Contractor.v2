@@ -3,11 +3,15 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Bar, BarModes, MenuBase, MenuNavigation, Text, useTheme } from 'shuttlex-integration';
+import { Bar, BarModes, formatCurrency, MenuBase, MenuNavigation, Text, useTheme } from 'shuttlex-integration';
 
 // TODO Uncomment all code whe we need it
 // import CrownIcon from 'shuttlex-integration';
-import { contractorAvatarSelector, contractorInfoSelector } from '../../../core/contractor/redux/selectors';
+import {
+  contractorAvatarSelector,
+  contractorInfoSelector,
+  primaryTariffSelector,
+} from '../../../core/contractor/redux/selectors';
 import { RootStackParamList } from '../../../Navigate/props';
 import { MenuProps } from './props';
 
@@ -111,23 +115,35 @@ const AdditionalContent = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
+  const primaryTariff = useSelector(primaryTariffSelector);
+  const contractorInfo = useSelector(contractorInfoSelector);
+
   const computedStyles = {
     balanceTitle: {
       color: colors.textQuadraticColor,
     },
   };
 
+  //TODO: Rewrite with skeletons (will be implemented in Task-345)
+  if (!contractorInfo || !primaryTariff) {
+    return;
+  }
+
   return (
     <View style={styles.balance}>
       <Bar mode={BarModes.Disabled} style={styles.textWrapper}>
         <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('ride_Menu_additionalEarned')}</Text>
         {/* TODO: create logic for it (from where will we get the balance) */}
-        <Text style={styles.balanceTotal}>$682.40</Text>
+        <Text style={styles.balanceTotal}>
+          {formatCurrency(primaryTariff.currencyCode, contractorInfo.earnedToday)}
+        </Text>
       </Bar>
 
       <Bar mode={BarModes.Disabled} style={styles.textWrapper}>
         <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('ride_Menu_additionalPrevious')}</Text>
-        <Text style={styles.balanceTotal}>$12.10</Text>
+        <Text style={styles.balanceTotal}>
+          {formatCurrency(primaryTariff.currencyCode, contractorInfo.previousOrderEarned)}
+        </Text>
       </Bar>
     </View>
   );

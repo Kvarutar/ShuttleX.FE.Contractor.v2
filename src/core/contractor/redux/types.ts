@@ -35,6 +35,7 @@ export type VehicleData = {
   id: string;
   brand: string;
   number: string;
+  model: string;
 };
 
 //TODO: maybe it would be better to come up with another title for the "state"

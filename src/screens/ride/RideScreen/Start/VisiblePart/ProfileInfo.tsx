@@ -114,7 +114,7 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
         <View style={styles.carDataContainer}>
           <View style={[styles.carTitleContainer, computedStyles.carTitleContainer]}>
             <Text numberOfLines={1} style={styles.carTitleText}>
-              {contractorInfo.vehicle.brand}
+              {contractorInfo.vehicle.brand} {contractorInfo.vehicle.model}
             </Text>
           </View>
           <View style={[styles.carIdContainer, computedStyles.carIdContainer]}>
