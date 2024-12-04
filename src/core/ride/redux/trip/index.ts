@@ -96,7 +96,6 @@ const slice = createSlice({
           passenger: {
             id: passengerInfo.id,
             name: passengerInfo.name,
-            lastName: passengerInfo.lastName,
             phone: passengerInfo.phone,
             avatarURL: passengerAvatarURL,
           },

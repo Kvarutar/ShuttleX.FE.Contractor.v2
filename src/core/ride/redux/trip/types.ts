@@ -6,7 +6,6 @@ export type TripPoint = { address: string } & LatLng;
 export type PassengerInfoAPIResponse = {
   id: string;
   name: string;
-  lastName: string;
   phone: string;
 };
 
@@ -15,7 +14,6 @@ export type PassengerAvatarAPIResponse = Blob;
 export type PassengerInfoType = {
   id: string;
   name: string;
-  lastName: string;
   phone: string;
   avatarURL: string;
 };

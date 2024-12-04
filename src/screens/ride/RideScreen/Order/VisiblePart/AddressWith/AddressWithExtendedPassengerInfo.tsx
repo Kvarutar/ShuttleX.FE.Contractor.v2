@@ -32,9 +32,7 @@ const AddressWithExtendedPassengerInfo = ({
       <View style={styles.passangerInfoWithAvatar}>
         <Image style={styles.passengerAvatar} source={require('../../../../../../assets/img/Man.png')} />
         <View style={styles.visibleTextWrapper}>
-          <Text style={styles.passangerInfoWithAvatarText}>
-            {order.passenger.name} {order.passenger.lastName}
-          </Text>
+          <Text style={styles.passangerInfoWithAvatarText}>{order.passenger.name}</Text>
           <View style={styles.addressMiniWrapper}>
             {withStopPoint ? <PickUpIcon /> : <DropOffIcon />}
             <Text style={[styles.addressMini, computedStyles.addressMini]}>{tripPoints[0]}</Text>

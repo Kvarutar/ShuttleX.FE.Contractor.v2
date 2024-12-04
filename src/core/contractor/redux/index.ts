@@ -102,12 +102,8 @@ const slice = createSlice({
         preference.id === preferenceId ? { ...preference, [field]: !preference[field] } : preference,
       );
     },
-    setContractorInfo(state, action: PayloadAction<Omit<ContractorInfo, 'email' | 'phone'>>) {
-      state.info = {
-        ...action.payload,
-        phone: state.info.phone,
-        email: state.info.email,
-      };
+    setContractorInfo(state, action: PayloadAction<ContractorInfo>) {
+      state.info = action.payload;
     },
     setContractorAvatar(state, action: PayloadAction<string>) {
       state.avatarURL = action.payload;

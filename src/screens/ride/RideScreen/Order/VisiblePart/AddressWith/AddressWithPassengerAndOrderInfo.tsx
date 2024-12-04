@@ -169,7 +169,7 @@ const AddressWithPassengerAndOrderInfo = ({
                 {t('ride_Ride_Order_pickUpText')}
               </Text>
               <Text style={[computedStyles.passengerName, styles.visibleMiniPassengerName]}>
-                {order.passenger.name} {order.passenger.lastName}
+                {order.passenger.name}
               </Text>
             </View>
             <Text style={styles.address}>{tripPoints[0]}</Text>
@@ -178,7 +178,7 @@ const AddressWithPassengerAndOrderInfo = ({
           <View style={styles.endingAdressAndNames}>
             <Text style={[styles.endingAddress, computedStyles.endingAddress]}>{tripPoints[0]}</Text>
             <Text style={[styles.endingPassengerNames, computedStyles.endingPassengerNames]}>
-              {order.passenger.name} {order.passenger.lastName}
+              {order.passenger.name}
             </Text>
           </View>
         )}

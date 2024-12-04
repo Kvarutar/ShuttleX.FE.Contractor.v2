@@ -44,47 +44,47 @@ export const getOrUpdateZone = createAppAsyncThunk<Nullable<Zone>, void>(
 );
 
 //TODO: Add popup when request is rejected
-export const getContractorInfo = createAppAsyncThunk<
-  { contractorInfo: Omit<ContractorInfo, 'email' | 'phone'>; avatarURL: string },
-  void
->('contractor/getContractorInfo', async (_, { rejectWithValue, contractorAxios }) => {
-  try {
-    const [contractorInfoResponse, contractorAvatarResponse] = await Promise.allSettled([
-      contractorAxios.get<ContractorInfoAPIResponse>('/info'),
-      contractorAxios.get<GetContractorAvatarAPIResponse>('/avatar', { responseType: 'blob' }),
-    ]);
+export const getContractorInfo = createAppAsyncThunk<{ contractorInfo: ContractorInfo; avatarURL: string }, void>(
+  'contractor/getContractorInfo',
+  async (_, { rejectWithValue, contractorAxios }) => {
+    try {
+      const [contractorInfoResponse, contractorAvatarResponse] = await Promise.allSettled([
+        contractorAxios.get<ContractorInfoAPIResponse>('/info'),
+        contractorAxios.get<GetContractorAvatarAPIResponse>('/avatar', { responseType: 'blob' }),
+      ]);
 
-    let contractorInfo: Omit<ContractorInfo, 'email' | 'phone'>;
-    let avatarURL = '';
+      let contractorInfo: ContractorInfo;
+      let avatarURL = '';
 
-    if (contractorInfoResponse.status === 'fulfilled') {
-      contractorInfo = {
-        ...contractorInfoResponse.value.data,
-        status: 'offline',
-      };
+      if (contractorInfoResponse.status === 'fulfilled') {
+        contractorInfo = {
+          ...contractorInfoResponse.value.data,
+          status: 'offline',
+        };
 
-      switch (contractorInfoResponse.value.data.state) {
-        case 'WaitingOrder':
-        case 'InOrderProcessingWithNextStopPoint':
-        case 'InOrderProcessingWithNextDropOff':
-          contractorInfo.status = 'online';
-          break;
-        default:
-          contractorInfo.status = 'offline';
+        switch (contractorInfoResponse.value.data.state) {
+          case 'WaitingOrder':
+          case 'InOrderProcessingWithNextStopPoint':
+          case 'InOrderProcessingWithNextDropOff':
+            contractorInfo.status = 'online';
+            break;
+          default:
+            contractorInfo.status = 'offline';
+        }
+      } else {
+        return rejectWithValue(getNetworkErrorInfo(contractorInfoResponse.reason));
       }
-    } else {
-      return rejectWithValue(getNetworkErrorInfo(contractorInfoResponse.reason));
-    }
 
-    if (contractorAvatarResponse.status === 'fulfilled') {
-      avatarURL = await convertBlobToImgUri(contractorAvatarResponse.value.data);
-    }
+      if (contractorAvatarResponse.status === 'fulfilled') {
+        avatarURL = await convertBlobToImgUri(contractorAvatarResponse.value.data);
+      }
 
-    return { contractorInfo, avatarURL };
-  } catch (error) {
-    return rejectWithValue(getNetworkErrorInfo(error));
-  }
-});
+      return { contractorInfo, avatarURL };
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
 
 //TODO: Refactor return value, set it after waiting success response (without payload return)
 export const updateContractorStatus = createAppAsyncThunk<ContractorStatus, ContractorStatus>(

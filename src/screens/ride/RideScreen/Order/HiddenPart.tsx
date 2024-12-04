@@ -51,7 +51,7 @@ const HiddenPart = () => {
             {t('ride_Ride_Order_passenger')}
           </Text>
           <Text numberOfLines={1} style={[styles.hiddenTripInfoContent, computedStyles.hiddenTripInfoContent]}>
-            {order.passenger.name + ' ' + order.passenger.lastName}
+            {order.passenger.name}
           </Text>
         </View>
         <View style={[styles.hiddenTripInfo, computedStyles.hiddenTripInfo]}>

@@ -19,9 +19,8 @@ import {
 } from 'shuttlex-integration';
 
 // import { updateRequirementDocuments } from '../../../core/auth/redux/docs';
-import { profilePhotoSelector } from '../../../core/auth/redux/docs/selectors';
 import { signOut } from '../../../core/auth/redux/thunks';
-import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
+import { contractorAvatarSelector, contractorInfoSelector } from '../../../core/contractor/redux/selectors';
 import { resetAccountSettingsVerification } from '../../../core/menu/redux/accountSettings';
 import {
   accountSettingsErrorSelector,
@@ -127,7 +126,7 @@ const AccountSettings = (): JSX.Element => {
 
 const PhotoBlock = ({ onUploadPhoto }: PhotoBlockProps) => {
   //TODO decide where shoud we get the image
-  const photo = useSelector(profilePhotoSelector);
+  const photo = useSelector(contractorAvatarSelector);
 
   const [imageHeight, setImageHeight] = useState(0);
 
