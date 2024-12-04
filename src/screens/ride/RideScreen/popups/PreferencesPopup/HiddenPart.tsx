@@ -1,22 +1,23 @@
 import { useTranslation } from 'react-i18next';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Button, FlatListWithCustomScroll, Text, useTheme } from 'shuttlex-integration';
+import { Button, FlatListWithCustomScroll, Skeleton, Text, useTheme } from 'shuttlex-integration';
 
-import { contractorInfoSelector } from '../../../../../core/contractor/redux/selectors';
+import { contractorInfoSelector, isTariffsInfoLoadingSelector } from '../../../../../core/contractor/redux/selectors';
 import { sendSelectedTariffs } from '../../../../../core/contractor/redux/thunks';
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { HiddenPartProps } from './props';
 
 const windowHeight = Dimensions.get('window').height;
 
-const HiddenPart = ({ onClose, renderTariffs, isTariffsLoaded, localTariffsSorted }: HiddenPartProps) => {
+const HiddenPart = ({ onClose, renderTariffs, localTariffsSorted }: HiddenPartProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
   const dispatch = useAppDispatch();
   const localSelectedTariffs = localTariffsSorted.filter(localTariff => localTariff.isSelected);
   const contractorInfo = useSelector(contractorInfoSelector);
+  const isTariffsInfoLoading = useSelector(isTariffsInfoLoadingSelector);
 
   //TODO: Uncomment this constant when we need to add preferences
   // const preferences = useSelector(preferencesSelector);
@@ -54,8 +55,14 @@ const HiddenPart = ({ onClose, renderTariffs, isTariffsLoaded, localTariffsSorte
         {t('ride_Ride_PreferencesPopup_secondTitle')}
       </Text>
       <Text style={[styles.tariffsText, computedStyles.tariffsText]}>{t('ride_Ride_PreferencesPopup_tariffs')}</Text>
-      {/* TODO: Rewtire with skeletons */}
-      {isTariffsLoaded && (
+      {isTariffsInfoLoading ? (
+        <FlatListWithCustomScroll
+          wrapperStyle={styles.flatListWrapper}
+          contentContainerStyle={styles.flatListContentContainer}
+          renderItem={() => <Skeleton skeletonContainerStyle={styles.skeletonContainer} />}
+          items={Array.from({ length: 8 })}
+        />
+      ) : (
         <FlatListWithCustomScroll
           wrapperStyle={styles.flatListWrapper}
           contentContainerStyle={styles.flatListContentContainer}
@@ -85,6 +92,15 @@ const HiddenPart = ({ onClose, renderTariffs, isTariffsLoaded, localTariffsSorte
 };
 
 const styles = StyleSheet.create({
+  skeletonTariffsWrapper: {
+    flex: 1,
+    flexShrink: 1,
+    gap: 8,
+  },
+  skeletonContainer: {
+    height: 80,
+    borderRadius: 12,
+  },
   hiddenPartContainerStyle: {
     height: windowHeight * 0.9,
     paddingBottom: 34,

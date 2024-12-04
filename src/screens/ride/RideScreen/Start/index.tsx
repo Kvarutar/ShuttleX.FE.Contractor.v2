@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -19,7 +19,9 @@ import {
   contractorStatusSelector,
   contractorSubscriptionStatusSelector,
   contractorZoneSelector,
+  isTariffsInfoLoadingSelector,
   primaryTariffSelector,
+  tariffsInfoErrorSelector,
 } from '../../../../core/contractor/redux/selectors';
 import { getAchievements, getPreferences } from '../../../../core/contractor/redux/thunks';
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
@@ -80,6 +82,9 @@ const Start = () => {
   const preferencesBottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
   const achievementsBottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
 
+  const isTariffsInfoLoading = useSelector(isTariffsInfoLoadingSelector);
+  const tariffsInfoError = useSelector(tariffsInfoErrorSelector);
+
   const contractorStatus = useSelector(contractorStatusSelector);
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
   const isCanceledTripsPopupVisible = useSelector(isCanceledTripsPopupVisibleSelector);
@@ -97,6 +102,16 @@ const Start = () => {
   const pickUpRouteId = useSelector(pickUpRouteIdSelector);
   const dropOffRouteId = useSelector(dropOffRouteIdSelector);
   const contractorZone = useSelector(contractorZoneSelector);
+
+  const primaryTariff = useSelector(primaryTariffSelector);
+  const tariffsIconsData = useTariffsIcons();
+
+  const iconComponent = useMemo(() => {
+    if (!isTariffsInfoLoading && !tariffsInfoError && primaryTariff) {
+      return tariffsIconsData[primaryTariff.name].icon ?? null;
+    }
+    return null;
+  }, [isTariffsInfoLoading, tariffsInfoError, primaryTariff, tariffsIconsData]);
 
   useEffect(() => {
     setLineState(getRideBuilderRecord(t)[contractorStatus]);
@@ -205,16 +220,6 @@ const Start = () => {
     return <UnclosablePopupWithModes mode={unclosablePopupMode} bottomAdditionalContent={bottomAdditionalContent} />;
   };
 
-  const primaryTariff = useSelector(primaryTariffSelector);
-  const tariffsIconsData = useTariffsIcons();
-
-  //TODO: Add a skeletons
-  if (!primaryTariff) {
-    return;
-  }
-
-  const IconComponent = tariffsIconsData[primaryTariff.name].icon;
-
   const computedStyles = StyleSheet.create({
     headerWrapperStyle: {
       height: isOpened ? 30 : 'auto',
@@ -236,7 +241,7 @@ const Start = () => {
           isOpened && (
             <Animated.View entering={FadeIn.duration(300)}>
               <View style={styles.bigCarImageContainer}>
-                <IconComponent style={styles.bigCarImage} />
+                {iconComponent && iconComponent({ style: styles.bigCarImage })}
               </View>
             </Animated.View>
           )

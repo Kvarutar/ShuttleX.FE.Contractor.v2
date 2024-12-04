@@ -41,10 +41,6 @@ const TariffPreferencesPopup = ({
   const tariffsIconsData = useTariffsIcons();
 
   const tariffsSorted = useSelector(sortedTariffsSelector);
-
-  //TODO: Rewrite with pending and skeletons
-  const isTariffsLoaded = true;
-
   const [localTariffsSorted, setLocalTariffsSorted] = useState<TariffInfo[]>(tariffsSorted);
 
   // Uncomment if for working with preferences
@@ -56,6 +52,10 @@ const TariffPreferencesPopup = ({
   useEffect(() => {
     preferencesBottomWindowRef.current?.openWindow();
   }, [preferencesBottomWindowRef]);
+
+  useEffect(() => {
+    setLocalTariffsSorted(tariffsSorted);
+  }, [tariffsSorted]);
 
   const onTariffPressHandler = (tariff: TariffInfo) => {
     if (!tariff.isPrimary) {
@@ -203,12 +203,7 @@ const TariffPreferencesPopup = ({
       setIsOpened={setIsPreferencesPopupVisible}
       ref={preferencesBottomWindowRef}
       hiddenPart={
-        <HiddenPart
-          onClose={onClose}
-          renderTariffs={renderTariffs}
-          isTariffsLoaded={isTariffsLoaded}
-          localTariffsSorted={localTariffsSorted}
-        />
+        <HiddenPart onClose={onClose} renderTariffs={renderTariffs} localTariffsSorted={localTariffsSorted} />
       }
     />
   );

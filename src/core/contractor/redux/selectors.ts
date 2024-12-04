@@ -3,7 +3,6 @@ import { createSelector } from '@reduxjs/toolkit';
 import { AppState } from '../../redux/store';
 
 export const tariffsSelector = (state: AppState) => state.contractor.tariffs;
-export const contractorGeneralErrorSelector = (state: AppState) => state.contractor.error.general;
 export const selectedTariffsSelector = createSelector([tariffsSelector], tariffs =>
   tariffs.filter(tariff => tariff.isSelected),
 );
@@ -39,3 +38,13 @@ export const contractorZoneSelector = (state: AppState) => state.contractor.zone
 export const contractorInfoStateSelector = (state: AppState) => state.contractor.info.state;
 export const contractorStatusSelector = (state: AppState) => state.contractor.info.status;
 export const contractorSubscriptionStatusSelector = (state: AppState) => state.contractor.subscriptionStatus;
+
+//Errors selectors
+export const tariffsInfoErrorSelector = (state: AppState) => state.contractor.error.tariffsInfo;
+export const contractorInfoErrorSelector = (state: AppState) => state.contractor.error.contractorInfo;
+export const contractorGeneralErrorSelector = (state: AppState) => state.contractor.error.general;
+
+//Loadings selectors
+export const isTariffsInfoLoadingSelector = (state: AppState) => state.contractor.loading.tariffsInfo;
+export const isContractorInfoLoadingSelector = (state: AppState) => state.contractor.loading.contractorInfo;
+export const isContractorGeneralLoadingSelector = (state: AppState) => state.contractor.loading.general;

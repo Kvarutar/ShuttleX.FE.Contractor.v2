@@ -3,14 +3,27 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Bar, BarModes, formatCurrency, MenuBase, MenuNavigation, Text, useTheme } from 'shuttlex-integration';
+import {
+  Bar,
+  BarModes,
+  formatCurrency,
+  MenuBase,
+  MenuNavigation,
+  Skeleton,
+  Text,
+  useTheme,
+} from 'shuttlex-integration';
 
 // TODO Uncomment all code whe we need it
 // import CrownIcon from 'shuttlex-integration';
 import {
   contractorAvatarSelector,
+  contractorInfoErrorSelector,
   contractorInfoSelector,
+  isContractorInfoLoadingSelector,
+  isTariffsInfoLoadingSelector,
   primaryTariffSelector,
+  tariffsInfoErrorSelector,
 } from '../../../core/contractor/redux/selectors';
 import { RootStackParamList } from '../../../Navigate/props';
 import { MenuProps } from './props';
@@ -22,6 +35,8 @@ const Menu = ({ onClose }: MenuProps) => {
 
   const contractorInfo = useSelector(contractorInfoSelector);
   const contractorAvatar = useSelector(contractorAvatarSelector);
+
+  const isContractorInfoLoading = useSelector(isContractorInfoLoadingSelector);
 
   const currentRoute = useNavigationState(state => state.routes[state.index].name);
 
@@ -86,6 +101,7 @@ const Menu = ({ onClose }: MenuProps) => {
       currentRoute={currentRoute}
       isContractorMenu
       // label={<LevelLabel />}
+      isLoading={isContractorInfoLoading}
     />
   );
 };
@@ -115,8 +131,14 @@ const AdditionalContent = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const primaryTariff = useSelector(primaryTariffSelector);
   const contractorInfo = useSelector(contractorInfoSelector);
+  const primaryTariff = useSelector(primaryTariffSelector);
+
+  const contractorInfoIsLoading = useSelector(isContractorInfoLoadingSelector);
+  const tariffsInfoIsLoading = useSelector(isTariffsInfoLoadingSelector);
+
+  const contractorInfoIsError = useSelector(contractorInfoErrorSelector);
+  const tariffsInfoIsError = useSelector(tariffsInfoErrorSelector);
 
   const computedStyles = {
     balanceTitle: {
@@ -124,8 +146,15 @@ const AdditionalContent = () => {
     },
   };
 
-  //TODO: Rewrite with skeletons (will be implemented in Task-345)
-  if (!contractorInfo || !primaryTariff) {
+  if (contractorInfoIsLoading || tariffsInfoIsLoading) {
+    return (
+      <View style={styles.balance}>
+        <Skeleton skeletonContainerStyle={styles.skeletonAdditionalContentContainer} skeletonsAmount={2} />
+      </View>
+    );
+  }
+
+  if (contractorInfoIsError || tariffsInfoIsError || !primaryTariff) {
     return;
   }
 
@@ -133,7 +162,6 @@ const AdditionalContent = () => {
     <View style={styles.balance}>
       <Bar mode={BarModes.Disabled} style={styles.textWrapper}>
         <Text style={[styles.balanceTitle, computedStyles.balanceTitle]}>{t('ride_Menu_additionalEarned')}</Text>
-        {/* TODO: create logic for it (from where will we get the balance) */}
         <Text style={styles.balanceTotal}>
           {formatCurrency(primaryTariff.currencyCode, contractorInfo.earnedToday)}
         </Text>
@@ -150,6 +178,11 @@ const AdditionalContent = () => {
 };
 
 const styles = StyleSheet.create({
+  skeletonAdditionalContentContainer: {
+    flex: 1,
+    height: 75,
+    borderRadius: 12,
+  },
   labelText: {
     fontSize: 14,
     fontFamily: 'Inter Medium',

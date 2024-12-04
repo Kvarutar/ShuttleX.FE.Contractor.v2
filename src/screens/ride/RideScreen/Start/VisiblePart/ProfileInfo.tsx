@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import {
   formatCurrency,
   sizes,
+  Skeleton,
   StatsBlock,
   SwipeButton,
   SwipeButtonModes,
@@ -15,11 +16,15 @@ import {
 } from 'shuttlex-integration';
 
 import {
+  contractorInfoErrorSelector,
   contractorInfoSelector,
   contractorStatusSelector,
   contractorZoneSelector,
+  isContractorInfoLoadingSelector,
+  isTariffsInfoLoadingSelector,
   primaryTariffSelector,
   selectedTariffsSelector,
+  tariffsInfoErrorSelector,
 } from '../../../../../core/contractor/redux/selectors';
 import { updateContractorStatus } from '../../../../../core/contractor/redux/thunks';
 import { ContractorStatus } from '../../../../../core/contractor/redux/types';
@@ -42,6 +47,11 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
   const selectedTariffs = useSelector(selectedTariffsSelector);
   const primaryTariff = useSelector(primaryTariffSelector);
   const contractorZone = useSelector(contractorZoneSelector);
+
+  const isContractorInfoLoading = useSelector(isContractorInfoLoadingSelector);
+  const isTariffsInfoLoading = useSelector(isTariffsInfoLoadingSelector);
+  const contractorInfoError = useSelector(contractorInfoErrorSelector);
+  const tariffsInfoError = useSelector(tariffsInfoErrorSelector);
 
   const contractorStatusIsOffline = contractorStatus === 'offline';
 
@@ -83,8 +93,43 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
     bottomWindowRef.current?.closeWindow();
   };
 
-  //TODO: Rewrite with skeletons
-  if (!contractorInfo || !contractorInfo.vehicle || !primaryTariff) {
+  if (isContractorInfoLoading || isTariffsInfoLoading) {
+    return (
+      <Animated.View
+        entering={FadeIn.duration(animationDuration)}
+        exiting={FadeOut.duration(animationDuration)}
+        style={[styles.container, computedStyles.container]}
+      >
+        <View>
+          <Skeleton skeletonContainerStyle={styles.skeletonNameContainer} />
+          <Skeleton skeletonContainerStyle={styles.skeletonRidesAndLikes} />
+          <View style={styles.skeletonCarDataContainer}>
+            <Skeleton skeletonsAmount={2} skeletonContainerStyle={styles.skeletonCarDataItem} />
+          </View>
+          <View style={[styles.bottomInfoWrapper, computedStyles.bottomInfoWrapper]}>
+            <Skeleton skeletonsAmount={2} skeletonContainerStyle={styles.skeletonBottomBlockContainer} />
+          </View>
+        </View>
+        <View style={styles.swipeButtonContainer}>
+          {contractorStatusIsOffline ? (
+            <SwipeButton
+              mode={SwipeButtonModes.Disabled}
+              onSwipeEnd={() => swipeHandler(lineState.toLineState)}
+              text={t('ride_Ride_Start_startRideButton')}
+            />
+          ) : (
+            <SwipeButton
+              mode={SwipeButtonModes.Disabled}
+              onSwipeEnd={() => swipeHandler(lineState.toLineState)}
+              text={t('ride_Ride_Start_finishRideButton')}
+            />
+          )}
+        </View>
+      </Animated.View>
+    );
+  }
+
+  if (tariffsInfoError || contractorInfoError || !contractorInfo.vehicle) {
     return;
   }
 
@@ -138,10 +183,11 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
             <Text style={[styles.bottomInfoTitle, computedStyles.bottomInfoTitle]}>
               {t('ride_Ride_Order_earnedToday')}
             </Text>
-            {/* TODO: Add "Earned today" state when it will be added */}
-            <Text style={[styles.bottomInfoText, computedStyles.bottomInfoText]}>
-              {formatCurrency(primaryTariff.currencyCode, contractorInfo.earnedToday)}
-            </Text>
+            {primaryTariff && (
+              <Text style={[styles.bottomInfoText, computedStyles.bottomInfoText]}>
+                {formatCurrency(primaryTariff.currencyCode, contractorInfo.earnedToday)}
+              </Text>
+            )}
           </View>
         </View>
       </View>
@@ -166,6 +212,35 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
 };
 
 const styles = StyleSheet.create({
+  skeletonNameContainer: {
+    alignSelf: 'center',
+    width: '50%',
+    height: 21,
+    marginTop: 12,
+  },
+  skeletonRidesAndLikes: {
+    alignSelf: 'center',
+    marginTop: 12,
+    width: '70%',
+    height: 21,
+    marginBottom: 13,
+  },
+  skeletonCarDataContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 6,
+    marginBottom: 21,
+    paddingHorizontal: 16,
+    height: 36,
+  },
+  skeletonCarDataItem: {
+    flex: 1,
+    borderRadius: 12,
+  },
+  skeletonBottomBlockContainer: {
+    height: 54,
+    borderRadius: 12,
+  },
   container: {
     //TODO: think of clever way(problem is: i can't calculate visible part height in opened state before it's opened. This problem occure because of we don't use hidden part in this component and in opened state height of visible part lesser then 93% of widow height)
     height: '100%',
@@ -209,6 +284,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
     marginBottom: 21,
+    paddingHorizontal: 16,
   },
   carTitleContainer: {
     justifyContent: 'center',

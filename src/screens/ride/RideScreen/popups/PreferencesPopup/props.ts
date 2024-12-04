@@ -13,6 +13,5 @@ export type PreferencesPopupProps = {
 export type HiddenPartProps = {
   onClose: () => void;
   renderTariffs: ListRenderItem<TariffInfo>;
-  isTariffsLoaded: boolean;
   localTariffsSorted: TariffInfo[];
 };
