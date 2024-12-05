@@ -101,7 +101,10 @@ const Menu = ({ onClose }: MenuProps) => {
       currentRoute={currentRoute}
       isContractorMenu
       // label={<LevelLabel />}
-      isLoading={isContractorInfoLoading}
+      loading={{
+        avatar: isContractorInfoLoading,
+        username: isContractorInfoLoading,
+      }}
     />
   );
 };
