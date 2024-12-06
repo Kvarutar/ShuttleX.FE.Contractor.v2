@@ -29,6 +29,7 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
   const tripStatus = useSelector(tripStatusSelector);
   const tripPoints = useSelector(tripPointsSelector);
 
+  //TODO: Refactor trip status change logic, add a new field "currentPoint" (pickUp, stopPoint[numberOfStopPoint]), etc..
   const updateTripStatus = useCallback(() => {
     if (order && tripPoints.length !== 0) {
       const isPickUp = tripPoints.length === order.stopPointAddresses.length + 1;

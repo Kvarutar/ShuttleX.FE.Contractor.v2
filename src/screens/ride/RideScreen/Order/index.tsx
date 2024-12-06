@@ -72,7 +72,7 @@ const Order = () => {
         <View style={[styles.avatarAndShadowContainer, computedStyles.avatarAndShadowContainer]}>
           <Shadow {...defaultShadow(colors.weakShadowColor)}>
             <View style={[styles.passengerAvatarContainer, computedStyles.passengerAvatarContainer]}>
-              {order.passenger.avatarURL === '' ? (
+              {order.passenger.avatarURL === null ? (
                 <Image source={require('../../../../assets/img/DefaultAvatar.png')} style={styles.passengerAvatar} />
               ) : (
                 <Image source={{ uri: order.passenger.avatarURL }} style={styles.passengerAvatar} />

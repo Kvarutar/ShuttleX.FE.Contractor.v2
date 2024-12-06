@@ -107,7 +107,7 @@ const PassengerRating = () => {
             {...defaultShadow(colors.strongShadowColor)}
             style={[styles.avatarShadow, computedStyles.avatarShadow]}
           >
-            {order.passenger.avatarURL !== '' ? (
+            {order.passenger.avatarURL !== null ? (
               <Image
                 style={styles.avatar}
                 source={{

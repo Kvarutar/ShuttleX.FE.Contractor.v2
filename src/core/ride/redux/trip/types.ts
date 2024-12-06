@@ -1,6 +1,8 @@
 import { LatLng } from 'react-native-maps';
 import { NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
 
+import { TariffInfo } from '../../../contractor/redux/types';
+
 export type TripPoint = { address: string } & LatLng;
 
 export type PassengerInfoAPIResponse = {
@@ -15,7 +17,7 @@ export type PassengerInfoType = {
   id: string;
   name: string;
   phone: string;
-  avatarURL: string;
+  avatarURL: Nullable<string>;
 };
 
 export type AcceptOrDeclineOfferPayload = {
@@ -26,8 +28,9 @@ export type AcceptOfferAPIResponse = {
   orderId: string;
 };
 
-export type PassengerInfoPayload = AcceptOfferAPIResponse;
-export type PassengerAvatarPayload = AcceptOfferAPIResponse;
+export type GetPassengerTripInfoPayload = {
+  orderId: string;
+};
 
 export type ArrivedToPickUpPayload = {
   orderId: string;
@@ -67,7 +70,7 @@ export type OfferAPIResponse = {
   timeToDropOff: string;
   timeToAnswerSec: number;
   tariffId: string;
-  distanceKm: number;
+  distanceMtr: number;
   price: number;
   pricePerKm: number;
   currency: string;
@@ -97,6 +100,71 @@ export type OfferWayPointsDataAPIResponse = {
 export type OfferPickUpAPIResponse = OfferWayPointsDataAPIResponse;
 export type OfferDropOffAPIResponse = OfferWayPointsDataAPIResponse;
 
+export type AcceptOfferThunkResult = {
+  orderId: string;
+  passenger: {
+    info: PassengerInfoAPIResponse;
+    avatarURL: Nullable<string>;
+  };
+  tariffs: TariffInfo[];
+};
+
+export type GetPassengerTripInfoThunkResult = {
+  orderId: string;
+  passenger: {
+    info: PassengerInfoAPIResponse;
+    avatarURL: Nullable<string>;
+  };
+  tariffs: TariffInfo[];
+};
+
+export type OrderStateFromAPI =
+  | 'None'
+  | 'InPreviousOrder'
+  | 'MoveToPickUp'
+  | 'InPickUp'
+  | 'MoveToStopPoint'
+  | 'InStopPoint'
+  | 'MoveToDropOff'
+  | 'CompletedSuccessfully'
+  | 'CanceledByPassenger'
+  | 'CanceledByContractor';
+
+//TODO: Ask BE why we get '' and why not null
+export type GetCurrentOrderAPIResponse = GetCurrentOrderFromAPI | '';
+
+export type GetCurrentOrderFromAPI = {
+  id: string;
+  state: OrderStateFromAPI;
+  pickUpAddress: string;
+  stopPointAddresses: string[];
+  dropOffAddress: string;
+  timeToPickUp: string;
+  timeToDropOff: string;
+  tariffId: string;
+  distanceMtr: number;
+  price: number;
+  pricePerKm: number;
+  currency: string;
+  pickUpRouteId: string;
+  dropOffRouteId: string;
+};
+
+export type GetFutureOrderAPIResponse = GetCurrentOrderAPIResponse;
+
+//TODO Rewtrite this type
+//Logic is too complex now
+export type GetCurrentOrderThunkResult = Nullable<{
+  order: GetCurrentOrderFromAPI;
+  passenger: {
+    info: PassengerInfoAPIResponse;
+    avatarURL: Nullable<string>;
+  };
+  tariffs: TariffInfo[];
+}>;
+
+export type GetFutureOrderThunkResult = GetCurrentOrderThunkResult;
+
 export type OrderType = {
   id: string;
   pickUpAddress: string;
@@ -109,7 +177,7 @@ export type OrderType = {
   waitingTimeInMin: number;
   pricePerMin: number;
   pricePerKm: number;
-  distanceKm: number;
+  distanceMtr: number;
   currencyCode: string;
   pickUpRouteId: string;
   dropOffRouteId: string;

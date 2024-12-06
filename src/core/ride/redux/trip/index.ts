@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { NetworkErrorDetailsWithBody } from 'shuttlex-integration';
+import { NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
 
 import { TariffInfo } from '../../../contractor/redux/types';
 import {
@@ -12,9 +12,13 @@ import {
   fetchPickedUpAtPickUpPoint,
   fetchPickedUpAtStopPoint,
   fetchWayPointsRoute,
+  getCurrentOrder,
+  getFutureOrder,
+  getPassengerTripInfo,
   updatePassengerRating,
 } from './thunks';
 import {
+  GetCurrentOrderAPIResponse,
   OfferAPIResponse,
   OfferDropOffAPIResponse,
   OfferPickUpAPIResponse,
@@ -24,6 +28,7 @@ import {
   TripState,
   TripStatus,
 } from './types';
+import { tripStatusesByOrderStates } from './utils';
 
 const initialState: TripState = {
   order: null,
@@ -50,10 +55,12 @@ const slice = createSlice({
         tariffs: TariffInfo[];
         orderId: string;
         passengerInfo: PassengerInfoAPIResponse;
-        passengerAvatarURL: string;
+        passengerAvatarURL: Nullable<string>;
+        //TODO: do something with it
+        dataForOrder: Nullable<OfferAPIResponse | GetCurrentOrderAPIResponse>;
       }>,
     ) {
-      if (state.offer) {
+      if (action.payload.dataForOrder) {
         const {
           pickUpAddress,
           stopPointAddresses,
@@ -62,10 +69,10 @@ const slice = createSlice({
           price,
           pricePerKm,
           tariffId,
-          distanceKm,
+          distanceMtr,
           pickUpRouteId,
           dropOffRouteId,
-        } = state.offer;
+        } = action.payload.dataForOrder;
         const { orderId, passengerAvatarURL, passengerInfo, tariffs } = action.payload;
 
         const orderTariff = tariffs.find(tariff => tariff.id === tariffId);
@@ -83,7 +90,7 @@ const slice = createSlice({
           pickUpAddress,
           price,
           pricePerKm,
-          distanceKm,
+          distanceMtr,
           waitingTimeInMin: orderTariff.freeWaitingTimeMin,
           pricePerMin: orderTariff.paidWaitingTimeFeePriceMin,
           currencyCode: orderTariff.currencyCode,
@@ -91,7 +98,7 @@ const slice = createSlice({
           dropOffRouteId,
           timeToPickUp: new Date(timeToPickUp).getTime(),
           timeToDropOffInMin: dropOffTimeInMin,
-          stopPointAddresses: stopPointAddresses,
+          stopPointAddresses,
           id: orderId,
           passenger: {
             id: passengerInfo.id,
@@ -151,9 +158,6 @@ const slice = createSlice({
     setIsCanceledTripsPopupVisible(state, action: PayloadAction<boolean>) {
       state.isCanceledTripsPopupVisible = action.payload;
     },
-    addCanceledTrip(state) {
-      state.canceledTripsAmount++;
-    },
     toNextTripPoint(state) {
       if (state.tripPoints.length) {
         state.tripPoints.shift();
@@ -173,6 +177,111 @@ const slice = createSlice({
   },
   extraReducers: builder => {
     builder
+      .addCase(getCurrentOrder.pending, state => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: true,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: initialState.error,
+          type: setTripError.type,
+        });
+      })
+      .addCase(getCurrentOrder.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { tariffs, order, passenger } = action.payload;
+
+          const stopPointAddresses = [...order.stopPointAddresses, order.dropOffAddress];
+
+          if (order.state !== 'None' && order.state !== 'InPreviousOrder') {
+            slice.caseReducers.setTripStatus(state, {
+              payload: tripStatusesByOrderStates[order.state],
+              type: setTripStatus.type,
+            });
+          }
+          slice.caseReducers.setOrder(state, {
+            payload: {
+              tariffs,
+              orderId: order.id,
+              passengerInfo: passenger.info,
+              passengerAvatarURL: passenger.avatarURL,
+              dataForOrder: {
+                ...order,
+                stopPointAddresses,
+              },
+            },
+            type: setOrder.type,
+          });
+          if (order.state !== 'MoveToPickUp') {
+            state.tripPoints = stopPointAddresses;
+          }
+        }
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: initialState.error,
+          type: setTripError.type,
+        });
+      })
+      .addCase(getCurrentOrder.rejected, (state, action) => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
+          type: setTripError.type,
+        });
+      })
+      .addCase(getFutureOrder.pending, state => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: true,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: initialState.error,
+          type: setTripError.type,
+        });
+      })
+      .addCase(getFutureOrder.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { tariffs, order, passenger } = action.payload;
+
+          slice.caseReducers.setOrder(state, {
+            payload: {
+              tariffs,
+              orderId: order.id,
+              passengerInfo: passenger.info,
+              passengerAvatarURL: passenger.avatarURL,
+              dataForOrder: {
+                ...order,
+                stopPointAddresses: [...order.stopPointAddresses, order.dropOffAddress],
+              },
+            },
+            type: setOrder.type,
+          });
+        }
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: initialState.error,
+          type: setTripError.type,
+        });
+      })
+      .addCase(getFutureOrder.rejected, (state, action) => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
+          type: setTripError.type,
+        });
+      })
       .addCase(fetchOfferInfo.pending, state => {
         slice.caseReducers.setTripIsLoading(state, {
           payload: true,
@@ -258,7 +367,13 @@ const slice = createSlice({
         if (action.payload) {
           const { tariffs, orderId, passenger } = action.payload;
           slice.caseReducers.setOrder(state, {
-            payload: { tariffs, orderId, passengerInfo: passenger.info, passengerAvatarURL: passenger.avatarURL },
+            payload: {
+              tariffs,
+              orderId,
+              passengerInfo: passenger.info,
+              passengerAvatarURL: passenger.avatarURL,
+              dataForOrder: state.offer,
+            },
             type: setOrder.type,
           });
           slice.caseReducers.setTripOffer(state, {
@@ -276,6 +391,36 @@ const slice = createSlice({
         }
       })
       .addCase(acceptOffer.rejected, (state, action) => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
+          type: setTripError.type,
+        });
+      })
+      .addCase(getPassengerTripInfo.pending, state => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: true,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: initialState.error,
+          type: setTripError.type,
+        });
+      })
+      .addCase(getPassengerTripInfo.fulfilled, state => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: initialState.error,
+          type: setTripError.type,
+        });
+      })
+      .addCase(getPassengerTripInfo.rejected, (state, action) => {
         slice.caseReducers.setTripIsLoading(state, {
           payload: false,
           type: setTripIsLoading.type,
@@ -370,6 +515,7 @@ const slice = createSlice({
           payload: initialState.error,
           type: setTripError.type,
         });
+        slice.caseReducers.endTrip(state);
       })
       .addCase(updatePassengerRating.rejected, (state, action) => {
         slice.caseReducers.setTripIsLoading(state, {
@@ -436,7 +582,6 @@ const slice = createSlice({
         });
       })
       .addCase(fetchCancelTrip.fulfilled, state => {
-        slice.caseReducers.addCanceledTrip(state);
         slice.caseReducers.setIsCanceledTripsPopupVisible(state, slice.actions.setIsCanceledTripsPopupVisible(true));
         slice.caseReducers.setTripIsLoading(state, {
           payload: false,
@@ -468,7 +613,6 @@ export const {
   rateTrip,
   toNextTripPoint,
   endTrip,
-  addCanceledTrip,
   setIsCanceledTripsPopupVisible,
   setWayPointsRoute,
   setTripIsLoading,

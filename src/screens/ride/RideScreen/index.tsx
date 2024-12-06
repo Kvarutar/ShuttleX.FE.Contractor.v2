@@ -18,7 +18,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { contractorInfoStateSelector } from '../../../core/contractor/redux/selectors';
+import { contractorInfoStateSelector, isContractorInfoLoadingSelector } from '../../../core/contractor/redux/selectors';
 import { ContractorStatusAPIResponse } from '../../../core/contractor/redux/types';
 // import { setNotificationList } from '../../../core/menu/redux/notifications';
 // import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
@@ -60,6 +60,8 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   // const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
   const contractorDocsStatus = useSelector(contractorInfoStateSelector);
 
+  const isContractorInfoLoading = useSelector(isContractorInfoLoadingSelector);
+
   const insets = useSafeAreaInsets();
   const iosPaddingVertical = insets.bottom ? 0 : sizes.paddingVertical / 2;
 
@@ -83,10 +85,10 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   console.log('contractorDocsStatus', contractorDocsStatus);
 
   useEffect(() => {
-    if (contractorDocsStatus === 'None') {
+    if (contractorDocsStatus === 'None' && !isContractorInfoLoading) {
       navigation.replace('Verification');
     }
-  }, [contractorDocsStatus, navigation]);
+  }, [contractorDocsStatus, navigation, isContractorInfoLoading]);
 
   const determinePopupMode = (status: ContractorStatusAPIResponse): UnclosablePopupModes | null => {
     switch (status) {

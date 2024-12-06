@@ -1,17 +1,24 @@
 import { convertBlobToImgUri, getNetworkErrorInfo } from 'shuttlex-integration';
 
-import { TariffInfo } from '../../../contractor/redux/types';
+import { tariffsSelector } from '../../../contractor/redux/selectors';
 import { createAppAsyncThunk } from '../../../redux/hooks';
 import { geolocationCoordinatesSelector } from '../geolocation/selectors';
 import { getOfferNetworkErrorInfo } from './errors';
 import {
   AcceptOfferAPIResponse,
+  AcceptOfferThunkResult,
   AcceptOrDeclineOfferPayload,
   ArrivedToDropOffAPIRequest,
   ArrivedToDropOffPayload,
   ArrivedToPickUpAPIRequest,
   ArrivedToPickUpPayload,
   FetchCancelTripPayload,
+  GetCurrentOrderAPIResponse,
+  GetCurrentOrderThunkResult,
+  GetFutureOrderAPIResponse,
+  GetFutureOrderThunkResult,
+  GetPassengerTripInfoPayload,
+  GetPassengerTripInfoThunkResult,
   OfferAPIResponse,
   OfferDropOffAPIResponse,
   OfferPickUpAPIResponse,
@@ -21,6 +28,48 @@ import {
   UpdatePassengerRatingAPIRequest,
   UpdatePassengerRatingPayload,
 } from './types';
+
+export const getCurrentOrder = createAppAsyncThunk<GetCurrentOrderThunkResult, void>(
+  'trip/getCurrentOrder',
+  async (_, { rejectWithValue, ordersAxios, dispatch }) => {
+    try {
+      const response = await ordersAxios.get<GetCurrentOrderAPIResponse>('/current');
+
+      if (response.data) {
+        const tripDetails = await dispatch(getPassengerTripInfo({ orderId: response.data.id })).unwrap();
+        return {
+          order: response.data,
+          ...tripDetails,
+        };
+      }
+
+      return null;
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
+
+export const getFutureOrder = createAppAsyncThunk<GetFutureOrderThunkResult, void>(
+  'trip/getFutureOrder',
+  async (_, { rejectWithValue, ordersAxios, dispatch }) => {
+    try {
+      const response = await ordersAxios.get<GetFutureOrderAPIResponse>('/future');
+
+      if (response.data) {
+        const tripDetails = await dispatch(getPassengerTripInfo({ orderId: response.data.id })).unwrap();
+        return {
+          order: response.data,
+          ...tripDetails,
+        };
+      }
+
+      return null;
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
 
 export const fetchOfferInfo = createAppAsyncThunk<OfferAPIResponse, string>(
   'trip/fetchOfferInfo',
@@ -56,64 +105,63 @@ export const fetchWayPointsRoute = createAppAsyncThunk<
   },
 );
 
-export const acceptOffer = createAppAsyncThunk<
-  AcceptOfferAPIResponse & {
-    passenger: {
-      info: PassengerInfoAPIResponse;
-      avatarURL: string;
-    };
-    tariffs: TariffInfo[];
+export const acceptOffer = createAppAsyncThunk<AcceptOfferThunkResult, AcceptOrDeclineOfferPayload>(
+  'trip/acceptOffer',
+  async (payload, { rejectWithValue, offersAxios, dispatch }) => {
+    try {
+      const acceptOfferResponse = await offersAxios.post<AcceptOfferAPIResponse>(`${payload.offerId}/accept`);
+
+      const orderPayload = await dispatch(getPassengerTripInfo({ orderId: acceptOfferResponse.data.orderId })).unwrap();
+
+      return orderPayload;
+    } catch (error) {
+      return rejectWithValue(getOfferNetworkErrorInfo(error));
+    }
   },
-  AcceptOrDeclineOfferPayload
->('trip/acceptOffer', async (payload, { rejectWithValue, offersAxios, ordersAxios, getState }) => {
-  try {
-    const acceptOfferResponseData = await offersAxios.post<AcceptOfferAPIResponse>(`${payload.offerId}/accept`);
+);
 
-    const [passengerInfoResponse, passengerAvatarResponse] = await Promise.allSettled([
-      ordersAxios.get<PassengerInfoAPIResponse>(`/${acceptOfferResponseData.data.orderId}/passenger/info`),
-      ordersAxios.get<PassengerAvatarAPIResponse>(`/${acceptOfferResponseData.data.orderId}/passenger/avatar`, {
-        responseType: 'blob',
-      }),
-    ]);
+export const getPassengerTripInfo = createAppAsyncThunk<GetPassengerTripInfoThunkResult, GetPassengerTripInfoPayload>(
+  'trip/getPassengerTripInfo',
+  async (payload, { rejectWithValue, ordersAxios, getState }) => {
+    try {
+      const [passengerInfoResponse, passengerAvatarResponse] = await Promise.allSettled([
+        ordersAxios.get<PassengerInfoAPIResponse>(`/${payload.orderId}/passenger/info`),
+        ordersAxios.get<PassengerAvatarAPIResponse>(`/${payload.orderId}/passenger/avatar`, {
+          responseType: 'blob',
+        }),
+      ]);
 
-    let info: PassengerInfoAPIResponse;
-    let avatarURL = '';
+      let passengerInfo: PassengerInfoAPIResponse;
+      let avatarURL = null;
 
-    if (passengerInfoResponse.status === 'fulfilled') {
-      info = passengerInfoResponse.value.data;
-    } else {
-      return rejectWithValue(getOfferNetworkErrorInfo(passengerInfoResponse.reason));
+      if (passengerInfoResponse.status === 'fulfilled') {
+        passengerInfo = passengerInfoResponse.value.data;
+      } else {
+        return rejectWithValue(getOfferNetworkErrorInfo(passengerInfoResponse.reason));
+      }
+      if (passengerAvatarResponse.status === 'fulfilled') {
+        avatarURL = await convertBlobToImgUri(passengerAvatarResponse.value.data);
+      }
+
+      return {
+        orderId: payload.orderId,
+        passenger: {
+          info: passengerInfo,
+          avatarURL,
+        },
+        tariffs: tariffsSelector(getState()),
+      };
+    } catch (error) {
+      return rejectWithValue(getOfferNetworkErrorInfo(error));
     }
-    if (passengerAvatarResponse.status === 'fulfilled') {
-      avatarURL = await convertBlobToImgUri(passengerAvatarResponse.value.data);
-    }
-
-    const state = getState();
-
-    return {
-      orderId: acceptOfferResponseData.data.orderId,
-      passenger: {
-        info: info,
-        avatarURL,
-      },
-      tariffs: state.contractor.tariffs,
-    };
-  } catch (error) {
-    const { code, body, status } = getOfferNetworkErrorInfo(error);
-    return rejectWithValue({
-      code,
-      body,
-      status,
-    });
-  }
-});
+  },
+);
 
 export const declineOffer = createAppAsyncThunk<void, AcceptOrDeclineOfferPayload>(
   'trip/declineOffer',
-  async (payload, { rejectWithValue }) => {
+  async (payload, { rejectWithValue, offersAxios }) => {
     try {
-      //TODO: Test on the real offer
-      // await offersAxios.post<ResponseToOfferAPIResponse>(`${payload.offerId}/decline`);
+      await offersAxios.post(`/${payload.offerId}/decline`);
     } catch (error) {
       const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({

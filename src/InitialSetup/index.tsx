@@ -15,6 +15,7 @@ import {
 import { useAppDispatch } from '../core/redux/hooks';
 import { signalRThunks, updateSignalRAccessToken } from '../core/redux/signalr';
 import { geolocationCoordinatesSelector } from '../core/ride/redux/geolocation/selectors';
+import { getCurrentOrder, getFutureOrder } from '../core/ride/redux/trip/thunks';
 import { getFirebaseDeviceToken, setupNotifications } from '../core/utils/notifications/notificationSetup';
 import { InitialSetupProps } from './types';
 
@@ -44,10 +45,7 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
         await dispatch(getContractorInfo());
         dispatch(setIsLoggedIn(true));
 
-        if (isLoggedIn) {
-          await dispatch(getOrUpdateZone());
-          dispatch(getFullTariffsInfo());
-        }
+        dispatch(getOrUpdateZone()); // Here we get or update zone via ip
       } else {
         dispatch(setIsLoggedIn(false));
       }
@@ -69,8 +67,7 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   useEffect(() => {
     if (isLocationLoaded) {
       (async () => {
-        await dispatch(getOrUpdateZone());
-        dispatch(getFullTariffsInfo());
+        await dispatch(getOrUpdateZone()); // Here we get or update zone via geolocation
       })();
     }
   }, [isLocationLoaded, dispatch]);
@@ -80,6 +77,16 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
       setIsLocationLoaded(true);
     }
   }, [defaultLocation, isLocationLoaded]);
+
+  useEffect(() => {
+    if (contractorZone && isLocationLoaded) {
+      (async () => {
+        await dispatch(getFullTariffsInfo());
+        await dispatch(getCurrentOrder());
+        dispatch(getFutureOrder());
+      })();
+    }
+  }, [contractorZone, dispatch, isLocationLoaded]);
 
   useEffect(() => {
     setThemeMode('light');

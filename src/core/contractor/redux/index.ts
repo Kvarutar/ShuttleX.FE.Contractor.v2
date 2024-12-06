@@ -31,7 +31,7 @@ const initialState: ContractorState = {
     name: '',
     email: '',
     phone: '',
-    state: 'None',
+    state: 'OutOfWork',
     status: 'offline',
     level: 0,
     totalRidesCount: 0,
