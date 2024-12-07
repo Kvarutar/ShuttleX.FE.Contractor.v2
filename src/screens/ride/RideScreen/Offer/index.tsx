@@ -23,7 +23,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { wayPointsDropOffSelector, wayPointsPickUpSelector } from '../../../../core/ride/redux/trip/selectors';
+import { tripDropOffRouteSelector, tripPickUpRouteSelector } from '../../../../core/ride/redux/trip/selectors';
 import { TripPoint } from '../../../../core/ride/redux/trip/types';
 import { OfferItemProps, OfferProps } from './props';
 
@@ -51,15 +51,15 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
     return Date.now() + secToMilSec(offer.timeToAnswerSec);
   }, [offer.timeToAnswerSec]);
 
-  const wayPointsPickUp = useSelector(wayPointsPickUpSelector);
-  const wayPointsDropOff = useSelector(wayPointsDropOffSelector);
+  const pickUpWaypoints = useSelector(tripDropOffRouteSelector)?.waypoints;
+  const dropOffWaypoints = useSelector(tripPickUpRouteSelector)?.waypoints;
 
   const [pickUpData, setPickUpData] = useState<TripPoint[]>([]);
   const [dropOffData, setDropOffData] = useState<TripPoint[]>([]);
 
   useEffect(() => {
-    if (wayPointsPickUp && wayPointsPickUp.length > 0) {
-      const pickUpCoordinates = wayPointsPickUp.map<{ address: string } & LatLng>(waypoint => ({
+    if (pickUpWaypoints && pickUpWaypoints.length > 0) {
+      const pickUpCoordinates = pickUpWaypoints.map<{ address: string } & LatLng>(waypoint => ({
         address: offer.pickUpAddress,
         latitude: waypoint.geo.latitude,
         longitude: waypoint.geo.longitude,
@@ -67,15 +67,15 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
       setPickUpData(pickUpCoordinates);
     }
 
-    if (wayPointsDropOff && wayPointsDropOff.length > 0) {
-      const dropOffCoordinates = wayPointsDropOff.map<{ address: string } & LatLng>(waypoint => ({
+    if (dropOffWaypoints && dropOffWaypoints.length > 0) {
+      const dropOffCoordinates = dropOffWaypoints.map<{ address: string } & LatLng>(waypoint => ({
         address: offer.stopPointAddresses.join(', '),
         latitude: waypoint.geo.latitude,
         longitude: waypoint.geo.longitude,
       }));
       setDropOffData(dropOffCoordinates);
     }
-  }, [wayPointsPickUp, wayPointsDropOff, offer.stopPointAddresses, offer.pickUpAddress]);
+  }, [pickUpWaypoints, dropOffWaypoints, offer.stopPointAddresses, offer.pickUpAddress]);
 
   const startPosition: { address: string } & LatLng =
     pickUpData.length > 0

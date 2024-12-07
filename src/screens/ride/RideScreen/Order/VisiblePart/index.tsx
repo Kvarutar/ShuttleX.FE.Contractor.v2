@@ -1,8 +1,8 @@
-import { useCallback, useEffect } from 'react';
+import { ReactNode, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { Button, minToMilSec, SquareButtonModes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
+import { Button, minToMilSec, Nullable, SquareButtonModes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
 
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { setTripStatus } from '../../../../../core/ride/redux/trip';
@@ -36,11 +36,11 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
       const isLastPoint = tripPoints.length <= 1;
 
       if (isPickUp) {
-        dispatch(setTripStatus(TripStatus.Arriving));
+        dispatch(setTripStatus(TripStatus.NearPoint));
       } else if (isLastPoint) {
         dispatch(setTripStatus(TripStatus.Ending));
       } else {
-        dispatch(setTripStatus(TripStatus.ArrivingAtStopPoint));
+        dispatch(setTripStatus(TripStatus.NearStopPoint));
       }
     }
   }, [order, tripPoints, dispatch]);
@@ -52,16 +52,16 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
     }
   }, [updateTripStatus, tripStatus]);
 
-  let mainContent = null;
-  let statusSwitchers = null;
+  let mainContent: Nullable<Record<TripStatus, Nullable<ReactNode>>> = null;
+  let statusSwitchers: Nullable<Record<TripStatus, Nullable<ReactNode>>> = null;
 
   if (order && tripPoints.length !== 0) {
     mainContent = {
       idle: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToPickUp} />,
-      arriving: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToPickUp} />,
+      nearPoint: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToPickUp} />,
       //TODO: Add this component when work with stop points
       //TODO: Change timeForTimer when work with stop points
-      arrivingAtStopPoint: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={0} />,
+      nearStopPoint: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={0} />,
       arrived: (
         <AddressWithPassengerAndOrderInfo
           tripPoints={tripPoints}
@@ -85,14 +85,14 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
     };
     statusSwitchers = {
       idle: null,
-      arriving: (
+      nearPoint: (
         <Button
           mode={SquareButtonModes.Mode2}
           text={t('ride_Ride_Order_arrivedButton')}
           onPress={() => dispatch(fetchArrivedToPickUp({ orderId: order.id }))}
         />
       ),
-      arrivingAtStopPoint: (
+      nearStopPoint: (
         <Button
           mode={SquareButtonModes.Mode1}
           text={t('ride_Ride_Order_arrivedToStopButton')}

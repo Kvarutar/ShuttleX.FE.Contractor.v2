@@ -20,8 +20,6 @@ import {
 import {
   GetCurrentOrderAPIResponse,
   OfferAPIResponse,
-  OfferDropOffAPIResponse,
-  OfferPickUpAPIResponse,
   OfferWayPointsDataAPIResponse,
   OrderType,
   PassengerInfoAPIResponse,
@@ -33,8 +31,8 @@ import { tripStatusesByOrderStates } from './utils';
 const initialState: TripState = {
   order: null,
   offer: null,
-  pickUpPoint: null,
-  dropOffPoint: null,
+  pickUpRoute: null,
+  dropOffRoute: null,
   secondOrder: null,
   tripStatus: TripStatus.Idle,
   tripPoints: [],
@@ -129,8 +127,8 @@ const slice = createSlice({
       action: PayloadAction<{ pickup: OfferWayPointsDataAPIResponse; dropoff: OfferWayPointsDataAPIResponse }>,
     ) {
       if (state.offer) {
-        state.pickUpPoint = action.payload.pickup;
-        state.dropOffPoint = action.payload.dropoff;
+        state.pickUpRoute = action.payload.pickup;
+        state.dropOffRoute = action.payload.dropoff;
       }
     },
     setPassengerAvatar(state, action: PayloadAction<string>) {
@@ -154,6 +152,8 @@ const slice = createSlice({
         state.tripPoints = initialState.tripPoints;
       }
       state.tripStatus = TripStatus.Idle;
+      state.pickUpRoute = initialState.pickUpRoute;
+      state.dropOffRoute = initialState.dropOffRoute;
     },
     setIsCanceledTripsPopupVisible(state, action: PayloadAction<boolean>) {
       state.isCanceledTripsPopupVisible = action.payload;
@@ -162,16 +162,6 @@ const slice = createSlice({
       if (state.tripPoints.length) {
         state.tripPoints.shift();
         state.tripStatus = TripStatus.Ride;
-      }
-    },
-    setWayPointsPickUp(state, action: PayloadAction<OfferPickUpAPIResponse>) {
-      if (state.offer) {
-        state.pickUpPoint = action.payload;
-      }
-    },
-    setWayPointsDropOff(state, action: PayloadAction<OfferDropOffAPIResponse>) {
-      if (state.offer) {
-        state.dropOffPoint = action.payload;
       }
     },
   },

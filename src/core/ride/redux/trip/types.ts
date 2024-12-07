@@ -185,8 +185,8 @@ export type OrderType = {
 
 export type TripState = {
   order: Nullable<OrderType>;
-  pickUpPoint: Nullable<OfferWayPointsDataAPIResponse>;
-  dropOffPoint: Nullable<OfferWayPointsDataAPIResponse>;
+  pickUpRoute: Nullable<OfferWayPointsDataAPIResponse>;
+  dropOffRoute: Nullable<OfferWayPointsDataAPIResponse>;
   offer: Nullable<OfferInfo>;
   secondOrder: Nullable<OrderType>;
   tripStatus: TripStatus;
@@ -199,8 +199,8 @@ export type TripState = {
 
 export enum TripStatus {
   Idle = 'idle',
-  Arriving = 'arriving',
-  ArrivingAtStopPoint = 'arrivingAtStopPoint',
+  NearPoint = 'nearPoint',
+  NearStopPoint = 'nearStopPoint',
   Arrived = 'arrived',
   ArrivedAtStopPoint = 'arrivedAtStopPoint',
   Ride = 'ride',

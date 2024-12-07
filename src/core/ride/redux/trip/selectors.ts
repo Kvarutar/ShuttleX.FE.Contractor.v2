@@ -8,5 +8,5 @@ export const tripPointsSelector = (state: AppState) => state.trip.tripPoints;
 export const isCanceledTripsPopupVisibleSelector = (state: AppState) => state.trip.isCanceledTripsPopupVisible;
 export const pickUpRouteIdSelector = (state: AppState) => state.trip.offer?.pickUpRouteId;
 export const dropOffRouteIdSelector = (state: AppState) => state.trip.offer?.dropOffRouteId;
-export const wayPointsPickUpSelector = (state: AppState) => state.trip.pickUpPoint?.waypoints;
-export const wayPointsDropOffSelector = (state: AppState) => state.trip.dropOffPoint?.waypoints;
+export const tripPickUpRouteSelector = (state: AppState) => state.trip.pickUpRoute;
+export const tripDropOffRouteSelector = (state: AppState) => state.trip.dropOffRoute;

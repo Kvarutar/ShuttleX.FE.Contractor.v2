@@ -53,7 +53,7 @@ const AddressWithPassengerAndOrderInfo = ({
       case TripStatus.Idle:
         setTimerColorMode(TimerColorModes.Mode1);
         break;
-      case TripStatus.Arriving:
+      case TripStatus.NearPoint:
         setTimerColorMode(TimerColorModes.Mode2);
         break;
       case TripStatus.Ending:
