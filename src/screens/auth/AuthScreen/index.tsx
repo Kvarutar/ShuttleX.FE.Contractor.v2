@@ -25,6 +25,7 @@ const AuthScreen = ({ navigation, route }: AuthScreenProps): JSX.Element => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const signUpRef = useRef<SignUpScreenRef>(null);
+  const previousSignMethodRef = useRef<SignInMethod>(SignInMethod.Phone);
 
   const isLoading = useSelector(isAuthLoadingSelector);
   const signError = useSelector(authErrorSelector);
@@ -35,9 +36,11 @@ const AuthScreen = ({ navigation, route }: AuthScreenProps): JSX.Element => {
   const [lockoutMinutes, setLockoutMinutes] = useState('');
 
   useEffect(() => {
-    if (!isLoading && !signError && data) {
+    if (!isLoading && !signError && data && previousSignMethodRef.current === signMethod) {
       navigation.navigate('SignInCode', { verificationType: signMethod, data });
     }
+
+    previousSignMethodRef.current = signMethod;
 
     if (signError && isIncorrectFieldsError(signError)) {
       if (Array.isArray(signError.body)) {
