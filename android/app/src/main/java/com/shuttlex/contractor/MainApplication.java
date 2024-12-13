@@ -1,4 +1,4 @@
-package com.shuttlex.contractor;
+package com.shuttlexinc.contractor;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

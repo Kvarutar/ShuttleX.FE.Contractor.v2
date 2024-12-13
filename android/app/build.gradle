@@ -86,16 +86,16 @@ android {
     productFlavors {
         dev {
             applicationIdSuffix ".dev"
-            resValue "string", "build_config_package", "com.shuttlex.contractor"
+            resValue "string", "build_config_package", "com.shuttlexinc.contractor"
         }
         prod {
-            resValue "string", "build_config_package", "com.shuttlex.contractor"
+            resValue "string", "build_config_package", "com.shuttlexinc.contractor"
         }
     }
 
-    namespace "com.shuttlex.contractor"
+    namespace "com.shuttlexinc.contractor"
     defaultConfig {
-        applicationId "com.shuttlex.contractor"
+        applicationId "com.shuttlexinc.contractor"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 12

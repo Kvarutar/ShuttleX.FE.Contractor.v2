@@ -2,14 +2,14 @@
   "project_info": {
     "project_number": "1062771696618",
     "project_id": "shuttlex-contractor-dev",
-    "storage_bucket": "shuttlex-contractor-dev.appspot.com"
+    "storage_bucket": "shuttlex-contractor-dev.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1062771696618:android:4d09c68f34b87c92a7c893",
+        "mobilesdk_app_id": "1:1062771696618:android:d0f18c104658a409a7c893",
         "android_client_info": {
-          "package_name": "com.shuttlex.contractor.dev"
+          "package_name": "com.shuttlexinc.contractor.dev"
         }
       },
       "oauth_client": [],
