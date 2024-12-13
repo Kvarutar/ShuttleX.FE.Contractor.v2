@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { getTokens, useTheme } from 'shuttlex-integration';
+import { getTokens, ServerErrorModal, useTheme } from 'shuttlex-integration';
 
 import { setIsLoggedIn } from '../core/auth/redux';
 import { isLoggedInSelector } from '../core/auth/redux/selectors';
@@ -18,11 +18,13 @@ import { geolocationCoordinatesSelector } from '../core/ride/redux/geolocation/s
 import { getCurrentOrder, getFutureOrder } from '../core/ride/redux/trip/thunks';
 import { getFirebaseDeviceToken, setupNotifications } from '../core/utils/notifications/notificationSetup';
 import { InitialSetupProps } from './types';
+import useServerErrorHandler from './utils/useServerErrorHandler';
 
 const InitialSetup = ({ children }: InitialSetupProps) => {
   const dispatch = useAppDispatch();
   const { setThemeMode } = useTheme();
   const { i18n } = useTranslation();
+  const { isErrorAvailable } = useServerErrorHandler();
 
   const isLoggedIn = useSelector(isLoggedInSelector);
   const defaultLocation = useSelector(geolocationCoordinatesSelector);
@@ -30,6 +32,7 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   const contractor = useSelector(contractorInfoSelector);
 
   const [isLocationLoaded, setIsLocationLoaded] = useState(false);
+  const [isServerErrorModalVisible, setIsServerErrorModalVisible] = useState(false);
 
   useEffect(() => {
     dispatch(getFullTariffsInfo());
@@ -100,6 +103,15 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
     setupNotifications();
   }, [dispatch]);
 
-  return children;
+  useEffect(() => {
+    setIsServerErrorModalVisible(isErrorAvailable);
+  }, [isErrorAvailable]);
+
+  return (
+    <>
+      {children}
+      {isServerErrorModalVisible && <ServerErrorModal setIsVisible={setIsServerErrorModalVisible} />}
+    </>
+  );
 };
 export default InitialSetup;

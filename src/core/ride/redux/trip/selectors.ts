@@ -10,3 +10,6 @@ export const pickUpRouteIdSelector = (state: AppState) => state.trip.offer?.pick
 export const dropOffRouteIdSelector = (state: AppState) => state.trip.offer?.dropOffRouteId;
 export const tripPickUpRouteSelector = (state: AppState) => state.trip.pickUpRoute;
 export const tripDropOffRouteSelector = (state: AppState) => state.trip.dropOffRoute;
+
+//Errors
+export const tripErrorSelector = (state: AppState) => state.trip.error;
