@@ -1,7 +1,8 @@
 //TODO uncoment all notification related code when we will need it
+import { useNavigationState } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Platform, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
@@ -69,6 +70,10 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const isEmailVerified = false;
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
 
+  const androidPaddingTop = StatusBar.currentHeight
+    ? StatusBar.currentHeight?.valueOf() + sizes.paddingHorizontal
+    : sizes.paddingHorizontal;
+
   const computedStyles = StyleSheet.create({
     topButtonsContainer: {
       paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : iosPaddingVertical,
@@ -78,6 +83,9 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     },
     unreadNotificationsText: {
       color: colors.backgroundPrimaryColor,
+    },
+    menuHeader: {
+      paddingTop: Platform.OS === 'android' ? androidPaddingTop : 8,
     },
   });
 
@@ -195,15 +203,18 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   //   );
   // }
 
+  const currentRoute = useNavigationState(state => state.routes[state.index].name);
+
   return (
     <>
+      {currentRoute === 'Ride' && <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />}
       <SafeAreaView style={styles.wrapper}>
         <MapView />
 
         <MenuHeader
           onMenuPress={() => setIsMenuVisible(true)}
           onNotificationPress={() => navigation.navigate('Notifications')}
-          style={styles.menuHeader}
+          style={[styles.menuHeader, computedStyles.menuHeader]}
         >
           <Alert
             isVisible={isEmailVerified}
@@ -223,7 +234,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
         )}
         {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
       </SafeAreaView>
-      {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
+      {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} isStatusBarTransparent />}
       {unclosablePopupMode && (
         <UnclosablePopupWithModes mode={unclosablePopupMode} bottomAdditionalContent={unclosablePopupContent} />
       )}
@@ -244,7 +255,6 @@ const styles = StyleSheet.create({
   // },
   menuHeader: {
     paddingHorizontal: sizes.paddingHorizontal,
-    paddingTop: 8,
   },
   unreadNotificationsText: {
     fontFamily: 'Inter Medium',

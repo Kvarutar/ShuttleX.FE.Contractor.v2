@@ -37,7 +37,16 @@ const Navigate = (): JSX.Element => {
       >
         {isLoggedIn ? (
           <>
-            <Stack.Screen name="Ride" component={RideScreen} />
+            <Stack.Screen
+              name="Ride"
+              component={RideScreen}
+              options={{
+                animation: 'none',
+                statusBarTranslucent: true,
+                statusBarStyle: 'dark',
+                statusBarColor: 'transparent',
+              }}
+            />
             <Stack.Screen name="Notifications" component={NotificationScreen} />
             <Stack.Screen name="Rating" component={RatingScreen} />
             <Stack.Screen name="Zone" component={ZoneScreen} />
