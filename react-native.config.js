@@ -2,6 +2,7 @@ const path = require('path');
 const integrationPackageJson = require('./node_modules/shuttlex-integration/package.json');
 
 // Autolinking libraries in the 'dependencies' field of shuttlex-integration package
+// TODO: search also in shuttlex-integration/node_modules
 const integrationAutolinkingDeps = {};
 Object.keys(integrationPackageJson.dependencies).forEach(key => {
   integrationAutolinkingDeps[key] = { root: path.join(__dirname, `./node_modules/${key}`) };
