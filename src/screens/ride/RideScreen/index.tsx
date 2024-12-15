@@ -19,6 +19,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { signOut } from '../../../core/auth/redux/thunks';
 import { contractorInfoStateSelector, isContractorInfoLoadingSelector } from '../../../core/contractor/redux/selectors';
 import { ContractorStatusAPIResponse } from '../../../core/contractor/redux/types';
 // import { setNotificationList } from '../../../core/menu/redux/notifications';
@@ -118,15 +119,24 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       case 'UnavailableForWork':
       case 'UnderReview':
         return (
-          <Button
-            style={styles.popupButton}
-            shape={ButtonShapes.Square}
-            mode={SquareButtonModes.Mode2}
-            text={t('ride_Ride_supportButton')}
-            onPress={() => {
-              /* TODO: add logic for navigate */
-            }}
-          />
+          <View style={styles.popupButtonContainer}>
+            <Button
+              containerStyle={styles.popupButton}
+              shape={ButtonShapes.Square}
+              mode={SquareButtonModes.Mode2}
+              text={t('ride_Ride_supportButton')}
+              onPress={() => {
+                /* TODO: add logic for navigate */
+              }}
+            />
+            <Button
+              containerStyle={styles.popupButton}
+              shape={ButtonShapes.Square}
+              mode={SquareButtonModes.Mode4}
+              text={t('ride_Ride_logOutButton')}
+              onPress={() => dispatch(signOut())}
+            />
+          </View>
         );
       case 'RequireDocumentUpdate':
         return (
@@ -274,8 +284,13 @@ const styles = StyleSheet.create({
   topRightButtonContainer: {
     alignItems: 'center',
   },
+  popupButtonContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   popupButton: {
     marginTop: 76,
+    flex: 1,
   },
 });
 
