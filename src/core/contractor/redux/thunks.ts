@@ -64,6 +64,7 @@ export const getContractorInfo = createAppAsyncThunk<{ contractorInfo: Contracto
 
         switch (contractorInfoResponse.value.data.state) {
           case 'WaitingOrder':
+          case 'InOrderProcessingWithNextPickUp':
           case 'InOrderProcessingWithNextStopPoint':
           case 'InOrderProcessingWithNextDropOff':
             contractorInfo.status = 'online';

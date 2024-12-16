@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
+import { minToMilSec, NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
 
 import { TariffInfo } from '../../../contractor/redux/types';
 import {
@@ -18,7 +18,7 @@ import {
   updatePassengerRating,
 } from './thunks';
 import {
-  GetCurrentOrderAPIResponse,
+  GetCurrentOrderFromAPI,
   OfferAPIResponse,
   OfferWayPointsDataAPIResponse,
   OrderType,
@@ -54,8 +54,7 @@ const slice = createSlice({
         orderId: string;
         passengerInfo: PassengerInfoAPIResponse;
         passengerAvatarURL: Nullable<string>;
-        //TODO: do something with it
-        dataForOrder: Nullable<OfferAPIResponse | GetCurrentOrderAPIResponse>;
+        dataForOrder: Nullable<GetCurrentOrderFromAPI>;
       }>,
     ) {
       if (action.payload.dataForOrder) {
@@ -70,6 +69,8 @@ const slice = createSlice({
           distanceMtr,
           pickUpRouteId,
           dropOffRouteId,
+          arrivedToPickUpDate,
+          pickUpDate,
         } = action.payload.dataForOrder;
         const { orderId, passengerAvatarURL, passengerInfo, tariffs } = action.payload;
 
@@ -81,7 +82,6 @@ const slice = createSlice({
 
         const dropOffTime = new Date(timeToDropOff);
         const dropOffTimeInMs = dropOffTime.getTime() - Date.now();
-        const dropOffTimeInMin = Math.floor(dropOffTimeInMs / 1000 / 60);
 
         const order: OrderType = {
           tariffId,
@@ -89,13 +89,14 @@ const slice = createSlice({
           price,
           pricePerKm,
           distanceMtr,
-          waitingTimeInMin: orderTariff.freeWaitingTimeMin,
+          waitingTimeInMilSec: minToMilSec(orderTariff.freeWaitingTimeMin),
           pricePerMin: orderTariff.paidWaitingTimeFeePriceMin,
           currencyCode: orderTariff.currencyCode,
           pickUpRouteId,
           dropOffRouteId,
           timeToPickUp: new Date(timeToPickUp).getTime(),
-          timeToDropOffInMin: dropOffTimeInMin,
+          timeToDropOffInMilSec: dropOffTimeInMs,
+          travelTimeInMilSec: new Date(timeToDropOff).getTime() - new Date(timeToPickUp).getTime(),
           stopPointAddresses,
           id: orderId,
           passenger: {
@@ -105,6 +106,16 @@ const slice = createSlice({
             avatarURL: passengerAvatarURL,
           },
         };
+
+        if (arrivedToPickUpDate) {
+          const timeDifferenceInMilSec = Date.now() - new Date(arrivedToPickUpDate).getTime();
+          order.waitingTimeInMilSec = minToMilSec(orderTariff.freeWaitingTimeMin) - timeDifferenceInMilSec;
+        }
+
+        if (pickUpDate) {
+          order.timeToDropOffInMilSec = new Date(timeToDropOff).getTime() - Date.now();
+        }
+
         if (state.order && !state.secondOrder) {
           state.secondOrder = { ...order };
         } else if (!state.order) {
@@ -202,7 +213,7 @@ const slice = createSlice({
             },
             type: setOrder.type,
           });
-          if (order.state !== 'MoveToPickUp') {
+          if (order.state !== 'MoveToPickUp' && order.state !== 'InPickUp') {
             state.tripPoints = stopPointAddresses;
           }
         }
@@ -353,32 +364,19 @@ const slice = createSlice({
           type: setTripError.type,
         });
       })
-      .addCase(acceptOffer.fulfilled, (state, action) => {
-        if (action.payload) {
-          const { tariffs, orderId, passenger } = action.payload;
-          slice.caseReducers.setOrder(state, {
-            payload: {
-              tariffs,
-              orderId,
-              passengerInfo: passenger.info,
-              passengerAvatarURL: passenger.avatarURL,
-              dataForOrder: state.offer,
-            },
-            type: setOrder.type,
-          });
-          slice.caseReducers.setTripOffer(state, {
-            payload: initialState.offer,
-            type: setTripOffer.type,
-          });
-          slice.caseReducers.setTripIsLoading(state, {
-            payload: false,
-            type: setTripIsLoading.type,
-          });
-          slice.caseReducers.setTripError(state, {
-            payload: initialState.error,
-            type: setTripError.type,
-          });
-        }
+      .addCase(acceptOffer.fulfilled, state => {
+        slice.caseReducers.setTripOffer(state, {
+          payload: initialState.offer,
+          type: setTripOffer.type,
+        });
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: initialState.error,
+          type: setTripError.type,
+        });
       })
       .addCase(acceptOffer.rejected, (state, action) => {
         slice.caseReducers.setTripIsLoading(state, {

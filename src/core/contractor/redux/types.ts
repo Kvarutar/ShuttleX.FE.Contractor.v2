@@ -27,6 +27,7 @@ export type ContractorStatusAPIResponse =
   | 'RequireDocumentUpdate'
   | 'UnavailableForWork'
   | 'WaitingOrder'
+  | 'InOrderProcessingWithNextPickUp'
   | 'InOrderProcessingWithNextStopPoint'
   | 'InOrderProcessingWithNextDropOff'
   | 'OutOfWork';

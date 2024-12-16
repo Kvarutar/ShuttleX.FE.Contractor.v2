@@ -45,6 +45,7 @@ const AddressWithPassengerAndOrderInfo = ({
   const [extraWaiting, setExtraWaiting] = useState<boolean>(false);
   const [timerColorMode, setTimerColorMode] = useState<TimerColorModes>(TimerColorModes.Mode1);
   const [extraWaitingSum, setExtraWaitingSum] = useState<number>(0);
+  const [extraWaitingTimeIInSec, setExtraWaitingTimeInSec] = useState<number>(0);
 
   const withAvatar = tripStatus === TripStatus.Arrived || tripStatus === TripStatus.Ending;
 
@@ -65,7 +66,7 @@ const AddressWithPassengerAndOrderInfo = ({
 
   useEffect(() => {
     if (order && tripStatus === TripStatus.Arrived && setWaitingTime) {
-      setWaitingTime(Date.now() + minToMilSec(order.waitingTimeInMin));
+      setWaitingTime(Date.now() + order.waitingTimeInMilSec);
     }
   }, [order, tripStatus, setWaitingTime]);
 
@@ -87,6 +88,18 @@ const AddressWithPassengerAndOrderInfo = ({
     };
   }, []);
 
+  //TODO: Check time for timer and logic for rendering time in timer
+  // There is some small problems with time render after reloading app
+  useEffect(() => {
+    if (order && order.waitingTimeInMilSec < 0) {
+      const waitingTimeInMin = Math.floor(Math.abs(order.waitingTimeInMilSec) / (1000 * 60));
+
+      setExtraWaiting(true);
+      setExtraWaitingSum(waitingTimeInMin * order.pricePerMin);
+      setExtraWaitingTimeInSec(waitingTimeInMin * 60);
+    }
+  }, [order]);
+
   if (!order) {
     return;
   }
@@ -101,8 +114,8 @@ const AddressWithPassengerAndOrderInfo = ({
   };
 
   const travelTime = {
-    hours: Math.floor(order.timeToDropOffInMin / 60),
-    minutes: order.timeToDropOffInMin % 60,
+    hours: Math.floor(order.travelTimeInMilSec / (1000 * 60 * 60)),
+    minutes: Math.floor((order.travelTimeInMilSec / (1000 * 60)) % 60),
   };
 
   const computedStyles = StyleSheet.create({
@@ -241,6 +254,7 @@ const AddressWithPassengerAndOrderInfo = ({
                 sizeMode={TimerSizesModes.S}
                 colorMode={timerColorMode}
                 onAfterCountdownEnds={onAfterCountdownEnds}
+                countingForwardStartTime={extraWaitingTimeIInSec}
               />
             </Shadow>
 

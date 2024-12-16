@@ -2,7 +2,7 @@ import { ReactNode, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { Button, minToMilSec, Nullable, SquareButtonModes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
+import { Button, Nullable, SquareButtonModes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
 
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { setTripStatus } from '../../../../../core/ride/redux/trip';
@@ -66,7 +66,7 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
         <AddressWithPassengerAndOrderInfo
           tripPoints={tripPoints}
           withGoogleMapButton={false}
-          timeForTimer={Date.now() + minToMilSec(order.waitingTimeInMin)}
+          timeForTimer={Date.now() + order.waitingTimeInMilSec}
           isWaiting
         />
       ),

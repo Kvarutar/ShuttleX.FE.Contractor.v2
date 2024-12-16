@@ -100,15 +100,6 @@ export type OfferWayPointsDataAPIResponse = {
 export type OfferPickUpAPIResponse = OfferWayPointsDataAPIResponse;
 export type OfferDropOffAPIResponse = OfferWayPointsDataAPIResponse;
 
-export type AcceptOfferThunkResult = {
-  orderId: string;
-  passenger: {
-    info: PassengerInfoAPIResponse;
-    avatarURL: Nullable<string>;
-  };
-  tariffs: TariffInfo[];
-};
-
 export type GetPassengerTripInfoThunkResult = {
   orderId: string;
   passenger: {
@@ -130,8 +121,7 @@ export type OrderStateFromAPI =
   | 'CanceledByPassenger'
   | 'CanceledByContractor';
 
-//TODO: Ask BE why we get '' and why not null
-export type GetCurrentOrderAPIResponse = GetCurrentOrderFromAPI | '';
+export type GetCurrentOrderAPIResponse = GetCurrentOrderFromAPI;
 
 export type GetCurrentOrderFromAPI = {
   id: string;
@@ -148,6 +138,9 @@ export type GetCurrentOrderFromAPI = {
   currency: string;
   pickUpRouteId: string;
   dropOffRouteId: string;
+  arrivedToPickUpDate: Nullable<string>;
+  pickUpDate: Nullable<string>;
+  dropOffDate: Nullable<string>;
 };
 
 export type GetFutureOrderAPIResponse = GetCurrentOrderAPIResponse;
@@ -173,14 +166,15 @@ export type OrderType = {
   tariffId: string;
   price: number;
   timeToPickUp: number;
-  timeToDropOffInMin: number;
-  waitingTimeInMin: number;
+  timeToDropOffInMilSec: number;
+  waitingTimeInMilSec: number;
   pricePerMin: number;
   pricePerKm: number;
   distanceMtr: number;
   currencyCode: string;
   pickUpRouteId: string;
   dropOffRouteId: string;
+  travelTimeInMilSec: number;
 };
 
 export type TripState = {

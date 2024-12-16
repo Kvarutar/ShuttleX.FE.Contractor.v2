@@ -6,7 +6,6 @@ import { geolocationCoordinatesSelector } from '../geolocation/selectors';
 import { getOfferNetworkErrorInfo } from './errors';
 import {
   AcceptOfferAPIResponse,
-  AcceptOfferThunkResult,
   AcceptOrDeclineOfferPayload,
   ArrivedToDropOffAPIRequest,
   ArrivedToDropOffPayload,
@@ -105,15 +104,13 @@ export const fetchWayPointsRoute = createAppAsyncThunk<
   },
 );
 
-export const acceptOffer = createAppAsyncThunk<AcceptOfferThunkResult, AcceptOrDeclineOfferPayload>(
+export const acceptOffer = createAppAsyncThunk<void, AcceptOrDeclineOfferPayload>(
   'trip/acceptOffer',
   async (payload, { rejectWithValue, offersAxios, dispatch }) => {
     try {
-      const acceptOfferResponse = await offersAxios.post<AcceptOfferAPIResponse>(`${payload.offerId}/accept`);
+      await offersAxios.post<AcceptOfferAPIResponse>(`${payload.offerId}/accept`);
 
-      const orderPayload = await dispatch(getPassengerTripInfo({ orderId: acceptOfferResponse.data.orderId })).unwrap();
-
-      return orderPayload;
+      await dispatch(getCurrentOrder());
     } catch (error) {
       return rejectWithValue(getOfferNetworkErrorInfo(error));
     }

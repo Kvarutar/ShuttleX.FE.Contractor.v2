@@ -7,7 +7,6 @@ import {
   BottomWindowWithGesture,
   BottomWindowWithGestureRef,
   defaultShadow,
-  minToMilSec,
   sizes,
   Timer,
   TimerColorModes,
@@ -58,7 +57,11 @@ const Order = () => {
 
   useEffect(() => {
     if (withHeaderTimer && order) {
-      setTimeToDropOff(Date.now() + minToMilSec(order.timeToDropOffInMin));
+      if (order.timeToDropOffInMilSec > 0) {
+        setTimeToDropOff(Date.now() + order.timeToDropOffInMilSec);
+      } else {
+        setTimeToDropOff(Date.now());
+      }
     }
   }, [withHeaderTimer, order]);
 
