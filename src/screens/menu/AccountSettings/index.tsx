@@ -1,6 +1,6 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -24,10 +24,14 @@ import { contractorAvatarSelector, contractorInfoSelector } from '../../../core/
 import { resetAccountSettingsVerification } from '../../../core/menu/redux/accountSettings';
 import {
   accountSettingsErrorSelector,
+  accountSettingsVerifyStatusSelector,
   isAccountSettingsLoadingSelector,
-  isAccountSettingsVerificationDoneSelector,
 } from '../../../core/menu/redux/accountSettings/selectors';
-import { changeAccountContactData } from '../../../core/menu/redux/accountSettings/thunks';
+import {
+  changeAccountContactData,
+  getAccountSettingsVerifyStatus,
+  requestAccountSettingsChangeDataVerificationCode,
+} from '../../../core/menu/redux/accountSettings/thunks';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 import Menu from '../../ride/Menu';
@@ -42,34 +46,46 @@ const AccountSettings = (): JSX.Element => {
 
   const dispatch = useAppDispatch();
   const contractorInfo = useSelector(contractorInfoSelector);
-  const isVerificationDone = useSelector(isAccountSettingsVerificationDoneSelector);
+  const verifiedStatus = useSelector(accountSettingsVerifyStatusSelector);
   const changeDataError = useSelector(accountSettingsErrorSelector);
   const isLoading = useSelector(isAccountSettingsLoadingSelector);
 
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(resetAccountSettingsVerification());
-    }, [dispatch]),
-  );
+  useEffect(() => {
+    dispatch(getAccountSettingsVerifyStatus());
+    dispatch(resetAccountSettingsVerification());
+  }, [changeDataError, dispatch]);
 
-  const handleOpenVerification = async (mode: 'phone' | 'email', newValue: string) => {
+  const handleOpenVerification = async (mode: 'phone' | 'email', newValue: string, method: 'change' | 'verify') => {
     if (!isLoading && !changeDataError) {
-      try {
-        await dispatch(
-          changeAccountContactData({
-            method: mode,
-            data: { oldData: contractorInfo?.[mode] ?? '', newData: newValue },
-          }),
-        ).unwrap();
-        // If there is an error, then try catch will catch it and the next line will not be executed
-        navigation.navigate('AccountVerificateCode', { mode, newValue });
-      } catch (_) {}
+      let oldData: string | undefined;
+
+      switch (mode) {
+        case 'phone':
+          oldData = contractorInfo.phone;
+          break;
+        case 'email':
+          oldData = contractorInfo.email;
+          break;
+      }
+
+      switch (method) {
+        case 'change':
+          try {
+            await dispatch(
+              changeAccountContactData({ mode, data: { oldData: contractorInfo?.[mode] ?? '', newData: newValue } }),
+            ).unwrap();
+            // If there is an error, then try catch will catch it and the next line will not be executed
+            navigation.navigate('AccountVerificateCode', { mode, newValue, method });
+          } catch (_) {}
+          break;
+
+        case 'verify':
+          await dispatch(requestAccountSettingsChangeDataVerificationCode({ mode, data: oldData ?? '' }));
+          navigation.navigate('AccountVerificateCode', { mode, method });
+          break;
+      }
     }
   };
-
-  // const handleProfileDataSave = (profileData: AccountProfileDataProps) => {
-  //   dispatch(updateProfileData(profileData));
-  // };
 
   const onUploadPhoto = () => {
     navigation.navigate('ProfilePhoto');
@@ -94,7 +110,6 @@ const AccountSettings = (): JSX.Element => {
         <AccountSettingsScreen
           onSignOut={() => dispatch(signOut())}
           handleOpenVerification={handleOpenVerification}
-          isVerificationDone={isVerificationDone}
           // onProfileDataSave={handleProfileDataSave}
           profile={{
             fullName: contractorInfo.name ?? '',
@@ -103,6 +118,7 @@ const AccountSettings = (): JSX.Element => {
           }}
           // onNameChanged={onNameChanged}
           // isContractor={true}
+          verifiedStatus={verifiedStatus}
           photoBlock={<PhotoBlock onUploadPhoto={onUploadPhoto} />}
           // barBlock={<BarBlock onUpdateDocument={() => navigation.navigate('Docs')} />}
         />
@@ -152,7 +168,7 @@ const PhotoBlock = ({ onUploadPhoto }: PhotoBlockProps) => {
         <UploadPhotoIcon />
       </Button>
       <View onLayout={handleImageLayout}>
-        <MenuUserImage2 url={photo ?? ''} />
+        <MenuUserImage2 url={photo} />
       </View>
     </View>
   );

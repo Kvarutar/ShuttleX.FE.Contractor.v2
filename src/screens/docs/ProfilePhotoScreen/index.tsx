@@ -2,9 +2,10 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { MediaAmount, MediaCore, Text, useTheme } from 'shuttlex-integration';
+import { FileInfo, MediaAmount, MediaCore, Text, useTheme } from 'shuttlex-integration';
 
 import { saveProfilePhoto } from '../../../core/auth/redux/docs/thunks';
+import { getContractorInfo } from '../../../core/contractor/redux/thunks';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 
@@ -31,6 +32,11 @@ const ProfilePhotoScreen = (): JSX.Element => {
     </View>
   );
 
+  const onSaveFiles = async (files: FileInfo[]) => {
+    await dispatch(saveProfilePhoto({ file: files[0] }));
+    dispatch(getContractorInfo());
+  };
+
   return (
     <MediaCore
       windowTitle={t('docs_ProfilePhoto_headerTitle')}
@@ -40,7 +46,7 @@ const ProfilePhotoScreen = (): JSX.Element => {
       goBack={navigation.goBack}
       mediaAmount={MediaAmount.Single}
       cropperCircleOverlay
-      onSaveFiles={files => dispatch(saveProfilePhoto({ file: files[0] }))}
+      onSaveFiles={onSaveFiles}
     >
       <View style={styles.tips}>
         {tip(t('docs_ProfilePhoto_tip1'))}

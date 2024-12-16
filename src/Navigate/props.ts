@@ -22,6 +22,6 @@ export type RootStackParamList = {
   Verification: undefined;
   LockOut: undefined;
   AccountSettings: undefined;
-  AccountVerificateCode: { mode: 'phone' | 'email'; newValue: string };
+  AccountVerificateCode: { mode: 'phone' | 'email'; newValue?: string; method?: 'change' | 'verify' };
   DocMedia: { feKey: DocsFeKeyFromAPI; templateId: string };
 };

@@ -6,19 +6,22 @@ import { useSelector } from 'react-redux';
 import { CodeVerificationScreen, isLockedError, milSecToTime, SafeAreaView } from 'shuttlex-integration';
 
 import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
-import { setIsAccountSettingsVerificationDone } from '../../../core/menu/redux/accountSettings';
 import {
   accountSettingsErrorSelector,
   isAccountSettingsLoadingSelector,
 } from '../../../core/menu/redux/accountSettings/selectors';
-import { changeAccountContactData, verifyChangeAccountDataCode } from '../../../core/menu/redux/accountSettings/thunks';
+import {
+  changeAccountContactData,
+  requestAccountSettingsChangeDataVerificationCode,
+  verifyAccountSettingsDataCode,
+} from '../../../core/menu/redux/accountSettings/thunks';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 
 const AccountVerificateCodeScreen = (): JSX.Element => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'AccountVerificateCode'>>();
   const route = useRoute<RouteProp<RootStackParamList, 'AccountVerificateCode'>>();
-  const { mode, newValue } = route.params;
+  const { mode, newValue, method } = route.params;
 
   const dispatch = useAppDispatch();
 
@@ -27,21 +30,32 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
   const [lockoutEndTimestamp, setLockoutEndTimestamp] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
 
-  const contractorInfo = useSelector(contractorInfoSelector);
-
-  const changeDataError = useSelector(accountSettingsErrorSelector);
   const isLoading = useSelector(isAccountSettingsLoadingSelector);
+  const contractorInfo = useSelector(contractorInfoSelector);
+  const changeDataError = useSelector(accountSettingsErrorSelector);
 
   const { t } = useTranslation();
+
+  const defineMode = mode === 'email' ? contractorInfo.email : contractorInfo.phone;
 
   const handleCodeChange = useCallback(
     (newCode: string) => {
       if (newCode.length === 4) {
-        dispatch(verifyChangeAccountDataCode({ method: mode, code: newCode, body: newValue }));
+        if (method === 'change' && newValue) {
+          dispatch(verifyAccountSettingsDataCode({ mode, code: newCode, body: newValue }));
+        } else {
+          dispatch(verifyAccountSettingsDataCode({ mode, code: newCode, body: defineMode }));
+        }
       }
     },
-    [dispatch, mode, newValue],
+    [dispatch, method, mode, newValue, defineMode],
   );
+
+  useEffect(() => {
+    if (!changeDataError && !isLoading) {
+      navigation.goBack();
+    }
+  }, [changeDataError, navigation, isLoading]);
 
   useEffect(() => {
     if (changeDataError) {
@@ -59,17 +73,12 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
     }
   }, [changeDataError]);
 
-  useEffect(() => {
-    if (!isLoading && !changeDataError) {
-      dispatch(setIsAccountSettingsVerificationDone(true));
-      navigation.goBack();
-    }
-  }, [changeDataError, navigation, isLoading, dispatch]);
-
-  const isOldPhone = mode === 'phone' ? contractorInfo?.phone : contractorInfo?.email;
-
   const handleRequestAgain = () => {
-    dispatch(changeAccountContactData({ method: mode, data: { oldData: isOldPhone ?? '', newData: newValue } }));
+    if (method === 'change' && newValue) {
+      dispatch(changeAccountContactData({ mode, data: { oldData: defineMode, newData: newValue } }));
+    } else {
+      dispatch(requestAccountSettingsChangeDataVerificationCode({ mode, data: defineMode }));
+    }
   };
 
   const onBannedAgainPress = () => {

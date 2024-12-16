@@ -1,5 +1,5 @@
 import authInstanceInitializer from './authClient';
-import authResetInstanceInitializer from './authResetClient';
+import authAccountSettingsInstanceInitializer from './authResetClient';
 import configInstanceInitializer from './configClient';
 import contractorInstanceInitializer from './contractorClient';
 import docsInstanceInitializer from './docsClient';
@@ -10,7 +10,7 @@ import profileInstanceInitializer from './profileClient';
 
 const axiosInitilizers = {
   authAxios: authInstanceInitializer,
-  authResetAxios: authResetInstanceInitializer,
+  authAccountSettingsAxios: authAccountSettingsInstanceInitializer,
   contractorAxios: contractorInstanceInitializer,
   notificatorAxios: notificatorInstanceInitializer,
   offersAxios: offersInstanceInitializer,

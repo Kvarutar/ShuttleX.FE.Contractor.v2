@@ -2,7 +2,9 @@ import notifee, { AndroidColor } from '@notifee/react-native';
 
 import { getContractorInfo } from '../../contractor/redux/thunks';
 import { store } from '../../redux/store';
+import { endTrip, setTripStatus } from '../../ride/redux/trip';
 import { fetchOfferInfo } from '../../ride/redux/trip/thunks';
+import { TripStatus } from '../../ride/redux/trip/types';
 import { NotificationPayload, NotificationRemoteMessage, NotificationType, NotificationWithPayload } from './types';
 
 const isValidNotificationType = (key: string): key is NotificationType => {
@@ -20,7 +22,14 @@ const notificationHandlers: Record<NotificationType, (payload?: NotificationPayl
     }
   },
   [NotificationType.PassengerRejected]: () => {
-    // TODO add case
+    if (
+      store.getState().trip.tripStatus === TripStatus.Ride ||
+      store.getState().trip.tripStatus === TripStatus.Ending
+    ) {
+      store.dispatch(setTripStatus(TripStatus.Rating));
+    } else {
+      store.dispatch(endTrip());
+    }
   },
   [NotificationType.DocsApproved]: () => {
     store.dispatch(getContractorInfo());
