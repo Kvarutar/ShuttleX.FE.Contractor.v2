@@ -4,6 +4,8 @@ import {
   Button,
   ButtonShapes,
   CircleButtonModes,
+  LoadingSpinner,
+  LoadingSpinnerIconModes,
   RoundCheckIcon2,
   ShortArrowSmallIcon,
   Text,
@@ -19,23 +21,28 @@ const VerificationStepBar = ({
   barMode,
   textStyle,
   buttonMode = CircleButtonModes.Mode4,
+  isLoading = false,
 }: VerificationStepBarProps) => {
+  const stateIndicator = isLoading ? (
+    <LoadingSpinner iconMode={LoadingSpinnerIconModes.Mini} style={styles.loadingSpinner} />
+  ) : isSelected ? (
+    <RoundCheckIcon2 style={styles.roundButton} />
+  ) : (
+    <Button
+      style={styles.roundButton}
+      mode={buttonMode}
+      shape={ButtonShapes.Circle}
+      onPress={onPress}
+      disabled={isDisabled}
+    >
+      <ShortArrowSmallIcon />
+    </Button>
+  );
+
   return (
     <Bar style={styles.bar} mode={barMode} onPress={onPress} disabled={isDisabled}>
       <Text style={[styles.contentText, textStyle]}>{text}</Text>
-      {isSelected ? (
-        <RoundCheckIcon2 style={styles.roundButton} />
-      ) : (
-        <Button
-          style={styles.roundButton}
-          mode={buttonMode}
-          shape={ButtonShapes.Circle}
-          onPress={onPress}
-          disabled={isDisabled}
-        >
-          <ShortArrowSmallIcon />
-        </Button>
-      )}
+      {stateIndicator}
     </Bar>
   );
 };
@@ -54,6 +61,9 @@ const styles = StyleSheet.create({
   roundButton: {
     height: 32,
     width: 32,
+  },
+  loadingSpinner: {
+    flex: 0,
   },
 });
 

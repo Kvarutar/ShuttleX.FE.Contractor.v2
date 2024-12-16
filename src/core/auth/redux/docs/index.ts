@@ -63,6 +63,9 @@ const slice = createSlice({
         });
       })
 
+      .addCase(fetchDocsTemplates.pending, state => {
+        state.isLoading = true;
+      })
       .addCase(fetchDocsTemplates.fulfilled, (state, action) => {
         slice.caseReducers.setDocTemplates(state, {
           payload: action.payload.map<DocTemplate>(el => ({
@@ -73,12 +76,14 @@ const slice = createSlice({
           })),
           type: setDocTemplates.type,
         });
+        state.isLoading = false;
       })
       .addCase(fetchDocsTemplates.rejected, (state, action) => {
         slice.caseReducers.setError(state, {
           payload: action.payload as NetworkErrorDetailsWithBody<any>,
           type: setError.type,
         });
+        state.isLoading = false;
       })
 
       .addCase(saveDocBlob.rejected, (state, action) => {

@@ -19,6 +19,7 @@ import {
 
 import {
   docsTemplatesSelector,
+  isDocsLoadingSelector,
   profilePhotoSelector,
   selectedZoneSelector,
   zonesSelector,
@@ -39,6 +40,8 @@ const VerificationScreen = (): JSX.Element => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+
+  const isDocsLoading = useSelector(isDocsLoadingSelector);
 
   const contractorInfo = useSelector(contractorInfoSelector);
   const zones = useSelector(zonesSelector);
@@ -117,6 +120,7 @@ const VerificationScreen = (): JSX.Element => {
           onPress={() => navigation.navigate('Zone')}
           text={t('verification_Verification_selectZone')}
           textStyle={getStyleForText(isZoneSelected)}
+          isLoading={isDocsLoading}
         />
         <VerificationStepBar
           isSelected={isPresentPersonalDocuments}

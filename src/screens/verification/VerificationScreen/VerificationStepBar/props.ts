@@ -10,4 +10,5 @@ export type VerificationStepBarProps = {
   barMode?: BarModes;
   buttonMode?: CircleButtonModes;
   textStyle?: StyleProp<TextStyle>;
+  isLoading?: boolean;
 };
