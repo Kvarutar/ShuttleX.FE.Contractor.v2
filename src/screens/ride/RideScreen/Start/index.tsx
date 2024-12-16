@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Alert as AlertNative, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
@@ -27,12 +27,14 @@ import { getAchievements, getPreferences } from '../../../../core/contractor/red
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
-import { setIsCanceledTripsPopupVisible } from '../../../../core/ride/redux/trip';
+import { setIsCanceledTripsPopupVisible, setTripOffer } from '../../../../core/ride/redux/trip';
+import { isConflictError, isGoneError } from '../../../../core/ride/redux/trip/errors';
 import {
   dropOffRouteIdSelector,
   isCanceledTripsPopupVisibleSelector,
   offerSelector,
   pickUpRouteIdSelector,
+  tripErrorSelector,
 } from '../../../../core/ride/redux/trip/selectors';
 import { acceptOffer, declineOffer, fetchWayPointsRoute } from '../../../../core/ride/redux/trip/thunks';
 import AlertInitializer from '../../../../shared/AlertInitializer';
@@ -103,6 +105,8 @@ const Start = () => {
   const dropOffRouteId = useSelector(dropOffRouteIdSelector);
   const contractorZone = useSelector(contractorZoneSelector);
 
+  const tripError = useSelector(tripErrorSelector);
+
   const primaryTariff = useSelector(primaryTariffSelector);
   const tariffsIconsData = useTariffsIcons();
 
@@ -138,6 +142,18 @@ const Start = () => {
       setIsOfferPopupVisible(true);
     }
   }, [offer]);
+
+  useEffect(() => {
+    if (tripError && (isConflictError(tripError) || isGoneError(tripError))) {
+      dispatch(setTripOffer(null));
+      setIsOfferPopupVisible(false);
+      AlertNative.alert(
+        t('ride_Ride_Start_offerWasCanceledOrAcceptedAlertTitle'),
+        t('ride_Ride_Start_offerWasCanceledOrAcceptedAlertDescription'),
+        [{ text: t('ride_Ride_Start_offerWasCanceledOrAcceptedAlertButtonText') }],
+      );
+    }
+  }, [dispatch, tripError, t]);
 
   useEffect(() => {
     if (pickUpRouteId && dropOffRouteId) {
