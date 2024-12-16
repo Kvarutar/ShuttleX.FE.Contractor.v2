@@ -144,7 +144,8 @@ const Start = () => {
   }, [offer]);
 
   useEffect(() => {
-    if (tripError && (isConflictError(tripError) || isGoneError(tripError))) {
+    //TODO: Rewrite with the correct typeGuard function
+    if (tripError && (isConflictError(tripError) || isGoneError(tripError) || isIncorrectFieldsError(tripError))) {
       dispatch(setTripOffer(null));
       setIsOfferPopupVisible(false);
       AlertNative.alert(
