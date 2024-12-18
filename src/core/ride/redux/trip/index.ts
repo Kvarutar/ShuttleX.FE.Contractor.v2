@@ -15,6 +15,7 @@ import {
   getCurrentOrder,
   getFutureOrder,
   getPassengerTripInfo,
+  sendExpiredOfferId,
   updatePassengerRating,
 } from './thunks';
 import {
@@ -378,7 +379,31 @@ const slice = createSlice({
           type: setTripError.type,
         });
       })
-      .addCase(acceptOffer.rejected, (state, action) => {
+      .addCase(sendExpiredOfferId.pending, state => {
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: true,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: initialState.error,
+          type: setTripError.type,
+        });
+      })
+      .addCase(sendExpiredOfferId.fulfilled, state => {
+        slice.caseReducers.setTripOffer(state, {
+          payload: initialState.offer,
+          type: setTripOffer.type,
+        });
+        slice.caseReducers.setTripIsLoading(state, {
+          payload: false,
+          type: setTripIsLoading.type,
+        });
+        slice.caseReducers.setTripError(state, {
+          payload: initialState.error,
+          type: setTripError.type,
+        });
+      })
+      .addCase(sendExpiredOfferId.rejected, (state, action) => {
         slice.caseReducers.setTripIsLoading(state, {
           payload: false,
           type: setTripIsLoading.type,

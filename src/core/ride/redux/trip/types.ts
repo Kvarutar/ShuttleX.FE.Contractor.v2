@@ -3,6 +3,10 @@ import { NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
 
 import { TariffInfo } from '../../../contractor/redux/types';
 
+export type GetNewOfferLongPollingAPIResponse = {
+  offerId: string;
+};
+
 export type TripPoint = { address: string } & LatLng;
 
 export type PassengerInfoAPIResponse = {
@@ -68,7 +72,7 @@ export type OfferAPIResponse = {
   dropOffAddress: string;
   timeToPickUp: string;
   timeToDropOff: string;
-  timeToAnswerSec: number;
+  timeToAnswer: number;
   tariffId: string;
   distanceMtr: number;
   price: number;

@@ -20,7 +20,11 @@ import {
 } from 'shuttlex-integration';
 
 import { signOut } from '../../../core/auth/redux/thunks';
-import { contractorInfoStateSelector, isContractorInfoLoadingSelector } from '../../../core/contractor/redux/selectors';
+import {
+  contractorInfoStateSelector,
+  contractorStatusSelector,
+  isContractorInfoLoadingSelector,
+} from '../../../core/contractor/redux/selectors';
 import { ContractorStatusAPIResponse } from '../../../core/contractor/redux/types';
 import { getAccountSettingsVerifyStatus } from '../../../core/menu/redux/accountSettings/thunks';
 // import { setNotificationList } from '../../../core/menu/redux/notifications';
@@ -38,6 +42,7 @@ import {
   geolocationIsPermissionGrantedSelector,
 } from '../../../core/ride/redux/geolocation/selectors';
 import { orderSelector } from '../../../core/ride/redux/trip/selectors';
+import { getCancelTripLongPolling, getNewOfferLongPolling } from '../../../core/ride/redux/trip/thunks';
 import Menu from '../Menu';
 import MapCameraModeButton from './MapCameraModeButton';
 import MapView from './MapView';
@@ -62,6 +67,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const geolocationAccuracy = useSelector(geolocationAccuracySelector);
   // const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
   const contractorDocsStatus = useSelector(contractorInfoStateSelector);
+  const contractorStatus = useSelector(contractorStatusSelector);
 
   const isContractorInfoLoading = useSelector(isContractorInfoLoadingSelector);
 
@@ -99,6 +105,18 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       navigation.replace('Verification');
     }
   }, [contractorDocsStatus, navigation, isContractorInfoLoading]);
+
+  useEffect(() => {
+    if (order) {
+      dispatch(getCancelTripLongPolling({ orderId: order.id }));
+    }
+  }, [dispatch, order]);
+
+  useEffect(() => {
+    if (contractorStatus === 'online') {
+      dispatch(getNewOfferLongPolling());
+    }
+  }, [dispatch, contractorStatus]);
 
   useEffect(() => {
     dispatch(getAccountSettingsVerifyStatus());

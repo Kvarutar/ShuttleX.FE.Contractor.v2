@@ -23,7 +23,6 @@ import {
   primaryTariffSelector,
   tariffsInfoErrorSelector,
 } from '../../../../core/contractor/redux/selectors';
-import { getAchievements, getPreferences } from '../../../../core/contractor/redux/thunks';
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
@@ -36,7 +35,13 @@ import {
   pickUpRouteIdSelector,
   tripErrorSelector,
 } from '../../../../core/ride/redux/trip/selectors';
-import { acceptOffer, declineOffer, fetchWayPointsRoute } from '../../../../core/ride/redux/trip/thunks';
+import {
+  acceptOffer,
+  declineOffer,
+  fetchWayPointsRoute,
+  getNewOfferLongPolling,
+  sendExpiredOfferId,
+} from '../../../../core/ride/redux/trip/thunks';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import AccountIsNotActivePopup from '../popups/AccountIsNotActivePopup';
 import AchievementsPopup from '../popups/AchievementsPopup';
@@ -162,13 +167,15 @@ const Start = () => {
     }
   }, [dispatch, pickUpRouteId, dropOffRouteId]);
 
-  useEffect(() => {
-    (async () => {
-      //TODO: Change contractorId when we know how it seems
-      await dispatch(getAchievements({ contractorId: '' }));
-      await dispatch(getPreferences({ contractorId: '' }));
-    })();
-  }, [dispatch]);
+  //TODO: Change theese effect and thunks when we know how it seems
+  // Unused thunks for now
+  // For achievements and preferences
+  // useEffect(() => {
+  //   (async () => {
+  //     await dispatch(getAchievements({ contractorId: '' }));
+  //     await dispatch(getPreferences({ contractorId: '' }));
+  //   })();
+  // }, [dispatch]);
 
   useEffect(() => {
     if (generalError && isIncorrectFieldsError(generalError)) {
@@ -176,14 +183,18 @@ const Start = () => {
     }
   }, [generalError, dispatch]);
 
-  const onOfferPopupClose = () => {
+  const onOfferPopupClose = async () => {
     setIsOfferPopupVisible(false);
+    if (offer) {
+      await dispatch(sendExpiredOfferId({ offerId: offer.id }));
+      dispatch(getNewOfferLongPolling());
+    }
   };
 
-  const onOfferDecline = () => {
-    onOfferPopupClose();
+  const onOfferDecline = async () => {
     if (offer) {
-      dispatch(declineOffer({ offerId: offer.id }));
+      await dispatch(declineOffer({ offerId: offer.id }));
+      onOfferPopupClose();
     }
   };
 

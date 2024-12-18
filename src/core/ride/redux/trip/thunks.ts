@@ -3,6 +3,7 @@ import { convertBlobToImgUri, getNetworkErrorInfo } from 'shuttlex-integration';
 import { tariffsSelector } from '../../../contractor/redux/selectors';
 import { createAppAsyncThunk } from '../../../redux/hooks';
 import { geolocationCoordinatesSelector } from '../geolocation/selectors';
+import { endTrip, setTripStatus } from '.';
 import { getOfferNetworkErrorInfo } from './errors';
 import {
   AcceptOfferAPIResponse,
@@ -16,6 +17,7 @@ import {
   GetCurrentOrderThunkResult,
   GetFutureOrderAPIResponse,
   GetFutureOrderThunkResult,
+  GetNewOfferLongPollingAPIResponse,
   GetPassengerTripInfoPayload,
   GetPassengerTripInfoThunkResult,
   OfferAPIResponse,
@@ -24,9 +26,40 @@ import {
   PassengerAvatarAPIResponse,
   PassengerInfoAPIResponse,
   PickedUpAtPickUpPointPayload,
+  TripStatus,
   UpdatePassengerRatingAPIRequest,
   UpdatePassengerRatingPayload,
 } from './types';
+
+export const getNewOfferLongPolling = createAppAsyncThunk<void, void>(
+  'trip/getNewOfferLongPolling',
+  async (_, { rejectWithValue, offersLongPollingAxios, dispatch }) => {
+    try {
+      const response = await offersLongPollingAxios.get<GetNewOfferLongPollingAPIResponse>('/new/long-polling');
+      dispatch(fetchOfferInfo(response.data.offerId));
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
+
+export const getCancelTripLongPolling = createAppAsyncThunk<void, { orderId: string }>(
+  'trip/getCancelTripLongPolling',
+  async (payload, { rejectWithValue, ordersLongPollingAxios, dispatch, getState }) => {
+    try {
+      await ordersLongPollingAxios.get(`/${payload.orderId}/canceled/long-polling`);
+
+      const { trip } = getState();
+      if (trip.tripStatus === TripStatus.Ride || trip.tripStatus === TripStatus.Ending) {
+        dispatch(setTripStatus(TripStatus.Rating));
+      } else {
+        dispatch(endTrip());
+      }
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
 
 export const getCurrentOrder = createAppAsyncThunk<GetCurrentOrderThunkResult, void>(
   'trip/getCurrentOrder',
@@ -150,6 +183,22 @@ export const getPassengerTripInfo = createAppAsyncThunk<GetPassengerTripInfoThun
       };
     } catch (error) {
       return rejectWithValue(getOfferNetworkErrorInfo(error));
+    }
+  },
+);
+
+export const sendExpiredOfferId = createAppAsyncThunk<void, AcceptOrDeclineOfferPayload>(
+  'trip/sendExpiredOfferId',
+  async (payload, { rejectWithValue, offersAxios }) => {
+    try {
+      await offersAxios.post(`/${payload.offerId}/expire`);
+    } catch (error) {
+      const { code, body, status } = getNetworkErrorInfo(error);
+      return rejectWithValue({
+        code,
+        body,
+        status,
+      });
     }
   },
 );

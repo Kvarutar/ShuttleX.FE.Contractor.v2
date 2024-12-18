@@ -13,7 +13,6 @@ import {
   milSecToMin,
   PointIcon,
   ScrollViewWithCustomScroll,
-  secToMilSec,
   Separator,
   SquareButtonModes,
   Text,
@@ -48,8 +47,9 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
 
   const travelTime = calculateTravelTime(offer.timeToDropOff);
   const timeToAnswer = useMemo(() => {
-    return Date.now() + secToMilSec(offer.timeToAnswerSec);
-  }, [offer.timeToAnswerSec]);
+    const differenceInMilliseconds = new Date(offer.timeToAnswer).getTime() - Date.now();
+    return Date.now() + differenceInMilliseconds;
+  }, [offer.timeToAnswer]);
 
   const pickUpWaypoints = useSelector(tripDropOffRouteSelector)?.waypoints;
   const dropOffWaypoints = useSelector(tripPickUpRouteSelector)?.waypoints;

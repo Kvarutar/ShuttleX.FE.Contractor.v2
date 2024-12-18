@@ -5,7 +5,9 @@ import contractorInstanceInitializer from './contractorClient';
 import docsInstanceInitializer from './docsClient';
 import notificatorInstanceInitializer from './notificatorClient';
 import offersInstanceInitializer from './offersClient';
+import offersLongPollingInstanceInitializer from './offersLongPollingClient';
 import ordersInstanceInitializer from './ordersClient';
+import ordersLongPollingInstanceInitializer from './ordersLongPollingClient';
 import profileInstanceInitializer from './profileClient';
 
 const axiosInitilizers = {
@@ -18,6 +20,8 @@ const axiosInitilizers = {
   configAxios: configInstanceInitializer,
   docsAxios: docsInstanceInitializer,
   profileAxios: profileInstanceInitializer,
+  offersLongPollingAxios: offersLongPollingInstanceInitializer,
+  ordersLongPollingAxios: ordersLongPollingInstanceInitializer,
 };
 
 export default axiosInitilizers;
