@@ -1,7 +1,7 @@
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   Bar,
@@ -28,7 +28,7 @@ import {
 import { RootStackParamList } from '../../../Navigate/props';
 import { MenuProps } from './props';
 
-const Menu = ({ onClose, isStatusBarTransparent }: MenuProps) => {
+const Menu = ({ onClose }: MenuProps) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const { t } = useTranslation();
@@ -63,17 +63,19 @@ const Menu = ({ onClose, isStatusBarTransparent }: MenuProps) => {
       navFunc: () => {
         // navigation.navigate('Ride');
         // //TODO Create subscription page
-        // onClose();
+        Linking.openURL('https://www.shuttlex.com/contractor.html');
+        onClose();
       },
       title: t('ride_Menu_navigationSubscription'),
     },
-    wallet: {
-      navFunc: () => {
-        navigation.navigate('Wallet');
-        onClose();
-      },
-      title: t('ride_Menu_navigationWallet'),
-    },
+    //Dont need it now
+    // wallet: {
+    //   navFunc: () => {
+    //     navigation.navigate('Wallet');
+    //     onClose();
+    //   },
+    //   title: t('ride_Menu_navigationWallet'),
+    // },
     accountSettings: {
       navFunc: () => {
         navigation.navigate('AccountSettings');
@@ -105,7 +107,6 @@ const Menu = ({ onClose, isStatusBarTransparent }: MenuProps) => {
         avatar: isContractorInfoLoading,
         username: isContractorInfoLoading,
       }}
-      isStatusBarTransparent={isStatusBarTransparent}
     />
   );
 };

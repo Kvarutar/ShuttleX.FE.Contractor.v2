@@ -245,7 +245,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
         )}
         {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
       </SafeAreaView>
-      {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} isStatusBarTransparent />}
+      {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
       {unclosablePopupMode && (
         <UnclosablePopupWithModes mode={unclosablePopupMode} bottomAdditionalContent={unclosablePopupContent} />
       )}
