@@ -86,6 +86,7 @@ const AuthScreen = ({ navigation, route }: AuthScreenProps): JSX.Element => {
             isLoading={isLoading}
             signMethod={signMethod}
             setSignMethod={setSignMethod}
+            setPanelPhoneVisible={() => {}}
           />
         ) : (
           <SignUpScreen
@@ -94,6 +95,7 @@ const AuthScreen = ({ navigation, route }: AuthScreenProps): JSX.Element => {
             navigateToTerms={() => navigation.navigate('Terms')}
             onSubmit={handleSendingSignUpData}
             isLoading={isLoading}
+            setPanelPhoneVisible={() => {}}
           />
         )}
       </SafeAreaView>

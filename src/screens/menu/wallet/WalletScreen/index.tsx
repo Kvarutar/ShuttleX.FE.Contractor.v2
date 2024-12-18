@@ -283,7 +283,6 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
             circleSubContainerStyle: styles.circleSubContainerStyle,
           }}
           onMenuPress={() => setIsMenuVisible(true)}
-          onNotificationPress={() => {}}
         >
           <GroupedButtons
             setIsFirstButtonSelected={setIsSelectedCash}

@@ -22,6 +22,7 @@ import {
 import { signOut } from '../../../core/auth/redux/thunks';
 import { contractorInfoStateSelector, isContractorInfoLoadingSelector } from '../../../core/contractor/redux/selectors';
 import { ContractorStatusAPIResponse } from '../../../core/contractor/redux/types';
+import { getAccountSettingsVerifyStatus } from '../../../core/menu/redux/accountSettings/thunks';
 // import { setNotificationList } from '../../../core/menu/redux/notifications';
 // import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
 import { useAppDispatch } from '../../../core/redux/hooks';
@@ -98,6 +99,10 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       navigation.replace('Verification');
     }
   }, [contractorDocsStatus, navigation, isContractorInfoLoading]);
+
+  useEffect(() => {
+    dispatch(getAccountSettingsVerifyStatus());
+  }, [dispatch]);
 
   const determinePopupMode = (status: ContractorStatusAPIResponse): UnclosablePopupModes | null => {
     switch (status) {
@@ -221,11 +226,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       <SafeAreaView style={styles.wrapper}>
         <MapView />
 
-        <MenuHeader
-          onMenuPress={() => setIsMenuVisible(true)}
-          onNotificationPress={() => navigation.navigate('Notifications')}
-          style={[styles.menuHeader, computedStyles.menuHeader]}
-        >
+        <MenuHeader onMenuPress={() => setIsMenuVisible(true)} style={[styles.menuHeader, computedStyles.menuHeader]}>
           <Alert
             isVisible={isEmailVerified}
             text={t('ride_Ride_EmailAlert')}

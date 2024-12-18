@@ -1,5 +1,5 @@
+import authAccountSettingsInstanceInitializer from './authAccountSettingsClient';
 import authInstanceInitializer from './authClient';
-import authAccountSettingsInstanceInitializer from './authResetClient';
 import configInstanceInitializer from './configClient';
 import contractorInstanceInitializer from './contractorClient';
 import docsInstanceInitializer from './docsClient';

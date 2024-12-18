@@ -23,9 +23,9 @@ import { signOut } from '../../../core/auth/redux/thunks';
 import { contractorAvatarSelector, contractorInfoSelector } from '../../../core/contractor/redux/selectors';
 import { resetAccountSettingsVerification } from '../../../core/menu/redux/accountSettings';
 import {
-  accountSettingsErrorSelector,
+  accountSettingsChangeDataErrorSelector,
   accountSettingsVerifyStatusSelector,
-  isAccountSettingsLoadingSelector,
+  isAccountSettingsChangeDataLoadingSelector,
 } from '../../../core/menu/redux/accountSettings/selectors';
 import {
   changeAccountContactData,
@@ -47,8 +47,8 @@ const AccountSettings = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const contractorInfo = useSelector(contractorInfoSelector);
   const verifiedStatus = useSelector(accountSettingsVerifyStatusSelector);
-  const changeDataError = useSelector(accountSettingsErrorSelector);
-  const isLoading = useSelector(isAccountSettingsLoadingSelector);
+  const changeDataError = useSelector(accountSettingsChangeDataErrorSelector);
+  const isChangeDataLoading = useSelector(isAccountSettingsChangeDataLoadingSelector);
 
   useEffect(() => {
     dispatch(getAccountSettingsVerifyStatus());
@@ -56,18 +56,18 @@ const AccountSettings = (): JSX.Element => {
   }, [changeDataError, dispatch]);
 
   const handleOpenVerification = async (mode: 'phone' | 'email', newValue: string, method: 'change' | 'verify') => {
-    if (!isLoading && !changeDataError) {
+    if (!isChangeDataLoading && !changeDataError) {
       let oldData: string | undefined;
 
       switch (mode) {
         case 'phone':
-          oldData = contractorInfo.phone;
+          //TODO change it when back will synchronize profile
+          oldData = verifiedStatus.phoneInfo;
           break;
         case 'email':
-          oldData = contractorInfo.email;
+          oldData = verifiedStatus.emailInfo;
           break;
       }
-
       switch (method) {
         case 'change':
           try {
@@ -100,25 +100,24 @@ const AccountSettings = (): JSX.Element => {
   return (
     <>
       <SafeAreaView containerStyle={styles.wrapper}>
-        <MenuHeader
-          onMenuPress={() => setIsMenuVisible(true)}
-          onNotificationPress={() => navigation.navigate('Notifications')}
-        >
+        <MenuHeader onMenuPress={() => setIsMenuVisible(true)}>
           <Text>{t('ride_Menu_navigationAccountSettings')}</Text>
         </MenuHeader>
 
         <AccountSettingsScreen
           onSignOut={() => dispatch(signOut())}
           handleOpenVerification={handleOpenVerification}
+          isChangeDataLoading={isChangeDataLoading}
+          verifiedStatus={verifiedStatus}
           // onProfileDataSave={handleProfileDataSave}
           profile={{
             fullName: contractorInfo.name ?? '',
-            email: contractorInfo?.email ?? '',
-            phone: contractorInfo?.phone ?? '',
+            //TODO change it when back will synchronize profile
+            email: verifiedStatus.emailInfo ?? '',
+            phone: verifiedStatus.phoneInfo ?? '',
           }}
           // onNameChanged={onNameChanged}
           // isContractor={true}
-          verifiedStatus={verifiedStatus}
           photoBlock={<PhotoBlock onUploadPhoto={onUploadPhoto} />}
           // barBlock={<BarBlock onUpdateDocument={() => navigation.navigate('Docs')} />}
         />

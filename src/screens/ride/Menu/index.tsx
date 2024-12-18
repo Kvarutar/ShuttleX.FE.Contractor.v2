@@ -61,9 +61,9 @@ const Menu = ({ onClose, isStatusBarTransparent }: MenuProps) => {
     // },
     subscription: {
       navFunc: () => {
-        navigation.navigate('Ride');
-        //TODO Create subscription page
-        onClose();
+        // navigation.navigate('Ride');
+        // //TODO Create subscription page
+        // onClose();
       },
       title: t('ride_Menu_navigationSubscription'),
     },
@@ -83,9 +83,9 @@ const Menu = ({ onClose, isStatusBarTransparent }: MenuProps) => {
     },
     help: {
       navFunc: () => {
-        navigation.navigate('Ride');
-        //TODO Create help page
-        onClose();
+        // navigation.navigate('Ride');
+        // //TODO Create help page
+        // onClose();
       },
       title: t('ride_Menu_navigationHelp'),
     },

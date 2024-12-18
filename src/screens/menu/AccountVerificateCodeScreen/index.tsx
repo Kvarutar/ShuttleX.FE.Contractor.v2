@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { CodeVerificationScreen, isLockedError, milSecToTime, SafeAreaView } from 'shuttlex-integration';
 
-import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
 import {
-  accountSettingsErrorSelector,
-  isAccountSettingsLoadingSelector,
+  accountSettingsChangeDataErrorSelector,
+  accountSettingsVerifyStatusSelector,
+  isAccountSettingsVerifyLoadingSelector,
 } from '../../../core/menu/redux/accountSettings/selectors';
 import {
   changeAccountContactData,
@@ -30,32 +30,32 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
   const [lockoutEndTimestamp, setLockoutEndTimestamp] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
 
-  const isLoading = useSelector(isAccountSettingsLoadingSelector);
-  const contractorInfo = useSelector(contractorInfoSelector);
-  const changeDataError = useSelector(accountSettingsErrorSelector);
+  const changeDataError = useSelector(accountSettingsChangeDataErrorSelector);
+  const verifiedStatus = useSelector(accountSettingsVerifyStatusSelector);
+  const isVerificationLoading = useSelector(isAccountSettingsVerifyLoadingSelector);
 
   const { t } = useTranslation();
 
-  const defineMode = mode === 'email' ? contractorInfo.email : contractorInfo.phone;
+  const defineMode = mode === 'email' ? verifiedStatus.emailInfo : verifiedStatus.phoneInfo;
 
   const handleCodeChange = useCallback(
     (newCode: string) => {
       if (newCode.length === 4) {
         if (method === 'change' && newValue) {
           dispatch(verifyAccountSettingsDataCode({ mode, code: newCode, body: newValue }));
-        } else {
+        } else if (defineMode) {
           dispatch(verifyAccountSettingsDataCode({ mode, code: newCode, body: defineMode }));
         }
       }
     },
-    [dispatch, method, mode, newValue, defineMode],
+    [dispatch, mode, newValue, method, defineMode],
   );
 
   useEffect(() => {
-    if (!changeDataError && !isLoading) {
+    if (!changeDataError && !isVerificationLoading) {
       navigation.goBack();
     }
-  }, [changeDataError, navigation, isLoading]);
+  }, [changeDataError, navigation, isVerificationLoading]);
 
   useEffect(() => {
     if (changeDataError) {

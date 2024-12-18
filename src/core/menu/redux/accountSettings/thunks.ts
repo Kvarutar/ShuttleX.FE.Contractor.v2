@@ -1,7 +1,6 @@
 import DeviceInfo from 'react-native-device-info';
 import { formatPhone, getNetworkErrorInfo } from 'shuttlex-integration';
 
-import { getContractorInfo } from '../../../contractor/redux/thunks';
 import { createAppAsyncThunk } from '../../../redux/hooks';
 import {
   AccountSettingsVerificationConfirmType,
@@ -11,14 +10,13 @@ import {
   SendConfirmPayload,
   VerifyAccountContactDataCodeAPIRequest,
   VerifyAccountContactDataCodeAPIResponse,
-  VerifyAccountContactDataCodePayload,
+  VerifyAccountSettingsDataCodePayload,
   VerifyStatusAPIResponse,
 } from './types';
 
-export const verifyAccountSettingsDataCode = createAppAsyncThunk<void, VerifyAccountContactDataCodePayload>(
+export const verifyAccountSettingsDataCode = createAppAsyncThunk<void, VerifyAccountSettingsDataCodePayload>(
   'accountSettings/verifyAccountSettingsDataCode',
   async (payload, { rejectWithValue, authAccountSettingsAxios, dispatch }) => {
-    //TODO get deviceId from back
     const deviceId = await DeviceInfo.getUniqueId();
 
     let bodyPart;
@@ -38,7 +36,7 @@ export const verifyAccountSettingsDataCode = createAppAsyncThunk<void, VerifyAcc
         code: payload.code,
         deviceId,
       } as VerifyAccountContactDataCodeAPIRequest);
-      await dispatch(getContractorInfo());
+      await dispatch(getAccountSettingsVerifyStatus());
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
     }
@@ -74,7 +72,6 @@ export const requestAccountSettingsChangeDataVerificationCode = createAppAsyncTh
 
     try {
       const deviceId = await DeviceInfo.getUniqueId();
-
       authAccountSettingsAxios.post(`/send-confirm/${mode}`, {
         ...requestData,
         deviceId,
@@ -90,7 +87,6 @@ export const getAccountSettingsVerifyStatus = createAppAsyncThunk<VerifyStatusAP
   async (_, { rejectWithValue, authAccountSettingsAxios }) => {
     try {
       const result = await authAccountSettingsAxios.get<VerifyStatusAPIResponse>('/verify/status');
-
       return result.data;
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
