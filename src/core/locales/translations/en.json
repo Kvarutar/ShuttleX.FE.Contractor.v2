@@ -71,7 +71,7 @@
   "ride_Ride_UnclosablePopup_warningForTwoCancelsSubtitle": "Banned",
   "ride_Ride_UnclosablePopup_warningForTwoCancelsDescription": "You have cancelled a ride after \naccepting it for the second time. \nAfter 3 cancellations, access to the app \nwill be blocked for 24 hours.",
   "ride_Ride_UnclosablePopup_bannedSubtitle": "Banned",
-  "ride_Ride_UnclosablePopup_bannedTitle": "You Have Been \nBanned 24 hours",
+  "ride_Ride_UnclosablePopup_bannedTitle": "You Have Been \nBanned for 24 hours",
   "ride_Ride_UnclosablePopup_bannedDescription": "You have cancelled a ride after \naccepting it for the third time. If you \nhave any questions, contact support.",
   "ride_Ride_UnclosablePopup_documentUnderReviewTitle": "Document",
   "ride_Ride_UnclosablePopup_documentUnderReviewSecondTitle": "Under Review",
