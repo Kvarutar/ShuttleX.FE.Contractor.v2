@@ -307,6 +307,10 @@ const slice = createSlice({
         state.isLoading = false;
         state.error.acceptOrDeclineOffer = null;
       })
+      .addCase(acceptOffer.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error.acceptOrDeclineOffer = action.payload as NetworkErrorDetailsWithBody<any>;
+      })
       .addCase(sendExpiredOffer.pending, state => {
         state.isLoading = true;
         state.error.general = null;
