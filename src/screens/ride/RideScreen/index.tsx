@@ -351,7 +351,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
           onCloseAllBottomWindows={onCloseAllBottomWindows}
         />
       )}
-      {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
+      {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} isStatusBarTranslucent />}
       {unclosablePopupMode && (
         <UnclosablePopupWithModes mode={unclosablePopupMode} bottomAdditionalContent={unclosablePopupContent} />
       )}

@@ -28,7 +28,7 @@ import {
 import { RootStackParamList } from '../../../Navigate/props';
 import { MenuProps } from './props';
 
-const Menu = ({ onClose }: MenuProps) => {
+const Menu = ({ onClose, isStatusBarTranslucent }: MenuProps) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const { t } = useTranslation();
@@ -100,6 +100,7 @@ const Menu = ({ onClose }: MenuProps) => {
       userImageUri={contractorAvatar ?? undefined}
       userName={contractorInfo?.name}
       menuNavigation={menuNavigation}
+      isStatusBarTranslucent={isStatusBarTranslucent}
       currentRoute={currentRoute}
       isContractorMenu
       // label={<LevelLabel />}
