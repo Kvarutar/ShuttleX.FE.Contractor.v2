@@ -18,6 +18,7 @@ import {
 } from 'shuttlex-integration';
 
 import {
+  docsPaymentDataSelector,
   docsTemplatesSelector,
   isDocsLoadingSelector,
   profilePhotoSelector,
@@ -48,6 +49,7 @@ const VerificationScreen = (): JSX.Element => {
   const docsTemplates = useSelector(docsTemplatesSelector);
   const isZoneSelected = useSelector(selectedZoneSelector) !== null;
   const isProfilePhotoSelected = useSelector(profilePhotoSelector) !== null;
+  const isPaymentData = useSelector(docsPaymentDataSelector) !== null;
 
   const [selectedSection, setSelectedSection] = useState<Nullable<DocsType>>(null);
 
@@ -66,7 +68,7 @@ const VerificationScreen = (): JSX.Element => {
   });
 
   const isPresentPersonalDocuments =
-    isFilledTemplates(getTemplatesByDocsType(DocsType.Personal)) && isProfilePhotoSelected;
+    isFilledTemplates(getTemplatesByDocsType(DocsType.Personal)) && isProfilePhotoSelected && isPaymentData;
   const isPresentVehicleDocuments = isFilledTemplates(getTemplatesByDocsType(DocsType.Vehicle));
 
   const handleNextPress = () => {
@@ -120,7 +122,7 @@ const VerificationScreen = (): JSX.Element => {
           onPress={() => navigation.navigate('Zone')}
           text={t('verification_Verification_selectZone')}
           textStyle={getStyleForText(isZoneSelected)}
-          isLoading={isDocsLoading}
+          isLoading={isDocsLoading.docsTemplates}
         />
         <VerificationStepBar
           isSelected={isPresentPersonalDocuments}
@@ -182,7 +184,18 @@ const VerificationScreen = (): JSX.Element => {
           text={t('verification_Verification_profilePhoto')}
           textStyle={getStyleForText(isProfilePhotoSelected)}
         />
+
         {getTemplatesByDocsType(DocsType.Personal).map(renderStepForDocTemplate)}
+
+        <VerificationStepBar
+          isSelected={isPaymentData}
+          barMode={isPaymentData ? BarModes.Active : BarModes.Default}
+          buttonMode={CircleButtonModes.Mode4}
+          onPress={() => navigation.navigate('PaymentDoc')}
+          text={t('verification_Verification_paymentData')}
+          textStyle={getStyleForText(isPaymentData)}
+          isLoading={isDocsLoading.paymentData}
+        />
       </>
     ),
     button: (

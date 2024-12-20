@@ -6,5 +6,6 @@ export const selectedZoneSelector = (state: AppState) => state.docs.selectedZone
 export const profilePhotoSelector = (state: AppState) => state.docs.profilePhoto;
 export const docIdByTemplateIdSelector = (templateId: string) => (state: AppState) =>
   state.docs.templateIdToDocId[templateId];
+export const docsPaymentDataSelector = (state: AppState) => state.docs.paymentData;
 
 export const isDocsLoadingSelector = (state: AppState) => state.docs.isLoading;

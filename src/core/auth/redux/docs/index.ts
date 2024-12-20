@@ -1,7 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { NetworkErrorDetailsWithBody } from 'shuttlex-integration';
 
-import { fetchAllZone, fetchDocsTemplates, saveDocBlob, saveProfilePhoto, verifyDocs } from './thunks';
+import {
+  fetchAllZone,
+  fetchDocsTemplates,
+  saveDocBlob,
+  saveDocPaymentData,
+  saveProfilePhoto,
+  verifyDocs,
+} from './thunks';
 import { DocsState, DocTemplate } from './types';
 import { convertDocTemplateTypeFromAPI } from './utils/docsTemplateType';
 
@@ -12,7 +19,11 @@ const initialState: DocsState = {
   profilePhoto: null,
   selectedZone: null,
   error: null,
-  isLoading: false,
+  isLoading: {
+    paymentData: false,
+    docsTemplates: false,
+  },
+  paymentData: null,
 };
 
 const slice = createSlice({
@@ -37,6 +48,9 @@ const slice = createSlice({
     setProfilePhoto(state, action: PayloadAction<DocsState['profilePhoto']>) {
       state.profilePhoto = action.payload;
     },
+    setDocPaymentData(state, action: PayloadAction<DocsState['paymentData']>) {
+      state.paymentData = action.payload;
+    },
     updateDocTemplateIsFilled(state, action: PayloadAction<{ docId: string }>) {
       Object.entries(state.templateIdToDocId).forEach(([templateId, docId]) => {
         if (docId === action.payload.docId) {
@@ -46,6 +60,9 @@ const slice = createSlice({
           }
         }
       });
+    },
+    clearDocsState() {
+      return initialState;
     },
   },
   extraReducers: builder => {
@@ -64,7 +81,7 @@ const slice = createSlice({
       })
 
       .addCase(fetchDocsTemplates.pending, state => {
-        state.isLoading = true;
+        state.isLoading.docsTemplates = true;
       })
       .addCase(fetchDocsTemplates.fulfilled, (state, action) => {
         slice.caseReducers.setDocTemplates(state, {
@@ -76,14 +93,14 @@ const slice = createSlice({
           })),
           type: setDocTemplates.type,
         });
-        state.isLoading = false;
+        state.isLoading.docsTemplates = false;
       })
       .addCase(fetchDocsTemplates.rejected, (state, action) => {
         slice.caseReducers.setError(state, {
           payload: action.payload as NetworkErrorDetailsWithBody<any>,
           type: setError.type,
         });
-        state.isLoading = false;
+        state.isLoading.docsTemplates = false;
       })
 
       .addCase(saveDocBlob.rejected, (state, action) => {
@@ -111,6 +128,24 @@ const slice = createSlice({
           payload: action.payload as NetworkErrorDetailsWithBody<any>,
           type: setError.type,
         });
+      })
+
+      .addCase(saveDocPaymentData.pending, state => {
+        state.isLoading.paymentData = true;
+      })
+      .addCase(saveDocPaymentData.fulfilled, (state, action) => {
+        slice.caseReducers.setDocPaymentData(state, {
+          payload: action.payload,
+          type: setDocPaymentData.type,
+        });
+        state.isLoading.paymentData = false;
+      })
+      .addCase(saveDocPaymentData.rejected, (state, action) => {
+        slice.caseReducers.setError(state, {
+          payload: action.payload as NetworkErrorDetailsWithBody<any>,
+          type: setError.type,
+        });
+        state.isLoading.paymentData = false;
       });
   },
 });
@@ -123,6 +158,8 @@ export const {
   updateDocTemplateIsFilled,
   setZones,
   setSelectedZone,
+  setDocPaymentData,
+  clearDocsState,
 } = slice.actions;
 
 export default slice.reducer;

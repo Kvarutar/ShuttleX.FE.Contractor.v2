@@ -15,7 +15,11 @@ export type DocsState = {
   profilePhoto: Nullable<string>;
   selectedZone: Nullable<string>;
   error: Nullable<NetworkErrorDetailsWithBody<any>>;
-  isLoading: boolean;
+  isLoading: {
+    docsTemplates: boolean;
+    paymentData: boolean;
+  };
+  paymentData: Nullable<PaymentDataForm>;
 };
 
 export type ZoneAPIResponse = {
@@ -63,3 +67,10 @@ export type DocsTemplatesAPIResponse = {
   type: '0' | '1';
   subType: string;
 }[];
+
+export type PaymentDataForm = {
+  firstName: string;
+  surname: string;
+  patronymic: string;
+  taxNumber: string;
+};

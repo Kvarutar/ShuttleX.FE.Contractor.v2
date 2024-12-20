@@ -10,6 +10,7 @@ import SplashScreen from '../screens/auth/SplashScreen';
 import TermsScreen from '../screens/auth/TermsScreen';
 import DocMediaScreen from '../screens/docs/DocMediaScreen';
 import DocsScreen from '../screens/docs/DocsScreen';
+import PaymentDocScreen from '../screens/docs/PaymentDocScreen';
 import ProfilePhotoScreen from '../screens/docs/ProfilePhotoScreen';
 import AccountSettings from '../screens/menu/AccountSettings';
 import AccountVerificateCodeScreen from '../screens/menu/AccountVerificateCodeScreen';
@@ -58,6 +59,7 @@ const Navigate = (): JSX.Element => {
             <Stack.Screen name="AccountSettings" component={AccountSettings} />
             <Stack.Screen name="AccountVerificateCode" component={AccountVerificateCodeScreen} />
             <Stack.Screen name="DocMedia" component={DocMediaScreen} />
+            <Stack.Screen name="PaymentDoc" component={PaymentDocScreen} />
           </>
         ) : (
           <>

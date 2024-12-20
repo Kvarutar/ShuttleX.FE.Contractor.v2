@@ -1,12 +1,13 @@
 import { getNetworkErrorInfo } from 'shuttlex-integration';
 
 import { createAppAsyncThunk } from '../../../redux/hooks';
-import { setSelectedZone, setTemplateIdToDocId, updateDocTemplateIsFilled } from './index';
+import { clearDocsState, setSelectedZone, setTemplateIdToDocId, updateDocTemplateIsFilled } from './index';
 import { selectedZoneSelector } from './selectors';
 import {
   CreateDocAPIResponse,
   DocsState,
   DocsTemplatesAPIResponse,
+  PaymentDataForm,
   SaveDocAPIRequest,
   SaveProfilePhotoAPIRequest,
   SaveProfilePhotoAPIResponse,
@@ -100,11 +101,31 @@ export const saveProfilePhoto = createAppAsyncThunk<SaveProfilePhotoAPIResponse,
 
 export const verifyDocs = createAppAsyncThunk<void, void>(
   'docs/verifyDocs',
-  async (_, { rejectWithValue, docsAxios, getState }) => {
+  async (_, { rejectWithValue, docsAxios, getState, dispatch }) => {
     try {
       const zoneId = selectedZoneSelector(getState());
       const response = await docsAxios.post(`/zones/${zoneId}/contractors/complete`);
+      dispatch(clearDocsState());
       return response.data;
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
+
+export const saveDocPaymentData = createAppAsyncThunk<PaymentDataForm, PaymentDataForm>(
+  'docs/paymentData',
+  async (payload, { rejectWithValue, profileAxios }) => {
+    try {
+      await profileAxios.post('/profile/first-names', { type: 0, value: payload.firstName });
+      await profileAxios.post('/profile/last-names', { type: 0, value: payload.surname });
+      await profileAxios.post('/profile/patronic-names', {
+        type: 0,
+        value: payload.patronymic,
+      });
+      await profileAxios.patch('/profile', { socialSecurityNumber: payload.taxNumber });
+
+      return payload;
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
     }
