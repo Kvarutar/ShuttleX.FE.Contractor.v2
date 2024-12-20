@@ -2,7 +2,8 @@ import notifee, { AndroidColor } from '@notifee/react-native';
 
 import { getContractorInfo } from '../../contractor/redux/thunks';
 import { store } from '../../redux/store';
-import { endTrip, setTripStatus } from '../../ride/redux/trip';
+import { endTrip, setSecondOrder, setTripStatus } from '../../ride/redux/trip';
+import { secondOrderSelector, tripStatusSelector } from '../../ride/redux/trip/selectors';
 import { fetchOfferInfo } from '../../ride/redux/trip/thunks';
 import { TripStatus } from '../../ride/redux/trip/types';
 import { NotificationPayload, NotificationRemoteMessage, NotificationType, NotificationWithPayload } from './types';
@@ -22,13 +23,18 @@ const notificationHandlers: Record<NotificationType, (payload?: NotificationPayl
     }
   },
   [NotificationType.PassengerRejected]: () => {
-    if (
-      store.getState().trip.tripStatus === TripStatus.Ride ||
-      store.getState().trip.tripStatus === TripStatus.Ending
-    ) {
-      store.dispatch(setTripStatus(TripStatus.Rating));
+    const secondOrder = secondOrderSelector(store.getState());
+    if (!secondOrder) {
+      const tripStatus = tripStatusSelector(store.getState());
+      if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Ending) {
+        store.dispatch(setTripStatus(TripStatus.Rating));
+      }
+      //Because this status might be chanched in lonpolling also
+      else if (tripStatus !== TripStatus.Rating) {
+        store.dispatch(endTrip());
+      }
     } else {
-      store.dispatch(endTrip());
+      store.dispatch(setSecondOrder(null));
     }
   },
   [NotificationType.DocsApproved]: () => {

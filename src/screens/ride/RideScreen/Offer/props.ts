@@ -18,4 +18,5 @@ export type OfferItemProps = {
   style: StyleProp<TextStyle>;
   setIsShowMorePoints?: (isShowMorePoints: boolean) => void;
   numberOfAdditionalPoints?: number;
+  durationTime?: number;
 };

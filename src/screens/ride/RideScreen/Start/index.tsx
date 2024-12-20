@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert as AlertNative, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
   BottomWindowWithGesture,
-  BottomWindowWithGestureRef,
   Button,
   isIncorrectFieldsError,
   SquareButtonModes,
@@ -26,29 +25,15 @@ import {
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
-import { setIsCanceledTripsPopupVisible, setTripOffer } from '../../../../core/ride/redux/trip';
-import { isConflictError, isGoneError } from '../../../../core/ride/redux/trip/errors';
-import {
-  dropOffRouteIdSelector,
-  isCanceledTripsPopupVisibleSelector,
-  offerSelector,
-  pickUpRouteIdSelector,
-  tripErrorSelector,
-} from '../../../../core/ride/redux/trip/selectors';
-import {
-  acceptOffer,
-  declineOffer,
-  fetchWayPointsRoute,
-  getNewOfferLongPolling,
-  sendExpiredOfferId,
-} from '../../../../core/ride/redux/trip/thunks';
+import { setIsCanceledTripsPopupVisible } from '../../../../core/ride/redux/trip';
+import { isCanceledTripsPopupVisibleSelector } from '../../../../core/ride/redux/trip/selectors';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import AccountIsNotActivePopup from '../popups/AccountIsNotActivePopup';
 import AchievementsPopup from '../popups/AchievementsPopup';
-import OfferPopup from '../popups/OfferPopup';
 import TariffPreferencesPopup from '../popups/PreferencesPopup';
 import UnclosablePopupWithModes from '../popups/UnclosablePopupWithModes';
 import { UnclosablePopupModes } from '../popups/UnclosablePopupWithModes/props';
+import { StartProps } from './types';
 import VisiblePart from './VisiblePart';
 
 type lineStateTypes = {
@@ -81,13 +66,9 @@ const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record
   },
 });
 
-const Start = () => {
+const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottomWindowRef }: StartProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-
-  const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
-  const preferencesBottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
-  const achievementsBottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
 
   const isTariffsInfoLoading = useSelector(isTariffsInfoLoadingSelector);
   const tariffsInfoError = useSelector(tariffsInfoErrorSelector);
@@ -100,17 +81,11 @@ const Start = () => {
 
   const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t)[contractorStatus]);
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
-  const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
   const [isAchievementsPopupVisible, setIsAchievementsPopupVisible] = useState<boolean>(false);
   const [isAccountIsNotActivePopupVisible, setIsAccountIsNotActivePopupVisible] = useState<boolean>(false);
   const [isUnsupportedCityPopupVisible, setIsUnsupportedCityPopupVisible] = useState<boolean>(false);
   const [isOpened, setIsOpened] = useState<boolean>(false);
-  const offer = useSelector(offerSelector);
-  const pickUpRouteId = useSelector(pickUpRouteIdSelector);
-  const dropOffRouteId = useSelector(dropOffRouteIdSelector);
   const contractorZone = useSelector(contractorZoneSelector);
-
-  const tripError = useSelector(tripErrorSelector);
 
   const primaryTariff = useSelector(primaryTariffSelector);
   const tariffsIconsData = useTariffsIcons();
@@ -142,31 +117,6 @@ const Start = () => {
     }
   }, [contractorStatus, contractorZone, isOpened]);
 
-  useEffect(() => {
-    if (offer) {
-      setIsOfferPopupVisible(true);
-    }
-  }, [offer]);
-
-  useEffect(() => {
-    //TODO: Rewrite with the correct typeGuard function
-    if (tripError && (isConflictError(tripError) || isGoneError(tripError) || isIncorrectFieldsError(tripError))) {
-      dispatch(setTripOffer(null));
-      setIsOfferPopupVisible(false);
-      AlertNative.alert(
-        t('ride_Ride_Start_offerWasCanceledOrAcceptedAlertTitle'),
-        t('ride_Ride_Start_offerWasCanceledOrAcceptedAlertDescription'),
-        [{ text: t('ride_Ride_Start_offerWasCanceledOrAcceptedAlertButtonText') }],
-      );
-    }
-  }, [dispatch, tripError, t]);
-
-  useEffect(() => {
-    if (pickUpRouteId && dropOffRouteId) {
-      dispatch(fetchWayPointsRoute({ pickUpRouteId, dropOffRouteId }));
-    }
-  }, [dispatch, pickUpRouteId, dropOffRouteId]);
-
   //TODO: Change theese effect and thunks when we know how it seems
   // Unused thunks for now
   // For achievements and preferences
@@ -182,34 +132,6 @@ const Start = () => {
       dispatch(setIsCanceledTripsPopupVisible(true));
     }
   }, [generalError, dispatch]);
-
-  const onOfferPopupClose = async () => {
-    setIsOfferPopupVisible(false);
-    if (offer) {
-      await dispatch(sendExpiredOfferId({ offerId: offer.id }));
-      dispatch(getNewOfferLongPolling());
-    }
-  };
-
-  const onOfferDecline = async () => {
-    if (offer) {
-      await dispatch(declineOffer({ offerId: offer.id }));
-      onOfferPopupClose();
-    }
-  };
-
-  const onOfferAccept = async () => {
-    if (offer && pickUpRouteId && dropOffRouteId) {
-      await dispatch(acceptOffer({ offerId: offer.id }));
-      setIsOfferPopupVisible(false);
-    }
-  };
-
-  const onCloseAllBottomWindows = () => {
-    bottomWindowRef.current?.closeWindow();
-    preferencesBottomWindowRef.current?.closeWindow();
-    achievementsBottomWindowRef.current?.closeWindow();
-  };
 
   const onPressConfirmButton = () => {
     dispatch(setIsCanceledTripsPopupVisible(false));
@@ -300,15 +222,6 @@ const Start = () => {
           onClose={() => setIsPreferencesPopupVisible(false)}
           setIsPreferencesPopupVisible={setIsPreferencesPopupVisible}
           preferencesBottomWindowRef={preferencesBottomWindowRef}
-        />
-      )}
-      {offer && isOfferPopupVisible && (
-        <OfferPopup
-          offer={offer}
-          onOfferAccept={onOfferAccept}
-          onOfferDecline={onOfferDecline}
-          onClose={onOfferPopupClose}
-          onCloseAllBottomWindows={onCloseAllBottomWindows}
         />
       )}
       {isAchievementsPopupVisible && (

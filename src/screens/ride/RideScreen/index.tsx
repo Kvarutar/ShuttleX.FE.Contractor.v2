@@ -1,16 +1,18 @@
 //TODO uncoment all notification related code when we will need it
 import { useNavigationState } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
+import { Alert as AlertNative, Platform, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import {
   Alert,
+  BottomWindowWithGestureRef,
   Button,
   ButtonShapes,
   IntegrationModule,
+  isIncorrectFieldsError,
   LocationUnavailable,
   LocationUnavailableProps,
   MenuHeader,
@@ -20,11 +22,7 @@ import {
 } from 'shuttlex-integration';
 
 import { signOut } from '../../../core/auth/redux/thunks';
-import {
-  contractorInfoStateSelector,
-  contractorStatusSelector,
-  isContractorInfoLoadingSelector,
-} from '../../../core/contractor/redux/selectors';
+import { contractorInfoStateSelector, isContractorInfoLoadingSelector } from '../../../core/contractor/redux/selectors';
 import { ContractorStatusAPIResponse } from '../../../core/contractor/redux/types';
 import { getAccountSettingsVerifyStatus } from '../../../core/menu/redux/accountSettings/thunks';
 // import { setNotificationList } from '../../../core/menu/redux/notifications';
@@ -41,12 +39,27 @@ import {
   geolocationIsLocationEnabledSelector,
   geolocationIsPermissionGrantedSelector,
 } from '../../../core/ride/redux/geolocation/selectors';
-import { orderSelector } from '../../../core/ride/redux/trip/selectors';
-import { getCancelTripLongPolling, getNewOfferLongPolling } from '../../../core/ride/redux/trip/thunks';
+import { setTripOffer } from '../../../core/ride/redux/trip';
+import { isConflictError, isGoneError } from '../../../core/ride/redux/trip/errors';
+import {
+  acceptOrDeclineOfferErrorSelector,
+  dropOffRouteIdSelector,
+  offerSelector,
+  orderSelector,
+  pickUpRouteIdSelector,
+} from '../../../core/ride/redux/trip/selectors';
+import {
+  acceptOffer,
+  declineOffer,
+  getCancelTripLongPolling,
+  getNewOfferLongPolling,
+  sendExpiredOffer,
+} from '../../../core/ride/redux/trip/thunks';
 import Menu from '../Menu';
 import MapCameraModeButton from './MapCameraModeButton';
 import MapView from './MapView';
 import Order from './Order';
+import OfferPopup from './popups/OfferPopup';
 import UnclosablePopupWithModes from './popups/UnclosablePopupWithModes';
 import { UnclosablePopupModes } from './popups/UnclosablePopupWithModes/props';
 import { type RideScreenProps } from './props';
@@ -67,7 +80,6 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const geolocationAccuracy = useSelector(geolocationAccuracySelector);
   // const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
   const contractorDocsStatus = useSelector(contractorInfoStateSelector);
-  const contractorStatus = useSelector(contractorStatusSelector);
 
   const isContractorInfoLoading = useSelector(isContractorInfoLoadingSelector);
 
@@ -106,17 +118,14 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     }
   }, [contractorDocsStatus, navigation, isContractorInfoLoading]);
 
-  useEffect(() => {
-    if (order) {
-      dispatch(getCancelTripLongPolling({ orderId: order.id }));
-    }
-  }, [dispatch, order]);
+  const cancelTripLongPollinghasCalledRef = useRef(false);
 
   useEffect(() => {
-    if (contractorStatus === 'online') {
-      dispatch(getNewOfferLongPolling());
+    if (order && !cancelTripLongPollinghasCalledRef.current) {
+      dispatch(getCancelTripLongPolling({ orderId: order.id }));
+      cancelTripLongPollinghasCalledRef.current = true;
     }
-  }, [dispatch, contractorStatus]);
+  }, [dispatch, order]);
 
   useEffect(() => {
     dispatch(getAccountSettingsVerifyStatus());
@@ -238,6 +247,72 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
 
   const currentRoute = useNavigationState(state => state.routes[state.index].name);
 
+  const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
+  const preferencesBottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
+  const achievementsBottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
+
+  const acceptOrDeclineOfferError = useSelector(acceptOrDeclineOfferErrorSelector);
+  const offer = useSelector(offerSelector);
+  const pickUpRouteId = useSelector(pickUpRouteIdSelector);
+  const dropOffRouteId = useSelector(dropOffRouteIdSelector);
+
+  const [isOfferPopupVisible, setIsOfferPopupVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (offer) {
+      setIsOfferPopupVisible(true);
+    }
+  }, [offer]);
+
+  useEffect(() => {
+    //TODO: Rewrite with the correct typeGuard function
+    if (
+      acceptOrDeclineOfferError &&
+      (isConflictError(acceptOrDeclineOfferError) ||
+        isGoneError(acceptOrDeclineOfferError) ||
+        isIncorrectFieldsError(acceptOrDeclineOfferError))
+    ) {
+      dispatch(setTripOffer(null));
+      setIsOfferPopupVisible(false);
+      AlertNative.alert(
+        t('ride_Ride_offerWasCanceledOrAcceptedAlertTitle'),
+        t('ride_Ride_offerWasCanceledOrAcceptedAlertDescription'),
+        [{ text: t('ride_Ride_offerWasCanceledOrAcceptedAlertButtonText') }],
+      );
+    }
+  }, [dispatch, acceptOrDeclineOfferError, t]);
+
+  useEffect(() => {
+    dispatch(getNewOfferLongPolling());
+  }, [dispatch]);
+
+  const onOfferPopupClose = async () => {
+    setIsOfferPopupVisible(false);
+    if (offer) {
+      await dispatch(sendExpiredOffer({ offerId: offer.id }));
+    }
+  };
+
+  const onOfferDecline = async () => {
+    if (offer) {
+      await dispatch(declineOffer({ offerId: offer.id }));
+      setIsOfferPopupVisible(false);
+    }
+  };
+
+  const onOfferAccept = async () => {
+    if (offer && pickUpRouteId && dropOffRouteId) {
+      await dispatch(acceptOffer({ offerId: offer.id }));
+      setIsOfferPopupVisible(false);
+    }
+  };
+
+  const onCloseAllBottomWindows = () => {
+    bottomWindowRef.current?.closeWindow();
+    preferencesBottomWindowRef.current?.closeWindow();
+    achievementsBottomWindowRef.current?.closeWindow();
+  };
+
   return (
     <>
       {currentRoute === 'Ride' && <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />}
@@ -259,10 +334,23 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
             <Order />
           </>
         ) : (
-          <Start />
+          <Start
+            bottomWindowRef={bottomWindowRef}
+            achievementsBottomWindowRef={achievementsBottomWindowRef}
+            preferencesBottomWindowRef={preferencesBottomWindowRef}
+          />
         )}
         {locationUnavailableProps && <LocationUnavailable {...locationUnavailableProps} />}
       </SafeAreaView>
+      {offer && isOfferPopupVisible && (
+        <OfferPopup
+          offer={offer}
+          onOfferAccept={onOfferAccept}
+          onOfferDecline={onOfferDecline}
+          onClose={onOfferPopupClose}
+          onCloseAllBottomWindows={onCloseAllBottomWindows}
+        />
+      )}
       {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
       {unclosablePopupMode && (
         <UnclosablePopupWithModes mode={unclosablePopupMode} bottomAdditionalContent={unclosablePopupContent} />

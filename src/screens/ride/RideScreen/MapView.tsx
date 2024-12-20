@@ -6,6 +6,7 @@ import {
   calculateNewMapRoute,
   decodeGooglePolyline,
   getTimeWithAbbreviation,
+  MapPolyline,
   MapView as MapViewIntegration,
   Nullable,
   secToMilSec,
@@ -22,6 +23,7 @@ import { mapCameraModeSelector, mapStopPointsSelector } from '../../../core/ride
 import {
   orderSelector,
   tripDropOffRouteSelector,
+  tripFutureOrderPickUpRouteSelector,
   tripPickUpRouteSelector,
   tripStatusSelector,
 } from '../../../core/ride/redux/trip/selectors';
@@ -40,9 +42,12 @@ const MapView = (): JSX.Element => {
   const tripStatus = useSelector(tripStatusSelector);
   const pickUpRoute = useSelector(tripPickUpRouteSelector);
   const dropOffRoute = useSelector(tripDropOffRouteSelector);
+  const futureOrderPickUpRoute = useSelector(tripFutureOrderPickUpRouteSelector);
   const order = useSelector(orderSelector);
 
-  const [polylineCoordinates, setPolylineCoordinates] = useState<LatLng[]>([]);
+  const [polylines, setPolylines] = useState<MapPolyline[]>([]);
+  const [currentOrderPolylinesCoordinates, setCurrentOrderPolylinesCoordinates] = useState<LatLng[]>([]);
+  const [futureOrderMarker, setFutureOrderMarker] = useState<LatLng | null>(null);
   const [finalStopPointCoordinates, setFinalStopPointCoordinates] = useState<Nullable<LatLng>>(null);
   const [finalStopPointTimeInSec, setFinalStopPointTimeInSec] = useState<number>(0);
 
@@ -88,8 +93,9 @@ const MapView = (): JSX.Element => {
 
   // Section: polylines
   const resetPoints = useCallback(() => {
-    setPolylineCoordinates([]);
+    setCurrentOrderPolylinesCoordinates([]);
     setFinalStopPointCoordinates(null);
+    setFutureOrderMarker(null);
   }, []);
 
   useEffect(() => {
@@ -97,7 +103,7 @@ const MapView = (): JSX.Element => {
       case TripStatus.Idle:
         if (pickUpRoute) {
           const coordinates = decodeGooglePolyline(pickUpRoute.geometry);
-          setPolylineCoordinates(coordinates);
+          setCurrentOrderPolylinesCoordinates(coordinates);
           setFinalStopPointCoordinates(coordinates[coordinates.length - 1]);
           setFinalStopPointTimeInSec(pickUpRoute.totalDurationSec);
         } else {
@@ -107,7 +113,7 @@ const MapView = (): JSX.Element => {
       case TripStatus.Ride:
         if (dropOffRoute) {
           const coordinates = decodeGooglePolyline(dropOffRoute.geometry);
-          setPolylineCoordinates(coordinates);
+          setCurrentOrderPolylinesCoordinates(coordinates);
           setFinalStopPointCoordinates(coordinates[coordinates.length - 1]);
           setFinalStopPointTimeInSec(dropOffRoute.totalDurationSec);
         } else {
@@ -141,20 +147,32 @@ const MapView = (): JSX.Element => {
 
   useEffect(() => {
     if (geolocationCoordinates) {
-      setPolylineCoordinates(prev => calculateNewMapRoute(prev, geolocationCoordinates, 15));
+      setCurrentOrderPolylinesCoordinates(prev => calculateNewMapRoute(prev, geolocationCoordinates, 15));
     }
   }, [geolocationCoordinates]);
+
+  useEffect(() => {
+    const newPolylines: MapPolyline[] = [];
+    if (currentOrderPolylinesCoordinates.length !== 0) {
+      newPolylines.push({ type: 'straight', options: { coordinates: currentOrderPolylinesCoordinates } });
+    }
+    if (futureOrderPickUpRoute) {
+      const coordinates = decodeGooglePolyline(futureOrderPickUpRoute.geometry);
+      newPolylines.push({
+        type: 'straight',
+        options: { coordinates: coordinates, color: '#00000066' },
+      });
+      setFutureOrderMarker(coordinates[coordinates.length - 1]);
+    }
+    setPolylines(newPolylines);
+  }, [currentOrderPolylinesCoordinates, futureOrderPickUpRoute]);
 
   return (
     <MapViewIntegration
       style={StyleSheet.absoluteFill}
       geolocationCoordinates={geolocationCoordinates ?? undefined}
       geolocationCalculatedHeading={geolocationCalculatedHeading}
-      polylines={
-        polylineCoordinates.length !== 0
-          ? [{ type: 'straight', options: { coordinates: polylineCoordinates } }]
-          : undefined
-      }
+      polylines={polylines}
       finalStopPoint={
         finalStopPointCoordinates
           ? {
@@ -165,6 +183,7 @@ const MapView = (): JSX.Element => {
             }
           : undefined
       }
+      markers={futureOrderMarker ? [{ colorMode: 'mode1', coordinates: futureOrderMarker }] : undefined}
       stopPoints={stopPoints}
       cameraMode={cameraMode}
       setCameraModeOnDrag={mode => dispatch(setMapCameraMode(mode))}

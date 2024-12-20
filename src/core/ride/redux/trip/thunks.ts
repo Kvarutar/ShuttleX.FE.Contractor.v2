@@ -3,8 +3,9 @@ import { convertBlobToImgUri, getNetworkErrorInfo } from 'shuttlex-integration';
 import { tariffsSelector } from '../../../contractor/redux/selectors';
 import { createAppAsyncThunk } from '../../../redux/hooks';
 import { geolocationCoordinatesSelector } from '../geolocation/selectors';
-import { endTrip, setTripStatus } from '.';
+import { endTrip, resetCurrentRoutes, resetFutureRoutes, setSecondOrder, setTripOffer, setTripStatus } from '.';
 import { getOfferNetworkErrorInfo } from './errors';
+import { orderSelector } from './selectors';
 import {
   AcceptOfferAPIResponse,
   AcceptOrDeclineOfferPayload,
@@ -26,9 +27,11 @@ import {
   PassengerAvatarAPIResponse,
   PassengerInfoAPIResponse,
   PickedUpAtPickUpPointPayload,
+  SendExpiredOfferPayload,
   TripStatus,
   UpdatePassengerRatingAPIRequest,
   UpdatePassengerRatingPayload,
+  WayPointsRouteType,
 } from './types';
 
 export const getNewOfferLongPolling = createAppAsyncThunk<void, void>(
@@ -50,10 +53,16 @@ export const getCancelTripLongPolling = createAppAsyncThunk<void, { orderId: str
       await ordersLongPollingAxios.get(`/${payload.orderId}/canceled/long-polling`);
 
       const { trip } = getState();
-      if (trip.tripStatus === TripStatus.Ride || trip.tripStatus === TripStatus.Ending) {
-        dispatch(setTripStatus(TripStatus.Rating));
+      if (!trip.secondOrder) {
+        if (trip.tripStatus === TripStatus.Ride || trip.tripStatus === TripStatus.Ending) {
+          dispatch(setTripStatus(TripStatus.Rating));
+        }
+        //Because this status might be chanched in notifications also
+        else if (trip.tripStatus !== TripStatus.Rating) {
+          dispatch(endTrip());
+        }
       } else {
-        dispatch(endTrip());
+        dispatch(setSecondOrder(null));
       }
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
@@ -68,6 +77,14 @@ export const getCurrentOrder = createAppAsyncThunk<GetCurrentOrderThunkResult, v
       const response = await ordersAxios.get<GetCurrentOrderAPIResponse>('/current');
 
       if (response.data) {
+        dispatch(
+          fetchWayPointsRoute({
+            pickUpRouteId: response.data.pickUpRouteId,
+            dropOffRouteId: response.data.dropOffRouteId,
+            type: 'current',
+          }),
+        );
+
         const tripDetails = await dispatch(getPassengerTripInfo({ orderId: response.data.id })).unwrap();
         return {
           order: response.data,
@@ -89,6 +106,14 @@ export const getFutureOrder = createAppAsyncThunk<GetFutureOrderThunkResult, voi
       const response = await ordersAxios.get<GetFutureOrderAPIResponse>('/future');
 
       if (response.data) {
+        dispatch(
+          fetchWayPointsRoute({
+            pickUpRouteId: response.data.pickUpRouteId,
+            dropOffRouteId: response.data.dropOffRouteId,
+            type: 'future',
+          }),
+        );
+
         const tripDetails = await dispatch(getPassengerTripInfo({ orderId: response.data.id })).unwrap();
         return {
           order: response.data,
@@ -105,9 +130,20 @@ export const getFutureOrder = createAppAsyncThunk<GetFutureOrderThunkResult, voi
 
 export const fetchOfferInfo = createAppAsyncThunk<OfferAPIResponse, string>(
   'trip/fetchOfferInfo',
-  async (offerId, { rejectWithValue, offersAxios }) => {
+  async (offerId, { rejectWithValue, offersAxios, dispatch, getState }) => {
     try {
       const response = await offersAxios.get<OfferAPIResponse>(`/${offerId}`);
+
+      const order = orderSelector(getState());
+
+      await dispatch(
+        fetchWayPointsRoute({
+          pickUpRouteId: response.data.pickUpRouteId,
+          dropOffRouteId: response.data.dropOffRouteId,
+          type: order ? 'future' : 'current',
+        }),
+      );
+
       return response.data;
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
@@ -116,11 +152,11 @@ export const fetchOfferInfo = createAppAsyncThunk<OfferAPIResponse, string>(
 );
 
 export const fetchWayPointsRoute = createAppAsyncThunk<
-  { pickup: OfferPickUpAPIResponse; dropoff: OfferDropOffAPIResponse },
-  { pickUpRouteId: string; dropOffRouteId: string }
+  { pickup: OfferPickUpAPIResponse; dropoff: OfferDropOffAPIResponse; type: WayPointsRouteType },
+  { pickUpRouteId: string; dropOffRouteId: string; type: WayPointsRouteType }
 >(
   'trip/fetchWayPointsRoute',
-  async ({ pickUpRouteId, dropOffRouteId }, { rejectWithValue, offersAxios, ordersAxios }) => {
+  async ({ pickUpRouteId, dropOffRouteId, type }, { rejectWithValue, offersAxios, ordersAxios }) => {
     try {
       const [pickupResponse, dropoffResponse] = await Promise.all([
         offersAxios.get<OfferPickUpAPIResponse>(`/routes/${pickUpRouteId}/to-pick-up`),
@@ -130,6 +166,7 @@ export const fetchWayPointsRoute = createAppAsyncThunk<
       return {
         pickup: pickupResponse.data,
         dropoff: dropoffResponse.data,
+        type,
       };
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
@@ -139,11 +176,20 @@ export const fetchWayPointsRoute = createAppAsyncThunk<
 
 export const acceptOffer = createAppAsyncThunk<void, AcceptOrDeclineOfferPayload>(
   'trip/acceptOffer',
-  async (payload, { rejectWithValue, offersAxios, dispatch }) => {
+  async (payload, { rejectWithValue, offersAxios, dispatch, getState }) => {
     try {
       await offersAxios.post<AcceptOfferAPIResponse>(`${payload.offerId}/accept`);
 
-      await dispatch(getCurrentOrder());
+      const { trip } = getState();
+
+      if (trip.order) {
+        await dispatch(getFutureOrder());
+      } else {
+        await dispatch(getCurrentOrder());
+      }
+      dispatch(setTripOffer(null));
+
+      dispatch(getNewOfferLongPolling());
     } catch (error) {
       return rejectWithValue(getOfferNetworkErrorInfo(error));
     }
@@ -187,11 +233,22 @@ export const getPassengerTripInfo = createAppAsyncThunk<GetPassengerTripInfoThun
   },
 );
 
-export const sendExpiredOfferId = createAppAsyncThunk<void, AcceptOrDeclineOfferPayload>(
-  'trip/sendExpiredOfferId',
-  async (payload, { rejectWithValue, offersAxios }) => {
+export const sendExpiredOffer = createAppAsyncThunk<void, SendExpiredOfferPayload>(
+  'trip/sendExpiredOffer',
+  async (payload, { rejectWithValue, offersAxios, dispatch, getState }) => {
     try {
+      const order = orderSelector(getState());
+
+      if (order) {
+        dispatch(resetFutureRoutes());
+      } else {
+        dispatch(resetCurrentRoutes());
+      }
+
       await offersAxios.post(`/${payload.offerId}/expire`);
+
+      dispatch(setTripOffer(null));
+      dispatch(getNewOfferLongPolling());
     } catch (error) {
       const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({
@@ -205,9 +262,19 @@ export const sendExpiredOfferId = createAppAsyncThunk<void, AcceptOrDeclineOffer
 
 export const declineOffer = createAppAsyncThunk<void, AcceptOrDeclineOfferPayload>(
   'trip/declineOffer',
-  async (payload, { rejectWithValue, offersAxios }) => {
+  async (payload, { rejectWithValue, offersAxios, dispatch, getState }) => {
     try {
+      const order = orderSelector(getState());
+      if (order) {
+        dispatch(resetFutureRoutes());
+      } else {
+        dispatch(resetCurrentRoutes());
+      }
+
       await offersAxios.post(`/${payload.offerId}/decline`);
+
+      dispatch(setTripOffer(null));
+      dispatch(getNewOfferLongPolling());
     } catch (error) {
       const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({
@@ -242,9 +309,10 @@ export const fetchArrivedToPickUp = createAppAsyncThunk<void, ArrivedToPickUpPay
 
 export const fetchPickedUpAtPickUpPoint = createAppAsyncThunk<void, PickedUpAtPickUpPointPayload>(
   'trip/fetchPickedUpAtPickUpPoint',
-  async (payload, { rejectWithValue, ordersAxios }) => {
+  async (payload, { rejectWithValue, ordersAxios, dispatch }) => {
     try {
       await ordersAxios.post(`/${payload.orderId}/picked-up`);
+      await dispatch(getCurrentOrder());
     } catch (error) {
       const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({

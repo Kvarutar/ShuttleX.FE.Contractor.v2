@@ -1,12 +1,27 @@
-import { ReactNode, useCallback, useEffect } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LatLng } from 'react-native-maps';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
-import { Button, Nullable, SquareButtonModes, SwipeButton, SwipeButtonModes } from 'shuttlex-integration';
+import {
+  Button,
+  getDistanceBetweenPoints,
+  Nullable,
+  SquareButtonModes,
+  SwipeButton,
+  SwipeButtonModes,
+} from 'shuttlex-integration';
 
 import { useAppDispatch } from '../../../../../core/redux/hooks';
+import { geolocationCoordinatesSelector } from '../../../../../core/ride/redux/geolocation/selectors';
 import { setTripStatus } from '../../../../../core/ride/redux/trip';
-import { orderSelector, tripPointsSelector, tripStatusSelector } from '../../../../../core/ride/redux/trip/selectors';
+import {
+  orderSelector,
+  tripDropOffRouteSelector,
+  tripPickUpRouteSelector,
+  tripPointsSelector,
+  tripStatusSelector,
+} from '../../../../../core/ride/redux/trip/selectors';
 import {
   fetchArrivedToDropOff,
   fetchArrivedToPickUp,
@@ -14,12 +29,18 @@ import {
   fetchPickedUpAtPickUpPoint,
   fetchPickedUpAtStopPoint,
 } from '../../../../../core/ride/redux/trip/thunks';
-import { TripStatus } from '../../../../../core/ride/redux/trip/types';
+import { OfferWayPointsDataAPIResponse, TripStatus } from '../../../../../core/ride/redux/trip/types';
 import AddressWithExtendedPassengerInfo from './AddressWith/AddressWithExtendedPassengerInfo';
 import AddressWithMeta from './AddressWith/AddressWithMeta';
 import AddressWithPassengerAndOrderInfo from './AddressWith/AddressWithPassengerAndOrderInfo';
 
 const animationDuration = 200;
+const validDistanceToNearPoint = 100; // meters
+const validDistanceCheckInterval = 5000; // 5s
+
+const checkIsNearPoint = (p1: LatLng, route: OfferWayPointsDataAPIResponse): boolean => {
+  return getDistanceBetweenPoints(p1, route.waypoints[route.waypoints.length - 1].geo) <= validDistanceToNearPoint;
+};
 
 const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
   const { t } = useTranslation();
@@ -28,29 +49,38 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
   const order = useSelector(orderSelector);
   const tripStatus = useSelector(tripStatusSelector);
   const tripPoints = useSelector(tripPointsSelector);
+  const pickUpRoute = useSelector(tripPickUpRouteSelector);
+  const dropOffRoute = useSelector(tripDropOffRouteSelector);
 
-  //TODO: Refactor trip status change logic, add a new field "currentPoint" (pickUp, stopPoint[numberOfStopPoint]), etc..
-  const updateTripStatus = useCallback(() => {
-    if (order && tripPoints.length !== 0) {
-      const isPickUp = tripPoints.length === order.stopPointAddresses.length + 1;
-      const isLastPoint = tripPoints.length <= 1;
-
-      if (isPickUp) {
-        dispatch(setTripStatus(TripStatus.NearPoint));
-      } else if (isLastPoint) {
-        dispatch(setTripStatus(TripStatus.Ending));
-      } else {
-        dispatch(setTripStatus(TripStatus.NearStopPoint));
-      }
-    }
-  }, [order, tripPoints, dispatch]);
+  const geolocationCoordinates = useSelector(geolocationCoordinatesSelector);
+  const geolocationCoordinatesRef = useRef<LatLng | null>(null);
 
   useEffect(() => {
-    // TODO: replace with check is contractor arriving
-    if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Idle) {
-      setTimeout(updateTripStatus, 5000);
-    }
-  }, [updateTripStatus, tripStatus]);
+    geolocationCoordinatesRef.current = geolocationCoordinates;
+  }, [geolocationCoordinates]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (
+        (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Idle) &&
+        geolocationCoordinatesRef.current &&
+        order &&
+        tripPoints.length !== 0
+      ) {
+        //TODO: Refactor trip status change logic, add a new field "currentPoint" (pickUp, stopPoint[numberOfStopPoint]), etc..
+        const isPickUp = tripPoints.length === order.stopPointAddresses.length + 1;
+        const isLastPoint = tripPoints.length <= 1;
+
+        if (isPickUp && pickUpRoute && checkIsNearPoint(geolocationCoordinatesRef.current, pickUpRoute)) {
+          dispatch(setTripStatus(TripStatus.NearPoint));
+        } else if (isLastPoint && dropOffRoute && checkIsNearPoint(geolocationCoordinatesRef.current, dropOffRoute)) {
+          dispatch(setTripStatus(TripStatus.Ending));
+        }
+      }
+    }, validDistanceCheckInterval);
+
+    return () => clearInterval(interval);
+  }, [dispatch, tripStatus, order, tripPoints.length, pickUpRoute, dropOffRoute]);
 
   let mainContent: Nullable<Record<TripStatus, Nullable<ReactNode>>> = null;
   let statusSwitchers: Nullable<Record<TripStatus, Nullable<ReactNode>>> = null;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Linking, StyleSheet, View } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
 import {
@@ -20,7 +20,7 @@ import {
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { endTrip } from '../../../../../core/ride/redux/trip';
 import { orderSelector } from '../../../../../core/ride/redux/trip/selectors';
-import { updatePassengerRating } from '../../../../../core/ride/redux/trip/thunks';
+import { getCurrentOrder, updatePassengerRating } from '../../../../../core/ride/redux/trip/thunks';
 import { PassengerRate } from './props';
 
 const PassengerRating = () => {
@@ -72,15 +72,18 @@ const PassengerRating = () => {
 
   //TODO: Add logic for sending data to backend
   const onPressPaidViaCash = async () => {
+    dispatch(endTrip());
+    dispatch(getCurrentOrder());
     if (passengerRate) {
       await dispatch(updatePassengerRating({ orderId: order.id, rate: passengerRate === 'like' }));
     }
-    dispatch(endTrip());
   };
 
   //TODO: Add logic for sending data to backend
   const onPressGetHelp = () => {
+    Linking.openURL('https://t.me/ShuttleX_Support');
     dispatch(endTrip());
+    dispatch(getCurrentOrder());
   };
 
   return (

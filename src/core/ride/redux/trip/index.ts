@@ -4,6 +4,7 @@ import { minToMilSec, NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-int
 import { TariffInfo } from '../../../contractor/redux/types';
 import {
   acceptOffer,
+  declineOffer,
   fetchArrivedToDropOff,
   fetchArrivedToPickUp,
   fetchArrivedToStopPoint,
@@ -15,13 +16,13 @@ import {
   getCurrentOrder,
   getFutureOrder,
   getPassengerTripInfo,
-  sendExpiredOfferId,
+  sendExpiredOffer,
   updatePassengerRating,
 } from './thunks';
 import {
+  DataForOrderType,
   GetCurrentOrderFromAPI,
   OfferAPIResponse,
-  OfferWayPointsDataAPIResponse,
   OrderType,
   PassengerInfoAPIResponse,
   TripState,
@@ -34,12 +35,16 @@ const initialState: TripState = {
   offer: null,
   pickUpRoute: null,
   dropOffRoute: null,
+  futureOrderPickUpRoutes: null,
   secondOrder: null,
   tripStatus: TripStatus.Idle,
   tripPoints: [],
   canceledTripsAmount: 0,
   isCanceledTripsPopupVisible: false,
-  error: null,
+  error: {
+    general: null,
+    acceptOrDeclineOffer: null,
+  },
   //TODO create selector and place where it needed
   isLoading: false,
 };
@@ -56,6 +61,7 @@ const slice = createSlice({
         passengerInfo: PassengerInfoAPIResponse;
         passengerAvatarURL: Nullable<string>;
         dataForOrder: Nullable<GetCurrentOrderFromAPI>;
+        dataForOrderType: DataForOrderType;
       }>,
     ) {
       if (action.payload.dataForOrder) {
@@ -72,6 +78,8 @@ const slice = createSlice({
           dropOffRouteId,
           arrivedToPickUpDate,
           pickUpDate,
+          createdDate,
+          state: orderState,
         } = action.payload.dataForOrder;
         const { orderId, passengerAvatarURL, passengerInfo, tariffs } = action.payload;
 
@@ -97,7 +105,7 @@ const slice = createSlice({
           dropOffRouteId,
           timeToPickUp: new Date(timeToPickUp).getTime(),
           timeToDropOffInMilSec: dropOffTimeInMs,
-          travelTimeInMilSec: new Date(timeToDropOff).getTime() - new Date(timeToPickUp).getTime(),
+          travelTimeInMilSec: new Date(timeToDropOff).getTime() - new Date(createdDate).getTime(),
           stopPointAddresses,
           id: orderId,
           passenger: {
@@ -117,31 +125,20 @@ const slice = createSlice({
           order.timeToDropOffInMilSec = new Date(timeToDropOff).getTime() - Date.now();
         }
 
-        if (state.order && !state.secondOrder) {
+        if (action.payload.dataForOrderType === 'future') {
           state.secondOrder = { ...order };
-        } else if (!state.order) {
+        } else {
           state.order = order;
-          state.tripPoints = [order.pickUpAddress, ...order.stopPointAddresses];
+          if (orderState !== 'MoveToPickUp' && orderState !== 'InPickUp') {
+            state.tripPoints = stopPointAddresses;
+          } else {
+            state.tripPoints = [order.pickUpAddress, ...stopPointAddresses];
+          }
         }
       }
     },
-    setTripOffer(state, action: PayloadAction<OfferAPIResponse | null>) {
+    setTripOffer(state, action: PayloadAction<Nullable<OfferAPIResponse>>) {
       state.offer = action.payload;
-    },
-    setTripError(state, action: PayloadAction<NetworkErrorDetailsWithBody<any> | null>) {
-      state.error = action.payload;
-    },
-    setTripIsLoading(state, action: PayloadAction<boolean>) {
-      state.isLoading = action.payload;
-    },
-    setWayPointsRoute(
-      state,
-      action: PayloadAction<{ pickup: OfferWayPointsDataAPIResponse; dropoff: OfferWayPointsDataAPIResponse }>,
-    ) {
-      if (state.offer) {
-        state.pickUpRoute = action.payload.pickup;
-        state.dropOffRoute = action.payload.dropoff;
-      }
     },
     setPassengerAvatar(state, action: PayloadAction<string>) {
       if (state.order) {
@@ -153,6 +150,9 @@ const slice = createSlice({
     },
     rateTrip(state) {
       state.tripStatus = TripStatus.Rating;
+    },
+    setSecondOrder(state, action: PayloadAction<Nullable<OrderType>>) {
+      state.secondOrder = action.payload;
     },
     endTrip(state) {
       if (state.secondOrder) {
@@ -166,6 +166,7 @@ const slice = createSlice({
       state.tripStatus = TripStatus.Idle;
       state.pickUpRoute = initialState.pickUpRoute;
       state.dropOffRoute = initialState.dropOffRoute;
+      state.futureOrderPickUpRoutes = initialState.futureOrderPickUpRoutes;
     },
     setIsCanceledTripsPopupVisible(state, action: PayloadAction<boolean>) {
       state.isCanceledTripsPopupVisible = action.payload;
@@ -176,18 +177,19 @@ const slice = createSlice({
         state.tripStatus = TripStatus.Ride;
       }
     },
+    resetCurrentRoutes(state) {
+      state.pickUpRoute = null;
+      state.dropOffRoute = null;
+    },
+    resetFutureRoutes(state) {
+      state.futureOrderPickUpRoutes = null;
+    },
   },
   extraReducers: builder => {
     builder
       .addCase(getCurrentOrder.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = true;
+        state.error.general = null;
       })
       .addCase(getCurrentOrder.fulfilled, (state, action) => {
         if (action.payload) {
@@ -211,41 +213,21 @@ const slice = createSlice({
                 ...order,
                 stopPointAddresses,
               },
+              dataForOrderType: 'current',
             },
             type: setOrder.type,
           });
-          if (order.state !== 'MoveToPickUp' && order.state !== 'InPickUp') {
-            state.tripPoints = stopPointAddresses;
-          }
         }
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = null;
       })
       .addCase(getCurrentOrder.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(getFutureOrder.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = true;
+        state.error.general = null;
       })
       .addCase(getFutureOrder.fulfilled, (state, action) => {
         if (action.payload) {
@@ -261,48 +243,23 @@ const slice = createSlice({
                 ...order,
                 stopPointAddresses: [...order.stopPointAddresses, order.dropOffAddress],
               },
+              dataForOrderType: 'future',
             },
             type: setOrder.type,
           });
         }
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = null;
       })
       .addCase(getFutureOrder.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(fetchOfferInfo.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = true;
+        state.error.general = null;
       })
       .addCase(fetchOfferInfo.fulfilled, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
         slice.caseReducers.setTripOffer(state, {
           payload: {
             ...action.payload,
@@ -310,235 +267,130 @@ const slice = createSlice({
           },
           type: setTripOffer.type,
         });
+        state.isLoading = false;
+        state.error.general = null;
       })
       .addCase(fetchOfferInfo.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(fetchWayPointsRoute.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = true;
+        state.error.general = null;
       })
       .addCase(fetchWayPointsRoute.fulfilled, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
-        slice.caseReducers.setWayPointsRoute(state, {
-          payload: { pickup: action.payload.pickup, dropoff: action.payload.dropoff },
-          type: setWayPointsRoute.type,
-        });
+        switch (action.payload.type) {
+          case 'current':
+            state.pickUpRoute = action.payload.pickup;
+            state.dropOffRoute = action.payload.dropoff;
+            break;
+          case 'future':
+            state.futureOrderPickUpRoutes = action.payload.pickup;
+            break;
+        }
+        state.isLoading = false;
+        state.error.general = null;
       })
       .addCase(fetchWayPointsRoute.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(acceptOffer.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = true;
+        state.error.acceptOrDeclineOffer = null;
       })
       .addCase(acceptOffer.fulfilled, state => {
         slice.caseReducers.setTripOffer(state, {
           payload: initialState.offer,
           type: setTripOffer.type,
         });
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.acceptOrDeclineOffer = null;
       })
-      .addCase(sendExpiredOfferId.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+      .addCase(sendExpiredOffer.pending, state => {
+        state.isLoading = true;
+        state.error.general = null;
       })
-      .addCase(sendExpiredOfferId.fulfilled, state => {
+      .addCase(sendExpiredOffer.fulfilled, state => {
         slice.caseReducers.setTripOffer(state, {
           payload: initialState.offer,
           type: setTripOffer.type,
         });
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = null;
       })
-      .addCase(sendExpiredOfferId.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
+      .addCase(sendExpiredOffer.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error.acceptOrDeclineOffer = action.payload as NetworkErrorDetailsWithBody<any>;
+      })
+      .addCase(declineOffer.pending, state => {
+        state.isLoading = true;
+        state.error.acceptOrDeclineOffer = null;
+      })
+      .addCase(declineOffer.fulfilled, state => {
+        slice.caseReducers.setTripOffer(state, {
+          payload: initialState.offer,
+          type: setTripOffer.type,
         });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.acceptOrDeclineOffer = null;
+      })
+      .addCase(declineOffer.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error.acceptOrDeclineOffer = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(getPassengerTripInfo.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = true;
+        state.error.general = null;
       })
       .addCase(getPassengerTripInfo.fulfilled, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = null;
       })
       .addCase(getPassengerTripInfo.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(fetchArrivedToPickUp.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = true;
+        state.error.general = null;
       })
       .addCase(fetchArrivedToPickUp.fulfilled, state => {
         slice.caseReducers.setTripStatus(state, {
           payload: TripStatus.Arrived,
           type: setTripStatus.type,
         });
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = null;
       })
       .addCase(fetchArrivedToPickUp.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(fetchPickedUpAtPickUpPoint.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = true;
+        state.error.general = null;
       })
       .addCase(fetchPickedUpAtPickUpPoint.fulfilled, state => {
-        slice.caseReducers.toNextTripPoint(state);
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = null;
       })
       .addCase(fetchPickedUpAtPickUpPoint.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(updatePassengerRating.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
-        slice.caseReducers.endTrip(state);
+        state.isLoading = true;
+        state.error.general = null;
       })
       .addCase(updatePassengerRating.fulfilled, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
         slice.caseReducers.endTrip(state);
+        state.isLoading = false;
+        state.error.general = null;
       })
       .addCase(updatePassengerRating.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       //TODO: Rewtire when work with stop points
       // Not needed for now
@@ -554,72 +406,38 @@ const slice = createSlice({
         slice.caseReducers.toNextTripPoint(state);
       })
       .addCase(fetchArrivedToDropOff.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = true;
+        state.error.general = null;
       })
       .addCase(fetchArrivedToDropOff.fulfilled, state => {
         slice.caseReducers.rateTrip(state);
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = null;
       })
       .addCase(fetchArrivedToDropOff.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(fetchCancelTrip.pending, state => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: true,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = true;
+        state.error.general = null;
       })
       .addCase(fetchCancelTrip.fulfilled, state => {
+        slice.caseReducers.endTrip(state);
         slice.caseReducers.setIsCanceledTripsPopupVisible(state, slice.actions.setIsCanceledTripsPopupVisible(true));
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: initialState.error,
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = null;
       })
       .addCase(fetchCancelTrip.rejected, (state, action) => {
-        slice.caseReducers.setTripIsLoading(state, {
-          payload: false,
-          type: setTripIsLoading.type,
-        });
-        slice.caseReducers.setTripError(state, {
-          payload: action.payload as NetworkErrorDetailsWithBody<any>, //TODO: remove this cast after fix with rejectedValue
-          type: setTripError.type,
-        });
+        state.isLoading = false;
+        state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       });
   },
 });
 
 export const {
   setOrder,
+  setSecondOrder,
   setPassengerAvatar,
   setTripOffer,
   setTripStatus,
@@ -627,9 +445,8 @@ export const {
   toNextTripPoint,
   endTrip,
   setIsCanceledTripsPopupVisible,
-  setWayPointsRoute,
-  setTripIsLoading,
-  setTripError,
+  resetCurrentRoutes,
+  resetFutureRoutes,
 } = slice.actions;
 
 export default slice.reducer;

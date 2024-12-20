@@ -10,6 +10,8 @@ export const pickUpRouteIdSelector = (state: AppState) => state.trip.offer?.pick
 export const dropOffRouteIdSelector = (state: AppState) => state.trip.offer?.dropOffRouteId;
 export const tripPickUpRouteSelector = (state: AppState) => state.trip.pickUpRoute;
 export const tripDropOffRouteSelector = (state: AppState) => state.trip.dropOffRoute;
+export const tripFutureOrderPickUpRouteSelector = (state: AppState) => state.trip.futureOrderPickUpRoutes;
 
 //Errors
-export const tripErrorSelector = (state: AppState) => state.trip.error;
+export const tripErrorSelector = (state: AppState) => state.trip.error.general;
+export const acceptOrDeclineOfferErrorSelector = (state: AppState) => state.trip.error.acceptOrDeclineOffer;

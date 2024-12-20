@@ -28,6 +28,10 @@ export type AcceptOrDeclineOfferPayload = {
   offerId: string;
 };
 
+export type SendExpiredOfferPayload = {
+  offerId: string;
+};
+
 export type AcceptOfferAPIResponse = {
   orderId: string;
 };
@@ -80,6 +84,7 @@ export type OfferAPIResponse = {
   currency: string;
   pickUpRouteId: string;
   dropOffRouteId: string;
+  durationMin: number;
 };
 
 export type OfferInfo = OfferAPIResponse;
@@ -113,6 +118,9 @@ export type GetPassengerTripInfoThunkResult = {
   tariffs: TariffInfo[];
 };
 
+export type DataForOrderType = 'current' | 'future';
+export type WayPointsRouteType = 'current' | 'future';
+
 export type OrderStateFromAPI =
   | 'None'
   | 'InPreviousOrder'
@@ -145,6 +153,8 @@ export type GetCurrentOrderFromAPI = {
   arrivedToPickUpDate: Nullable<string>;
   pickUpDate: Nullable<string>;
   dropOffDate: Nullable<string>;
+  createdDate: string;
+  updatedDate: string;
 };
 
 export type GetFutureOrderAPIResponse = GetCurrentOrderAPIResponse;
@@ -185,13 +195,17 @@ export type TripState = {
   order: Nullable<OrderType>;
   pickUpRoute: Nullable<OfferWayPointsDataAPIResponse>;
   dropOffRoute: Nullable<OfferWayPointsDataAPIResponse>;
+  futureOrderPickUpRoutes: Nullable<OfferWayPointsDataAPIResponse>;
   offer: Nullable<OfferInfo>;
   secondOrder: Nullable<OrderType>;
   tripStatus: TripStatus;
   tripPoints: string[];
   canceledTripsAmount: number;
   isCanceledTripsPopupVisible: boolean; // This state is here because it is used in very different components
-  error: Nullable<NetworkErrorDetailsWithBody<any>>;
+  error: {
+    general: Nullable<NetworkErrorDetailsWithBody<any>>;
+    acceptOrDeclineOffer: Nullable<NetworkErrorDetailsWithBody<any>>;
+  };
   isLoading: boolean;
 };
 

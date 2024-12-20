@@ -99,6 +99,9 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
   }, [onCloseAllBottomWindows]);
 
   const computedStyles = StyleSheet.create({
+    offerInfoWrapper: {
+      marginBottom: addressGap,
+    },
     offerInfoText: {
       color: colors.textQuadraticColor,
     },
@@ -162,6 +165,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
           style={computedStyles.offerItemTitle}
           numberOfAdditionalPoints={offerPoints.length - 2}
           setIsShowMorePoints={setIsShowMorePoints}
+          durationTime={offer.durationMin}
         />
         <OfferItem
           address={offer.stopPointAddresses[offer.stopPointAddresses.length - 1]}
@@ -187,7 +191,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
           </Shadow>
         </View>
       }
-      <View style={styles.offerInfoWrapper}>
+      <View style={[styles.offerInfoWrapper, computedStyles.offerInfoWrapper]}>
         <View style={[styles.offerInfoItem, computedStyles.offerInfoItem]}>
           <Text style={[styles.offerInfoTitle, computedStyles.offerInfoText]}>{t('ride_Ride_Offer_travelTime')}</Text>
           <View style={styles.offerTimeContainer}>
@@ -234,10 +238,26 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
   );
 };
 
-const OfferItem = ({ address, pointName, isDropOff, isStopPoint, style }: OfferItemProps) => {
+const OfferItem = ({ address, pointName, isDropOff, isStopPoint, style, durationTime }: OfferItemProps) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
+
+  let convertedDurationTime;
+
+  if (durationTime) {
+    convertedDurationTime = {
+      hours: Math.floor(durationTime / 60),
+      minutes: Math.floor(durationTime % 60),
+    };
+  }
 
   const computedStyles = StyleSheet.create({
+    durationTimeContainer: {
+      marginTop: addressGap,
+    },
+    durationTime: {
+      color: colors.textQuadraticColor,
+    },
     offerItemTitle: {
       color: colors.textQuadraticColor,
     },
@@ -267,12 +287,52 @@ const OfferItem = ({ address, pointName, isDropOff, isStopPoint, style }: OfferI
       <View style={styles.offerItemBottom}>
         <Text style={[style, styles.offerPointTitle, computedStyles.offerItemTitle]}>{pointName}</Text>
         <Text style={styles.offerItemAddress}>{address}</Text>
+        {!isDropOff && durationTime && convertedDurationTime && (
+          <View style={[styles.durationTimeContainer, computedStyles.durationTimeContainer]}>
+            <Separator style={styles.separatorHorizontal} />
+
+            <View style={styles.convertedDurationTimeContainer}>
+              {convertedDurationTime.hours !== 0 && convertedDurationTime.hours > 0 && (
+                <Text style={[styles.durationTime, computedStyles.durationTime]}>
+                  {t('ride_Ride_Offer_durationTimeHours', { hours: convertedDurationTime.hours })}
+                </Text>
+              )}
+              <Text style={[styles.durationTime, computedStyles.durationTime]}>
+                {t('ride_Ride_Offer_durationTimeMinutes', {
+                  minutes:
+                    convertedDurationTime.minutes !== 0 && convertedDurationTime.minutes > 0
+                      ? convertedDurationTime.minutes
+                      : 0,
+                })}
+              </Text>
+            </View>
+            <Separator style={styles.separatorHorizontal} />
+          </View>
+        )}
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  durationTimeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    gap: 8,
+  },
+  convertedDurationTimeContainer: {
+    flexDirection: 'row',
+  },
+  durationTime: {
+    fontFamily: 'Inter Medium',
+    fontSize: 14,
+    lineHeight: 16,
+  },
+  separatorHorizontal: {
+    height: 1,
+  },
   timerContainer: {
     position: 'absolute',
     top: -45,
@@ -288,7 +348,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     gap: 5,
     paddingTop: 30,
-    marginBottom: addressGap,
   },
   scrollViewWrapper: {
     flex: 0,
@@ -309,6 +368,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   offerItemBottom: {
+    flex: 1,
     flexShrink: 1,
     marginLeft: 12,
     marginBottom: addressGap,
