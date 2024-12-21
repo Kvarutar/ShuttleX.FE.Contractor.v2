@@ -85,9 +85,8 @@ const Menu = ({ onClose, isStatusBarTranslucent }: MenuProps) => {
     },
     help: {
       navFunc: () => {
-        // navigation.navigate('Ride');
-        // //TODO Create help page
-        // onClose();
+        Linking.openURL('https://t.me/ShuttleX_Support');
+        onClose();
       },
       title: t('ride_Menu_navigationHelp'),
     },

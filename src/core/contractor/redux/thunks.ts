@@ -1,4 +1,3 @@
-import Config from 'react-native-config';
 import { convertBlobToImgUri, getNetworkErrorInfo, Nullable } from 'shuttlex-integration';
 
 import { createAppAsyncThunk } from '../../redux/hooks';
@@ -185,26 +184,25 @@ export const updateProfileLanguage = createAppAsyncThunk<void, string>(
 export const sendSelectedPreferences = createAppAsyncThunk<
   void,
   { selectedPreferences: PreferenceInfo[]; contractorId: string }
->('contractor/sendSelectedPreferences', async (payload, { rejectWithValue }) => {
-  const preferenceNames = payload.selectedPreferences.map(preference => preference.name);
-  try {
-    const response = await fetch(`${Config.API_URL_HTTPS}/tariff/update-contractor-selected-preferences`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        preferenceNames,
-      }),
-    });
-
-    if (!response.ok) {
-      throw 'Error occured during fetching seleted tariffs';
-    }
-  } catch (error) {
-    return rejectWithValue(error);
-  }
+>('contractor/sendSelectedPreferences', async () => {
+  //const preferenceNames = payload.selectedPreferences.map(preference => preference.name);
+  // try {
+  //   const response = await fetch(`${Config.API_URL_HTTPS}/tariff/update-contractor-selected-preferences`, {
+  //     method: 'POST',
+  //     headers: {
+  //       Accept: 'application/json',
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       preferenceNames,
+  //     }),
+  //   });
+  //   if (!response.ok) {
+  //     throw 'Error occured during fetching seleted tariffs';
+  //   }
+  // } catch (error) {
+  //   return rejectWithValue(error);
+  // }
 });
 
 //TODO: There's just example! Rewrite when info about "preferences" logic will be known

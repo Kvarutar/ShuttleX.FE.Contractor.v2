@@ -84,6 +84,7 @@
 		B62835B4C4E87BB4D0E7BD3C /* Pods_SharedPods_ShuttleX_Contractor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SharedPods_ShuttleX_Contractor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB8E221A6BA6413E9625B903 /* Inter Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter Light.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter Light.ttf"; sourceTree = "<group>"; };
 		C0B15E9A1F544FB5A85D1D67 /* Inter Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter Thin.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter Thin.ttf"; sourceTree = "<group>"; };
+		CF3C92062D149C4100ECF6A9 /* ShuttleX_Contractor.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ShuttleX_Contractor.entitlements; path = ShuttleX_Contractor/ShuttleX_Contractor.entitlements; sourceTree = "<group>"; };
 		CF6C94482D0AF71900E5E4BE /* ShuttleX_Contractor_dev.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShuttleX_Contractor_dev.entitlements; sourceTree = "<group>"; };
 		CF7F95C02D0F3D5F00FD07BC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D7273EE71D916CF2A3F1187F /* Pods_SharedPods_ShuttleX_ContractorTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SharedPods_ShuttleX_ContractorTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -140,6 +141,7 @@
 		13B07FAE1A68108700A75B9A /* ShuttleX_Contractor */ = {
 			isa = PBXGroup;
 			children = (
+				CF3C92062D149C4100ECF6A9 /* ShuttleX_Contractor.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				CF7F95C02D0F3D5F00FD07BC /* GoogleService-Info.plist */,
@@ -720,7 +722,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = ShuttleX_Contractor/ShuttleX_Contractor.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7D4K8F5PSQ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ShuttleX_Contractor/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -733,7 +737,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.shuttlexinc.contractor.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shuttlexinc.contractor;
 				PRODUCT_NAME = ShuttleX_Contractor;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -747,7 +751,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = ShuttleX_Contractor/ShuttleX_Contractor.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7D4K8F5PSQ;
 				INFOPLIST_FILE = ShuttleX_Contractor/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -759,7 +765,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.shuttlexinc.contractor.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shuttlexinc.contractor;
 				PRODUCT_NAME = ShuttleX_Contractor;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
