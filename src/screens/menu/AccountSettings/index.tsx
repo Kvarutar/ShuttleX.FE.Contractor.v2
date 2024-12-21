@@ -24,12 +24,12 @@ import { contractorAvatarSelector, contractorInfoSelector } from '../../../core/
 import { resetAccountSettingsVerification } from '../../../core/menu/redux/accountSettings';
 import {
   accountSettingsChangeDataErrorSelector,
+  accountSettingsVerifyErrorSelector,
   accountSettingsVerifyStatusSelector,
   isAccountSettingsChangeDataLoadingSelector,
 } from '../../../core/menu/redux/accountSettings/selectors';
 import {
   changeAccountContactData,
-  getAccountSettingsVerifyStatus,
   requestAccountSettingsChangeDataVerificationCode,
 } from '../../../core/menu/redux/accountSettings/thunks';
 import { useAppDispatch } from '../../../core/redux/hooks';
@@ -48,17 +48,17 @@ const AccountSettings = (): JSX.Element => {
   const contractorInfo = useSelector(contractorInfoSelector);
   const verifiedStatus = useSelector(accountSettingsVerifyStatusSelector);
   const changeDataError = useSelector(accountSettingsChangeDataErrorSelector);
+  const verifyDataError = useSelector(accountSettingsVerifyErrorSelector);
+
   const isChangeDataLoading = useSelector(isAccountSettingsChangeDataLoadingSelector);
 
   useEffect(() => {
-    dispatch(getAccountSettingsVerifyStatus());
     dispatch(resetAccountSettingsVerification());
-  }, [changeDataError, dispatch]);
+  }, [changeDataError, verifyDataError, dispatch]);
 
   const handleOpenVerification = async (mode: 'phone' | 'email', newValue: string, method: 'change' | 'verify') => {
     if (!isChangeDataLoading && !changeDataError) {
       let oldData: string | undefined;
-
       switch (mode) {
         case 'phone':
           //TODO change it when back will synchronize profile
@@ -71,16 +71,14 @@ const AccountSettings = (): JSX.Element => {
       switch (method) {
         case 'change':
           try {
-            await dispatch(
-              changeAccountContactData({ mode, data: { oldData: contractorInfo?.[mode] ?? '', newData: newValue } }),
-            ).unwrap();
+            await dispatch(changeAccountContactData({ mode, data: { oldData, newData: newValue } })).unwrap();
             // If there is an error, then try catch will catch it and the next line will not be executed
             navigation.navigate('AccountVerificateCode', { mode, newValue, method });
           } catch (_) {}
           break;
 
         case 'verify':
-          await dispatch(requestAccountSettingsChangeDataVerificationCode({ mode, data: oldData ?? '' }));
+          await dispatch(requestAccountSettingsChangeDataVerificationCode({ mode, data: oldData }));
           navigation.navigate('AccountVerificateCode', { mode, method });
           break;
       }
