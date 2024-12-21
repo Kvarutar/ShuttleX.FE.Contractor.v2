@@ -39,7 +39,7 @@ import {
   geolocationIsLocationEnabledSelector,
   geolocationIsPermissionGrantedSelector,
 } from '../../../core/ride/redux/geolocation/selectors';
-import { setTripOffer } from '../../../core/ride/redux/trip';
+import { resetCurrentRoutes, resetFutureRoutes, setTripOffer } from '../../../core/ride/redux/trip';
 import { isConflictError, isGoneError } from '../../../core/ride/redux/trip/errors';
 import {
   acceptOrDeclineOfferErrorSelector,
@@ -47,6 +47,7 @@ import {
   offerSelector,
   orderSelector,
   pickUpRouteIdSelector,
+  secondOrderSelector,
 } from '../../../core/ride/redux/trip/selectors';
 import {
   acceptOffer,
@@ -75,6 +76,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   useNetworkConnectionStartWatch();
 
   const order = useSelector(orderSelector);
+  const secondOrder = useSelector(secondOrderSelector);
   const isPermissionGranted = useSelector(geolocationIsPermissionGrantedSelector);
   const isLocationEnabled = useSelector(geolocationIsLocationEnabledSelector);
   const geolocationAccuracy = useSelector(geolocationAccuracySelector);
@@ -118,14 +120,19 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     }
   }, [contractorDocsStatus, navigation, isContractorInfoLoading]);
 
-  const cancelTripLongPollinghasCalledRef = useRef(false);
+  const cancelCurrentTripLongPollinghasCalledRef = useRef(false);
+  const cancelFutureTripLongPollinghasCalledRef = useRef(false);
 
   useEffect(() => {
-    if (order && !cancelTripLongPollinghasCalledRef.current) {
+    if (order && !cancelCurrentTripLongPollinghasCalledRef.current) {
       dispatch(getCancelTripLongPolling({ orderId: order.id }));
-      cancelTripLongPollinghasCalledRef.current = true;
+      cancelCurrentTripLongPollinghasCalledRef.current = true;
     }
-  }, [dispatch, order]);
+    if (secondOrder && !cancelFutureTripLongPollinghasCalledRef.current) {
+      dispatch(getCancelTripLongPolling({ orderId: secondOrder.id }));
+      cancelFutureTripLongPollinghasCalledRef.current = true;
+    }
+  }, [dispatch, order, secondOrder]);
 
   useEffect(() => {
     dispatch(getAccountSettingsVerifyStatus());
@@ -274,13 +281,19 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     ) {
       dispatch(setTripOffer(null));
       setIsOfferPopupVisible(false);
+
+      if (order) {
+        dispatch(resetCurrentRoutes());
+      } else if (secondOrder) {
+        dispatch(resetFutureRoutes());
+      }
       AlertNative.alert(
         t('ride_Ride_offerWasCanceledOrAcceptedAlertTitle'),
         t('ride_Ride_offerWasCanceledOrAcceptedAlertDescription'),
         [{ text: t('ride_Ride_offerWasCanceledOrAcceptedAlertButtonText') }],
       );
     }
-  }, [dispatch, acceptOrDeclineOfferError, t]);
+  }, [dispatch, acceptOrDeclineOfferError, t, order, secondOrder]);
 
   useEffect(() => {
     dispatch(getNewOfferLongPolling());

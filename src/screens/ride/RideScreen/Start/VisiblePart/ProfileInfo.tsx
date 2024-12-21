@@ -93,7 +93,7 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
     bottomWindowRef.current?.closeWindow();
   };
 
-  if (isContractorInfoLoading || isTariffsInfoLoading) {
+  if (isContractorInfoLoading || isTariffsInfoLoading || contractorInfoError || tariffsInfoError) {
     return (
       <Animated.View
         entering={FadeIn.duration(animationDuration)}
@@ -129,7 +129,7 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
     );
   }
 
-  if (tariffsInfoError || contractorInfoError || !contractorInfo.vehicle) {
+  if (!contractorInfo.vehicle) {
     return;
   }
 

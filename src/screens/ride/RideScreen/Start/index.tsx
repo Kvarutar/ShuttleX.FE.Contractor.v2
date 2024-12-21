@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
@@ -27,6 +27,7 @@ import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { setIsCanceledTripsPopupVisible } from '../../../../core/ride/redux/trip';
 import { isCanceledTripsPopupVisibleSelector } from '../../../../core/ride/redux/trip/selectors';
+import { getCurrentOrder } from '../../../../core/ride/redux/trip/thunks';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import AccountIsNotActivePopup from '../popups/AccountIsNotActivePopup';
 import AchievementsPopup from '../popups/AchievementsPopup';
@@ -135,11 +136,14 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
 
   const onPressConfirmButton = () => {
     dispatch(setIsCanceledTripsPopupVisible(false));
+    dispatch(getCurrentOrder());
   };
 
   //TODO: Add navigation to support page or same thing and resetting cancels
   const onPressContactSupportButton = () => {
+    Linking.openURL('https://t.me/ShuttleX_Support');
     dispatch(setIsCanceledTripsPopupVisible(false));
+    dispatch(getCurrentOrder());
   };
 
   const canceledTripsPopupsContent = () => {

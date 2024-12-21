@@ -1,7 +1,7 @@
 import { convertBlobToImgUri, getNetworkErrorInfo, Nullable } from 'shuttlex-integration';
 
 import { createAppAsyncThunk } from '../../redux/hooks';
-import { contractorZoneSelector } from './selectors';
+import { contractorZoneSelector, primaryTariffSelector } from './selectors';
 import {
   AchievementsAPIResponse,
   ContractorInfo,
@@ -153,9 +153,16 @@ export const getFullTariffsInfo = createAppAsyncThunk<TariffInfo[], void>(
 export const sendSelectedTariffs = createAppAsyncThunk<
   TariffInfo[],
   { selectedTariffs: TariffInfo[]; contractorId: string }
->('contractor/sendSelectedTariffs', async (payload, { rejectWithValue, contractorAxios }) => {
+>('contractor/sendSelectedTariffs', async (payload, { rejectWithValue, contractorAxios, getState }) => {
   const tariffIds = payload.selectedTariffs.map(tariff => tariff.id);
   try {
+    const primaryTariff = primaryTariffSelector(getState());
+
+    // If we have issue on back and primary tariff isn't selected
+    if (tariffIds.length === 0 && primaryTariff) {
+      tariffIds.push(primaryTariff.id);
+    }
+
     await contractorAxios.patch('/update-selected-tariff', {
       tariffIds,
     } as UpdateSelectedTariffsAPIRequest);

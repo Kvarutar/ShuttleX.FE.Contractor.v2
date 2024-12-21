@@ -1,11 +1,12 @@
 import { convertBlobToImgUri, getNetworkErrorInfo } from 'shuttlex-integration';
 
 import { tariffsSelector } from '../../../contractor/redux/selectors';
+import { getContractorInfo } from '../../../contractor/redux/thunks';
 import { createAppAsyncThunk } from '../../../redux/hooks';
 import { geolocationCoordinatesSelector } from '../geolocation/selectors';
 import { endTrip, resetCurrentRoutes, resetFutureRoutes, setSecondOrder, setTripOffer, setTripStatus } from '.';
 import { getOfferNetworkErrorInfo } from './errors';
-import { orderSelector } from './selectors';
+import { orderSelector, secondOrderSelector } from './selectors';
 import {
   AcceptOfferAPIResponse,
   AcceptOrDeclineOfferPayload,
@@ -53,17 +54,22 @@ export const getCancelTripLongPolling = createAppAsyncThunk<void, { orderId: str
       await ordersLongPollingAxios.get(`/${payload.orderId}/canceled/long-polling`);
 
       const { trip } = getState();
-      if (!trip.secondOrder) {
+
+      if (payload.orderId === trip.order?.id) {
         if (trip.tripStatus === TripStatus.Ride || trip.tripStatus === TripStatus.Ending) {
           dispatch(setTripStatus(TripStatus.Rating));
         }
         //Because this status might be chanched in notifications also
         else if (trip.tripStatus !== TripStatus.Rating) {
           dispatch(endTrip());
+          dispatch(resetCurrentRoutes());
         }
       } else {
         dispatch(setSecondOrder(null));
+        dispatch(resetFutureRoutes());
       }
+
+      dispatch(getContractorInfo());
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
     }
@@ -326,7 +332,7 @@ export const fetchPickedUpAtPickUpPoint = createAppAsyncThunk<void, PickedUpAtPi
 
 export const fetchArrivedToDropOff = createAppAsyncThunk<void, ArrivedToDropOffPayload>(
   'trip/fetchArrivedToDropOff',
-  async (payload, { rejectWithValue, ordersAxios, getState }) => {
+  async (payload, { rejectWithValue, ordersAxios, getState, dispatch }) => {
     try {
       const bodyPart: ArrivedToDropOffAPIRequest = geolocationCoordinatesSelector(getState()) ?? {
         latitude: 0,
@@ -334,6 +340,8 @@ export const fetchArrivedToDropOff = createAppAsyncThunk<void, ArrivedToDropOffP
       };
 
       await ordersAxios.post(`/${payload.orderId}/arrived-to-drop-off`, bodyPart);
+
+      dispatch(getContractorInfo());
     } catch (error) {
       const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({
@@ -365,9 +373,17 @@ export const updatePassengerRating = createAppAsyncThunk<void, UpdatePassengerRa
 
 export const fetchCancelTrip = createAppAsyncThunk<void, FetchCancelTripPayload>(
   'trip/fetchCancelTrip',
-  async (payload, { rejectWithValue, ordersAxios }) => {
+  async (payload, { rejectWithValue, ordersAxios, getState, dispatch }) => {
     try {
       await ordersAxios.post(`/${payload.orderId}/cancel`);
+
+      const secondOrder = secondOrderSelector(getState());
+
+      if (secondOrder) {
+        dispatch(setSecondOrder(null));
+        resetCurrentRoutes();
+        resetFutureRoutes();
+      }
     } catch (error) {
       const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({

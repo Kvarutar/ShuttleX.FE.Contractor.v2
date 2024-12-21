@@ -16,6 +16,7 @@ export enum NotificationType {
 
 export type NotificationPayload = {
   offerId?: string;
+  orderId?: string;
 };
 
 export type NotificationWithPayload = NotificationType.NewOffer;
