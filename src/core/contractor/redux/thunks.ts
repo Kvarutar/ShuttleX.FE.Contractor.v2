@@ -1,6 +1,7 @@
 import { convertBlobToImgUri, getNetworkErrorInfo, Nullable } from 'shuttlex-integration';
 
 import { createAppAsyncThunk } from '../../redux/hooks';
+import { getContractorNetworkErrorInfo } from './errors';
 import { contractorZoneSelector, primaryTariffSelector } from './selectors';
 import {
   AchievementsAPIResponse,
@@ -99,12 +100,7 @@ export const updateContractorStatus = createAppAsyncThunk<ContractorStatus, Cont
       }
       return 'online';
     } catch (error) {
-      const { code, body, status } = getNetworkErrorInfo(error);
-      return rejectWithValue({
-        code,
-        body,
-        status,
-      });
+      return rejectWithValue(getContractorNetworkErrorInfo(error));
     }
   },
 );

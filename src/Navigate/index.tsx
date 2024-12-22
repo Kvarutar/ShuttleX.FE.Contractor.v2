@@ -20,6 +20,7 @@ import WalletScreen from '../screens/menu/wallet/WalletScreen';
 import WithdrawScreen from '../screens/menu/wallet/WithdrawScreen';
 import RatingScreen from '../screens/ride/RatingScreen';
 import RideScreen from '../screens/ride/RideScreen';
+import VerifyPhoneCodeScreen from '../screens/ride/VerifyPhoneCodeScreen';
 import VerificationScreen from '../screens/verification/VerificationScreen';
 import ZoneScreen from '../screens/verification/ZoneScreen';
 import { RootStackParamList } from './props';
@@ -57,6 +58,7 @@ const Navigate = (): JSX.Element => {
             <Stack.Screen name="Wallet" component={WalletScreen} />
             <Stack.Screen name="Withdraw" component={WithdrawScreen} />
             <Stack.Screen name="Verification" component={VerificationScreen} />
+            <Stack.Screen name="VerifyPhoneCode" component={VerifyPhoneCodeScreen} />
             <Stack.Screen name="AccountSettings" component={AccountSettings} />
             <Stack.Screen name="AccountVerificateCode" component={AccountVerificateCodeScreen} />
             <Stack.Screen name="DocMedia" component={DocMediaScreen} />

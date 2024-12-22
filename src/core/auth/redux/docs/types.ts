@@ -1,5 +1,4 @@
-import { NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
-import { FileInfo } from 'shuttlex-integration/lib/typescript/src/shared/screens/MediaCore/types';
+import { FileInfo, NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
 
 export type DocsFeKeyFromAPI = 'passport' | 'driverlicense' | 'insurance' | 'vehicle';
 

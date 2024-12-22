@@ -20,6 +20,7 @@ export type RootStackParamList = {
   PhoneSelect: { initialFlag: CountryPhoneMaskDto; onFlagSelect: (flag: CountryPhoneMaskDto) => void };
   Terms: undefined;
   Verification: undefined;
+  VerifyPhoneCode: undefined;
   LockOut: undefined;
   AccountSettings: undefined;
   AccountVerificateCode: { mode: 'phone' | 'email'; newValue?: string; method?: 'change' | 'verify' };

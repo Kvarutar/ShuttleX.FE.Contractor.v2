@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { CodeVerificationScreen, isLockedError, milSecToTime, SafeAreaView } from 'shuttlex-integration';
+import { CodeVerificationScreen, isLockedError, milSecToTime } from 'shuttlex-integration';
 
 import {
   accountSettingsChangeDataErrorSelector,
@@ -87,24 +87,22 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
   };
 
   return (
-    <SafeAreaView>
-      <CodeVerificationScreen
-        headerFirstText={t('menu_AccountVerificateCode_firstHeader')}
-        headerSecondText={t('menu_AccountVerificateCode_secondHeader')}
-        onBackButtonPress={navigation.goBack}
-        onAgainButtonPress={handleRequestAgain}
-        onCodeChange={handleCodeChange}
-        titleText={t('menu_AccountVerificateCode_change')}
-        isBlocked={isBlocked}
-        isError={isIncorrectCode}
-        lockOutTime={lockoutEndTimestamp}
-        lockOutTimeForText={lockoutMinutes}
-        onBannedAgainButtonPress={onBannedAgainPress}
-        onSupportButtonPress={() => {
-          // TODO: onSupportPress
-        }}
-      />
-    </SafeAreaView>
+    <CodeVerificationScreen
+      headerFirstText={t('menu_AccountVerificateCode_firstHeader')}
+      headerSecondText={t('menu_AccountVerificateCode_secondHeader')}
+      onBackButtonPress={navigation.goBack}
+      onAgainButtonPress={handleRequestAgain}
+      onCodeChange={handleCodeChange}
+      titleText={t('menu_AccountVerificateCode_change')}
+      isBlocked={isBlocked}
+      isError={isIncorrectCode}
+      lockOutTime={lockoutEndTimestamp}
+      lockOutTimeForText={lockoutMinutes}
+      onBannedAgainButtonPress={onBannedAgainPress}
+      onSupportButtonPress={() => {
+        // TODO: onSupportPress
+      }}
+    />
   );
 };
 

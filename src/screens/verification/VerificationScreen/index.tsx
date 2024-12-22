@@ -135,7 +135,6 @@ const VerificationScreen = (): JSX.Element => {
           textStyle={getStyleForText(isPresentPersonalDocuments)}
           isDisabled={!isZoneSelected}
         />
-
         <VerificationStepBar
           isSelected={isPresentVehicleDocuments}
           barMode={isPresentVehicleDocuments ? BarModes.Active : !isZoneSelected ? BarModes.Disabled : BarModes.Default}
@@ -152,7 +151,7 @@ const VerificationScreen = (): JSX.Element => {
         disabled={!(isZoneSelected && isFilledTemplates(docsTemplates))}
         text={t('verification_Zone_buttonNext')}
         style={styles.nextButton}
-        mode={!(isZoneSelected && isFilledTemplates(docsTemplates)) ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
+        mode={isZoneSelected && isFilledTemplates(docsTemplates) ? SquareButtonModes.Mode1 : SquareButtonModes.Mode5}
         textStyle={styles.buttonText}
         onPress={handleNextPress}
       />

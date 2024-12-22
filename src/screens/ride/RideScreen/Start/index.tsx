@@ -1,3 +1,5 @@
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, StyleSheet, View } from 'react-native';
@@ -10,9 +12,12 @@ import {
   SquareButtonModes,
   SwipeButtonModes,
   UnsupportedCityPopup,
+  useChangeData,
   useTariffsIcons,
+  VerifyDataPopUp,
 } from 'shuttlex-integration';
 
+import { isUnVerifyPhoneError } from '../../../../core/contractor/redux/errors';
 import {
   contractorGeneralErrorSelector,
   contractorStatusSelector,
@@ -23,11 +28,14 @@ import {
   tariffsInfoErrorSelector,
 } from '../../../../core/contractor/redux/selectors';
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
+import { accountSettingsVerifyStatusSelector } from '../../../../core/menu/redux/accountSettings/selectors';
+import { requestAccountSettingsChangeDataVerificationCode } from '../../../../core/menu/redux/accountSettings/thunks';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { setIsCanceledTripsPopupVisible } from '../../../../core/ride/redux/trip';
 import { isCanceledTripsPopupVisibleSelector } from '../../../../core/ride/redux/trip/selectors';
 import { getCurrentOrder } from '../../../../core/ride/redux/trip/thunks';
+import { RootStackParamList } from '../../../../Navigate/props';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import AccountIsNotActivePopup from '../popups/AccountIsNotActivePopup';
 import AchievementsPopup from '../popups/AchievementsPopup';
@@ -70,6 +78,8 @@ const getRideBuilderRecord = (t: ReturnType<typeof useTranslation>['t']): Record
 const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottomWindowRef }: StartProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const { onVerifyPopupClose, isVerifyPopUpVisible, handleOpenVerifyWindow } = useChangeData();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const isTariffsInfoLoading = useSelector(isTariffsInfoLoadingSelector);
   const tariffsInfoError = useSelector(tariffsInfoErrorSelector);
@@ -87,6 +97,7 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
   const [isUnsupportedCityPopupVisible, setIsUnsupportedCityPopupVisible] = useState<boolean>(false);
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const contractorZone = useSelector(contractorZoneSelector);
+  const accountSettingsVerifyStatus = useSelector(accountSettingsVerifyStatusSelector);
 
   const primaryTariff = useSelector(primaryTariffSelector);
   const tariffsIconsData = useTariffsIcons();
@@ -101,6 +112,12 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
   useEffect(() => {
     setLineState(getRideBuilderRecord(t)[contractorStatus]);
   }, [contractorStatus, t]);
+
+  useEffect(() => {
+    if (generalError && isUnVerifyPhoneError(generalError)) {
+      handleOpenVerifyWindow('phone');
+    }
+  }, [generalError, handleOpenVerifyWindow]);
 
   useEffect(() => {
     if (isOpened && contractorStatus === 'offline' && !contractorSubscriptionStatus) {
@@ -133,6 +150,19 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
       dispatch(setIsCanceledTripsPopupVisible(true));
     }
   }, [generalError, dispatch]);
+
+  const handleOpenVerificationPhone = () => {
+    if (accountSettingsVerifyStatus.phoneInfo) {
+      dispatch(
+        requestAccountSettingsChangeDataVerificationCode({
+          mode: 'phone',
+          data: accountSettingsVerifyStatus.phoneInfo,
+        }),
+      );
+    }
+    onVerifyPopupClose();
+    navigation.navigate('VerifyPhoneCode');
+  };
 
   const onPressConfirmButton = () => {
     dispatch(setIsCanceledTripsPopupVisible(false));
@@ -243,6 +273,14 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
           //TODO: swap console.log('Support') to navigation on Support
           onSupportPressHandler={() => console.log('Support')}
           setIsUnsupportedCityPopupVisible={setIsUnsupportedCityPopupVisible}
+        />
+      )}
+      {isVerifyPopUpVisible && (
+        <VerifyDataPopUp
+          data={accountSettingsVerifyStatus.phoneInfo}
+          mode="phone"
+          handleOpenVerification={handleOpenVerificationPhone}
+          onVerifyPopupClose={onVerifyPopupClose}
         />
       )}
     </>
