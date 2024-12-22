@@ -1,5 +1,7 @@
 export type AddressWithMetaProps = {
   tripPoints: string[];
+  startTime: number | null;
+  endTime: number;
 };
 
 export type AddressWithPassengerAndOrderInfoProps = {

@@ -90,7 +90,7 @@ const slice = createSlice({
         }
 
         const dropOffTime = new Date(timeToDropOff);
-        const dropOffTimeInMs = dropOffTime.getTime() - Date.now();
+        const dropOffTimeFromNow = dropOffTime.getTime() - Date.now();
 
         const order: OrderType = {
           tariffId,
@@ -103,9 +103,11 @@ const slice = createSlice({
           currencyCode: orderTariff.currencyCode,
           pickUpRouteId,
           dropOffRouteId,
-          timeToPickUp: new Date(timeToPickUp).getTime(),
-          timeToDropOffInMilSec: dropOffTimeInMs,
-          travelTimeInMilSec: new Date(timeToDropOff).getTime() - new Date(createdDate).getTime(),
+          pickUpTime: null,
+          timeToPickUp: Date.parse(timeToPickUp),
+          timeToDropOff: dropOffTime.getTime(),
+          timeToDropOffFromNow: dropOffTimeFromNow,
+          travelTimeInMilSec: Date.parse(timeToDropOff) - Date.parse(createdDate),
           stopPointAddresses,
           id: orderId,
           passenger: {
@@ -117,12 +119,13 @@ const slice = createSlice({
         };
 
         if (arrivedToPickUpDate) {
-          const timeDifferenceInMilSec = Date.now() - new Date(arrivedToPickUpDate).getTime();
+          const timeDifferenceInMilSec = Date.now() - Date.parse(arrivedToPickUpDate);
           order.waitingTimeInMilSec = minToMilSec(orderTariff.freeWaitingTimeMin) - timeDifferenceInMilSec;
         }
 
         if (pickUpDate) {
-          order.timeToDropOffInMilSec = new Date(timeToDropOff).getTime() - Date.now();
+          order.pickUpTime = Date.parse(pickUpDate);
+          order.timeToDropOffFromNow = Date.parse(timeToDropOff) - Date.now();
         }
 
         if (action.payload.dataForOrderType === 'future') {

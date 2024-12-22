@@ -76,7 +76,7 @@ export type OfferAPIResponse = {
   dropOffAddress: string;
   timeToPickUp: string;
   timeToDropOff: string;
-  timeToAnswer: number;
+  timeToAnswer: string;
   tariffId: string;
   distanceMtr: number;
   price: number;
@@ -89,6 +89,8 @@ export type OfferAPIResponse = {
 
 export type OfferInfo = OfferAPIResponse;
 
+export type TrafficLoadFromAPI = 'Low' | 'Average' | 'High';
+
 export type OfferWayPointsDataAPIResponse = {
   routeId: string;
   totalDistanceMtr: number;
@@ -100,7 +102,7 @@ export type OfferWayPointsDataAPIResponse = {
   accurateGeometries: {
     polylineStartIndex: number;
     polylineEndIndex: number;
-    trafficLoad: string;
+    trafficLoad: TrafficLoadFromAPI;
   }[];
   geometry: string;
   trafficLoad: string;
@@ -179,8 +181,10 @@ export type OrderType = {
   passenger: PassengerInfoType;
   tariffId: string;
   price: number;
+  pickUpTime: number | null;
   timeToPickUp: number;
-  timeToDropOffInMilSec: number;
+  timeToDropOff: number;
+  timeToDropOffFromNow: number;
   waitingTimeInMilSec: number;
   pricePerMin: number;
   pricePerKm: number;

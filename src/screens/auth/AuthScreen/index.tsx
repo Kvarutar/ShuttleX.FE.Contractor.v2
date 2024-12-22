@@ -57,7 +57,7 @@ const AuthScreen = ({ navigation, route }: AuthScreenProps): JSX.Element => {
 
   useEffect(() => {
     if (signError && isLockedError(signError)) {
-      const lockoutEndDate = new Date(signError.body.lockOutEndTime).getTime() - Date.now();
+      const lockoutEndDate = Date.parse(signError.body.lockOutEndTime) - Date.now();
       setLockoutMinutes(Math.round(milSecToTime(lockoutEndDate)).toString());
     } else {
       setLockoutMinutes('');

@@ -57,8 +57,8 @@ const Order = () => {
 
   useEffect(() => {
     if (withHeaderTimer && order) {
-      if (order.timeToDropOffInMilSec > 0) {
-        setTimeToDropOff(Date.now() + order.timeToDropOffInMilSec);
+      if (order.timeToDropOffFromNow > 0) {
+        setTimeToDropOff(Date.now() + order.timeToDropOffFromNow);
       } else {
         setTimeToDropOff(Date.now());
       }

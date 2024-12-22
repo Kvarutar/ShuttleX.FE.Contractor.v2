@@ -43,7 +43,7 @@ const SignInCodeScreen = ({ navigation, route }: SignInCodeScreenProps): JSX.Ele
       setIsIncorrectCode(true);
       if (isLockedError(signError)) {
         setIsIncorrectCode(true);
-        const lockoutEndDate = new Date(signError.body.lockOutEndTime).getTime() - Date.now();
+        const lockoutEndDate = Date.parse(signError.body.lockOutEndTime) - Date.now();
 
         setLockoutMinutes(Math.round(milSecToTime(lockoutEndDate)).toString());
         setLockoutEndTimestamp(lockoutEndDate);

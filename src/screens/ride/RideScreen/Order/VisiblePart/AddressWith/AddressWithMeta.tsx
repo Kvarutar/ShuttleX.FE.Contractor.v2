@@ -1,21 +1,47 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import {
   ExternalMapIcon,
   PointIcon,
   sizes,
   Text,
   TrafficIndicator,
+  TrafficIndicatorProps,
   TrafficLevel,
   useTheme,
 } from 'shuttlex-integration';
 
+import {
+  mapRidePercentFromPolylinesSelector,
+  mapRouteTrafficSelector,
+} from '../../../../../../core/ride/redux/map/selectors';
+import { TrafficLoadFromAPI } from '../../../../../../core/ride/redux/trip/types';
 import { AddressWithMetaProps } from './props';
 
-const AddressWithMeta = ({ tripPoints }: AddressWithMetaProps) => {
+const trafficLoadFromAPIToTrafficLevel: Record<TrafficLoadFromAPI, TrafficLevel> = {
+  Low: TrafficLevel.Low,
+  Average: TrafficLevel.Average,
+  High: TrafficLevel.High,
+};
+
+const AddressWithMeta = ({ tripPoints, startTime, endTime }: AddressWithMetaProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
+
+  const ridePercentFromPolylines = useSelector(mapRidePercentFromPolylinesSelector);
+  const routeTraffic = useSelector(mapRouteTrafficSelector);
+
+  const trafficSegments: TrafficIndicatorProps['segments'] = [];
+  if (routeTraffic !== null) {
+    const lastRouteIndex = routeTraffic[routeTraffic.length - 1].polylineEndIndex;
+    routeTraffic.forEach(elem => {
+      trafficSegments.push({
+        level: trafficLoadFromAPIToTrafficLevel[elem.trafficLoad],
+        percent: `${(1 - (elem.polylineEndIndex - elem.polylineStartIndex) / lastRouteIndex) * 100}%`,
+      });
+    });
+  }
 
   const computedStyles = StyleSheet.create({
     dropOffText: {
@@ -38,20 +64,6 @@ const AddressWithMeta = ({ tripPoints }: AddressWithMetaProps) => {
     },
   });
 
-  //TODO: For test, delete after connect with back
-  const [currentDistance, setCurrentDistance] = useState(0);
-  const totalDistance = 100;
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentDistance(prevDistance => {
-        const newDistance = prevDistance + 10;
-        return Math.min(newDistance, totalDistance);
-      });
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <View>
       <View style={styles.metaInfoContainer}>
@@ -64,19 +76,15 @@ const AddressWithMeta = ({ tripPoints }: AddressWithMetaProps) => {
           <Text style={styles.address}>{tripPoints[0]}</Text>
         </View>
       </View>
-      {/*TODO: delete mock data*/}
-      <TrafficIndicator
-        containerStyle={styles.trafficIndicatorContainer}
-        currentPercent={`${currentDistance}%`}
-        segments={[
-          { percent: '15%', level: TrafficLevel.Low },
-          { percent: '15%', level: TrafficLevel.Average },
-          { percent: '30%', level: TrafficLevel.High },
-          { percent: '40%', level: TrafficLevel.Low },
-        ]}
-        startTime={43200}
-        endTime={45000}
-      />
+      {trafficSegments.length !== 0 && (
+        <TrafficIndicator
+          containerStyle={styles.trafficIndicatorContainer}
+          currentPercent={ridePercentFromPolylines}
+          segments={trafficSegments}
+          startDate={startTime !== null ? new Date(startTime) : undefined}
+          endDate={new Date(endTime)}
+        />
+      )}
       <Pressable style={[styles.openOnGoogleMapButton, computedStyles.openOnGoogleMapButton]}>
         <ExternalMapIcon />
         <View style={styles.googleMapTextContainer}>

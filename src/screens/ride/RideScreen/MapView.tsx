@@ -18,7 +18,7 @@ import {
   geolocationCalculatedHeadingSelector,
   geolocationCoordinatesSelector,
 } from '../../../core/ride/redux/geolocation/selectors';
-import { setMapCameraMode } from '../../../core/ride/redux/map';
+import { setMapCameraMode, setMapRidePercentFromPolylines, setMapRouteTraffic } from '../../../core/ride/redux/map';
 import { mapCameraModeSelector, mapStopPointsSelector } from '../../../core/ride/redux/map/selectors';
 import {
   orderSelector,
@@ -27,10 +27,11 @@ import {
   tripPickUpRouteSelector,
   tripStatusSelector,
 } from '../../../core/ride/redux/trip/selectors';
-import { TripStatus } from '../../../core/ride/redux/trip/types';
+import { OfferWayPointsDataAPIResponse, TripStatus } from '../../../core/ride/redux/trip/types';
 
 const finalStopPointUpdateIntervalInSec = 30;
 const updateContractorGeoInterval = 1000;
+const polylineClearPointDistanceMtr = 20;
 
 const MapView = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -46,6 +47,7 @@ const MapView = (): JSX.Element => {
   const order = useSelector(orderSelector);
 
   const [polylines, setPolylines] = useState<MapPolyline[]>([]);
+  const [routePolylinePointsCount, setRoutePolylinePointsCount] = useState<number>(0);
   const [currentOrderPolylinesCoordinates, setCurrentOrderPolylinesCoordinates] = useState<LatLng[]>([]);
   const [futureOrderMarker, setFutureOrderMarker] = useState<LatLng | null>(null);
   const [finalStopPointCoordinates, setFinalStopPointCoordinates] = useState<Nullable<LatLng>>(null);
@@ -92,37 +94,34 @@ const MapView = (): JSX.Element => {
   }, [dispatch, order]);
 
   // Section: polylines
-  const resetPoints = useCallback(() => {
-    setCurrentOrderPolylinesCoordinates([]);
-    setFinalStopPointCoordinates(null);
-    setFutureOrderMarker(null);
+  const setPolylineAndFinalPoint = useCallback((route: Nullable<OfferWayPointsDataAPIResponse>) => {
+    if (route) {
+      const coordinates = decodeGooglePolyline(route.geometry);
+      setRoutePolylinePointsCount(coordinates.length);
+      setCurrentOrderPolylinesCoordinates(coordinates);
+      setFinalStopPointCoordinates(coordinates[coordinates.length - 1]);
+      setFinalStopPointTimeInSec(route.totalDurationSec);
+    } else {
+      setCurrentOrderPolylinesCoordinates([]);
+      setFinalStopPointCoordinates(null);
+      setFutureOrderMarker(null);
+    }
   }, []);
 
   useEffect(() => {
     switch (tripStatus) {
       case TripStatus.Idle:
-        if (pickUpRoute) {
-          const coordinates = decodeGooglePolyline(pickUpRoute.geometry);
-          setCurrentOrderPolylinesCoordinates(coordinates);
-          setFinalStopPointCoordinates(coordinates[coordinates.length - 1]);
-          setFinalStopPointTimeInSec(pickUpRoute.totalDurationSec);
-        } else {
-          resetPoints();
-        }
+        setPolylineAndFinalPoint(pickUpRoute);
         break;
       case TripStatus.Ride:
+        setPolylineAndFinalPoint(dropOffRoute);
         if (dropOffRoute) {
-          const coordinates = decodeGooglePolyline(dropOffRoute.geometry);
-          setCurrentOrderPolylinesCoordinates(coordinates);
-          setFinalStopPointCoordinates(coordinates[coordinates.length - 1]);
-          setFinalStopPointTimeInSec(dropOffRoute.totalDurationSec);
-        } else {
-          resetPoints();
+          dispatch(setMapRouteTraffic(dropOffRoute.accurateGeometries));
         }
         break;
       default:
     }
-  }, [tripStatus, dropOffRoute, pickUpRoute, resetPoints]);
+  }, [dispatch, tripStatus, dropOffRoute, pickUpRoute, setPolylineAndFinalPoint]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -147,7 +146,9 @@ const MapView = (): JSX.Element => {
 
   useEffect(() => {
     if (geolocationCoordinates) {
-      setCurrentOrderPolylinesCoordinates(prev => calculateNewMapRoute(prev, geolocationCoordinates, 15));
+      setCurrentOrderPolylinesCoordinates(prev =>
+        calculateNewMapRoute(prev, geolocationCoordinates, polylineClearPointDistanceMtr),
+      );
     }
   }, [geolocationCoordinates]);
 
@@ -165,7 +166,12 @@ const MapView = (): JSX.Element => {
       setFutureOrderMarker(coordinates[coordinates.length - 1]);
     }
     setPolylines(newPolylines);
-  }, [currentOrderPolylinesCoordinates, futureOrderPickUpRoute]);
+    dispatch(
+      setMapRidePercentFromPolylines(
+        `${Math.floor((1 - currentOrderPolylinesCoordinates.length / routePolylinePointsCount) * 100)}%`,
+      ),
+    );
+  }, [dispatch, currentOrderPolylinesCoordinates, futureOrderPickUpRoute, routePolylinePointsCount]);
 
   return (
     <MapViewIntegration

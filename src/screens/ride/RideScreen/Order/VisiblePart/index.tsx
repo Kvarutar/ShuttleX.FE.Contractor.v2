@@ -103,7 +103,7 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
       //TODO: Add this component when work with stop points
       // Note: Not styled for new design
       arrivedAtStopPoint: <AddressWithExtendedPassengerInfo withStopPoint tripPoints={tripPoints} />,
-      ride: <AddressWithMeta tripPoints={tripPoints} />,
+      ride: <AddressWithMeta tripPoints={tripPoints} startTime={order.pickUpTime} endTime={order.timeToDropOff} />,
       ending: (
         <AddressWithPassengerAndOrderInfo
           tripPoints={tripPoints}

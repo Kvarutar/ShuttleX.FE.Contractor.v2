@@ -62,7 +62,7 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
       setIsIncorrectCode(true);
       if (isLockedError(changeDataError)) {
         setIsIncorrectCode(true);
-        const lockoutEndDate = new Date(changeDataError.body.lockOutEndTime).getTime() - Date.now();
+        const lockoutEndDate = Date.parse(changeDataError.body.lockOutEndTime) - Date.now();
 
         setLockoutMinutes(Math.round(milSecToTime(lockoutEndDate)).toString());
         setLockoutEndTimestamp(lockoutEndDate);
