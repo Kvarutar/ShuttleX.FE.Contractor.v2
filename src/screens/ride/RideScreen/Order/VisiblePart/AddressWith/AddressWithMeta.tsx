@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   ExternalMapIcon,
+  openRouteOnGoogleMaps,
   PointIcon,
   sizes,
   Text,
@@ -25,7 +26,7 @@ const trafficLoadFromAPIToTrafficLevel: Record<TrafficLoadFromAPI, TrafficLevel>
   High: TrafficLevel.High,
 };
 
-const AddressWithMeta = ({ tripPoints, startTime, endTime }: AddressWithMetaProps) => {
+const AddressWithMeta = ({ tripPointsAddresses, googleMapButtonPoints, startTime, endTime }: AddressWithMetaProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -73,7 +74,7 @@ const AddressWithMeta = ({ tripPoints, startTime, endTime }: AddressWithMetaProp
         />
         <View style={styles.dropOffTextsContainer}>
           <Text style={[styles.dropOffText, computedStyles.dropOffText]}>{t('ride_Ride_Order_dropOff')}</Text>
-          <Text style={styles.address}>{tripPoints[0]}</Text>
+          <Text style={styles.address}>{tripPointsAddresses[0]}</Text>
         </View>
       </View>
       {trafficSegments.length !== 0 && (
@@ -85,13 +86,20 @@ const AddressWithMeta = ({ tripPoints, startTime, endTime }: AddressWithMetaProp
           endDate={new Date(endTime)}
         />
       )}
-      <Pressable style={[styles.openOnGoogleMapButton, computedStyles.openOnGoogleMapButton]}>
-        <ExternalMapIcon />
-        <View style={styles.googleMapTextContainer}>
-          <Text style={[styles.openOnText, computedStyles.openOnText]}>{t('ride_Ride_Order_openOnText')}</Text>
-          <Text style={[styles.googleMapText, computedStyles.googleMapText]}>{t('ride_Ride_Order_googleMapText')}</Text>
-        </View>
-      </Pressable>
+      {googleMapButtonPoints && (
+        <Pressable
+          style={[styles.openOnGoogleMapButton, computedStyles.openOnGoogleMapButton]}
+          onPress={() => openRouteOnGoogleMaps(googleMapButtonPoints.startPoint, googleMapButtonPoints.endPoint)}
+        >
+          <ExternalMapIcon />
+          <View style={styles.googleMapTextContainer}>
+            <Text style={[styles.openOnText, computedStyles.openOnText]}>{t('ride_Ride_Order_openOnText')}</Text>
+            <Text style={[styles.googleMapText, computedStyles.googleMapText]}>
+              {t('ride_Ride_Order_googleMapText')}
+            </Text>
+          </View>
+        </Pressable>
+      )}
     </View>
   );
 };

@@ -13,6 +13,7 @@ import {
   ExternalMapIcon,
   formatCurrency,
   minToMilSec,
+  openRouteOnGoogleMaps,
   PhoneIcon,
   Text,
   Timer,
@@ -28,10 +29,10 @@ import { AddressWithPassengerAndOrderInfoProps } from './props';
 const buttonTextHeight = 18;
 
 const AddressWithPassengerAndOrderInfo = ({
-  tripPoints,
-  isWaiting,
-  withGoogleMapButton = true,
+  tripPointsAddresses,
   timeForTimer,
+  googleMapButtonPoints,
+  isWaiting,
   setWaitingTime,
 }: AddressWithPassengerAndOrderInfoProps) => {
   const { colors } = useTheme();
@@ -185,19 +186,22 @@ const AddressWithPassengerAndOrderInfo = ({
                 {order.passenger.name}
               </Text>
             </View>
-            <Text style={styles.address}>{tripPoints[0]}</Text>
+            <Text style={styles.address}>{tripPointsAddresses[0]}</Text>
           </>
         ) : (
           <View style={styles.endingAdressAndNames}>
-            <Text style={[styles.endingAddress, computedStyles.endingAddress]}>{tripPoints[0]}</Text>
+            <Text style={[styles.endingAddress, computedStyles.endingAddress]}>{tripPointsAddresses[0]}</Text>
             <Text style={[styles.endingPassengerNames, computedStyles.endingPassengerNames]}>
               {order.passenger.name}
             </Text>
           </View>
         )}
         <View>
-          {withGoogleMapButton && (
-            <Pressable style={[styles.openOnGoogleMapButton, computedStyles.openOnGoogleMapButton]}>
+          {googleMapButtonPoints && (
+            <Pressable
+              style={[styles.openOnGoogleMapButton, computedStyles.openOnGoogleMapButton]}
+              onPress={() => openRouteOnGoogleMaps(googleMapButtonPoints.startPoint, googleMapButtonPoints.endPoint)}
+            >
               <ExternalMapIcon />
               <View style={styles.googleMapTextContainer}>
                 <Text style={[styles.openOnText, computedStyles.openOnText]}>{t('ride_Ride_Order_openOnText')}</Text>

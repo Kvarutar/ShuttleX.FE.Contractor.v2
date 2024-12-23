@@ -1,13 +1,21 @@
+import { LatLng } from 'react-native-maps';
+
+export type GoogleMapButtonPoints = {
+  startPoint: LatLng;
+  endPoint: LatLng;
+};
+
 export type AddressWithMetaProps = {
-  tripPoints: string[];
+  tripPointsAddresses: string[];
   startTime: number | null;
   endTime: number;
+  googleMapButtonPoints?: GoogleMapButtonPoints;
 };
 
 export type AddressWithPassengerAndOrderInfoProps = {
-  tripPoints: string[];
-  withGoogleMapButton?: boolean;
-  isWaiting?: boolean;
+  tripPointsAddresses: string[];
   timeForTimer: number;
+  googleMapButtonPoints?: GoogleMapButtonPoints;
+  isWaiting?: boolean;
   setWaitingTime?: (newState: number) => void;
 };

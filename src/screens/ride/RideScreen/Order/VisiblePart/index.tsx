@@ -33,6 +33,7 @@ import { OfferWayPointsDataAPIResponse, TripStatus } from '../../../../../core/r
 import AddressWithExtendedPassengerInfo from './AddressWith/AddressWithExtendedPassengerInfo';
 import AddressWithMeta from './AddressWith/AddressWithMeta';
 import AddressWithPassengerAndOrderInfo from './AddressWith/AddressWithPassengerAndOrderInfo';
+import { GoogleMapButtonPoints } from './AddressWith/props';
 
 const animationDuration = 200;
 const validDistanceToNearPoint = 100; // meters
@@ -85,17 +86,39 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
   let mainContent: Nullable<Record<TripStatus, Nullable<ReactNode>>> = null;
   let statusSwitchers: Nullable<Record<TripStatus, Nullable<ReactNode>>> = null;
 
+  let googleMapPickUpRoutePoints: GoogleMapButtonPoints | undefined;
+  if (pickUpRoute && pickUpRoute.waypoints.length > 1) {
+    googleMapPickUpRoutePoints = {
+      startPoint: pickUpRoute.waypoints[0].geo,
+      endPoint: pickUpRoute.waypoints[pickUpRoute.waypoints.length - 1].geo,
+    };
+  }
+  let googleMapDropOffRoutePoints: GoogleMapButtonPoints | undefined;
+  if (dropOffRoute && dropOffRoute.waypoints.length > 1) {
+    googleMapDropOffRoutePoints = {
+      startPoint: dropOffRoute.waypoints[0].geo,
+      endPoint: dropOffRoute.waypoints[dropOffRoute.waypoints.length - 1].geo,
+    };
+  }
+
   if (order && tripPoints.length !== 0) {
     mainContent = {
-      idle: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToPickUp} />,
-      nearPoint: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={order.timeToPickUp} />,
+      idle: (
+        <AddressWithPassengerAndOrderInfo
+          tripPointsAddresses={tripPoints}
+          googleMapButtonPoints={googleMapPickUpRoutePoints}
+          timeForTimer={order.timeToPickUp}
+        />
+      ),
+      nearPoint: (
+        <AddressWithPassengerAndOrderInfo tripPointsAddresses={tripPoints} timeForTimer={order.timeToPickUp} />
+      ),
       //TODO: Add this component when work with stop points
       //TODO: Change timeForTimer when work with stop points
-      nearStopPoint: <AddressWithPassengerAndOrderInfo tripPoints={tripPoints} timeForTimer={0} />,
+      nearStopPoint: <AddressWithPassengerAndOrderInfo tripPointsAddresses={tripPoints} timeForTimer={0} />,
       arrived: (
         <AddressWithPassengerAndOrderInfo
-          tripPoints={tripPoints}
-          withGoogleMapButton={false}
+          tripPointsAddresses={tripPoints}
           timeForTimer={Date.now() + order.waitingTimeInMilSec}
           isWaiting
         />
@@ -103,14 +126,15 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
       //TODO: Add this component when work with stop points
       // Note: Not styled for new design
       arrivedAtStopPoint: <AddressWithExtendedPassengerInfo withStopPoint tripPoints={tripPoints} />,
-      ride: <AddressWithMeta tripPoints={tripPoints} startTime={order.pickUpTime} endTime={order.timeToDropOff} />,
-      ending: (
-        <AddressWithPassengerAndOrderInfo
-          tripPoints={tripPoints}
-          withGoogleMapButton={false}
-          timeForTimer={timeToDropOff}
+      ride: (
+        <AddressWithMeta
+          tripPointsAddresses={tripPoints}
+          startTime={order.pickUpTime}
+          endTime={order.timeToDropOff}
+          googleMapButtonPoints={googleMapDropOffRoutePoints}
         />
       ),
+      ending: <AddressWithPassengerAndOrderInfo tripPointsAddresses={tripPoints} timeForTimer={timeToDropOff} />,
       rating: null,
     };
     statusSwitchers = {
