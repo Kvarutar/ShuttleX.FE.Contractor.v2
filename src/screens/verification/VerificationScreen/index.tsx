@@ -92,7 +92,7 @@ const VerificationScreen = (): JSX.Element => {
   };
 
   const renderStepForDocTemplate = (template: DocTemplate) => {
-    const { id, isFilled, feKey } = template;
+    const { id, isFilled, feKey, isLoading } = template;
 
     if (!feKey) {
       return <></>;
@@ -109,6 +109,7 @@ const VerificationScreen = (): JSX.Element => {
         onPress={() => navigation.navigate('DocMedia', { feKey: feKey, templateId: id })}
         text={t(title)}
         textStyle={getStyleForText(isFilled)}
+        isLoading={isLoading}
       />
     );
   };
@@ -183,6 +184,7 @@ const VerificationScreen = (): JSX.Element => {
           onPress={() => navigation.navigate('ProfilePhoto')}
           text={t('verification_Verification_profilePhoto')}
           textStyle={getStyleForText(isProfilePhotoSelected)}
+          isLoading={isDocsLoading.profilePhoto}
         />
 
         {getTemplatesByDocsType(DocsType.Personal).map(renderStepForDocTemplate)}

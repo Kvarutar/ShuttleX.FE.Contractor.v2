@@ -22,6 +22,7 @@ const initialState: DocsState = {
   isLoading: {
     paymentData: false,
     docsTemplates: false,
+    profilePhoto: false,
   },
   paymentData: null,
 };
@@ -56,6 +57,7 @@ const slice = createSlice({
         if (docId === action.payload.docId) {
           const templateIndex = state.templates.findIndex(template => template.id === templateId);
           if (templateIndex !== -1) {
+            state.templates[templateIndex].isLoading = false;
             state.templates[templateIndex].isFilled = true;
           }
         }
@@ -90,6 +92,7 @@ const slice = createSlice({
             type: convertDocTemplateTypeFromAPI[el.type],
             feKey: el.feKey,
             isFilled: false,
+            isLoading: false,
           })),
           type: setDocTemplates.type,
         });
@@ -103,24 +106,47 @@ const slice = createSlice({
         state.isLoading.docsTemplates = false;
       })
 
+      .addCase(saveDocBlob.pending, (state, action) => {
+        Object.entries(state.templateIdToDocId).forEach(([templateId, docId]) => {
+          if (docId === action.meta.arg.docId) {
+            const templateIndex = state.templates.findIndex(template => template.id === templateId);
+            if (templateIndex !== -1) {
+              state.templates[templateIndex].isLoading = true;
+            }
+          }
+        });
+      })
       .addCase(saveDocBlob.rejected, (state, action) => {
         slice.caseReducers.setError(state, {
           payload: action.payload as NetworkErrorDetailsWithBody<any>,
           type: setError.type,
         });
+        Object.entries(state.templateIdToDocId).forEach(([templateId, docId]) => {
+          if (docId === action.meta.arg.docId) {
+            const templateIndex = state.templates.findIndex(template => template.id === templateId);
+            if (templateIndex !== -1) {
+              state.templates[templateIndex].isLoading = false;
+            }
+          }
+        });
       })
 
+      .addCase(saveProfilePhoto.pending, state => {
+        state.isLoading.profilePhoto = true;
+      })
       .addCase(saveProfilePhoto.fulfilled, (state, action) => {
         slice.caseReducers.setProfilePhoto(state, {
           payload: action.payload.id,
           type: setProfilePhoto.type,
         });
+        state.isLoading.profilePhoto = false;
       })
       .addCase(saveProfilePhoto.rejected, (state, action) => {
         slice.caseReducers.setError(state, {
           payload: action.payload as NetworkErrorDetailsWithBody<any>,
           type: setError.type,
         });
+        state.isLoading.profilePhoto = false;
       })
 
       .addCase(verifyDocs.rejected, (state, action) => {

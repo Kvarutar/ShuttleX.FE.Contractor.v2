@@ -17,6 +17,7 @@ export type DocsState = {
   isLoading: {
     docsTemplates: boolean;
     paymentData: boolean;
+    profilePhoto: boolean;
   };
   paymentData: Nullable<PaymentDataForm>;
 };
@@ -55,6 +56,7 @@ export type DocTemplate = {
   feKey: Nullable<DocsFeKeyFromAPI>;
   type: Nullable<DocsType>;
   isFilled: boolean;
+  isLoading: boolean;
 };
 
 export type DocsTemplatesAPIResponse = {
