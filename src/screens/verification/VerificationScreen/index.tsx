@@ -28,6 +28,7 @@ import {
 import { fetchAllZone, verifyDocs } from '../../../core/auth/redux/docs/thunks';
 import { DocsType, DocTemplate } from '../../../core/auth/redux/docs/types';
 import { getDocTitlesByFeKey } from '../../../core/auth/redux/docs/utils/docsFeKey';
+import { signOut } from '../../../core/auth/redux/thunks';
 import { contractorInfoSelector } from '../../../core/contractor/redux/selectors';
 import { getContractorInfo } from '../../../core/contractor/redux/thunks';
 import { useAppDispatch } from '../../../core/redux/hooks';
@@ -76,7 +77,7 @@ const VerificationScreen = (): JSX.Element => {
       dispatch(verifyDocs());
       dispatch(getContractorInfo());
 
-      navigation.navigate('Ride');
+      navigation.replace('Ride');
     } else {
       setSelectedSection(null);
     }
@@ -86,7 +87,7 @@ const VerificationScreen = (): JSX.Element => {
     if (selectedSection) {
       setSelectedSection(null);
     } else {
-      navigation.navigate('Splash');
+      dispatch(signOut());
     }
   };
 
