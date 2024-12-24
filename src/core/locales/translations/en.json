@@ -37,7 +37,7 @@
   "ride_Ride_Order_call": "Call",
   "ride_Ride_Order_message": "Message",
   "ride_Ride_Start_startRideButton": "Start your ride",
-  "ride_Ride_Start_finishRideButton": "Cancel your ride",
+  "ride_Ride_Start_finishRideButton": "Confirm to stop",
   "ride_Ride_Start_accountIsNotActiveSubtitle": "Subscription",
   "ride_Ride_Start_accountIsNotActiveDescription": "You can start earning, but you won't be\nable to withdraw money until you\nactivate your account.\nDo you really want to do it later?",
   "ride_Ride_Start_accountIsNotActiveTitle": "Account",

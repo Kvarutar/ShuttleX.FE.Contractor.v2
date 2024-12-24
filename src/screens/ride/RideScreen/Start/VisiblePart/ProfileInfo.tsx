@@ -35,7 +35,7 @@ const animationDuration = 200;
 
 //TODO: Add "setIsAchievementsPopupVisible" prop when we need achievements
 // Details in Task-266
-const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
+const ProfileInfo = ({ bottomWindowRef, lineState, setIsAccountIsNotActivePopupVisible }: ProfileInfoProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -90,6 +90,11 @@ const ProfileInfo = ({ bottomWindowRef, lineState }: ProfileInfoProps) => {
 
   const swipeHandler = async (mode: ContractorStatus) => {
     await dispatch(updateContractorStatus(mode));
+
+    //TODO: add logic to show this popup
+    if (contractorStatusIsOffline) {
+      setIsAccountIsNotActivePopupVisible(true);
+    }
     bottomWindowRef.current?.closeWindow();
   };
 

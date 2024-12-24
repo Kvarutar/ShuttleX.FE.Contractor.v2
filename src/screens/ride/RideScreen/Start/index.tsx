@@ -21,7 +21,6 @@ import { isUnVerifyPhoneError } from '../../../../core/contractor/redux/errors';
 import {
   contractorGeneralErrorSelector,
   contractorStatusSelector,
-  contractorSubscriptionStatusSelector,
   contractorZoneSelector,
   isTariffsInfoLoadingSelector,
   primaryTariffSelector,
@@ -87,7 +86,6 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
   const contractorStatus = useSelector(contractorStatusSelector);
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
   const isCanceledTripsPopupVisible = useSelector(isCanceledTripsPopupVisibleSelector);
-  const contractorSubscriptionStatus = useSelector(contractorSubscriptionStatusSelector);
   const generalError = useSelector(contractorGeneralErrorSelector);
 
   const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t)[contractorStatus]);
@@ -118,14 +116,6 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
       handleOpenVerifyWindow('phone');
     }
   }, [generalError, handleOpenVerifyWindow]);
-
-  useEffect(() => {
-    if (isOpened && contractorStatus === 'offline' && !contractorSubscriptionStatus) {
-      setIsAccountIsNotActivePopupVisible(true);
-    } else if (!isOpened) {
-      setIsAccountIsNotActivePopupVisible(false);
-    }
-  }, [contractorStatus, contractorSubscriptionStatus, isOpened]);
 
   useEffect(() => {
     if (isOpened && contractorStatus === 'offline' && !contractorZone) {
@@ -247,6 +237,7 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
               setIsPreferencesPopupVisible={setIsPreferencesPopupVisible}
               setIsAchievementsPopupVisible={setIsAchievementsPopupVisible}
               lineState={lineState}
+              setIsAccountIsNotActivePopupVisible={setIsAccountIsNotActivePopupVisible}
             />
           </Animated.View>
         }

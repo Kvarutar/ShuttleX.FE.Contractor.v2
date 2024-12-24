@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
 import {
@@ -238,7 +238,13 @@ const AddressWithPassengerAndOrderInfo = ({
         <View style={styles.bottomButtonsAndTimer}>
           <View style={styles.contactButtonContainer}>
             <View style={styles.textDummy} />
-            <Button shape={ButtonShapes.Circle} mode={CircleButtonModes.Mode2} size={ButtonSizes.M} disableShadow>
+            <Button
+              onPress={() => Linking.openURL(`tel:${order.passenger.phone}`)}
+              shape={ButtonShapes.Circle}
+              mode={CircleButtonModes.Mode2}
+              size={ButtonSizes.M}
+              disableShadow
+            >
               <PhoneIcon />
             </Button>
             <Text style={[styles.contactButtonText, computedStyles.contactButtonText]}>

@@ -7,6 +7,7 @@ export type ProfileInfoProps = {
   bottomWindowRef: RefObject<BottomWindowWithGestureRef>;
   lineState: lineStateTypes;
   setIsAchievementsPopupVisible: (newState: boolean) => void;
+  setIsAccountIsNotActivePopupVisible: (isVisible: boolean) => void;
 };
 
 export type StatusProps = {
@@ -21,6 +22,7 @@ export type VisiblePartProps = {
   setIsPreferencesPopupVisible: (isPreferencesPopupVisible: boolean) => void;
   setIsAchievementsPopupVisible: (newState: boolean) => void;
   lineState: lineStateTypes;
+  setIsAccountIsNotActivePopupVisible: (isVisible: boolean) => void;
 };
 
 export type lineStateTypes = {

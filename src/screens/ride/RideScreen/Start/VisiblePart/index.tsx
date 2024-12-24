@@ -8,10 +8,12 @@ const VisiblePart = ({
   setIsPreferencesPopupVisible,
   setIsAchievementsPopupVisible,
   lineState,
+  setIsAccountIsNotActivePopupVisible,
 }: VisiblePartProps) => {
   if (isOpened) {
     return (
       <ProfileInfo
+        setIsAccountIsNotActivePopupVisible={setIsAccountIsNotActivePopupVisible}
         bottomWindowRef={bottomWindowRef}
         setIsAchievementsPopupVisible={setIsAchievementsPopupVisible}
         lineState={lineState}
