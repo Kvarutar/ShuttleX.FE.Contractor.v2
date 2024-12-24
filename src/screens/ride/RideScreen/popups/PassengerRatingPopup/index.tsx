@@ -11,6 +11,7 @@ import {
   CircleButtonModes,
   defaultShadow,
   DislikeIcon,
+  formatCurrency,
   LikeIcon,
   SquareButtonModes,
   Text,
@@ -90,7 +91,10 @@ const PassengerRating = () => {
     <BottomWindow windowStyle={styles.windowStyle} withShade>
       <View>
         <Text style={[styles.titleFirst, computedStyles.titleFirst]}>
-          {t('ride_Ride_PassengerRatingPopup_title', { name: order?.passenger.name })}
+          {t('ride_Ride_PassengerRatingPopup_title', {
+            name: order?.passenger.name,
+            formattedSum: formatCurrency(order.currencyCode, order.price),
+          })}
         </Text>
         <Text style={[styles.description, computedStyles.description]}>
           {t('ride_Ride_PassengerRatingPopup_description', { name: order?.passenger.name })}

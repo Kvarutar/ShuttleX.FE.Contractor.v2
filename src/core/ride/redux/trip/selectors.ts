@@ -15,3 +15,7 @@ export const tripFutureOrderPickUpRouteSelector = (state: AppState) => state.tri
 //Errors
 export const tripErrorSelector = (state: AppState) => state.trip.error.general;
 export const acceptOrDeclineOfferErrorSelector = (state: AppState) => state.trip.error.acceptOrDeclineOffer;
+
+//Long Polling
+export const isCurrentOrderLongPollingActiveSelector = (state: AppState) => state.trip.longPolling.current;
+export const isFutureOrderLongPollingActiveSelector = (state: AppState) => state.trip.longPolling.future;

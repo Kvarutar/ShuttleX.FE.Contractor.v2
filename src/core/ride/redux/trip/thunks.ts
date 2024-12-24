@@ -4,7 +4,15 @@ import { tariffsSelector } from '../../../contractor/redux/selectors';
 import { getContractorInfo } from '../../../contractor/redux/thunks';
 import { createAppAsyncThunk } from '../../../redux/hooks';
 import { geolocationCoordinatesSelector } from '../geolocation/selectors';
-import { endTrip, resetCurrentRoutes, resetFutureRoutes, setSecondOrder, setTripOffer, setTripStatus } from '.';
+import {
+  endTrip,
+  resetCurrentRoutes,
+  resetFutureRoutes,
+  setOrder,
+  setSecondOrder,
+  setTripOffer,
+  setTripStatus,
+} from '.';
 import { getOfferNetworkErrorInfo } from './errors';
 import { orderSelector, secondOrderSelector } from './selectors';
 import {
@@ -17,6 +25,8 @@ import {
   FetchCancelTripPayload,
   GetCurrentOrderAPIResponse,
   GetCurrentOrderThunkResult,
+  GetFinalCostAPIResponse,
+  GetFinalCostPayload,
   GetFutureOrderAPIResponse,
   GetFutureOrderThunkResult,
   GetNewOfferLongPollingAPIResponse,
@@ -34,6 +44,17 @@ import {
   UpdatePassengerRatingPayload,
   WayPointsRouteType,
 } from './types';
+
+export const getFinalCost = createAppAsyncThunk<GetFinalCostAPIResponse, GetFinalCostPayload>(
+  'trip/getFinalCost',
+  async (payload, { rejectWithValue, cashieringAxios }) => {
+    try {
+      return (await cashieringAxios.get<GetFinalCostAPIResponse>(`/ride/orders/${payload.orderId}/final-cost`)).data;
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
 
 export const getNewOfferLongPolling = createAppAsyncThunk<void, void>(
   'trip/getNewOfferLongPolling',
@@ -57,6 +78,7 @@ export const getCancelTripLongPolling = createAppAsyncThunk<void, { orderId: str
 
       if (payload.orderId === trip.order?.id) {
         if (trip.tripStatus === TripStatus.Ride || trip.tripStatus === TripStatus.Ending) {
+          await dispatch(getFinalCost({ orderId: payload.orderId }));
           dispatch(setTripStatus(TripStatus.Rating));
         }
         //Because this status might be chanched in notifications also
@@ -341,6 +363,14 @@ export const fetchArrivedToDropOff = createAppAsyncThunk<void, ArrivedToDropOffP
 
       await ordersAxios.post(`/${payload.orderId}/arrived-to-drop-off`, bodyPart);
 
+      await dispatch(getFinalCost({ orderId: payload.orderId }));
+
+      const secondOrder = secondOrderSelector(getState());
+
+      if (secondOrder) {
+        setOrder(secondOrder);
+      }
+
       dispatch(getContractorInfo());
     } catch (error) {
       const { code, body, status } = getNetworkErrorInfo(error);
@@ -380,6 +410,7 @@ export const fetchCancelTrip = createAppAsyncThunk<void, FetchCancelTripPayload>
       const secondOrder = secondOrderSelector(getState());
 
       if (secondOrder) {
+        setOrder(secondOrder);
         dispatch(setSecondOrder(null));
         resetCurrentRoutes();
         resetFutureRoutes();

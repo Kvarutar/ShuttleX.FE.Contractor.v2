@@ -14,6 +14,7 @@ import {
   fetchPickedUpAtStopPoint,
   fetchWayPointsRoute,
   getCurrentOrder,
+  getFinalCost,
   getFutureOrder,
   getPassengerTripInfo,
   sendExpiredOffer,
@@ -44,16 +45,21 @@ const initialState: TripState = {
   error: {
     general: null,
     acceptOrDeclineOffer: null,
+    getFinalCost: null,
   },
   //TODO create selector and place where it needed
   isLoading: false,
+  longPolling: {
+    current: false,
+    future: false,
+  },
 };
 
 const slice = createSlice({
   name: 'trip',
   initialState,
   reducers: {
-    setOrder(
+    setOrderWithAdditionalInfo(
       state,
       action: PayloadAction<{
         tariffs: TariffInfo[];
@@ -140,6 +146,12 @@ const slice = createSlice({
         }
       }
     },
+    setOrder(state, action: PayloadAction<Nullable<OrderType>>) {
+      state.order = action.payload;
+    },
+    setSecondOrder(state, action: PayloadAction<Nullable<OrderType>>) {
+      state.secondOrder = action.payload;
+    },
     setTripOffer(state, action: PayloadAction<Nullable<OfferAPIResponse>>) {
       state.offer = action.payload;
     },
@@ -153,9 +165,6 @@ const slice = createSlice({
     },
     rateTrip(state) {
       state.tripStatus = TripStatus.Rating;
-    },
-    setSecondOrder(state, action: PayloadAction<Nullable<OrderType>>) {
-      state.secondOrder = action.payload;
     },
     endTrip(state) {
       if (state.secondOrder) {
@@ -206,7 +215,7 @@ const slice = createSlice({
               type: setTripStatus.type,
             });
           }
-          slice.caseReducers.setOrder(state, {
+          slice.caseReducers.setOrderWithAdditionalInfo(state, {
             payload: {
               tariffs,
               orderId: order.id,
@@ -218,7 +227,7 @@ const slice = createSlice({
               },
               dataForOrderType: 'current',
             },
-            type: setOrder.type,
+            type: setOrderWithAdditionalInfo.type,
           });
         }
         state.isLoading = false;
@@ -236,7 +245,7 @@ const slice = createSlice({
         if (action.payload) {
           const { tariffs, order, passenger } = action.payload;
 
-          slice.caseReducers.setOrder(state, {
+          slice.caseReducers.setOrderWithAdditionalInfo(state, {
             payload: {
               tariffs,
               orderId: order.id,
@@ -248,7 +257,7 @@ const slice = createSlice({
               },
               dataForOrderType: 'future',
             },
-            type: setOrder.type,
+            type: setOrderWithAdditionalInfo.type,
           });
         }
         state.isLoading = false;
@@ -399,6 +408,22 @@ const slice = createSlice({
         state.isLoading = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
+      .addCase(getFinalCost.pending, state => {
+        state.isLoading = true;
+        state.error.getFinalCost = null;
+      })
+      .addCase(getFinalCost.fulfilled, (state, action) => {
+        if (state.order) {
+          state.order.price = action.payload.cost;
+          state.order.currencyCode = action.payload.currency;
+        }
+        state.isLoading = false;
+        state.error.getFinalCost = null;
+      })
+      .addCase(getFinalCost.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error.getFinalCost = action.payload as NetworkErrorDetailsWithBody<any>;
+      })
       //TODO: Rewtire when work with stop points
       // Not needed for now
       .addCase(fetchArrivedToStopPoint.fulfilled, state => {
@@ -443,6 +468,7 @@ const slice = createSlice({
 });
 
 export const {
+  setOrderWithAdditionalInfo,
   setOrder,
   setSecondOrder,
   setPassengerAvatar,

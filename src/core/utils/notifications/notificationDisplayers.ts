@@ -4,7 +4,7 @@ import { getContractorInfo } from '../../contractor/redux/thunks';
 import { store } from '../../redux/store';
 import { endTrip, resetCurrentRoutes, resetFutureRoutes, setSecondOrder, setTripStatus } from '../../ride/redux/trip';
 import { orderSelector, tripStatusSelector } from '../../ride/redux/trip/selectors';
-import { fetchOfferInfo } from '../../ride/redux/trip/thunks';
+import { fetchOfferInfo, getFinalCost } from '../../ride/redux/trip/thunks';
 import { TripStatus } from '../../ride/redux/trip/types';
 import { NotificationPayload, NotificationRemoteMessage, NotificationType, NotificationWithPayload } from './types';
 
@@ -22,11 +22,13 @@ const notificationHandlers: Record<NotificationType, (payload?: NotificationPayl
       store.dispatch(fetchOfferInfo(payload.offerId));
     }
   },
-  [NotificationType.PassengerRejected]: payload => {
+  [NotificationType.PassengerRejected]: async payload => {
     const order = orderSelector(store.getState());
-    if (payload?.orderId === order?.id) {
+    if (payload && payload.orderId && payload?.orderId === order?.id) {
       const tripStatus = tripStatusSelector(store.getState());
       if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Ending) {
+        await store.dispatch(getFinalCost({ orderId: payload.orderId }));
+
         store.dispatch(setTripStatus(TripStatus.Rating));
       }
       //Because this status might be chanched in lonpolling also

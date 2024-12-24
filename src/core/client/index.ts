@@ -1,5 +1,6 @@
 import authAccountSettingsInstanceInitializer from './authAccountSettingsClient';
 import authInstanceInitializer from './authClient';
+import cashieringInstanceInitializer from './cashieringClient';
 import configInstanceInitializer from './configClient';
 import contractorInstanceInitializer from './contractorClient';
 import docsInstanceInitializer from './docsClient';
@@ -20,6 +21,7 @@ const axiosInitilizers = {
   configAxios: configInstanceInitializer,
   docsAxios: docsInstanceInitializer,
   profileAxios: profileInstanceInitializer,
+  cashieringAxios: cashieringInstanceInitializer,
   offersLongPollingAxios: offersLongPollingInstanceInitializer,
   ordersLongPollingAxios: ordersLongPollingInstanceInitializer,
 };

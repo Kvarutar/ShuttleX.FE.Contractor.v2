@@ -132,7 +132,7 @@
   "ride_Ride_completeButton": "Завершити",
   "ride_Ride_tryAgainButton": "Повторити спробу",
   "ride_Ride_EmailAlert": "Підтвердіть пошту",
-  "ride_Ride_PassengerRatingPopup_title": "Пасажир {{name}}\nоплатив поїздку\nготівкою?",
+  "ride_Ride_PassengerRatingPopup_title": "Пасажир {{name}}\nоплатив поїздку\n{{formattedSum}}\nготівкою?",
   "ride_Ride_PassengerRatingPopup_description": "Будь-ласка, оцініть, як пройшла\nпоїздка з пасажиром {{name}}?",
   "ride_Ride_PassengerRatingPopup_confirmButton": "Так",
   "ride_Ride_PassengerRatingPopup_getHelpButton": "Допомога",

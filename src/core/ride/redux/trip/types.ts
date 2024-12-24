@@ -69,6 +69,16 @@ export type FetchCancelTripPayload = {
   orderId: string;
 };
 
+export type GetFinalCostPayload = {
+  orderId: string;
+};
+
+export type GetFinalCostAPIResponse = {
+  orderId: string;
+  cost: number;
+  currency: string;
+};
+
 export type OfferAPIResponse = {
   id: string;
   pickUpAddress: string;
@@ -209,8 +219,13 @@ export type TripState = {
   error: {
     general: Nullable<NetworkErrorDetailsWithBody<any>>;
     acceptOrDeclineOffer: Nullable<NetworkErrorDetailsWithBody<any>>;
+    getFinalCost: Nullable<NetworkErrorDetailsWithBody<any>>;
   };
   isLoading: boolean;
+  longPolling: {
+    current: boolean;
+    future: boolean;
+  };
 };
 
 export enum TripStatus {

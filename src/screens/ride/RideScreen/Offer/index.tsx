@@ -57,6 +57,8 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
   const [pickUpData, setPickUpData] = useState<TripPoint[]>([]);
   const [dropOffData, setDropOffData] = useState<TripPoint[]>([]);
 
+  const [isAcceptOrDeclineButtonPressed, setIsAcceptOrDeclineButtonPressed] = useState(false);
+
   useEffect(() => {
     if (pickUpWaypoints && pickUpWaypoints.length > 0) {
       const pickUpCoordinates = pickUpWaypoints.map<{ address: string } & LatLng>(waypoint => ({
@@ -225,13 +227,29 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
         <Button
           text={t('ride_Ride_Offer_acceptButton')}
           containerStyle={styles.offerButtonsItem}
-          onPress={onOfferAccept}
+          onPress={() => {
+            //To block multiple calls (because if it is called more than once there will be an error and the routes will be cleared)
+            if (isAcceptOrDeclineButtonPressed) {
+              return;
+            }
+            onOfferAccept();
+            setIsAcceptOrDeclineButtonPressed(true);
+          }}
+          disabled={isAcceptOrDeclineButtonPressed}
         />
         <Button
           text={t('ride_Ride_Offer_declineButton')}
           mode={SquareButtonModes.Mode4}
           containerStyle={styles.offerButtonsItem}
-          onPress={onOfferDecline}
+          onPress={() => {
+            //To block multiple calls (because if it is called more than once there will be an error and the routes will be cleared)
+            if (isAcceptOrDeclineButtonPressed) {
+              return;
+            }
+            onOfferDecline();
+            setIsAcceptOrDeclineButtonPressed(true);
+          }}
+          disabled={isAcceptOrDeclineButtonPressed}
         />
       </View>
     </>

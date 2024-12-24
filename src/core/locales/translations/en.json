@@ -92,7 +92,7 @@
   "ride_Ride_completeButton": "Complete",
   "ride_Ride_tryAgainButton": "Try again",
   "ride_Ride_EmailAlert": "Check and confirm email",
-  "ride_Ride_PassengerRatingPopup_title": "Has Passenger\n{{name}} Paid Trip\nVia Cash?",
+  "ride_Ride_PassengerRatingPopup_title": "Has Passenger\n{{name}} Paid Trip\n{{formattedSum}}\nVia Cash?",
   "ride_Ride_PassengerRatingPopup_description": "Please rate your trip with\n{{name}} ",
   "ride_Ride_PassengerRatingPopup_confirmButton": "Yes",
   "ride_Ride_PassengerRatingPopup_getHelpButton": "Get help",

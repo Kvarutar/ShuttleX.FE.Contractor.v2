@@ -16,6 +16,7 @@ import {
   LocationUnavailable,
   LocationUnavailableProps,
   MenuHeader,
+  Nullable,
   sizes,
   SquareButtonModes,
   useTheme,
@@ -120,17 +121,17 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     }
   }, [contractorDocsStatus, navigation, isContractorInfoLoading]);
 
-  const cancelCurrentTripLongPollinghasCalledRef = useRef(false);
-  const cancelFutureTripLongPollinghasCalledRef = useRef(false);
+  const currentOrderIdRef = useRef<Nullable<string>>(null);
+  const futureOrderIdRef = useRef<Nullable<string>>(null);
 
   useEffect(() => {
-    if (order && !cancelCurrentTripLongPollinghasCalledRef.current) {
+    if (order && order.id !== currentOrderIdRef.current && order.id !== futureOrderIdRef.current) {
       dispatch(getCancelTripLongPolling({ orderId: order.id }));
-      cancelCurrentTripLongPollinghasCalledRef.current = true;
+      currentOrderIdRef.current = order.id;
     }
-    if (secondOrder && !cancelFutureTripLongPollinghasCalledRef.current) {
+    if (secondOrder && secondOrder.id !== futureOrderIdRef.current) {
       dispatch(getCancelTripLongPolling({ orderId: secondOrder.id }));
-      cancelFutureTripLongPollinghasCalledRef.current = true;
+      futureOrderIdRef.current = secondOrder.id;
     }
   }, [dispatch, order, secondOrder]);
 
