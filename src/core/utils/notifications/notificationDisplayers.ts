@@ -1,5 +1,6 @@
 import notifee, { AndroidColor } from '@notifee/react-native';
 
+import { logger } from '../../../App';
 import { getContractorInfo } from '../../contractor/redux/thunks';
 import { store } from '../../redux/store';
 import { endTrip, resetCurrentRoutes, resetFutureRoutes, setSecondOrder, setTripStatus } from '../../ride/redux/trip';
@@ -53,7 +54,7 @@ export const displayNotificationForAll = async (remoteMessage: NotificationRemot
   const { key, payload, title, body } = remoteMessage.data;
 
   if (!isValidNotificationType(key)) {
-    console.error(`Invalid notification type: ${key}`);
+    logger.error(`Invalid notification type: ${key}`);
     return;
   }
 
@@ -87,6 +88,6 @@ export const displayNotificationForAll = async (remoteMessage: NotificationRemot
       },
     });
   } catch (error) {
-    console.error('Error processing notification:', error);
+    logger.error('Error processing notification:', error);
   }
 };

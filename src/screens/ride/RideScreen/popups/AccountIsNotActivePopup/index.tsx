@@ -2,13 +2,14 @@ import { useTranslation } from 'react-i18next';
 import { Linking, StyleSheet, View } from 'react-native';
 import { BigHeader, BottomWindowWithGesture, Button, ButtonShapes, SquareButtonModes } from 'shuttlex-integration';
 
+import { logger } from '../../../../../App';
 import { AccountIsNotActivePopupProps } from './types';
 
 const AccountIsNotActivePopup = ({ setIsAccountIsNotActivePopupVisible }: AccountIsNotActivePopupProps) => {
   const { t } = useTranslation();
 
   const onPressConfirm = () => {
-    Linking.openURL('https://www.shuttlex.com').catch(err => console.error(err));
+    Linking.openURL('https://www.shuttlex.com').catch(err => logger.error(err));
     setIsAccountIsNotActivePopupVisible(false);
   };
 

@@ -59,7 +59,6 @@ const slice = createSlice({
       .addCase(changeAccountContactData.rejected, (state, action) => {
         state.loading.changeData = false;
         state.error.changeData = action.payload as NetworkErrorDetailsWithBody<any>;
-        console.error(changeAccountContactData.typePrefix, action.payload);
       })
 
       //VerifyData

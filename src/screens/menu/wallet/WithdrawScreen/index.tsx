@@ -24,6 +24,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { logger } from '../../../../App';
 import {
   emailOrBinanceIdCryptoSelector,
   minWithdrawSumCashSelector,
@@ -158,7 +159,7 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
             text: buttonText,
             onPress: () => {
               if (url) {
-                Linking.openURL(url).catch(err => console.error(err));
+                Linking.openURL(url).catch(err => logger.error(err));
               } else {
                 setIsVisibleSlider(false);
                 navigation.goBack();

@@ -22,12 +22,12 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+// import { setNotificationList } from '../../../core/menu/redux/notifications';
+// import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
 import { signOut } from '../../../core/auth/redux/thunks';
 import { contractorInfoStateSelector, isContractorInfoLoadingSelector } from '../../../core/contractor/redux/selectors';
 import { ContractorStatusAPIResponse } from '../../../core/contractor/redux/types';
 import { getAccountSettingsVerifyStatus } from '../../../core/menu/redux/accountSettings/thunks';
-// import { setNotificationList } from '../../../core/menu/redux/notifications';
-// import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { useGeolocationStartWatch, useNetworkConnectionStartWatch } from '../../../core/ride/hooks';
 import {
