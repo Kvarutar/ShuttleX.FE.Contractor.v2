@@ -58,7 +58,6 @@ import {
   sendExpiredOffer,
 } from '../../../core/ride/redux/trip/thunks';
 import Menu from '../Menu';
-import MapCameraModeButton from './MapCameraModeButton';
 import MapView from './MapView';
 import Order from './Order';
 import OfferPopup from './popups/OfferPopup';
@@ -343,10 +342,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
         </MenuHeader>
         <View style={[styles.topButtonsContainer, computedStyles.topButtonsContainer]} />
         {order ? (
-          <>
-            <MapCameraModeButton />
-            <Order />
-          </>
+          <Order />
         ) : (
           <Start
             bottomWindowRef={bottomWindowRef}

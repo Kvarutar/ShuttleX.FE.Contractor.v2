@@ -36,6 +36,7 @@ import { isCanceledTripsPopupVisibleSelector } from '../../../../core/ride/redux
 import { getCurrentOrder } from '../../../../core/ride/redux/trip/thunks';
 import { RootStackParamList } from '../../../../Navigate/props';
 import AlertInitializer from '../../../../shared/AlertInitializer';
+import MapCameraModeButton from '../MapCameraModeButton';
 import AccountIsNotActivePopup from '../popups/AccountIsNotActivePopup';
 import AchievementsPopup from '../popups/AchievementsPopup';
 import TariffPreferencesPopup from '../popups/PreferencesPopup';
@@ -220,6 +221,7 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
             </Animated.View>
           )
         }
+        additionalTopContent={!isOpened && <MapCameraModeButton />}
         alerts={alerts.map(alertData => (
           <AlertInitializer
             key={alertData.id}

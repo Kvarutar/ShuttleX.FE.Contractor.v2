@@ -18,6 +18,7 @@ import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/al
 import { orderSelector, tripStatusSelector } from '../../../../core/ride/redux/trip/selectors';
 import { TripStatus } from '../../../../core/ride/redux/trip/types';
 import AlertInitializer from '../../../../shared/AlertInitializer';
+import MapCameraModeButton from '../MapCameraModeButton';
 import PassengerRating from '../popups/PassengerRatingPopup';
 import HiddenPart from './HiddenPart';
 import VisiblePart from './VisiblePart';
@@ -106,6 +107,7 @@ const Order = () => {
         hiddenPartContainerStyle={styles.bottomWindowHiddenContainer}
         headerWrapperStyle={computedStyles.headerWrapperStyle}
         ref={bottomWindowRef}
+        additionalTopContent={<MapCameraModeButton />}
         alerts={alerts.map(alertData => (
           <AlertInitializer
             key={alertData.id}

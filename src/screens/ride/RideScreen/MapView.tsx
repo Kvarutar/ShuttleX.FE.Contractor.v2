@@ -31,7 +31,7 @@ import { OfferWayPointsDataAPIResponse, TripStatus } from '../../../core/ride/re
 
 const finalStopPointUpdateIntervalInSec = 30;
 const updateContractorGeoInterval = 1000;
-const polylineClearPointDistanceMtr = 20;
+const polylineClearPointDistanceMtr = 25;
 
 const MapView = (): JSX.Element => {
   const dispatch = useAppDispatch();
