@@ -88,7 +88,7 @@ const Order = () => {
     if (withHeaderTimer) {
       return (
         <View style={styles.timerWrapper}>
-          <Shadow {...defaultShadow(colors.strongShadowColor)}>
+          <Shadow {...defaultShadow(colors.strongShadowColor)} style={styles.shadowStyle}>
             <Timer time={timeToDropOff} sizeMode={TimerSizesModes.S} colorMode={TimerColorModes.Mode3} />
           </Shadow>
         </View>
@@ -125,6 +125,9 @@ const Order = () => {
 };
 
 const styles = StyleSheet.create({
+  shadowStyle: {
+    borderRadius: 1000,
+  },
   bottomWindowHiddenContainer: {
     gap: 8,
   },

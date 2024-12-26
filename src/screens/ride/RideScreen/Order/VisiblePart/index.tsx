@@ -7,6 +7,7 @@ import {
   Button,
   getDistanceBetweenPoints,
   Nullable,
+  secToMilSec,
   SquareButtonModes,
   SwipeButton,
   SwipeButtonModes,
@@ -119,7 +120,8 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
       arrived: (
         <AddressWithPassengerAndOrderInfo
           tripPointsAddresses={tripPoints}
-          timeForTimer={Date.now() + order.waitingTimeInMilSec}
+          //TODO: Remove "secToMilSec(1)" when fix a timer
+          timeForTimer={Date.now() + order.waitingTimeInMilSec - secToMilSec(1)} // For correct time rendering in timer
           isWaiting
         />
       ),
