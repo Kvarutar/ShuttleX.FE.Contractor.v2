@@ -13,6 +13,7 @@ import {
   MenuHeader,
   MenuUserImage2,
   SafeAreaView,
+  SignOutPopup,
   sizes,
   Text,
   UploadPhotoIcon,
@@ -49,6 +50,7 @@ const AccountSettings = (): JSX.Element => {
   const verifiedStatus = useSelector(accountSettingsVerifyStatusSelector);
   const changeDataError = useSelector(accountSettingsChangeDataErrorSelector);
   const verifyDataError = useSelector(accountSettingsVerifyErrorSelector);
+  const [isSignOutPopupVisible, setIsSignOutPopupVisible] = useState(false);
 
   const isChangeDataLoading = useSelector(isAccountSettingsChangeDataLoadingSelector);
 
@@ -98,12 +100,12 @@ const AccountSettings = (): JSX.Element => {
   return (
     <>
       <SafeAreaView containerStyle={styles.wrapper}>
-        <MenuHeader onMenuPress={() => setIsMenuVisible(true)}>
+        <MenuHeader onMenuPress={() => setIsMenuVisible(true)} style={styles.menuHeader}>
           <Text>{t('ride_Menu_navigationAccountSettings')}</Text>
         </MenuHeader>
 
         <AccountSettingsScreen
-          onSignOut={() => dispatch(signOut())}
+          setIsSignOutPopupVisible={setIsSignOutPopupVisible}
           handleOpenVerification={handleOpenVerification}
           isChangeDataLoading={isChangeDataLoading}
           verifiedStatus={verifiedStatus}
@@ -120,6 +122,9 @@ const AccountSettings = (): JSX.Element => {
           // barBlock={<BarBlock onUpdateDocument={() => navigation.navigate('Docs')} />}
         />
       </SafeAreaView>
+      {isSignOutPopupVisible && (
+        <SignOutPopup setIsSignOutPopupVisible={setIsSignOutPopupVisible} onSignOut={() => dispatch(signOut())} />
+      )}
       {isMenuVisible && <Menu onClose={() => setIsMenuVisible(false)} />}
     </>
   );
@@ -174,6 +179,9 @@ const PhotoBlock = ({ onUploadPhoto }: PhotoBlockProps) => {
 const styles = StyleSheet.create({
   wrapper: {
     gap: 24,
+  },
+  menuHeader: {
+    zIndex: -1,
   },
   icon: {
     position: 'absolute',
