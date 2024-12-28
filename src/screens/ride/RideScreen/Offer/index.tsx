@@ -22,7 +22,12 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
-import { tripDropOffRouteSelector, tripPickUpRouteSelector } from '../../../../core/ride/redux/trip/selectors';
+import {
+  isAcceptOfferLoadingSelector,
+  isDeclineOfferLoadingSelector,
+  tripDropOffRouteSelector,
+  tripPickUpRouteSelector,
+} from '../../../../core/ride/redux/trip/selectors';
 import { TripPoint } from '../../../../core/ride/redux/trip/types';
 import { OfferItemProps, OfferProps } from './props';
 
@@ -53,6 +58,8 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
 
   const pickUpWaypoints = useSelector(tripDropOffRouteSelector)?.waypoints;
   const dropOffWaypoints = useSelector(tripPickUpRouteSelector)?.waypoints;
+  const isDeclineOfferLoading = useSelector(isDeclineOfferLoadingSelector);
+  const isAcceptOfferLoading = useSelector(isAcceptOfferLoadingSelector);
 
   const [pickUpData, setPickUpData] = useState<TripPoint[]>([]);
   const [dropOffData, setDropOffData] = useState<TripPoint[]>([]);
@@ -236,6 +243,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
             setIsAcceptOrDeclineButtonPressed(true);
           }}
           disabled={isAcceptOrDeclineButtonPressed}
+          isLoading={isAcceptOfferLoading}
         />
         <Button
           text={t('ride_Ride_Offer_declineButton')}
@@ -250,6 +258,7 @@ const Offer = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottom
             setIsAcceptOrDeclineButtonPressed(true);
           }}
           disabled={isAcceptOrDeclineButtonPressed}
+          isLoading={isDeclineOfferLoading}
         />
       </View>
     </>

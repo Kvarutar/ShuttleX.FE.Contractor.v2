@@ -221,7 +221,11 @@ export type TripState = {
     acceptOrDeclineOffer: Nullable<NetworkErrorDetailsWithBody<any>>;
     getFinalCost: Nullable<NetworkErrorDetailsWithBody<any>>;
   };
-  isLoading: boolean;
+  loading: {
+    acceptOffer: boolean;
+    declineOffer: boolean;
+    makeOfferDecision: boolean;
+  };
   longPolling: {
     current: boolean;
     future: boolean;

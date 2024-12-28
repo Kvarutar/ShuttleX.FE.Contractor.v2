@@ -47,8 +47,12 @@ const initialState: TripState = {
     acceptOrDeclineOffer: null,
     getFinalCost: null,
   },
+  loading: {
+    acceptOffer: false,
+    declineOffer: false,
+    makeOfferDecision: false,
+  },
   //TODO create selector and place where it needed
-  isLoading: false,
   longPolling: {
     current: false,
     future: false,
@@ -200,7 +204,7 @@ const slice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(getCurrentOrder.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(getCurrentOrder.fulfilled, (state, action) => {
@@ -230,15 +234,15 @@ const slice = createSlice({
             type: setOrderWithAdditionalInfo.type,
           });
         }
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(getCurrentOrder.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(getFutureOrder.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(getFutureOrder.fulfilled, (state, action) => {
@@ -260,15 +264,15 @@ const slice = createSlice({
             type: setOrderWithAdditionalInfo.type,
           });
         }
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(getFutureOrder.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(fetchOfferInfo.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(fetchOfferInfo.fulfilled, (state, action) => {
@@ -279,15 +283,15 @@ const slice = createSlice({
           },
           type: setTripOffer.type,
         });
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(fetchOfferInfo.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(fetchWayPointsRoute.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(fetchWayPointsRoute.fulfilled, (state, action) => {
@@ -300,15 +304,15 @@ const slice = createSlice({
             state.futureOrderPickUpRoutes = action.payload.pickup;
             break;
         }
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(fetchWayPointsRoute.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(acceptOffer.pending, state => {
-        state.isLoading = true;
+        state.loading.acceptOffer = true;
         state.error.acceptOrDeclineOffer = null;
       })
       .addCase(acceptOffer.fulfilled, state => {
@@ -316,15 +320,15 @@ const slice = createSlice({
           payload: initialState.offer,
           type: setTripOffer.type,
         });
-        state.isLoading = false;
+        state.loading.acceptOffer = false;
         state.error.acceptOrDeclineOffer = null;
       })
       .addCase(acceptOffer.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.acceptOffer = false;
         state.error.acceptOrDeclineOffer = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(sendExpiredOffer.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(sendExpiredOffer.fulfilled, state => {
@@ -332,15 +336,15 @@ const slice = createSlice({
           payload: initialState.offer,
           type: setTripOffer.type,
         });
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(sendExpiredOffer.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.acceptOrDeclineOffer = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(declineOffer.pending, state => {
-        state.isLoading = true;
+        state.loading.declineOffer = true;
         state.error.acceptOrDeclineOffer = null;
       })
       .addCase(declineOffer.fulfilled, state => {
@@ -348,27 +352,27 @@ const slice = createSlice({
           payload: initialState.offer,
           type: setTripOffer.type,
         });
-        state.isLoading = false;
+        state.loading.declineOffer = false;
         state.error.acceptOrDeclineOffer = null;
       })
       .addCase(declineOffer.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.declineOffer = false;
         state.error.acceptOrDeclineOffer = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(getPassengerTripInfo.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(getPassengerTripInfo.fulfilled, state => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(getPassengerTripInfo.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(fetchArrivedToPickUp.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(fetchArrivedToPickUp.fulfilled, state => {
@@ -376,40 +380,40 @@ const slice = createSlice({
           payload: TripStatus.Arrived,
           type: setTripStatus.type,
         });
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(fetchArrivedToPickUp.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(fetchPickedUpAtPickUpPoint.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(fetchPickedUpAtPickUpPoint.fulfilled, state => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(fetchPickedUpAtPickUpPoint.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(updatePassengerRating.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(updatePassengerRating.fulfilled, state => {
         slice.caseReducers.endTrip(state);
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(updatePassengerRating.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(getFinalCost.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.getFinalCost = null;
       })
       .addCase(getFinalCost.fulfilled, (state, action) => {
@@ -417,11 +421,11 @@ const slice = createSlice({
           state.order.price = action.payload.cost;
           state.order.currencyCode = action.payload.currency;
         }
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.getFinalCost = null;
       })
       .addCase(getFinalCost.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.getFinalCost = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       //TODO: Rewtire when work with stop points
@@ -438,30 +442,30 @@ const slice = createSlice({
         slice.caseReducers.toNextTripPoint(state);
       })
       .addCase(fetchArrivedToDropOff.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(fetchArrivedToDropOff.fulfilled, state => {
         slice.caseReducers.rateTrip(state);
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(fetchArrivedToDropOff.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       })
       .addCase(fetchCancelTrip.pending, state => {
-        state.isLoading = true;
+        state.loading.makeOfferDecision = true;
         state.error.general = null;
       })
       .addCase(fetchCancelTrip.fulfilled, state => {
         slice.caseReducers.endTrip(state);
         slice.caseReducers.setIsCanceledTripsPopupVisible(state, slice.actions.setIsCanceledTripsPopupVisible(true));
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
       .addCase(fetchCancelTrip.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading.makeOfferDecision = false;
         state.error.general = action.payload as NetworkErrorDetailsWithBody<any>;
       });
   },

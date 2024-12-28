@@ -19,3 +19,7 @@ export const acceptOrDeclineOfferErrorSelector = (state: AppState) => state.trip
 //Long Polling
 export const isCurrentOrderLongPollingActiveSelector = (state: AppState) => state.trip.longPolling.current;
 export const isFutureOrderLongPollingActiveSelector = (state: AppState) => state.trip.longPolling.future;
+
+//Loading
+export const isAcceptOfferLoadingSelector = (state: AppState) => state.trip.loading.acceptOffer;
+export const isDeclineOfferLoadingSelector = (state: AppState) => state.trip.loading.declineOffer;
