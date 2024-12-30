@@ -1,4 +1,5 @@
 import notifee, { AndroidColor } from '@notifee/react-native';
+import { minToMilSec } from 'shuttlex-integration';
 
 import { logger } from '../../../App';
 import { getContractorInfo } from '../../contractor/redux/thunks';
@@ -51,7 +52,19 @@ const notificationHandlers: Record<NotificationType, (payload?: NotificationPayl
 
 //display notiff without buttons
 export const displayNotificationForAll = async (remoteMessage: NotificationRemoteMessage) => {
-  const { key, payload, title, body } = remoteMessage.data;
+  const { key, payload, title, body, sendTime } = remoteMessage.data;
+
+  if (key === NotificationType.NewOffer) {
+    const notificationTime = Date.parse(sendTime);
+    const currentTime = Date.now();
+
+    const timeDifferenceMilSec = Math.abs(currentTime - notificationTime);
+
+    if (timeDifferenceMilSec > minToMilSec(1)) {
+      logger.log('Skipping old notification:', remoteMessage);
+      return;
+    }
+  }
 
   if (!isValidNotificationType(key)) {
     logger.error(`Invalid notification type: ${key}`);
@@ -65,7 +78,7 @@ export const displayNotificationForAll = async (remoteMessage: NotificationRemot
       payloadData = JSON.parse(payload);
     }
 
-    await notificationHandlers[key](payloadData);
+    notificationHandlers[key](payloadData);
 
     await notifee.displayNotification({
       title,
