@@ -58,9 +58,11 @@ export const getFinalCost = createAppAsyncThunk<GetFinalCostAPIResponse, GetFina
 
 export const getNewOfferLongPolling = createAppAsyncThunk<void, void>(
   'trip/getNewOfferLongPolling',
-  async (_, { rejectWithValue, offersLongPollingAxios, dispatch }) => {
+  async (_, { rejectWithValue, offersLongPollingAxios, dispatch, abortAllSignal }) => {
     try {
-      const response = await offersLongPollingAxios.get<GetNewOfferLongPollingAPIResponse>('/new/long-polling');
+      const response = await offersLongPollingAxios.get<GetNewOfferLongPollingAPIResponse>('/new/long-polling', {
+        signal: abortAllSignal,
+      });
       dispatch(fetchOfferInfo(response.data.offerId));
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
@@ -70,9 +72,9 @@ export const getNewOfferLongPolling = createAppAsyncThunk<void, void>(
 
 export const getCancelTripLongPolling = createAppAsyncThunk<void, { orderId: string }>(
   'trip/getCancelTripLongPolling',
-  async (payload, { rejectWithValue, ordersLongPollingAxios, dispatch, getState }) => {
+  async (payload, { rejectWithValue, ordersLongPollingAxios, dispatch, getState, abortAllSignal }) => {
     try {
-      await ordersLongPollingAxios.get(`/${payload.orderId}/canceled/long-polling`);
+      await ordersLongPollingAxios.get(`/${payload.orderId}/canceled/long-polling`, { signal: abortAllSignal });
 
       const { trip } = getState();
 

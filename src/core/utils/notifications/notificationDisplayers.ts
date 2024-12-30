@@ -6,7 +6,12 @@ import { getContractorInfo } from '../../contractor/redux/thunks';
 import { store } from '../../redux/store';
 import { endTrip, resetCurrentRoutes, resetFutureRoutes, setSecondOrder, setTripStatus } from '../../ride/redux/trip';
 import { orderSelector, tripStatusSelector } from '../../ride/redux/trip/selectors';
-import { fetchOfferInfo, getFinalCost } from '../../ride/redux/trip/thunks';
+import {
+  fetchOfferInfo,
+  getCancelTripLongPolling,
+  getFinalCost,
+  getNewOfferLongPolling,
+} from '../../ride/redux/trip/thunks';
 import { TripStatus } from '../../ride/redux/trip/types';
 import { NotificationPayload, NotificationRemoteMessage, NotificationType, NotificationWithPayload } from './types';
 
@@ -20,11 +25,15 @@ const isPayloadRequired = (type: NotificationType): type is NotificationWithPayl
 
 const notificationHandlers: Record<NotificationType, (payload?: NotificationPayload) => void> = {
   [NotificationType.NewOffer]: payload => {
+    getNewOfferLongPolling.abortAll();
+
     if (payload?.offerId) {
       store.dispatch(fetchOfferInfo(payload.offerId));
     }
   },
   [NotificationType.PassengerRejected]: async payload => {
+    getCancelTripLongPolling.abortAll();
+
     const order = orderSelector(store.getState());
     if (payload && payload.orderId && payload?.orderId === order?.id) {
       const tripStatus = tripStatusSelector(store.getState());
