@@ -6,6 +6,7 @@ import {
   calculateNewMapRoute,
   decodeGooglePolyline,
   getTimeWithAbbreviation,
+  MapMarker,
   MapPolyline,
   MapView as MapViewIntegration,
   Nullable,
@@ -173,23 +174,31 @@ const MapView = (): JSX.Element => {
     );
   }, [dispatch, currentOrderPolylinesCoordinates, futureOrderPickUpRoute, routePolylinePointsCount]);
 
+  const markers: MapMarker[] = [];
+  if (futureOrderMarker) {
+    markers.push({
+      type: 'simple',
+      colorMode: 'mode1',
+      coordinates: futureOrderMarker,
+    });
+  }
+  if (finalStopPointCoordinates) {
+    markers.push({
+      type: 'withLabel',
+      colorMode: 'mode2',
+      coordinates: finalStopPointCoordinates,
+      title: finalStopPointTimeWithAbbreviation.value,
+      subtitle: finalStopPointTimeWithAbbreviation.label,
+    });
+  }
+
   return (
     <MapViewIntegration
       style={StyleSheet.absoluteFill}
       geolocationCoordinates={geolocationCoordinates ?? undefined}
       geolocationCalculatedHeading={geolocationCalculatedHeading}
       polylines={polylines}
-      finalStopPoint={
-        finalStopPointCoordinates
-          ? {
-              colorMode: 'mode2',
-              coordinates: finalStopPointCoordinates,
-              title: finalStopPointTimeWithAbbreviation.value,
-              subtitle: finalStopPointTimeWithAbbreviation.label,
-            }
-          : undefined
-      }
-      markers={futureOrderMarker ? [{ colorMode: 'mode1', coordinates: futureOrderMarker }] : undefined}
+      markers={markers}
       stopPoints={stopPoints}
       cameraMode={cameraMode}
       setCameraModeOnDrag={mode => dispatch(setMapCameraMode(mode))}
