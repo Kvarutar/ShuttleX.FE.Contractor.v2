@@ -8,6 +8,9 @@ const resources = {
   uk: {
     translation: uk,
   },
+  ru: {
+    translation: uk,
+  },
 };
 
 export default resources;
