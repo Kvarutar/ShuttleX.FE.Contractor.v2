@@ -1,5 +1,5 @@
 import notifee, { AndroidColor } from '@notifee/react-native';
-import { minToMilSec } from 'shuttlex-integration';
+import { getTimezoneOffsetInMilSec, minToMilSec } from 'shuttlex-integration';
 
 import { logger } from '../../../App';
 import { getContractorInfo } from '../../contractor/redux/thunks';
@@ -64,7 +64,7 @@ export const displayNotificationForAll = async (remoteMessage: NotificationRemot
   const { key, payload, title, body, sendTime } = remoteMessage.data;
 
   if (key === NotificationType.NewOffer) {
-    const notificationTime = Date.parse(sendTime);
+    const notificationTime = Date.parse(sendTime) + getTimezoneOffsetInMilSec();
     const currentTime = Date.now();
 
     const timeDifferenceMilSec = Math.abs(currentTime - notificationTime);

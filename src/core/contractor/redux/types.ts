@@ -14,7 +14,8 @@ export type GetOrUpdateZoneAPIResponse = {
 
 export type Zone = GetOrUpdateZoneAPIResponse;
 
-export type TariffFeKeyFromAPI = 'basicx' | 'basicxl' | 'comfortplus' | 'premiumx' | 'premiumxl' | 'electric';
+//TODO: add "premiumx", "premiumxl" or "business" if necessary
+export type TariffFeKeyFromAPI = 'basicx' | 'basicxl' | 'comfortplus' | 'electric';
 
 export type PreferenceType = 'CryptoPayment' | 'CashPayment';
 
