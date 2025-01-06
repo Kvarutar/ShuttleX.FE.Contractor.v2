@@ -14,7 +14,7 @@ import {
 } from 'shuttlex-integration';
 
 import { sortedTariffsSelector } from '../../../../../core/contractor/redux/selectors';
-import { TariffInfo } from '../../../../../core/contractor/redux/types';
+import { TariffInfoFromAPI } from '../../../../../core/contractor/redux/types';
 import HiddenPart from './HiddenPart';
 import { PreferencesPopupProps } from './props';
 
@@ -41,7 +41,7 @@ const TariffPreferencesPopup = ({
   const tariffsIconsData = useTariffsIcons();
 
   const tariffsSorted = useSelector(sortedTariffsSelector);
-  const [localTariffsSorted, setLocalTariffsSorted] = useState<TariffInfo[]>(tariffsSorted);
+  const [localTariffsSorted, setLocalTariffsSorted] = useState<TariffInfoFromAPI[]>(tariffsSorted);
 
   // Uncomment if for working with preferences
   // const preferencesTexts = {
@@ -57,7 +57,7 @@ const TariffPreferencesPopup = ({
     setLocalTariffsSorted(tariffsSorted);
   }, [tariffsSorted]);
 
-  const onTariffPressHandler = (tariff: TariffInfo) => {
+  const onTariffPressHandler = (tariff: TariffInfoFromAPI) => {
     if (!tariff.isPrimary) {
       setLocalTariffsSorted(prevState =>
         prevState.map(t => (t.id === tariff.id ? { ...t, isSelected: !t.isSelected } : t)),
@@ -65,7 +65,13 @@ const TariffPreferencesPopup = ({
     }
   };
 
-  const renderTariffs: ListRenderItem<TariffInfo> = ({ item, index }: { item: TariffInfo; index: number }) => {
+  const renderTariffs: ListRenderItem<TariffInfoFromAPI> = ({
+    item,
+    index,
+  }: {
+    item: TariffInfoFromAPI;
+    index: number;
+  }) => {
     const IconComponent = tariffsIconsData[item.name].icon;
 
     const isSelected = item.isSelected;

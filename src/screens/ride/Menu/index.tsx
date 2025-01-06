@@ -48,7 +48,13 @@ const Menu = ({ onClose, isStatusBarTranslucent }: MenuProps) => {
       },
       title: t('ride_Menu_navigationRide'),
     },
-
+    activity: {
+      navFunc: () => {
+        navigation.navigate('OrderHistory');
+        onClose();
+      },
+      title: t('ride_Menu_navigationOrderHistory'),
+    },
     // TODO Uncomment all code whe we need it
 
     // statistics: {

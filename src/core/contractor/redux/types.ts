@@ -99,7 +99,7 @@ export type TariffInfoByTariffsAPIResponse = {
   isSelected: boolean;
 };
 
-export type TariffInfo = {
+export type TariffInfoFromAPI = {
   id: string;
   name: TariffType;
   isPrimary: boolean;
@@ -130,9 +130,11 @@ export type ContractorStateErrorKey = keyof ContractorState['error'];
 export type ContractorStateLoadingKey = keyof ContractorState['loading'];
 
 export type ContractorState = {
-  tariffs: TariffInfo[];
+  tariffs: TariffInfoFromAPI[];
   preferences: PreferenceInfo[];
   achievements: AchievementsAPIResponse[];
+  ordersHistory: OrderWithTariffInfo[];
+  isOrdersHistoryOffsetEmpty: boolean;
   info: ContractorInfo;
   avatarURL: string;
   zone: Nullable<Zone>;
@@ -141,10 +143,47 @@ export type ContractorState = {
     contractorInfo: Nullable<NetworkErrorDetailsWithBody<any>>;
     tariffsInfo: Nullable<NetworkErrorDetailsWithBody<any>>;
     general: Nullable<NetworkErrorDetailsWithBody<any>>;
+    orderHistory: Nullable<NetworkErrorDetailsWithBody<any>>;
   };
   loading: {
     contractorInfo: boolean;
     tariffsInfo: boolean;
     general: boolean;
+    orderHistory: boolean;
   };
 };
+
+export type OrderFromAPI = {
+  id: string;
+  state: string;
+  pickUpPlace: string;
+  pickUpAddress: string;
+  dropOffPlace: string;
+  stopPointAddresses: string[];
+  dropOffAddress: string;
+  timeToPickUp: string;
+  timeToDropOff: string;
+  tariffId: string;
+  durationMin: number;
+  distanceMtr: number;
+  price: number;
+  pricePerKm: number;
+  currency: string;
+  pickUpRouteId: string;
+  dropOffRouteId: string;
+  arrivedToPickUpDate: string;
+  pickUpDate: string;
+  dropOffDate: string;
+  createdDate: string;
+  updatedDate: string;
+};
+
+export type OrderWithTariffInfo = OrderFromAPI & { tariffInfo: TariffInfoFromAPI };
+
+export type OrdersHistoryAPIRequest = {
+  amount: number;
+  offset: number;
+};
+
+export type TariffInfoByIdAPIResponse = TariffInfoFromAPI;
+export type OrdersHistoryAPIResponse = OrderFromAPI[];

@@ -26,4 +26,5 @@ export type RootStackParamList = {
   AccountVerificateCode: { mode: 'phone' | 'email'; newValue?: string; method?: 'change' | 'verify' };
   DocMedia: { feKey: DocsFeKeyFromAPI; templateId: string };
   PaymentDoc: undefined;
+  OrderHistory: undefined;
 };

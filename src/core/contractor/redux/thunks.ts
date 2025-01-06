@@ -10,10 +10,14 @@ import {
   ContractorStatus,
   GetContractorAvatarAPIResponse,
   GetOrUpdateZoneAPIResponse,
+  OrdersHistoryAPIRequest,
+  OrdersHistoryAPIResponse,
+  OrderWithTariffInfo,
   PreferenceInfo,
   TariffAdditionalInfoAPIResponse,
-  TariffInfo,
+  TariffInfoByIdAPIResponse,
   TariffInfoByTariffsAPIResponse,
+  TariffInfoFromAPI,
   UpdateProfileLanguageAPIRequest,
   UpdateSelectedTariffsAPIRequest,
   Zone,
@@ -37,6 +41,53 @@ export const getOrUpdateZone = createAppAsyncThunk<Nullable<Zone>, void>(
         response.data.find(el => el.locationType === 'City') ?? response.data.find(el => el.locationType === 'Country');
 
       return zone ?? null;
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
+
+export const getTariffInfoById = createAppAsyncThunk<TariffInfoFromAPI, { tariffId: string }>(
+  'contractor/getTariffInfoById',
+  async (payload, { rejectWithValue, configAxios }) => {
+    try {
+      return (await configAxios.get<TariffInfoByIdAPIResponse>(`/tariffs/${payload.tariffId}`)).data;
+    } catch (error) {
+      return rejectWithValue(getNetworkErrorInfo(error));
+    }
+  },
+);
+
+export const getOrdersHistory = createAppAsyncThunk<OrderWithTariffInfo[], OrdersHistoryAPIRequest>(
+  'contractor/getOrdersHistory',
+  async (payload, { rejectWithValue, ordersAxios, dispatch }) => {
+    try {
+      const ordersHistory = (
+        await ordersAxios.get<OrdersHistoryAPIResponse>('/', {
+          params: {
+            SortBy: 'createdDate:desc',
+            amount: payload.amount,
+            offset: payload.offset,
+          },
+        })
+      ).data;
+
+      const uniqueTariffIds = Array.from(new Set(ordersHistory.map(order => order.tariffId)));
+
+      const tariffInfoMap: Record<string, TariffInfoFromAPI> = {};
+      await Promise.all(
+        uniqueTariffIds.map(async tariffId => {
+          const tariffInfo = await dispatch(getTariffInfoById({ tariffId })).unwrap();
+          tariffInfoMap[tariffId] = tariffInfo;
+        }),
+      );
+
+      const ordersWithTariffInfo = ordersHistory.map(order => ({
+        ...order,
+        tariffInfo: tariffInfoMap[order.tariffId],
+      }));
+
+      return ordersWithTariffInfo;
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
     }
@@ -105,7 +156,7 @@ export const updateContractorStatus = createAppAsyncThunk<ContractorStatus, Cont
   },
 );
 
-export const getFullTariffsInfo = createAppAsyncThunk<TariffInfo[], void>(
+export const getFullTariffsInfo = createAppAsyncThunk<TariffInfoFromAPI[], void>(
   'contractor/getFullTariffsInfo',
   async (_, { rejectWithValue, contractorAxios, configAxios, getState }) => {
     try {
@@ -120,7 +171,7 @@ export const getFullTariffsInfo = createAppAsyncThunk<TariffInfo[], void>(
       const primaryTariffsInfo = primaryTariffsInfoResponse.data;
       const additionalTariffsInfo = additionalTariffsInfoResponse.data;
 
-      const updatedTariffs: TariffInfo[] = [];
+      const updatedTariffs: TariffInfoFromAPI[] = [];
 
       primaryTariffsInfo.forEach(primaryTariff => {
         const matchingTariff = additionalTariffsInfo.find(additionalTariff => additionalTariff.id === primaryTariff.id);
@@ -147,8 +198,8 @@ export const getFullTariffsInfo = createAppAsyncThunk<TariffInfo[], void>(
 
 //TODO: Refactor return value, set it after waiting success response (without payload return)
 export const sendSelectedTariffs = createAppAsyncThunk<
-  TariffInfo[],
-  { selectedTariffs: TariffInfo[]; contractorId: string }
+  TariffInfoFromAPI[],
+  { selectedTariffs: TariffInfoFromAPI[]; contractorId: string }
 >('contractor/sendSelectedTariffs', async (payload, { rejectWithValue, contractorAxios, getState }) => {
   const tariffIds = payload.selectedTariffs.map(tariff => tariff.id);
   try {

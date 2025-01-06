@@ -2,7 +2,7 @@ import { RefObject } from 'react';
 import { ListRenderItem } from 'react-native';
 import { BottomWindowWithGestureRef } from 'shuttlex-integration';
 
-import { TariffInfo } from '../../../../../core/contractor/redux/types';
+import { TariffInfoFromAPI } from '../../../../../core/contractor/redux/types';
 
 export type PreferencesPopupProps = {
   onClose: () => void;
@@ -12,6 +12,6 @@ export type PreferencesPopupProps = {
 
 export type HiddenPartProps = {
   onClose: () => void;
-  renderTariffs: ListRenderItem<TariffInfo>;
-  localTariffsSorted: TariffInfo[];
+  renderTariffs: ListRenderItem<TariffInfoFromAPI>;
+  localTariffsSorted: TariffInfoFromAPI[];
 };

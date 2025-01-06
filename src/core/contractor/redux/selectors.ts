@@ -33,11 +33,13 @@ export const achievementsSelector = (state: AppState) => state.contractor.achiev
 export const doneAchievementsSelector = createSelector([achievementsSelector], achievements =>
   achievements.filter(achievement => achievement.isDone),
 );
+export const ordersHistorySelector = (state: AppState) => state.contractor.ordersHistory;
 
 export const contractorZoneSelector = (state: AppState) => state.contractor.zone;
 export const contractorInfoStateSelector = (state: AppState) => state.contractor.info.state;
 export const contractorStatusSelector = (state: AppState) => state.contractor.info.status;
 export const contractorSubscriptionStatusSelector = (state: AppState) => state.contractor.subscriptionStatus;
+export const isOrdersHistoryOffsetEmptySelector = (state: AppState) => state.contractor.isOrdersHistoryOffsetEmpty;
 
 //Errors selectors
 export const tariffsInfoErrorSelector = (state: AppState) => state.contractor.error.tariffsInfo;
@@ -48,3 +50,4 @@ export const contractorGeneralErrorSelector = (state: AppState) => state.contrac
 export const isTariffsInfoLoadingSelector = (state: AppState) => state.contractor.loading.tariffsInfo;
 export const isContractorInfoLoadingSelector = (state: AppState) => state.contractor.loading.contractorInfo;
 export const isContractorGeneralLoadingSelector = (state: AppState) => state.contractor.loading.general;
+export const isOrdersHistoryLoadingSelector = (state: AppState) => state.contractor.loading.orderHistory;

@@ -58,6 +58,7 @@
   "docs_PaymentDoc_errorMinCharacters": "Це поле повинно містити щонайменше {{min}} символи",
   "docs_PaymentDoc_errorExactDigits": "Це поле повинно містити рівно {{count}} цифр",
   "ride_Menu_navigationRide": "Моя поїздка",
+  "ride_Menu_navigationOrderHistory": "Історя поїздок",
   "ride_Menu_navigationStatistics": "Статистика",
   "ride_Menu_navigationAccountSettings": "Налаштування",
   "ride_Menu_navigationWallet": "Гаманець",
@@ -170,5 +171,8 @@
   "menu_Withdraw_alertDescriptionWarning": "Ви ще не активували свій аккаунт, щоб вивести гроші, перейдіть на\nсайт та виконайте необхідні дії для його активації.",
   "menu_Withdraw_alertContinueButton": "Продовжити",
   "menu_Withdraw_alertWarningButton": "Перейти",
-  "menu_Withdraw_SuccessPopup_continueButton": "Продовжити"
+  "menu_Withdraw_SuccessPopup_continueButton": "Продовжити",
+  "menu_OrderHistory_title": "Історія поїздок",
+  "menu_OrderHistory_canceled": "Скасоване",
+  "menu_OrderHistory_empty": "Тут буде відображатися\nінформація про Ваші\nпоїздки"
 }

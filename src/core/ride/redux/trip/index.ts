@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { minToMilSec, NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
 
-import { TariffInfo } from '../../../contractor/redux/types';
+import { TariffInfoFromAPI } from '../../../contractor/redux/types';
 import {
   acceptOffer,
   declineOffer,
@@ -66,7 +66,7 @@ const slice = createSlice({
     setOrderWithAdditionalInfo(
       state,
       action: PayloadAction<{
-        tariffs: TariffInfo[];
+        tariffs: TariffInfoFromAPI[];
         orderId: string;
         passengerInfo: PassengerInfoAPIResponse;
         passengerAvatarURL: Nullable<string>;

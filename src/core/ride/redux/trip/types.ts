@@ -1,7 +1,7 @@
 import { LatLng } from 'react-native-maps';
 import { NetworkErrorDetailsWithBody, Nullable } from 'shuttlex-integration';
 
-import { TariffInfo } from '../../../contractor/redux/types';
+import { TariffInfoFromAPI } from '../../../contractor/redux/types';
 
 export type GetNewOfferLongPollingAPIResponse = {
   offerId: string;
@@ -127,7 +127,7 @@ export type GetPassengerTripInfoThunkResult = {
     info: PassengerInfoAPIResponse;
     avatarURL: Nullable<string>;
   };
-  tariffs: TariffInfo[];
+  tariffs: TariffInfoFromAPI[];
 };
 
 export type DataForOrderType = 'current' | 'future';
@@ -179,7 +179,7 @@ export type GetCurrentOrderThunkResult = Nullable<{
     info: PassengerInfoAPIResponse;
     avatarURL: Nullable<string>;
   };
-  tariffs: TariffInfo[];
+  tariffs: TariffInfoFromAPI[];
 }>;
 
 export type GetFutureOrderThunkResult = GetCurrentOrderThunkResult;

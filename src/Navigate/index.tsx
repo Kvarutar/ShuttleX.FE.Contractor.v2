@@ -16,6 +16,7 @@ import ProfilePhotoScreen from '../screens/docs/ProfilePhotoScreen';
 import AccountSettings from '../screens/menu/AccountSettings';
 import AccountVerificateCodeScreen from '../screens/menu/AccountVerificateCodeScreen';
 import NotificationScreen from '../screens/menu/NotificationsScreen';
+import OrderHistory from '../screens/menu/OrderHistory';
 import WalletScreen from '../screens/menu/wallet/WalletScreen';
 import WithdrawScreen from '../screens/menu/wallet/WithdrawScreen';
 import RatingScreen from '../screens/ride/RatingScreen';
@@ -63,6 +64,7 @@ const Navigate = (): JSX.Element => {
             <Stack.Screen name="AccountVerificateCode" component={AccountVerificateCodeScreen} />
             <Stack.Screen name="DocMedia" component={DocMediaScreen} />
             <Stack.Screen name="PaymentDoc" component={PaymentDocScreen} />
+            <Stack.Screen name="OrderHistory" component={OrderHistory} />
           </>
         ) : (
           <>

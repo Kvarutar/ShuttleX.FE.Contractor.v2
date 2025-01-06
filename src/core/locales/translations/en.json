@@ -98,7 +98,7 @@
   "ride_Ride_PassengerRatingPopup_getHelpButton": "Get help",
   "ride_Rating_Feedback_title": "Rate the passenger {{name}} on this ride.",
   "ride_Menu_navigationRide": "Ride",
-  "ride_Menu_navigationActivity": "Activity",
+  "ride_Menu_navigationOrderHistory": "Order History",
   "ride_Menu_navigationStatistics": "Statistics",
   "ride_Menu_navigationPromocodes": "Promocodes",
   "ride_Menu_navigationSettings": "Settings",
@@ -238,5 +238,10 @@
   "menu_Withdraw_SuccessPopup_continueButton": "Continue",
   "menu_AccountVerificateCode_firstHeader": "Enter the Four-digit Code You Received",
   "menu_AccountVerificateCode_secondHeader": "in Message",
-  "menu_AccountVerificateCode_change": "Change"
+  "menu_AccountVerificateCode_change": "Change",
+  "menu_OrderHistory_title": "Order History",
+  "menu_OrderHistory_canceled": "Canceled",
+  "menu_OrderHistory_empty": "This will display\ninformation about your\nrides",
+  "menu_OrderHistory_durationTimeHours": "{{hours}} h ",
+  "menu_OrderHistory_durationTimeMinutes": "{{minutes}} min"
 }

@@ -10,7 +10,7 @@ import {
   isTariffsInfoLoadingSelector,
   selectedTariffsSelector,
 } from '../../../core/contractor/redux/selectors';
-import { TariffInfo } from '../../../core/contractor/redux/types';
+import { TariffInfoFromAPI } from '../../../core/contractor/redux/types';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -42,7 +42,7 @@ const TariffsCarousel = () => {
     },
   });
 
-  const renderCarousel = (data: TariffInfo[], renderItem: CarouselRenderItem<TariffInfo>) => {
+  const renderCarousel = (data: TariffInfoFromAPI[], renderItem: CarouselRenderItem<TariffInfoFromAPI>) => {
     return (
       <Carousel
         loop

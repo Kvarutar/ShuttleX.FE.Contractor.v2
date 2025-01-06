@@ -5,6 +5,7 @@ import {
   getAchievements,
   getContractorInfo,
   getFullTariffsInfo,
+  getOrdersHistory,
   getOrUpdateZone,
   getPreferences,
   getSubscriptionStatus,
@@ -13,19 +14,25 @@ import {
   updateContractorStatus,
 } from './thunks';
 import {
+  AchievementsAPIResponse,
   type ContractorInfo,
+  ContractorState,
   ContractorStateErrorKey,
   ContractorStateLoadingKey,
+  ContractorStatus,
   GetOrUpdateZoneAPIResponse,
+  PreferenceInfo,
+  TariffInfoFromAPI,
   VehicleData,
 } from './types';
-import { AchievementsAPIResponse, ContractorState, ContractorStatus, PreferenceInfo, TariffInfo } from './types';
 
 const initialState: ContractorState = {
   //TODO: Remove contractorId and Profile value when logic for receiving it will be added
   tariffs: [],
   preferences: [],
   achievements: [],
+  ordersHistory: [],
+  isOrdersHistoryOffsetEmpty: false,
   info: {
     id: '',
     name: '',
@@ -47,11 +54,13 @@ const initialState: ContractorState = {
     general: null, // for all for non-parallel errors
     contractorInfo: null,
     tariffsInfo: null,
+    orderHistory: null,
   },
   loading: {
     general: false, // for all for non-parallel loadings
     contractorInfo: false,
     tariffsInfo: false,
+    orderHistory: false,
   },
 };
 
@@ -62,7 +71,7 @@ const slice = createSlice({
     setContractorId(state, action: PayloadAction<string>) {
       state.info.id = action.payload;
     },
-    setTariffs(state, action: PayloadAction<TariffInfo[]>) {
+    setTariffs(state, action: PayloadAction<TariffInfoFromAPI[]>) {
       state.tariffs = action.payload;
     },
     setError(
@@ -122,6 +131,11 @@ const slice = createSlice({
     },
     setSubscriptionStatus(state, action: PayloadAction<boolean>) {
       state.subscriptionStatus = action.payload;
+    },
+
+    clearOrdersHistory(state) {
+      state.ordersHistory = initialState.ordersHistory;
+      state.isOrdersHistoryOffsetEmpty = initialState.isOrdersHistoryOffsetEmpty;
     },
   },
 
@@ -302,6 +316,43 @@ const slice = createSlice({
           payload: action.payload,
           type: setSubscriptionStatus.type,
         });
+      })
+
+      .addCase(getOrdersHistory.pending, state => {
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'orderHistory', value: true },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'orderHistory', value: null },
+          type: setError.type,
+        });
+      })
+      .addCase(getOrdersHistory.fulfilled, (state, action) => {
+        if (action.payload.length) {
+          state.ordersHistory.push(...action.payload);
+        } else {
+          state.isOrdersHistoryOffsetEmpty = true;
+        }
+
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'orderHistory', value: false },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'orderHistory', value: null },
+          type: setError.type,
+        });
+      })
+      .addCase(getOrdersHistory.rejected, (state, action) => {
+        slice.caseReducers.setLoading(state, {
+          payload: { loadingKey: 'orderHistory', value: false },
+          type: setLoading.type,
+        });
+        slice.caseReducers.setError(state, {
+          payload: { errorKey: 'orderHistory', value: action.payload as NetworkErrorDetailsWithBody<any> },
+          type: setError.type,
+        });
       });
   },
 });
@@ -321,6 +372,7 @@ export const {
   setContractorZone,
   updateContractorInfo,
   setSubscriptionStatus,
+  clearOrdersHistory,
 } = slice.actions;
 
 export default slice.reducer;
