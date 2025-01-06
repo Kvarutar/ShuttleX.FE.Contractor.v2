@@ -263,8 +263,7 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
       )}
       {isUnsupportedCityPopupVisible && (
         <UnsupportedCityPopup
-          //TODO: swap console.log('Support') to navigation on Support
-          onSupportPressHandler={() => console.log('Support')}
+          onSupportPressHandler={() => Linking.openURL('https://t.me/ShuttleX_Support')}
           setIsUnsupportedCityPopupVisible={setIsUnsupportedCityPopupVisible}
         />
       )}

@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, StyleSheet } from 'react-native';
+import { Keyboard, Linking, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   BottomWindowWithGesture,
@@ -144,9 +144,7 @@ const VerifyPhoneCodeScreen = (): JSX.Element => {
         underButtonPressableText={t('verification_VerifyPhoneCode_underButtonPressableText')}
         onPressUnderButtonText={openChangePhonePopUp}
         onBannedAgainButtonPress={onBannedAgainPress}
-        onSupportButtonPress={() => {
-          // TODO: onSupportPress
-        }}
+        onSupportButtonPress={() => Linking.openURL('https://t.me/ShuttleX_Support')}
       />
       {isBottomWindowOpened && (
         <BottomWindowWithGesture
