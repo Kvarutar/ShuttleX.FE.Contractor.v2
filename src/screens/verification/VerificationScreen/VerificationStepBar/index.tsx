@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import {
   Bar,
   Button,
@@ -40,10 +41,12 @@ const VerificationStepBar = ({
   );
 
   return (
-    <Bar style={styles.bar} mode={barMode} onPress={onPress} disabled={isDisabled}>
-      <Text style={[styles.contentText, textStyle]}>{text}</Text>
-      {stateIndicator}
-    </Bar>
+    <Animated.View entering={FadeIn} exiting={FadeOut}>
+      <Bar style={styles.bar} mode={barMode} onPress={onPress} disabled={isDisabled}>
+        <Text style={[styles.contentText, textStyle]}>{text}</Text>
+        {stateIndicator}
+      </Bar>
+    </Animated.View>
   );
 };
 

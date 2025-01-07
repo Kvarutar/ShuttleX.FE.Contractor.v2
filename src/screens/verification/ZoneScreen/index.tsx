@@ -23,6 +23,9 @@ import { RootStackParamList } from '../../../Navigate/props';
 import VerificationHeader from '../VerificationScreen/VerificationHeader';
 import VerificationStepBar from '../VerificationScreen/VerificationStepBar';
 
+const getTopLevelZones = (zones: ZoneAPIResponse[]): ZoneAPIResponse[] =>
+  zones.filter(zone => zone.parentZoneId === null);
+
 const ZoneScreen = (): JSX.Element => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Zone'>>();
 
@@ -35,8 +38,7 @@ const ZoneScreen = (): JSX.Element => {
   const [zoneToSelect, setZoneToSelect] = useState<ZoneAPIResponse | null>(null);
 
   useEffect(() => {
-    const topLevelZones = allZones.filter(zone => zone.parentZoneId === null);
-    setCurrentZones(topLevelZones);
+    setCurrentZones(getTopLevelZones(allZones));
   }, [allZones]);
 
   const onSubmit = () => {
@@ -63,8 +65,7 @@ const ZoneScreen = (): JSX.Element => {
 
   const handleBackPress = () => {
     if (currentZones[0].parentZoneId) {
-      const parentZones = allZones.filter(tmZone => tmZone.id === currentZones[0].parentZoneId);
-      setCurrentZones(parentZones);
+      setCurrentZones(getTopLevelZones(allZones));
     } else {
       navigation.goBack();
     }
