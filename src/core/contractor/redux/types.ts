@@ -151,6 +151,9 @@ export type ContractorState = {
     general: boolean;
     orderHistory: boolean;
   };
+  ui: {
+    isLoadingStubVisible: boolean;
+  };
 };
 
 export type OrderFromAPI = {

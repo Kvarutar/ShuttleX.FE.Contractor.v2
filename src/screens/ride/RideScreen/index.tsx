@@ -13,6 +13,8 @@ import {
   ButtonShapes,
   IntegrationModule,
   isIncorrectFieldsError,
+  LoadingBrandIconModes,
+  LoadingStub,
   LocationUnavailable,
   LocationUnavailableProps,
   MenuHeader,
@@ -25,7 +27,12 @@ import {
 // import { setNotificationList } from '../../../core/menu/redux/notifications';
 // import { numberOfUnreadNotificationsSelector } from '../../../core/menu/redux/notifications/selectors';
 import { signOut } from '../../../core/auth/redux/thunks';
-import { contractorInfoStateSelector, isContractorInfoLoadingSelector } from '../../../core/contractor/redux/selectors';
+import { setIsLoadingStubVisible } from '../../../core/contractor/redux';
+import {
+  contractorInfoStateSelector,
+  isContractorInfoLoadingSelector,
+  isLoadingStubVisibleSelector,
+} from '../../../core/contractor/redux/selectors';
 import { ContractorStatusAPIResponse } from '../../../core/contractor/redux/types';
 import { getAccountSettingsVerifyStatus } from '../../../core/menu/redux/accountSettings/thunks';
 import { useAppDispatch } from '../../../core/redux/hooks';
@@ -82,6 +89,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
   const geolocationAccuracy = useSelector(geolocationAccuracySelector);
   // const unreadNotifications = useSelector(numberOfUnreadNotificationsSelector);
   const contractorDocsStatus = useSelector(contractorInfoStateSelector);
+  const isLoadingStubVisible = useSelector(isLoadingStubVisibleSelector);
 
   const isContractorInfoLoading = useSelector(isContractorInfoLoadingSelector);
 
@@ -328,9 +336,10 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
 
   return (
     <>
+      {isLoadingStubVisible && <LoadingStub mode={LoadingBrandIconModes.Mode1} />}
       {currentRoute === 'Ride' && <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />}
       <SafeAreaView style={styles.wrapper}>
-        <MapView />
+        <MapView onFirstCameraAnimationComplete={() => dispatch(setIsLoadingStubVisible(false))} />
 
         <MenuHeader onMenuPress={() => setIsMenuVisible(true)} style={[styles.menuHeader, computedStyles.menuHeader]}>
           <Alert

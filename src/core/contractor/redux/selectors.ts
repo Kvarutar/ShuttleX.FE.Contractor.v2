@@ -51,3 +51,6 @@ export const isTariffsInfoLoadingSelector = (state: AppState) => state.contracto
 export const isContractorInfoLoadingSelector = (state: AppState) => state.contractor.loading.contractorInfo;
 export const isContractorGeneralLoadingSelector = (state: AppState) => state.contractor.loading.general;
 export const isOrdersHistoryLoadingSelector = (state: AppState) => state.contractor.loading.orderHistory;
+
+//UI
+export const isLoadingStubVisibleSelector = (state: AppState) => state.contractor.ui.isLoadingStubVisible;

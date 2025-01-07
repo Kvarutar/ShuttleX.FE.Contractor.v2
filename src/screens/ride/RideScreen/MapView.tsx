@@ -34,7 +34,7 @@ const finalStopPointUpdateIntervalInSec = 30;
 const updateContractorGeoInterval = 1000;
 const polylineClearPointDistanceMtr = 25;
 
-const MapView = (): JSX.Element => {
+const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationComplete: () => void }): JSX.Element => {
   const dispatch = useAppDispatch();
 
   const geolocationCoordinates = useSelector(geolocationCoordinatesSelector);
@@ -197,6 +197,7 @@ const MapView = (): JSX.Element => {
       style={StyleSheet.absoluteFill}
       geolocationCoordinates={geolocationCoordinates ?? undefined}
       geolocationCalculatedHeading={geolocationCalculatedHeading}
+      onFirstCameraAnimationComplete={onFirstCameraAnimationComplete}
       polylines={polylines}
       markers={markers}
       stopPoints={stopPoints}

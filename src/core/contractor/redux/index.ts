@@ -62,6 +62,9 @@ const initialState: ContractorState = {
     tariffsInfo: false,
     orderHistory: false,
   },
+  ui: {
+    isLoadingStubVisible: true,
+  },
 };
 
 const slice = createSlice({
@@ -70,6 +73,9 @@ const slice = createSlice({
   reducers: {
     setContractorId(state, action: PayloadAction<string>) {
       state.info.id = action.payload;
+    },
+    setIsLoadingStubVisible(state, action: PayloadAction<boolean>) {
+      state.ui.isLoadingStubVisible = action.payload;
     },
     setTariffs(state, action: PayloadAction<TariffInfoFromAPI[]>) {
       state.tariffs = action.payload;
@@ -372,6 +378,7 @@ export const {
   setContractorZone,
   updateContractorInfo,
   setSubscriptionStatus,
+  setIsLoadingStubVisible,
   clearOrdersHistory,
 } = slice.actions;
 
