@@ -3,8 +3,9 @@ import DeviceInfo from 'react-native-device-info';
 import Keychain from 'react-native-keychain';
 import { getNetworkErrorInfo, getTokens, saveTokens } from 'shuttlex-integration';
 
-import { setIsLoadingStubVisible } from '../../contractor/redux';
+import { clearContractorState, setIsLoadingStubVisible } from '../../contractor/redux';
 import { createAppAsyncThunk } from '../../redux/hooks';
+import { cleanTripState } from '../../ride/redux/trip';
 import { setIsLoggedIn } from '.';
 import {
   SignInAPIRequest,
@@ -86,6 +87,9 @@ export const signOut = createAppAsyncThunk<void, void>(
           allOpenSessions: false,
         });
       }
+
+      dispatch(cleanTripState());
+      dispatch(clearContractorState());
 
       dispatch(setIsLoadingStubVisible(true));
       dispatch(setIsLoggedIn(false));

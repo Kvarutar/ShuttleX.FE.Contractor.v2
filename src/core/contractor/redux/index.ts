@@ -143,6 +143,16 @@ const slice = createSlice({
       state.ordersHistory = initialState.ordersHistory;
       state.isOrdersHistoryOffsetEmpty = initialState.isOrdersHistoryOffsetEmpty;
     },
+
+    clearContractorState(state) {
+      //Add some states if need
+      state.zone = initialState.zone;
+      state.tariffs = initialState.tariffs;
+      state.avatarURL = initialState.avatarURL;
+      state.info = initialState.info;
+      state.achievements = initialState.achievements;
+      state.preferences = initialState.preferences;
+    },
   },
 
   extraReducers: builder => {
@@ -364,6 +374,7 @@ const slice = createSlice({
 });
 
 export const {
+  clearContractorState,
   setContractorId,
   setTariffs,
   setLoading,

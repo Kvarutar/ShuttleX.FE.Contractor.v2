@@ -1,4 +1,4 @@
-import { CountryPhoneMaskDto } from 'shuttlex-integration';
+import { AccountSettingsVerificationMethod, CountryPhoneMaskDto } from 'shuttlex-integration';
 
 import { DocsFeKeyFromAPI } from '../core/auth/redux/docs/types';
 import { WithdrawType } from '../core/menu/redux/wallet/types';
@@ -23,7 +23,7 @@ export type RootStackParamList = {
   VerifyPhoneCode: undefined;
   LockOut: undefined;
   AccountSettings: undefined;
-  AccountVerificateCode: { mode: 'phone' | 'email'; newValue?: string; method?: 'change' | 'verify' };
+  AccountVerificateCode: { mode: 'phone' | 'email'; newValue?: string; method?: AccountSettingsVerificationMethod };
   DocMedia: { feKey: DocsFeKeyFromAPI; templateId: string };
   PaymentDoc: undefined;
   OrderHistory: undefined;

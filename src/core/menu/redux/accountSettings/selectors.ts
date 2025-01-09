@@ -13,3 +13,4 @@ export const isAccountSettingsVerifyLoadingSelector = (state: AppState) => state
 //Errors
 export const accountSettingsChangeDataErrorSelector = (state: AppState) => state.accountSettings.error.changeData;
 export const accountSettingsVerifyErrorSelector = (state: AppState) => state.accountSettings.error.verify;
+export const deleteAccountErrorSelector = (state: AppState) => state.accountSettings.error.deleteAccount;

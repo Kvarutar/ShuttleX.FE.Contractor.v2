@@ -159,6 +159,16 @@ const slice = createSlice({
     setTripOffer(state, action: PayloadAction<Nullable<OfferAPIResponse>>) {
       state.offer = action.payload;
     },
+    cleanTripState(state) {
+      //Add some states if need
+      state.offer = null;
+      state.order = null;
+      state.secondOrder = null;
+      state.pickUpRoute = null;
+      state.dropOffRoute = null;
+      state.futureOrderPickUpRoutes = null;
+      state.tripPoints = [];
+    },
     setPassengerAvatar(state, action: PayloadAction<string>) {
       if (state.order) {
         state.order.passenger.avatarURL = action.payload;
@@ -474,6 +484,7 @@ const slice = createSlice({
 export const {
   setOrderWithAdditionalInfo,
   setOrder,
+  cleanTripState,
   setSecondOrder,
   setPassengerAvatar,
   setTripOffer,
