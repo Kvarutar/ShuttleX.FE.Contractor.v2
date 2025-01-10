@@ -15,6 +15,9 @@
 		1A8A853E7F13A3B6A805295C /* Pods_SharedPods_ShuttleX_Contractor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62835B4C4E87BB4D0E7BD3C /* Pods_SharedPods_ShuttleX_Contractor.framework */; };
 		2DF56FA9BAA848AFB544681A /* Inter Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AE74D88DE3B4B12B6902699 /* Inter Black.ttf */; };
 		4B62709666624D5FA2C0EB2E /* Inter Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9627073BFA23443BA6D6F66F /* Inter Bold.ttf */; };
+		4BBF71CF2D2ED6FD00F9AB34 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4BBF71D32D2ED6FD00F9AB34 /* InfoPlist.strings */; };
+		4BBF71D02D2ED6FD00F9AB34 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4BBF71D32D2ED6FD00F9AB34 /* InfoPlist.strings */; };
+		4BBF71D12D2ED6FD00F9AB34 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4BBF71D32D2ED6FD00F9AB34 /* InfoPlist.strings */; };
 		4C9B87D6634D4D31AF8D36F2 /* Inter SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4002563309F4E7EBD4155B6 /* Inter SemiBold.ttf */; };
 		565994BFDB8A45C39C4B4A06 /* Inter Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F5E4ADE10F1E4AB6AB97E8CD /* Inter Regular.ttf */; };
 		5723C9A7C26040A8957E5C57 /* Inter Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0B15E9A1F544FB5A85D1D67 /* Inter Thin.ttf */; };
@@ -69,6 +72,9 @@
 		3143A753470638B7FC74F987 /* Pods_SharedPods_ShuttleX_Contractor_dev.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SharedPods_ShuttleX_Contractor_dev.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DEF935395434169AAD5D6DA /* Pods-ShuttleX_Contractor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShuttleX_Contractor.release.xcconfig"; path = "Target Support Files/Pods-ShuttleX_Contractor/Pods-ShuttleX_Contractor.release.xcconfig"; sourceTree = "<group>"; };
 		3F0E93F1D8294B7EBE30C3F2 /* Inter Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter Medium.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter Medium.ttf"; sourceTree = "<group>"; };
+		4BBF71D22D2ED6FD00F9AB34 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4BBF71D42D2ED6FF00F9AB34 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4BBF71D52D2ED6FF00F9AB34 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4D6046ECD14D41DC841AB349 /* Inter ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter ExtraBold.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter ExtraBold.ttf"; sourceTree = "<group>"; };
 		5991448C00A070C784846D68 /* Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig"; path = "Target Support Files/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig"; sourceTree = "<group>"; };
 		5B3BAE8016DD2CE29160DD01 /* Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig"; path = "Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig"; sourceTree = "<group>"; };
@@ -174,6 +180,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				4BBF71D32D2ED6FD00F9AB34 /* InfoPlist.strings */,
 				CF6C94482D0AF71900E5E4BE /* ShuttleX_Contractor_dev.entitlements */,
 				13B07FAE1A68108700A75B9A /* ShuttleX_Contractor */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -326,6 +333,8 @@
 			knownRegions = (
 				en,
 				Base,
+				uk,
+				ru,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
@@ -345,6 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF7F95C22D0F3D5F00FD07BC /* GoogleService-Info.plist in Resources */,
+				4BBF71D12D2ED6FD00F9AB34 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,6 +365,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				2DF56FA9BAA848AFB544681A /* Inter Black.ttf in Resources */,
 				4B62709666624D5FA2C0EB2E /* Inter Bold.ttf in Resources */,
+				4BBF71CF2D2ED6FD00F9AB34 /* InfoPlist.strings in Resources */,
 				C9BC2C98981B48F69D01E05B /* Inter ExtraBold.ttf in Resources */,
 				AA75A189654C41F498BBAA8B /* Inter ExtraLight.ttf in Resources */,
 				CF7F95C12D0F3D5F00FD07BC /* GoogleService-Info.plist in Resources */,
@@ -374,6 +385,7 @@
 				75673DD12C9B1CE5006E9710 /* Images.xcassets in Resources */,
 				75673DD22C9B1CE5006E9710 /* Inter Black.ttf in Resources */,
 				75673DD32C9B1CE5006E9710 /* Inter Bold.ttf in Resources */,
+				4BBF71D02D2ED6FD00F9AB34 /* InfoPlist.strings in Resources */,
 				75673DD42C9B1CE5006E9710 /* Inter ExtraBold.ttf in Resources */,
 				75673DD52C9B1CE5006E9710 /* Inter ExtraLight.ttf in Resources */,
 				CF7F95C32D0F3D5F00FD07BC /* GoogleService-Info.plist in Resources */,
@@ -697,6 +709,19 @@
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		4BBF71D32D2ED6FD00F9AB34 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4BBF71D22D2ED6FD00F9AB34 /* en */,
+				4BBF71D42D2ED6FF00F9AB34 /* ru */,
+				4BBF71D52D2ED6FF00F9AB34 /* uk */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {

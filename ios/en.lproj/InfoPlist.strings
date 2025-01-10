@@ -1,0 +1,4 @@
+"NSLocationWhenInUseUsageDescription" = "We use your location to find orders and calculate routes.";
+"NSPhotoLibraryUsageDescription" = "Photo library access is needed to upload documents or your profile picture.";
+"NSCameraUsageDescription" = "Camera access is required to upload documents or your profile photo.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "We use your location in the background to find orders and calculate routes.";

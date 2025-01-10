@@ -40,8 +40,10 @@
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
 	<string></string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Your location is required for the app to work properly</string>
+	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
+	<string></string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UIAppFonts</key>
 	<array>

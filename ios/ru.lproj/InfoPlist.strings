@@ -1,0 +1,4 @@
+"NSLocationWhenInUseUsageDescription" = "Мы используем ваше местоположение для поиска заказов и расчета маршрутов.";
+"NSPhotoLibraryUsageDescription" = "Доступ к галерее необходим для загрузки документов или фото профиля.";
+"NSCameraUsageDescription" = "Доступ к камере необходим для загрузки документов или фото профиля.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Мы используем ваше местоположение в фоновом режиме для поиска заказов и расчета маршрутов.";
