@@ -165,6 +165,8 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
         options: { coordinates: coordinates, color: '#00000066' },
       });
       setFutureOrderMarker(coordinates[coordinates.length - 1]);
+    } else {
+      setFutureOrderMarker(null);
     }
     setPolylines(newPolylines);
     dispatch(

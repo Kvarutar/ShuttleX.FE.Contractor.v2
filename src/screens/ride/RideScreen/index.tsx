@@ -290,11 +290,12 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       dispatch(setTripOffer(null));
       setIsOfferPopupVisible(false);
 
-      if (order) {
+      if (!order) {
         dispatch(resetCurrentRoutes());
-      } else if (secondOrder) {
+      } else if (order && !secondOrder) {
         dispatch(resetFutureRoutes());
       }
+
       AlertNative.alert(
         t('ride_Ride_offerWasCanceledOrAcceptedAlertTitle'),
         t('ride_Ride_offerWasCanceledOrAcceptedAlertDescription'),

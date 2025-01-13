@@ -83,7 +83,7 @@ export const getCancelTripLongPolling = createAppAsyncThunk<void, { orderId: str
           await dispatch(getFinalCost({ orderId: payload.orderId }));
           dispatch(setTripStatus(TripStatus.Rating));
         }
-        //Because this status might be chanched in notifications also
+        //Because this status might be changed in notifications also
         else if (trip.tripStatus !== TripStatus.Rating) {
           dispatch(endTrip());
           dispatch(resetCurrentRoutes());

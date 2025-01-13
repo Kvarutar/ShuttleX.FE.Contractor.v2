@@ -5,7 +5,7 @@ import { logger } from '../../../App';
 import { getContractorInfo } from '../../contractor/redux/thunks';
 import { store } from '../../redux/store';
 import { endTrip, resetCurrentRoutes, resetFutureRoutes, setSecondOrder, setTripStatus } from '../../ride/redux/trip';
-import { orderSelector, tripStatusSelector } from '../../ride/redux/trip/selectors';
+import { orderSelector, secondOrderSelector, tripStatusSelector } from '../../ride/redux/trip/selectors';
 import {
   fetchOfferInfo,
   getCancelTripLongPolling,
@@ -20,7 +20,7 @@ const isValidNotificationType = (key: string): key is NotificationType => {
 };
 
 const isPayloadRequired = (type: NotificationType): type is NotificationWithPayload => {
-  return [NotificationType.NewOffer].includes(type);
+  return [NotificationType.NewOffer, NotificationType.PassengerRejected].includes(type);
 };
 
 const notificationHandlers: Record<NotificationType, (payload?: NotificationPayload) => void> = {
@@ -35,14 +35,18 @@ const notificationHandlers: Record<NotificationType, (payload?: NotificationPayl
     getCancelTripLongPolling.abortAll();
 
     const order = orderSelector(store.getState());
+    const secondOrder = secondOrderSelector(store.getState());
     if (payload && payload.orderId && payload?.orderId === order?.id) {
+      if (secondOrder) {
+        store.dispatch(getCancelTripLongPolling({ orderId: secondOrder.id }));
+      }
       const tripStatus = tripStatusSelector(store.getState());
       if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Ending) {
         await store.dispatch(getFinalCost({ orderId: payload.orderId }));
 
         store.dispatch(setTripStatus(TripStatus.Rating));
       }
-      //Because this status might be chanched in lonpolling also
+      //Because this status might be changed in lonpolling also
       else if (tripStatus !== TripStatus.Rating) {
         store.dispatch(endTrip());
         store.dispatch(resetCurrentRoutes());
