@@ -4,15 +4,7 @@ import { tariffsSelector } from '../../../contractor/redux/selectors';
 import { getContractorInfo } from '../../../contractor/redux/thunks';
 import { createAppAsyncThunk } from '../../../redux/hooks';
 import { geolocationCoordinatesSelector } from '../geolocation/selectors';
-import {
-  endTrip,
-  resetCurrentRoutes,
-  resetFutureRoutes,
-  setOrder,
-  setSecondOrder,
-  setTripOffer,
-  setTripStatus,
-} from '.';
+import { resetCurrentRoutes, resetFutureRoutes, setOrder, setSecondOrder, setTripOffer } from '.';
 import { getOfferNetworkErrorInfo } from './errors';
 import { orderSelector, secondOrderSelector } from './selectors';
 import {
@@ -29,7 +21,6 @@ import {
   GetFinalCostPayload,
   GetFutureOrderAPIResponse,
   GetFutureOrderThunkResult,
-  GetNewOfferLongPollingAPIResponse,
   GetPassengerTripInfoPayload,
   GetPassengerTripInfoThunkResult,
   OfferAPIResponse,
@@ -39,7 +30,6 @@ import {
   PassengerInfoAPIResponse,
   PickedUpAtPickUpPointPayload,
   SendExpiredOfferPayload,
-  TripStatus,
   UpdatePassengerRatingAPIRequest,
   UpdatePassengerRatingPayload,
   WayPointsRouteType,
@@ -50,50 +40,6 @@ export const getFinalCost = createAppAsyncThunk<GetFinalCostAPIResponse, GetFina
   async (payload, { rejectWithValue, cashieringAxios }) => {
     try {
       return (await cashieringAxios.get<GetFinalCostAPIResponse>(`/ride/orders/${payload.orderId}/final-cost`)).data;
-    } catch (error) {
-      return rejectWithValue(getNetworkErrorInfo(error));
-    }
-  },
-);
-
-export const getNewOfferLongPolling = createAppAsyncThunk<void, void>(
-  'trip/getNewOfferLongPolling',
-  async (_, { rejectWithValue, offersLongPollingAxios, dispatch, abortAllSignal }) => {
-    try {
-      const response = await offersLongPollingAxios.get<GetNewOfferLongPollingAPIResponse>('/new/long-polling', {
-        signal: abortAllSignal,
-      });
-      dispatch(fetchOfferInfo(response.data.offerId));
-    } catch (error) {
-      return rejectWithValue(getNetworkErrorInfo(error));
-    }
-  },
-);
-
-export const getCancelTripLongPolling = createAppAsyncThunk<void, { orderId: string }>(
-  'trip/getCancelTripLongPolling',
-  async (payload, { rejectWithValue, ordersLongPollingAxios, dispatch, getState, abortAllSignal }) => {
-    try {
-      await ordersLongPollingAxios.get(`/${payload.orderId}/canceled/long-polling`, { signal: abortAllSignal });
-
-      const { trip } = getState();
-
-      if (payload.orderId === trip.order?.id) {
-        if (trip.tripStatus === TripStatus.Ride || trip.tripStatus === TripStatus.Ending) {
-          await dispatch(getFinalCost({ orderId: payload.orderId }));
-          dispatch(setTripStatus(TripStatus.Rating));
-        }
-        //Because this status might be changed in notifications also
-        else if (trip.tripStatus !== TripStatus.Rating) {
-          dispatch(endTrip());
-          dispatch(resetCurrentRoutes());
-        }
-      } else {
-        dispatch(setSecondOrder(null));
-        dispatch(resetFutureRoutes());
-      }
-
-      dispatch(getContractorInfo());
     } catch (error) {
       return rejectWithValue(getNetworkErrorInfo(error));
     }
@@ -218,8 +164,6 @@ export const acceptOffer = createAppAsyncThunk<void, AcceptOrDeclineOfferPayload
         await dispatch(getCurrentOrder());
       }
       dispatch(setTripOffer(null));
-
-      dispatch(getNewOfferLongPolling());
     } catch (error) {
       return rejectWithValue(getOfferNetworkErrorInfo(error));
     }
@@ -278,7 +222,6 @@ export const sendExpiredOffer = createAppAsyncThunk<void, SendExpiredOfferPayloa
       await offersAxios.post(`/${payload.offerId}/expire`);
 
       dispatch(setTripOffer(null));
-      dispatch(getNewOfferLongPolling());
     } catch (error) {
       const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({
@@ -304,7 +247,6 @@ export const declineOffer = createAppAsyncThunk<void, AcceptOrDeclineOfferPayloa
       await offersAxios.post(`/${payload.offerId}/decline`);
 
       dispatch(setTripOffer(null));
-      dispatch(getNewOfferLongPolling());
     } catch (error) {
       const { code, body, status } = getNetworkErrorInfo(error);
       return rejectWithValue({

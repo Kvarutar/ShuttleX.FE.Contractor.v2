@@ -18,7 +18,6 @@ import {
   LocationUnavailable,
   LocationUnavailableProps,
   MenuHeader,
-  Nullable,
   sizes,
   SquareButtonModes,
   useTheme,
@@ -57,13 +56,7 @@ import {
   pickUpRouteIdSelector,
   secondOrderSelector,
 } from '../../../core/ride/redux/trip/selectors';
-import {
-  acceptOffer,
-  declineOffer,
-  getCancelTripLongPolling,
-  getNewOfferLongPolling,
-  sendExpiredOffer,
-} from '../../../core/ride/redux/trip/thunks';
+import { acceptOffer, declineOffer, sendExpiredOffer } from '../../../core/ride/redux/trip/thunks';
 import Menu from '../Menu';
 import MapView from './MapView';
 import Order from './Order';
@@ -127,20 +120,6 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       navigation.replace('Verification');
     }
   }, [contractorDocsStatus, navigation, isContractorInfoLoading]);
-
-  const currentOrderIdRef = useRef<Nullable<string>>(null);
-  const futureOrderIdRef = useRef<Nullable<string>>(null);
-
-  useEffect(() => {
-    if (order && order.id !== currentOrderIdRef.current && order.id !== futureOrderIdRef.current) {
-      dispatch(getCancelTripLongPolling({ orderId: order.id }));
-      currentOrderIdRef.current = order.id;
-    }
-    if (secondOrder && secondOrder.id !== futureOrderIdRef.current) {
-      dispatch(getCancelTripLongPolling({ orderId: secondOrder.id }));
-      futureOrderIdRef.current = secondOrder.id;
-    }
-  }, [dispatch, order, secondOrder]);
 
   useEffect(() => {
     dispatch(getAccountSettingsVerifyStatus());
@@ -303,10 +282,6 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       );
     }
   }, [dispatch, acceptOrDeclineOfferError, t, order, secondOrder]);
-
-  useEffect(() => {
-    dispatch(getNewOfferLongPolling());
-  }, [dispatch]);
 
   const onOfferPopupClose = async () => {
     setIsOfferPopupVisible(false);

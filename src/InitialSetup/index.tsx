@@ -16,6 +16,7 @@ import { useAppDispatch } from '../core/redux/hooks';
 import { signalRThunks, updateSignalRAccessToken } from '../core/redux/signalr';
 import { geolocationCoordinatesSelector } from '../core/ride/redux/geolocation/selectors';
 import { getCurrentOrder, getFutureOrder } from '../core/ride/redux/trip/thunks';
+import { initializeSSEConnection } from '../core/sse';
 import { getFirebaseDeviceToken, setupNotifications } from '../core/utils/notifications/notificationSetup';
 import { InitialSetupProps } from './types';
 import useServerErrorHandler from './utils/useServerErrorHandler';
@@ -63,6 +64,7 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
 
         dispatch(updateSignalRAccessToken(accessToken));
         dispatch(signalRThunks.connect());
+        initializeSSEConnection(accessToken);
       }
     })();
   }, [dispatch, isLoggedIn]);

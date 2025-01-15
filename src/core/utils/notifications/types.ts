@@ -8,7 +8,7 @@ export interface NotificationRemoteMessage {
   };
 }
 
-export enum NotificationType {
+export enum SSEAndNotificationsEventType {
   NewOffer = 'offer_received',
   PassengerRejected = 'passenger_rejected',
   DocsApproved = 'docs_approved',
@@ -19,4 +19,4 @@ export type NotificationPayload = {
   orderId?: string;
 };
 
-export type NotificationWithPayload = NotificationType.NewOffer;
+export type NotificationWithPayload = SSEAndNotificationsEventType.NewOffer;

@@ -5,41 +5,33 @@ import { logger } from '../../../App';
 import { getContractorInfo } from '../../contractor/redux/thunks';
 import { store } from '../../redux/store';
 import { endTrip, resetCurrentRoutes, resetFutureRoutes, setSecondOrder, setTripStatus } from '../../ride/redux/trip';
-import { orderSelector, secondOrderSelector, tripStatusSelector } from '../../ride/redux/trip/selectors';
-import {
-  fetchOfferInfo,
-  getCancelTripLongPolling,
-  getFinalCost,
-  getNewOfferLongPolling,
-} from '../../ride/redux/trip/thunks';
+import { orderSelector, tripStatusSelector } from '../../ride/redux/trip/selectors';
+import { fetchOfferInfo, getFinalCost } from '../../ride/redux/trip/thunks';
 import { TripStatus } from '../../ride/redux/trip/types';
-import { NotificationPayload, NotificationRemoteMessage, NotificationType, NotificationWithPayload } from './types';
+import {
+  NotificationPayload,
+  NotificationRemoteMessage,
+  NotificationWithPayload,
+  SSEAndNotificationsEventType,
+} from './types';
 
-const isValidNotificationType = (key: string): key is NotificationType => {
-  return Object.values(NotificationType).includes(key as NotificationType);
+const isValidNotificationType = (key: string): key is SSEAndNotificationsEventType => {
+  return Object.values(SSEAndNotificationsEventType).includes(key as SSEAndNotificationsEventType);
 };
 
-const isPayloadRequired = (type: NotificationType): type is NotificationWithPayload => {
-  return [NotificationType.NewOffer, NotificationType.PassengerRejected].includes(type);
+const isPayloadRequired = (type: SSEAndNotificationsEventType): type is NotificationWithPayload => {
+  return [SSEAndNotificationsEventType.NewOffer, SSEAndNotificationsEventType.PassengerRejected].includes(type);
 };
 
-const notificationHandlers: Record<NotificationType, (payload?: NotificationPayload) => void> = {
-  [NotificationType.NewOffer]: payload => {
-    getNewOfferLongPolling.abortAll();
-
+const notificationHandlers: Record<SSEAndNotificationsEventType, (payload?: NotificationPayload) => void> = {
+  [SSEAndNotificationsEventType.NewOffer]: payload => {
     if (payload?.offerId) {
       store.dispatch(fetchOfferInfo(payload.offerId));
     }
   },
-  [NotificationType.PassengerRejected]: async payload => {
-    getCancelTripLongPolling.abortAll();
-
+  [SSEAndNotificationsEventType.PassengerRejected]: async payload => {
     const order = orderSelector(store.getState());
-    const secondOrder = secondOrderSelector(store.getState());
     if (payload && payload.orderId && payload?.orderId === order?.id) {
-      if (secondOrder) {
-        store.dispatch(getCancelTripLongPolling({ orderId: secondOrder.id }));
-      }
       const tripStatus = tripStatusSelector(store.getState());
       if (tripStatus === TripStatus.Ride || tripStatus === TripStatus.Ending) {
         await store.dispatch(getFinalCost({ orderId: payload.orderId }));
@@ -58,7 +50,7 @@ const notificationHandlers: Record<NotificationType, (payload?: NotificationPayl
 
     store.dispatch(getContractorInfo());
   },
-  [NotificationType.DocsApproved]: () => {
+  [SSEAndNotificationsEventType.DocsApproved]: () => {
     store.dispatch(getContractorInfo());
   },
 };
@@ -67,7 +59,7 @@ const notificationHandlers: Record<NotificationType, (payload?: NotificationPayl
 export const displayNotificationForAll = async (remoteMessage: NotificationRemoteMessage) => {
   const { key, payload, title, body, sendTime } = remoteMessage.data;
 
-  if (key === NotificationType.NewOffer) {
+  if (key === SSEAndNotificationsEventType.NewOffer) {
     const notificationTime = Date.parse(sendTime) + getTimezoneOffsetInMilSec();
     const currentTime = Date.now();
 
