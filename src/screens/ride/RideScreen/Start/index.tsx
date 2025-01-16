@@ -38,6 +38,7 @@ import { RootStackParamList } from '../../../../Navigate/props';
 import AlertInitializer from '../../../../shared/AlertInitializer';
 import MapCameraModeButton from '../MapCameraModeButton';
 import AccountIsNotActivePopup from '../popups/AccountIsNotActivePopup';
+import { AccountIsNotActivePopupModes } from '../popups/AccountIsNotActivePopup/types';
 import AchievementsPopup from '../popups/AchievementsPopup';
 import TariffPreferencesPopup from '../popups/PreferencesPopup';
 import UnclosablePopupWithModes from '../popups/UnclosablePopupWithModes';
@@ -93,6 +94,8 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
   const [isAchievementsPopupVisible, setIsAchievementsPopupVisible] = useState<boolean>(false);
   const [isAccountIsNotActivePopupVisible, setIsAccountIsNotActivePopupVisible] = useState<boolean>(false);
+  const [isAccountIsNotActivePopupConfirmVisible, setIsAccountIsNotActivePopupConfirmVisible] =
+    useState<boolean>(false);
   const [isUnsupportedCityPopupVisible, setIsUnsupportedCityPopupVisible] = useState<boolean>(false);
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const contractorZone = useSelector(contractorZoneSelector);
@@ -259,7 +262,16 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
       )}
       {isCanceledTripsPopupVisible && canceledTripsPopupsContent()}
       {isAccountIsNotActivePopupVisible && (
-        <AccountIsNotActivePopup setIsAccountIsNotActivePopupVisible={setIsAccountIsNotActivePopupVisible} />
+        <AccountIsNotActivePopup
+          setIsAccountIsNotActivePopupVisible={setIsAccountIsNotActivePopupVisible}
+          onPressLaterHandler={() => setIsAccountIsNotActivePopupConfirmVisible(true)}
+        />
+      )}
+      {isAccountIsNotActivePopupConfirmVisible && (
+        <AccountIsNotActivePopup
+          setIsAccountIsNotActivePopupVisible={setIsAccountIsNotActivePopupConfirmVisible}
+          mode={AccountIsNotActivePopupModes.Confirm}
+        />
       )}
       {isUnsupportedCityPopupVisible && (
         <UnsupportedCityPopup
