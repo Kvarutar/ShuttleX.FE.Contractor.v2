@@ -6,6 +6,7 @@ import { getNetworkErrorInfo, getTokens, saveTokens } from 'shuttlex-integration
 import { clearContractorState, setIsLoadingStubVisible } from '../../contractor/redux';
 import { createAppAsyncThunk } from '../../redux/hooks';
 import { cleanTripState } from '../../ride/redux/trip';
+import { closeSSEConnection, removeAllSSEListeners } from '../../sse';
 import { setIsLoggedIn } from '.';
 import {
   SignInAPIRequest,
@@ -87,6 +88,10 @@ export const signOut = createAppAsyncThunk<void, void>(
           allOpenSessions: false,
         });
       }
+
+      //clean work
+      removeAllSSEListeners();
+      closeSSEConnection();
 
       dispatch(cleanTripState());
       dispatch(clearContractorState());
