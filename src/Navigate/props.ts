@@ -27,4 +27,5 @@ export type RootStackParamList = {
   DocMedia: { feKey: DocsFeKeyFromAPI; templateId: string };
   PaymentDoc: undefined;
   OrderHistory: undefined;
+  Subscription: undefined;
 };

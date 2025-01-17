@@ -107,7 +107,7 @@
   "ride_Menu_navigationWallet": "Wallet",
   "ride_Menu_navigationNotifications": "Notifications",
   "ride_Menu_navigationHelp": "Help",
-  "ride_Menu_navigationSubscription": "Subscription",
+  "ride_Menu_navigationSubscription": "Access to orders",
   "ride_Menu_additionalEarned": "Earned",
   "ride_Menu_additionalPrevious": "Previous",
   "ride_Menu_level": "{{level}} lvl.",
@@ -247,5 +247,17 @@
   "menu_OrderHistory_canceled": "Canceled",
   "menu_OrderHistory_empty": "This will display\ninformation about your\nrides",
   "menu_OrderHistory_durationTimeHours": "{{hours}} h ",
-  "menu_OrderHistory_durationTimeMinutes": "{{minutes}} min"
+  "menu_OrderHistory_durationTimeMinutes": "{{minutes}} min",
+  "menu_Subscription_headerTitle": "Account activation",
+  "menu_Subscription_description": "To get full access to orders,\ngo to the ShuttleX website and activate the desired\nplan through your personal account.",
+  "menu_Subscription_supportButton": "Contact support",
+  "menu_Subscription_titleFirstDaily": "Access for",
+  "menu_Subscription_titleSecondDaily": "Day",
+  "menu_Subscription_titleFirstDebt": "Access for Day",
+  "menu_Subscription_titleSecondDebt": "(Postpaid)",
+  "menu_Subscription_titleFirstMonthly": "Access for",
+  "menu_Subscription_titleSecondMonthly": "Month",
+  "menu_Subscription_descriptionDaily": "Daily access with\n95% reward for each\norder. Payment is\nautomatically deducted\ndaily — {{price}}.",
+  "menu_Subscription_descriptionDebt": "Flexible daily access with\n95% reward per\norder. Pay {{price}} for the\nprevious day before\nactivating a new one.\nLimitation: no more than\n3 such days.",
+  "menu_Subscription_descriptionMonthly": "Monthly access with\n95% reward for each\norder. The monthly fee is\n{{price}} and is deducted automatically."
 }

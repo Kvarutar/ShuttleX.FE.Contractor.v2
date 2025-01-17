@@ -1,7 +1,7 @@
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { Linking, StyleSheet, View } from 'react-native';
+import { Linking, Platform, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   Bar,
@@ -48,6 +48,18 @@ const Menu = ({ onClose, isStatusBarTranslucent }: MenuProps) => {
       },
       title: t('ride_Menu_navigationRide'),
     },
+    subscription: {
+      navFunc: () => {
+        // //TODO Create subscription page
+        if (Platform.OS === 'ios') {
+          navigation.navigate('Subscription');
+        } else {
+          Linking.openURL('https://www.shuttlex.com/contractor.html');
+        }
+        onClose();
+      },
+      title: t('ride_Menu_navigationSubscription'),
+    },
     activity: {
       navFunc: () => {
         navigation.navigate('OrderHistory');
@@ -65,15 +77,6 @@ const Menu = ({ onClose, isStatusBarTranslucent }: MenuProps) => {
     //   },
     //   title: t('ride_Menu_navigationStatistics'),
     // },
-    subscription: {
-      navFunc: () => {
-        // navigation.navigate('Ride');
-        // //TODO Create subscription page
-        Linking.openURL('https://www.shuttlex.com/contractor.html');
-        onClose();
-      },
-      title: t('ride_Menu_navigationSubscription'),
-    },
     //Dont need it now
     // wallet: {
     //   navFunc: () => {

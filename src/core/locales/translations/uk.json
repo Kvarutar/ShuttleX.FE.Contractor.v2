@@ -63,7 +63,7 @@
   "ride_Menu_navigationAccountSettings": "Налаштування",
   "ride_Menu_navigationWallet": "Гаманець",
   "ride_Menu_navigationHelp": "Допомога",
-  "ride_Menu_navigationSubscription": "Підписки",
+  "ride_Menu_navigationSubscription": "Активація аккаунта",
   "ride_Menu_additionalEarned": "Зароблено",
   "ride_Menu_additionalPrevious": "Нещодавній",
   "menu_AccountVerificateCode_phonePrompt": "Введіть код,\nотриманий в SMS на\nномер",
@@ -178,5 +178,17 @@
   "menu_Withdraw_SuccessPopup_continueButton": "Продовжити",
   "menu_OrderHistory_title": "Історія поїздок",
   "menu_OrderHistory_canceled": "Скасоване",
-  "menu_OrderHistory_empty": "Тут буде відображатися\nінформація про Ваші\nпоїздки"
+  "menu_OrderHistory_empty": "Тут буде відображатися\nінформація про Ваші\nпоїздки",
+  "menu_Subscription_headerTitle": "Активація аккаунта",
+  "menu_Subscription_description": "Щоб отримати повний доступ до замовлень,\nперейдіть на сайт ShuttleX та активуйте бажаний план через особистий кабінет.",
+  "menu_Subscription_supportButton": "Служба підтримки",
+  "menu_Subscription_titleFirstDaily": "Доступ",
+  "menu_Subscription_titleSecondDaily": "на день",
+  "menu_Subscription_titleFirstDebt": "Доступ на день",
+  "menu_Subscription_titleSecondDebt": "(Післяоплата)",
+  "menu_Subscription_titleFirstMonthly": "Доступ",
+  "menu_Subscription_titleSecondMonthly": "на місяць",
+  "menu_Subscription_descriptionDaily": "Щоденний доступ із\nвинагородою 95% з кожного\nзамовлення. Оплата\nавтоматично списується\nщодня — {{price}}.",
+  "menu_Subscription_descriptionDebt": "Гнучкий щоденний доступ із\nвинагородою 95% за\nзамовлення. Сплатіть {{price}} за\nпопередній день перед тим, як\nактивувати новий.\nОбмеження: не більше 3 таких\nднів .",
+  "menu_Subscription_descriptionMonthly": "Місячний доступ із\nвинагородою 95% за кожне\nзамовлення. Щомісячна\nоплата становить {{price}} і\nсписується автоматично."
 }
