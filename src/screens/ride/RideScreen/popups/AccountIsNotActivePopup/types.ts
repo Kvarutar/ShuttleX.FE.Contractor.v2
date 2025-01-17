@@ -1,6 +1,7 @@
 export enum AccountIsNotActivePopupModes {
-  Default = 'default',
+  FirstUse = 'firstUse',
   Confirm = 'confirm',
+  AfterUse = 'afterUse',
 }
 
 export type AccountIsNotActivePopupProps = {
