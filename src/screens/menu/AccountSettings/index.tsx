@@ -1,10 +1,11 @@
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
+  AccountSettingsRef,
   AccountSettingsScreen,
   AccountSettingsVerificationMethod,
   Button,
@@ -13,6 +14,7 @@ import {
   CircleButtonModes,
   ConfirmDeleteAccountPopup,
   DeleteAccountPopup,
+  isIncorrectFieldsError,
   MenuHeader,
   MenuUserImage2,
   SafeAreaView,
@@ -28,7 +30,6 @@ import { contractorAvatarSelector, contractorInfoSelector } from '../../../core/
 import { resetAccountSettingsVerification } from '../../../core/menu/redux/accountSettings';
 import {
   accountSettingsChangeDataErrorSelector,
-  accountSettingsVerifyErrorSelector,
   accountSettingsVerifyStatusSelector,
   isAccountSettingsChangeDataLoadingSelector,
 } from '../../../core/menu/redux/accountSettings/selectors';
@@ -43,6 +44,8 @@ import { PhotoBlockProps } from './types';
 
 //TODO: uncoment all changeName related code when we need changeName popup///////
 const AccountSettings = (): JSX.Element => {
+  const accountSettingsRef = useRef<AccountSettingsRef>(null);
+
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'AccountSettings'>>();
   const { t } = useTranslation();
 
@@ -52,50 +55,72 @@ const AccountSettings = (): JSX.Element => {
   const contractorInfo = useSelector(contractorInfoSelector);
   const verifiedStatus = useSelector(accountSettingsVerifyStatusSelector);
   const changeDataError = useSelector(accountSettingsChangeDataErrorSelector);
-  const verifyDataError = useSelector(accountSettingsVerifyErrorSelector);
+  const isChangeDataLoading = useSelector(isAccountSettingsChangeDataLoadingSelector);
+  const [errorField, setErrorField] = useState<string>('');
+
   const [isSignOutPopupVisible, setIsSignOutPopupVisible] = useState(false);
   const [isDeleteAccountPopupVisible, setIsDeleteAccountPopupVisible] = useState(false);
   const [isConfirmDeleteAccountPopupVisible, setIsConfirmDeleteAccountPopupVisible] = useState(false);
 
-  const isChangeDataLoading = useSelector(isAccountSettingsChangeDataLoadingSelector);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(resetAccountSettingsVerification());
+    }, [dispatch]),
+  );
 
   useEffect(() => {
-    dispatch(resetAccountSettingsVerification());
-  }, [changeDataError, verifyDataError, dispatch]);
+    if (changeDataError && isIncorrectFieldsError(changeDataError)) {
+      if (Array.isArray(changeDataError.body)) {
+        changeDataError.body.forEach(item => {
+          accountSettingsRef.current?.showErrors({ [item.field]: item.message });
+        });
+      } else if (changeDataError.body.message) {
+        accountSettingsRef.current?.showErrors({
+          [errorField === 'phone' ? 'newphone' : 'newemail']: changeDataError.body.message,
+        });
+      }
+    }
+  }, [changeDataError, errorField]);
 
   const handleOpenVerification = async (
     mode: 'phone' | 'email',
     newValue: string,
     method: AccountSettingsVerificationMethod,
-  ) => {
-    if (!isChangeDataLoading && !changeDataError) {
-      let oldData: string | undefined;
-      switch (mode) {
-        case 'phone':
-          //TODO change it when back will synchronize profile
-          oldData = verifiedStatus.phoneInfo;
-          break;
-        case 'email':
-          oldData = verifiedStatus.emailInfo;
-          break;
-      }
-      switch (method) {
-        case 'change':
-          try {
-            await dispatch(changeAccountContactData({ mode, data: { oldData, newData: newValue } })).unwrap();
-            // If there is an error, then try catch will catch it and the next line will not be executed
-            navigation.navigate('AccountVerificateCode', { mode, newValue, method });
-          } catch (_) {}
-          break;
-        case 'verify':
+  ): Promise<boolean | void> => {
+    setErrorField(mode);
+    let oldData: string | undefined;
+    switch (mode) {
+      case 'phone':
+        //TODO change it when back will synchronize profile
+        oldData = verifiedStatus.phoneInfo;
+        break;
+      case 'email':
+        oldData = verifiedStatus.emailInfo;
+        break;
+    }
+
+    switch (method) {
+      case 'change':
+        try {
+          await dispatch(changeAccountContactData({ mode, data: { oldData, newData: newValue } })).unwrap();
+          navigation.navigate('AccountVerificateCode', { mode, newValue, method });
+          return true;
+        } catch (error) {
+          return false;
+        }
+
+      case 'verify':
+        try {
           await dispatch(requestAccountSettingsChangeDataVerificationCode({ mode, data: oldData }));
           navigation.navigate('AccountVerificateCode', { mode, method });
-          break;
-        case 'delete':
-          await dispatch(requestAccountSettingsChangeDataVerificationCode({ mode, data: oldData ?? '' }));
-          navigation.navigate('AccountVerificateCode', { mode, method });
-          break;
-      }
+          return true;
+        } catch (error) {
+          return false;
+        }
+      case 'delete':
+        await dispatch(requestAccountSettingsChangeDataVerificationCode({ mode, data: oldData ?? '' }));
+        navigation.navigate('AccountVerificateCode', { mode, method });
+        break;
     }
   };
 
@@ -117,6 +142,7 @@ const AccountSettings = (): JSX.Element => {
         </MenuHeader>
 
         <AccountSettingsScreen
+          ref={accountSettingsRef}
           setIsSignOutPopupVisible={setIsSignOutPopupVisible}
           setIsDeleteAccountPopupVisible={setIsDeleteAccountPopupVisible}
           handleOpenVerification={handleOpenVerification}

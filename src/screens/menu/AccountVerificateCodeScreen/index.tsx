@@ -9,6 +9,7 @@ import { CodeVerificationScreen, isLockedError, milSecToTime } from 'shuttlex-in
 import { isCantDeleteAccountWhileInDebtError } from '../../../core/menu/redux/accountSettings/errors';
 import {
   accountSettingsChangeDataErrorSelector,
+  accountSettingsVerifyErrorSelector,
   accountSettingsVerifyStatusSelector,
   deleteAccountErrorSelector,
   isAccountSettingsVerifyLoadingSelector,
@@ -35,6 +36,8 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
   const [isBlocked, setIsBlocked] = useState(false);
 
   const changeDataError = useSelector(accountSettingsChangeDataErrorSelector);
+  const verifyDataError = useSelector(accountSettingsVerifyErrorSelector);
+
   const deleteAccountError = useSelector(deleteAccountErrorSelector);
   const verifiedStatus = useSelector(accountSettingsVerifyStatusSelector);
   const isVerificationLoading = useSelector(isAccountSettingsVerifyLoadingSelector);
@@ -57,14 +60,14 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
   );
 
   useEffect(() => {
-    if (!changeDataError && !isVerificationLoading) {
+    if (!changeDataError && !verifyDataError && !isVerificationLoading) {
       if (method === 'delete') {
         dispatch(deleteAccountRequest());
       } else {
         navigation.goBack();
       }
     }
-  }, [dispatch, changeDataError, navigation, isVerificationLoading, method]);
+  }, [changeDataError, navigation, isVerificationLoading, verifyDataError, dispatch, method]);
 
   useEffect(() => {
     if (deleteAccountError) {
@@ -81,8 +84,9 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
   }, [t, navigation, deleteAccountError]);
 
   useEffect(() => {
+    setIsIncorrectCode(Boolean(changeDataError || verifyDataError));
+
     if (changeDataError) {
-      setIsIncorrectCode(true);
       if (isLockedError(changeDataError)) {
         setIsIncorrectCode(true);
         const lockoutEndDate = Date.parse(changeDataError.body.lockOutEndTime) - Date.now();
@@ -91,10 +95,8 @@ const AccountVerificateCodeScreen = (): JSX.Element => {
         setLockoutEndTimestamp(lockoutEndDate);
         setIsBlocked(true);
       }
-    } else {
-      setIsIncorrectCode(false);
     }
-  }, [changeDataError]);
+  }, [changeDataError, verifyDataError]);
 
   const handleRequestAgain = () => {
     if (method === 'change' && newValue) {
