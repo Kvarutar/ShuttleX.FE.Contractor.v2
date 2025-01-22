@@ -277,9 +277,10 @@ const AddressWithPassengerAndOrderInfo = ({
                 </View>
               ) : (
                 <View style={[styles.timerStatusContainer, computedStyles.timerStatusContainer]}>
-                  <Text
-                    style={[styles.timerStatusText, computedStyles.timerStatusText]}
-                  >{`+${formatCurrency(order.currencyCode, extraWaitingSum)}`}</Text>
+                  <Text style={[styles.timerStatusText, computedStyles.timerStatusText]}>{`+${formatCurrency(
+                    order.currencyCode,
+                    extraWaitingSum,
+                  )}`}</Text>
                 </View>
               ))}
           </View>

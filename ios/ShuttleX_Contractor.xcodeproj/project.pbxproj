@@ -14,6 +14,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1A8A853E7F13A3B6A805295C /* Pods_SharedPods_ShuttleX_Contractor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62835B4C4E87BB4D0E7BD3C /* Pods_SharedPods_ShuttleX_Contractor.framework */; };
 		2DF56FA9BAA848AFB544681A /* Inter Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0AE74D88DE3B4B12B6902699 /* Inter Black.ttf */; };
+		4A5A1AAAEB1F2ADE3A6D1636 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 68540948CDC52B8A176EEB1C /* PrivacyInfo.xcprivacy */; };
 		4B62709666624D5FA2C0EB2E /* Inter Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9627073BFA23443BA6D6F66F /* Inter Bold.ttf */; };
 		4BBF71CF2D2ED6FD00F9AB34 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4BBF71D32D2ED6FD00F9AB34 /* InfoPlist.strings */; };
 		4BBF71D02D2ED6FD00F9AB34 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4BBF71D32D2ED6FD00F9AB34 /* InfoPlist.strings */; };
@@ -21,6 +22,7 @@
 		4C9B87D6634D4D31AF8D36F2 /* Inter SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4002563309F4E7EBD4155B6 /* Inter SemiBold.ttf */; };
 		565994BFDB8A45C39C4B4A06 /* Inter Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F5E4ADE10F1E4AB6AB97E8CD /* Inter Regular.ttf */; };
 		5723C9A7C26040A8957E5C57 /* Inter Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0B15E9A1F544FB5A85D1D67 /* Inter Thin.ttf */; };
+		72078D1FED583A01B3C8B5CD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8B5CB1626125D62F84A2F9BA /* PrivacyInfo.xcprivacy */; };
 		75673DCC2C9B1CE5006E9710 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		75673DCD2C9B1CE5006E9710 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		75673DD12C9B1CE5006E9710 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -78,11 +80,13 @@
 		4D6046ECD14D41DC841AB349 /* Inter ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter ExtraBold.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter ExtraBold.ttf"; sourceTree = "<group>"; };
 		5991448C00A070C784846D68 /* Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig"; path = "Target Support Files/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests/Pods-ShuttleX_Contractor-ShuttleX_ContractorTests.release.xcconfig"; sourceTree = "<group>"; };
 		5B3BAE8016DD2CE29160DD01 /* Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig"; path = "Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev.debug.xcconfig"; sourceTree = "<group>"; };
+		68540948CDC52B8A176EEB1C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = ShuttleX_Contractor/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		75673DE22C9B1CE5006E9710 /* ShuttleX_Contractor_dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShuttleX_Contractor_dev.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75673DE32C9B1CE5006E9710 /* ShuttleX_Contractor_dev.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = ShuttleX_Contractor_dev.plist; path = /Users/nikolab131/Documents/Work/NewShuttleX/ShuttleX.FE.Contractor.v2/ios/ShuttleX_Contractor_dev.plist; sourceTree = "<absolute>"; };
 		789C8A2B72601E037F65660E /* Pods-ShuttleX_Contractor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShuttleX_Contractor.debug.xcconfig"; path = "Target Support Files/Pods-ShuttleX_Contractor/Pods-ShuttleX_Contractor.debug.xcconfig"; sourceTree = "<group>"; };
 		7DCB645E790A9BD6A413FF47 /* Pods-SharedPods-ShuttleX_Contractor_dev.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharedPods-ShuttleX_Contractor_dev.release.xcconfig"; path = "Target Support Files/Pods-SharedPods-ShuttleX_Contractor_dev/Pods-SharedPods-ShuttleX_Contractor_dev.release.xcconfig"; sourceTree = "<group>"; };
 		80E447F92D9A43DEBC3752EC /* Inter ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter ExtraLight.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter ExtraLight.ttf"; sourceTree = "<group>"; };
+		8B5CB1626125D62F84A2F9BA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = ShuttleX_Contractor/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		8EACC64E4D3A416BB4FF6C74 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = ShuttleX_Contractor/BootSplash.storyboard; sourceTree = "<group>"; };
 		9627073BFA23443BA6D6F66F /* Inter Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter Bold.ttf"; path = "../node_modules/shuttlex-integration/src/assets/fonts/Inter Bold.ttf"; sourceTree = "<group>"; };
 		9E2D703C028F01A2B396CD09 /* Pods-SharedPods-ShuttleX_ContractorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharedPods-ShuttleX_ContractorTests.debug.xcconfig"; path = "Target Support Files/Pods-SharedPods-ShuttleX_ContractorTests/Pods-SharedPods-ShuttleX_ContractorTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -155,6 +159,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				8EACC64E4D3A416BB4FF6C74 /* BootSplash.storyboard */,
+				68540948CDC52B8A176EEB1C /* PrivacyInfo.xcprivacy */,
 			);
 			name = ShuttleX_Contractor;
 			sourceTree = "<group>";
@@ -190,6 +195,7 @@
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
 				C1B3D85CEECE4A05B293E8B4 /* Resources */,
 				75673DE32C9B1CE5006E9710 /* ShuttleX_Contractor_dev.plist */,
+				8B5CB1626125D62F84A2F9BA /* PrivacyInfo.xcprivacy */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -268,7 +274,6 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ShuttleX_Contractor" */;
 			buildPhases = (
 				760B3AAC04E2E2337770E8C2 /* [CP] Check Pods Manifest.lock */,
-				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -291,7 +296,6 @@
 			buildConfigurationList = 75673DDF2C9B1CE5006E9710 /* Build configuration list for PBXNativeTarget "ShuttleX_Contractor_dev" */;
 			buildPhases = (
 				75673DC92C9B1CE5006E9710 /* [CP] Check Pods Manifest.lock */,
-				75673DCA2C9B1CE5006E9710 /* Start Packager */,
 				75673DCB2C9B1CE5006E9710 /* Sources */,
 				75673DCE2C9B1CE5006E9710 /* Frameworks */,
 				75673DD02C9B1CE5006E9710 /* Resources */,
@@ -375,6 +379,7 @@
 				4C9B87D6634D4D31AF8D36F2 /* Inter SemiBold.ttf in Resources */,
 				5723C9A7C26040A8957E5C57 /* Inter Thin.ttf in Resources */,
 				F596F5F42458425CA7DBC88B /* BootSplash.storyboard in Resources */,
+				4A5A1AAAEB1F2ADE3A6D1636 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -395,6 +400,7 @@
 				75673DD92C9B1CE5006E9710 /* Inter SemiBold.ttf in Resources */,
 				75673DDA2C9B1CE5006E9710 /* Inter Thin.ttf in Resources */,
 				75673DDB2C9B1CE5006E9710 /* BootSplash.storyboard in Resources */,
+				72078D1FED583A01B3C8B5CD /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,25 +465,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		75673DCA2C9B1CE5006E9710 /* Start Packager */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Start Packager";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		75673DDC2C9B1CE5006E9710 /* Bundle React Native code and images */ = {
@@ -652,25 +639,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SharedPods-ShuttleX_ContractorTests/Pods-SharedPods-ShuttleX_ContractorTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		FD10A7F022414F080027D42C /* Start Packager */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Start Packager";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -734,7 +702,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = ShuttleX_ContractorTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -758,7 +726,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = ShuttleX_ContractorTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -892,7 +860,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -944,8 +912,11 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -963,10 +934,12 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -975,7 +948,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1023,8 +996,11 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -1041,10 +1017,12 @@
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
+					"-DFOLLY_CFG_NO_COROUTINES=1",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
