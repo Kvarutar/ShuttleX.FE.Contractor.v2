@@ -38,7 +38,7 @@ const VerifyPhoneCodeScreen = (): JSX.Element => {
   const codeVerificationRef = useRef<Nullable<CodeVerificationScreenRef>>(null);
   const previousChangedValue = useRef<Nullable<string>>(null);
 
-  const initialPhone = useSelector(accountSettingsVerifyStatusSelector).phoneInfo;
+  const initialPhone = useSelector(accountSettingsVerifyStatusSelector).phone;
   const verifyDateError = useSelector(accountSettingsVerifyErrorSelector);
 
   const isVerificationLoading = useSelector(isAccountSettingsVerifyLoadingSelector);

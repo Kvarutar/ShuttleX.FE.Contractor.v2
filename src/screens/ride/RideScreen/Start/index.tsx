@@ -146,11 +146,11 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
   }, [generalError, dispatch]);
 
   const handleOpenVerificationPhone = () => {
-    if (accountSettingsVerifyStatus.phoneInfo) {
+    if (accountSettingsVerifyStatus.phone) {
       dispatch(
         requestAccountSettingsChangeDataVerificationCode({
           mode: 'phone',
-          data: accountSettingsVerifyStatus.phoneInfo,
+          data: accountSettingsVerifyStatus.phone,
         }),
       );
     }
@@ -281,7 +281,7 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
       )}
       {isVerifyPopUpVisible && (
         <VerifyDataPopUp
-          data={accountSettingsVerifyStatus.phoneInfo}
+          data={accountSettingsVerifyStatus.phone}
           mode="phone"
           handleOpenVerification={handleOpenVerificationPhone}
           onVerifyPopupClose={onVerifyPopupClose}

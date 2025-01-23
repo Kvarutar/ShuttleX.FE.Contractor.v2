@@ -24,11 +24,6 @@ export type VerifyAccountContactDataCodeAPIRequest = {
   deviceId: string;
 } & ({ phone: string } | { email: string });
 
-export type VerifyAccountContactDataCodeAPIResponse = {
-  accessToken: string;
-  refreshToken: string;
-};
-
 export type VerifyAccountSettingsDataCodePayload = {
   mode: AvaliableChangeAccountContactDataMethods;
   code: string;
@@ -51,7 +46,6 @@ export type SendConfirmPayload = {
 
 export type SendConfirmAPIRequest = {
   deviceId: string;
-  resendAtempt?: number;
 } & ({ phone: string } | { email: string });
 
 export type AccountSettingsVerificationConfirmType =
@@ -63,8 +57,8 @@ export type AccountSettingsVerificationConfirmType =
     };
 
 export type VerifyStatusAPIResponse = {
-  phoneInfo: string;
+  phone: string;
   isPhoneVerified: boolean;
-  emailInfo: string;
+  email: string;
   isEmailVerified: boolean;
 };
