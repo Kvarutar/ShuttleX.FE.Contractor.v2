@@ -36,20 +36,24 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   const [isServerErrorModalVisible, setIsServerErrorModalVisible] = useState(false);
 
   useEffect(() => {
-    dispatch(getFullTariffsInfo());
-  }, [contractor, dispatch]);
+    if (contractorZone) {
+      dispatch(getFullTariffsInfo());
+    }
+  }, [dispatch, contractor, contractorZone]);
 
   useEffect(() => {
     (async () => {
       const { accessToken } = await getTokens();
 
       if (accessToken) {
-        getFirebaseDeviceToken();
-        //TODO temporary solution
-        await dispatch(getContractorInfo());
-        dispatch(setIsLoggedIn(true));
+        if (isLoggedIn) {
+          getFirebaseDeviceToken();
 
-        dispatch(getOrUpdateZone()); // Here we get or update zone via ip
+          //TODO temporary solution
+          dispatch(getContractorInfo());
+        } else {
+          dispatch(setIsLoggedIn(true));
+        }
       } else {
         dispatch(setIsLoggedIn(false));
       }
@@ -70,12 +74,12 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   }, [dispatch, isLoggedIn]);
 
   useEffect(() => {
-    if (isLocationLoaded) {
+    if (isLoggedIn) {
       (async () => {
-        await dispatch(getOrUpdateZone()); // Here we get or update zone via geolocation
+        await dispatch(getOrUpdateZone()); // Here we get or update zone via ip and then via geolocation
       })();
     }
-  }, [isLocationLoaded, dispatch]);
+  }, [dispatch, isLocationLoaded, isLoggedIn]);
 
   useEffect(() => {
     if (defaultLocation && !isLocationLoaded) {
@@ -91,7 +95,7 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
         dispatch(getFutureOrder());
       })();
     }
-  }, [contractorZone, dispatch, isLocationLoaded]);
+  }, [dispatch, contractorZone, isLocationLoaded]);
 
   useEffect(() => {
     setThemeMode('light');
@@ -99,7 +103,7 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
 
   useEffect(() => {
     dispatch(updateProfileLanguage(i18n.language));
-  }, [contractorZone, i18n.language, dispatch]);
+  }, [dispatch, contractorZone, i18n.language]);
 
   useEffect(() => {
     setupNotifications();
