@@ -195,6 +195,6 @@
   "menu_Subscription_titleFirstMonthly": "Доступ",
   "menu_Subscription_titleSecondMonthly": "на місяць",
   "menu_Subscription_descriptionDaily": "Щоденний доступ із\nвинагородою 95% з кожного\nзамовлення. Оплата\nавтоматично списується\nщодня — {{price}}.",
-  "menu_Subscription_descriptionDebt": "Гнучкий щоденний доступ із\nвинагородою 95% за\nзамовлення. Сплатіть {{price}} за\nпопередній день перед тим, як\nактивувати новий.\nОбмеження: не більше 3 таких\nднів .",
+  "menu_Subscription_descriptionDebt": "Гнучкий щоденний доступ із\nвинагородою 95% за\nзамовлення. Сплатіть {{price}} за\nпопередній день перед тим, як\nактивувати новий.",
   "menu_Subscription_descriptionMonthly": "Місячний доступ із\nвинагородою 95% за кожне\nзамовлення. Щомісячна\nоплата становить {{price}} і\nсписується автоматично."
 }

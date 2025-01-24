@@ -266,6 +266,6 @@
   "menu_Subscription_titleFirstMonthly": "Access for",
   "menu_Subscription_titleSecondMonthly": "Month",
   "menu_Subscription_descriptionDaily": "Daily access with\n95% reward for each\norder. Payment is\nautomatically deducted\ndaily — {{price}}.",
-  "menu_Subscription_descriptionDebt": "Flexible daily access with\n95% reward per\norder. Pay {{price}} for the\nprevious day before\nactivating a new one.\nLimitation: no more than\n3 such days.",
+  "menu_Subscription_descriptionDebt": "Flexible daily access with\n95% reward per\norder. Pay {{price}} for the\nprevious day before\nactivating a new one.",
   "menu_Subscription_descriptionMonthly": "Monthly access with\n95% reward for each\norder. The monthly fee is\n{{price}} and is deducted automatically."
 }

@@ -90,21 +90,23 @@ const SubscriptionSlider = () => {
 
   return (
     <View style={styles.wrapper}>
-      <Carousel
-        ref={sliderRef}
-        width={windowWidth}
-        height={itemHeight}
-        loop={false}
-        onSnapToItem={setCurrentIndex}
-        data={subscriptions}
-        renderItem={renderItem}
-        mode="parallax"
-        modeConfig={{
-          parallaxScrollingScale: 0.85,
-          parallaxScrollingOffset: 40,
-          parallaxAdjacentItemScale: 0.85,
-        }}
-      />
+      <View style={styles.carouselContainer}>
+        <Carousel
+          ref={sliderRef}
+          width={windowWidth}
+          height={itemHeight}
+          loop={false}
+          onSnapToItem={setCurrentIndex}
+          data={subscriptions}
+          renderItem={renderItem}
+          mode="parallax"
+          modeConfig={{
+            parallaxScrollingScale: 0.85,
+            parallaxScrollingOffset: 40,
+            parallaxAdjacentItemScale: 0.85,
+          }}
+        />
+      </View>
       <View style={styles.dotsContainer}>{renderDots}</View>
       <Text style={[styles.descriptionText, computedStyles.descriptionText]}>{t('menu_Subscription_description')}</Text>
     </View>
@@ -117,6 +119,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 34,
+  },
+  carouselContainer: {
+    height: itemHeight,
   },
   itemDescription: {
     fontSize: 14,
