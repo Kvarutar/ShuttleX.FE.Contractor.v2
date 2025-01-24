@@ -53,6 +53,18 @@ const notificationHandlers: Record<SSEAndNotificationsEventType, (payload?: Noti
   [SSEAndNotificationsEventType.DocsApproved]: () => {
     store.dispatch(getContractorInfo());
   },
+
+  [SSEAndNotificationsEventType.Custom]: () => {
+    //just custom notif for test from endpoint
+  },
+
+  [SSEAndNotificationsEventType.PaymentTracsactionStatus]: () => {
+    //add logic when payment will be done
+  },
+
+  [SSEAndNotificationsEventType.Subscription_Expired]: () => {
+    //add logic
+  },
 };
 
 //display notiff without buttons
