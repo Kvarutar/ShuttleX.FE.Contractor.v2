@@ -58,7 +58,7 @@
   "docs_PaymentDoc_errorMinCharacters": "Це поле повинно містити щонайменше {{min}} символи",
   "docs_PaymentDoc_errorExactDigits": "Це поле повинно містити рівно {{count}} цифр",
   "ride_Menu_navigationRide": "Моя поїздка",
-  "ride_Menu_navigationOrderHistory": "Історя поїздок",
+  "ride_Menu_navigationOrderHistory": "Історія поїздок",
   "ride_Menu_navigationStatistics": "Статистика",
   "ride_Menu_navigationAccountSettings": "Налаштування",
   "ride_Menu_navigationWallet": "Гаманець",
