@@ -23,7 +23,7 @@ const isPayloadRequired = (type: SSEAndNotificationsEventType): type is Notifica
   return [SSEAndNotificationsEventType.NewOffer, SSEAndNotificationsEventType.PassengerRejected].includes(type);
 };
 
-const notificationHandlers: Record<SSEAndNotificationsEventType, (payload?: NotificationPayload) => void> = {
+export const notificationHandlers: Record<SSEAndNotificationsEventType, (payload?: NotificationPayload) => void> = {
   [SSEAndNotificationsEventType.NewOffer]: payload => {
     if (payload?.offerId) {
       store.dispatch(fetchOfferInfo(payload.offerId));
@@ -69,7 +69,8 @@ const notificationHandlers: Record<SSEAndNotificationsEventType, (payload?: Noti
 
 //display notiff without buttons
 export const displayNotificationForAll = async (remoteMessage: NotificationRemoteMessage) => {
-  const { key, payload, title, body, sendTime } = remoteMessage.data;
+  const { key, payload, sendTime } = remoteMessage.data;
+  const { title, body } = remoteMessage.notification;
 
   if (key === SSEAndNotificationsEventType.NewOffer) {
     const notificationTime = Date.parse(sendTime) + getTimezoneOffsetInMilSec();
