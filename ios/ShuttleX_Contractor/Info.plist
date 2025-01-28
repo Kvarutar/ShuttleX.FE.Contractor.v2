@@ -33,15 +33,18 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string></string>
+	<string>Camera access is required to upload documents or your profile photo.</string>
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
-	<string></string>
+	<dict>
+		<key>PreciseLocation</key>
+		<string>We need precise access to your location temporarily to improve the accuracy of order matching and route calculation.</string>
+	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>We use your location to find orders and calculate routes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string></string>
+	<string>Photo library access is needed to upload documents or your profile picture.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string></string>
+	<string>We use your location in the background to find orders and calculate routes.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter Black.ttf</string>
