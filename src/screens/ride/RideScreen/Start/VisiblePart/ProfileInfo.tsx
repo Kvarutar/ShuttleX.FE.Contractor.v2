@@ -28,6 +28,11 @@ import {
 } from '../../../../../core/contractor/redux/selectors';
 import { updateContractorStatus } from '../../../../../core/contractor/redux/thunks';
 import { ContractorStatus } from '../../../../../core/contractor/redux/types';
+import { isContractorNeverBeforeHaveSubscription } from '../../../../../core/menu/redux/subscription/errors';
+import {
+  subscriptionAvailableStatusErrorSelector,
+  subscriptionDebtStatusErrorSelector,
+} from '../../../../../core/menu/redux/subscription/selectors';
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { ProfileInfoProps } from './types';
 
@@ -52,6 +57,9 @@ const ProfileInfo = ({ bottomWindowRef, lineState, setIsAccountIsNotActivePopupV
   const isTariffsInfoLoading = useSelector(isTariffsInfoLoadingSelector);
   const contractorInfoError = useSelector(contractorInfoErrorSelector);
   const tariffsInfoError = useSelector(tariffsInfoErrorSelector);
+
+  const subscriptionAvailableStatusError = useSelector(subscriptionAvailableStatusErrorSelector);
+  const subscriptionDebtStatusError = useSelector(subscriptionDebtStatusErrorSelector);
 
   const contractorStatusIsOffline = contractorStatus === 'offline';
 
@@ -89,12 +97,18 @@ const ProfileInfo = ({ bottomWindowRef, lineState, setIsAccountIsNotActivePopupV
   });
 
   const swipeHandler = async (mode: ContractorStatus) => {
-    await dispatch(updateContractorStatus(mode));
-
-    //TODO: add logic to show this popup
-    if (contractorStatusIsOffline) {
+    if (contractorStatusIsOffline && subscriptionAvailableStatusError && subscriptionDebtStatusError) {
+      if (
+        isContractorNeverBeforeHaveSubscription(subscriptionAvailableStatusError) &&
+        isContractorNeverBeforeHaveSubscription(subscriptionDebtStatusError)
+      ) {
+        await dispatch(updateContractorStatus(mode));
+      }
       setIsAccountIsNotActivePopupVisible(true);
+    } else {
+      await dispatch(updateContractorStatus(mode));
     }
+
     bottomWindowRef.current?.closeWindow();
   };
 

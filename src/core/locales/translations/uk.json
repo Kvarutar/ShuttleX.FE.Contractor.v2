@@ -92,7 +92,7 @@
   "ride_Ride_Start_startRideButton": "Розпочати роботу",
   "ride_Ride_Start_finishRideButton": "Завершити роботу",
   "ride_Ride_Start_accountIsNotActiveFirstUseDescription": "Почніть заробляти без обмежень!\nПерейдіть на сайт ShuttleX та активуйте\nбажаний план через особистий кабінет,\nщоб отримати повний доступ до\nзамовлень!",
-  "ride_Ride_Start_accountIsNotActiveConfirmDescription": "Активуйте свій акаунт, щоб повністю\nскористатися всіма можливостями\nзаробітку. Ви дійсно хочете зробити\nце пізніше?",
+  "ride_Ride_Start_accountIsNotActiveConfirmDescription": "Ви обрали \"Пізніше\". Для вас активовано\nденний доступ із післяоплатою ({{debtPrice}}).\nАккаунт можна активувати у будь-який\nчас через сайт ShuttleX, ви дійсно хочете\nзробити це пізніше?",
   "ride_Ride_Start_accountIsNotActiveAfterUseDescriptionIos": "Ваш попередній денний доступ із\nпісляоплатою ще не сплачено або у Вас\nнемає активних доступів.\nПерейдіть в особистий кабінет на сайті\nShuttleX, щоб дізнатись деталі або\nзверніться в підтримку.",
   "ride_Ride_Start_accountIsNotActiveAfterUseDescriptionAndroid": "Підписка за день з післяоплатою ще не\nсплачена або у Вас немає активних планів\nпідписок.\nПерейдіть в особистий кабінет на сайті\nShuttleX, щоб дізнатись деталі або\nзверніться в підтримку.",
   "ride_Ride_Start_accountIsNotActiveTitle": "Акаунт",

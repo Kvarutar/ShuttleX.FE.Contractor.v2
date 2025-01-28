@@ -29,10 +29,15 @@ import {
 import { ContractorStatus } from '../../../../core/contractor/redux/types';
 import { accountSettingsVerifyStatusSelector } from '../../../../core/menu/redux/accountSettings/selectors';
 import { requestAccountSettingsChangeDataVerificationCode } from '../../../../core/menu/redux/accountSettings/thunks';
+import { isContractorNeverBeforeHaveSubscription } from '../../../../core/menu/redux/subscription/errors';
+import {
+  subscriptionAvailableStatusErrorSelector,
+  subscriptionDebtStatusErrorSelector,
+} from '../../../../core/menu/redux/subscription/selectors';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { setIsCanceledTripsPopupVisible } from '../../../../core/ride/redux/trip';
-import { isCanceledTripsPopupVisibleSelector } from '../../../../core/ride/redux/trip/selectors';
+import { isCanceledTripsPopupVisibleSelector, orderSelector } from '../../../../core/ride/redux/trip/selectors';
 import { getCurrentOrder } from '../../../../core/ride/redux/trip/thunks';
 import { RootStackParamList } from '../../../../Navigate/props';
 import AlertInitializer from '../../../../shared/AlertInitializer';
@@ -88,7 +93,10 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
   const contractorStatus = useSelector(contractorStatusSelector);
   const alerts = useSelector(twoHighestPriorityAlertsSelector);
   const isCanceledTripsPopupVisible = useSelector(isCanceledTripsPopupVisibleSelector);
+
   const generalError = useSelector(contractorGeneralErrorSelector);
+  const subscriptionAvailableStatusError = useSelector(subscriptionAvailableStatusErrorSelector);
+  const subscriptionDebtStatusError = useSelector(subscriptionDebtStatusErrorSelector);
 
   const [lineState, setLineState] = useState<lineStateTypes>(getRideBuilderRecord(t)[contractorStatus]);
   const [isPreferencesPopupVisible, setIsPreferencesPopupVisible] = useState<boolean>(false);
@@ -100,6 +108,7 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
   const [isOpened, setIsOpened] = useState<boolean>(false);
   const contractorZone = useSelector(contractorZoneSelector);
   const accountSettingsVerifyStatus = useSelector(accountSettingsVerifyStatusSelector);
+  const order = useSelector(orderSelector);
 
   const primaryTariff = useSelector(primaryTariffSelector);
   const tariffsIconsData = useTariffsIcons();
@@ -111,9 +120,26 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
     return null;
   }, [isTariffsInfoLoading, tariffsInfoError, primaryTariff, tariffsIconsData]);
 
+  const isAccountIsNotActiveFirstUse =
+    subscriptionAvailableStatusError &&
+    subscriptionDebtStatusError &&
+    isContractorNeverBeforeHaveSubscription(subscriptionAvailableStatusError) &&
+    isContractorNeverBeforeHaveSubscription(subscriptionDebtStatusError);
+
   useEffect(() => {
     setLineState(getRideBuilderRecord(t)[contractorStatus]);
   }, [contractorStatus, t]);
+
+  useEffect(() => {
+    if (
+      subscriptionAvailableStatusError &&
+      subscriptionDebtStatusError &&
+      !isAccountIsNotActiveFirstUse &&
+      order === null
+    ) {
+      setIsAccountIsNotActivePopupVisible(true);
+    }
+  }, [isAccountIsNotActiveFirstUse, order, subscriptionAvailableStatusError, subscriptionDebtStatusError]);
 
   useEffect(() => {
     if (generalError && isUnVerifyPhoneError(generalError)) {
@@ -264,6 +290,9 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
       {isAccountIsNotActivePopupVisible && (
         <AccountIsNotActivePopup
           setIsAccountIsNotActivePopupVisible={setIsAccountIsNotActivePopupVisible}
+          mode={
+            isAccountIsNotActiveFirstUse ? AccountIsNotActivePopupModes.FirstUse : AccountIsNotActivePopupModes.AfterUse
+          }
           onPressLaterHandler={() => setIsAccountIsNotActivePopupConfirmVisible(true)}
         />
       )}

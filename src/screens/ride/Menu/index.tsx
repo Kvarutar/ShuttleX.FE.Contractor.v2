@@ -14,6 +14,7 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { logger } from '../../../App';
 // TODO Uncomment all code whe we need it
 // import CrownIcon from 'shuttlex-integration';
 import {
@@ -25,20 +26,37 @@ import {
   primaryTariffSelector,
   tariffsInfoErrorSelector,
 } from '../../../core/contractor/redux/selectors';
+import { subscriptionStatusSelector } from '../../../core/menu/redux/subscription/selectors';
 import { RootStackParamList } from '../../../Navigate/props';
 import { MenuProps } from './props';
 
 const Menu = ({ onClose, isStatusBarTranslucent }: MenuProps) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
+  const currentRoute = useNavigationState(state => state.routes[state.index].name);
   const { t } = useTranslation();
 
   const contractorInfo = useSelector(contractorInfoSelector);
   const contractorAvatar = useSelector(contractorAvatarSelector);
+  const subscriptionStatus = useSelector(subscriptionStatusSelector);
 
   const isContractorInfoLoading = useSelector(isContractorInfoLoadingSelector);
 
-  const currentRoute = useNavigationState(state => state.routes[state.index].name);
+  const subscriptionMenuSection =
+    subscriptionStatus === null || Platform.OS === 'android'
+      ? {
+          subscription: {
+            navFunc: () => {
+              if (Platform.OS === 'ios') {
+                navigation.navigate('Subscription');
+              } else {
+                Linking.openURL('https://www.shuttlex.com/contractor.html').catch(logger.error);
+              }
+              onClose();
+            },
+            title: t('ride_Menu_navigationSubscription'),
+          },
+        }
+      : {};
 
   const menuNavigation: MenuNavigation = {
     ride: {
@@ -48,18 +66,7 @@ const Menu = ({ onClose, isStatusBarTranslucent }: MenuProps) => {
       },
       title: t('ride_Menu_navigationRide'),
     },
-    subscription: {
-      navFunc: () => {
-        // //TODO Create subscription page
-        if (Platform.OS === 'ios') {
-          navigation.navigate('Subscription');
-        } else {
-          Linking.openURL('https://www.shuttlex.com/contractor.html');
-        }
-        onClose();
-      },
-      title: t('ride_Menu_navigationSubscription'),
-    },
+    ...subscriptionMenuSection,
     activity: {
       navFunc: () => {
         navigation.navigate('OrderHistory');

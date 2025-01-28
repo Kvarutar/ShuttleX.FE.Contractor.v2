@@ -1,8 +1,21 @@
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { Linking, Platform, StyleSheet, View } from 'react-native';
-import { BigHeader, BottomWindowWithGesture, Button, ButtonShapes, SquareButtonModes } from 'shuttlex-integration';
+import { useSelector } from 'react-redux';
+import {
+  BigHeader,
+  BottomWindowWithGesture,
+  Button,
+  ButtonShapes,
+  getCurrencySign,
+  SquareButtonModes,
+} from 'shuttlex-integration';
+import { CurrencyType } from 'shuttlex-integration/lib/typescript/src/utils/currency/types';
 
 import { logger } from '../../../../../App';
+import { subscriptionsSelector } from '../../../../../core/menu/redux/subscription/selectors';
+import { RootStackParamList } from '../../../../../Navigate/props';
 import { AccountIsNotActivePopupModes, AccountIsNotActivePopupProps } from './types';
 
 const osMode = Platform.OS === 'ios' ? 'Ios' : 'Android';
@@ -14,7 +27,6 @@ const textModeData = {
     secondButton: 'ride_Ride_Start_accountIsNotActiveFirstUseSecondButton',
   },
   confirm: {
-    //TODO change description to new version
     description: 'ride_Ride_Start_accountIsNotActiveConfirmDescription',
     firstButton: 'ride_Ride_Start_accountIsNotActiveConfirmFirstButton',
     secondButton: 'ride_Ride_Start_accountIsNotActiveConfirmSecondButton',
@@ -32,11 +44,25 @@ const AccountIsNotActivePopup = ({
   mode = AccountIsNotActivePopupModes.FirstUse,
 }: AccountIsNotActivePopupProps) => {
   const { t } = useTranslation();
+  const subscriptions = useSelector(subscriptionsSelector);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const debtPrice = () => {
+    const debtSub = subscriptions.find(sub => sub.subscriptionType === 'Debt');
+
+    return debtSub ? `${getCurrencySign(debtSub.currency as CurrencyType)}${debtSub.amount}` : '';
+  };
 
   const onPressFirstButton = () => {
-    Linking.openURL(mode === 'afterUse' ? 'https://t.me/ShuttleX_Support' : 'https://www.shuttlex.com').catch(
-      logger.error,
-    );
+    if (mode === 'afterUse') {
+      Linking.openURL('https://t.me/ShuttleX_Support').catch(logger.error);
+    } else {
+      if (Platform.OS === 'ios') {
+        navigation.navigate('Subscription');
+      } else {
+        Linking.openURL('https://www.shuttlex.com/contractor.html').catch(logger.error);
+      }
+    }
     setIsAccountIsNotActivePopupVisible(false);
   };
 
@@ -61,7 +87,7 @@ const AccountIsNotActivePopup = ({
             windowTitle={t(`ride_Ride_Start_accountIsNotActiveSubtitle${osMode}`)}
             firstHeaderTitle={t('ride_Ride_Start_accountIsNotActiveTitle')}
             secondHeaderTitle={t('ride_Ride_Start_accountIsNotActiveSecondTitle')}
-            description={t(textModeData[mode].description)}
+            description={t(textModeData[mode].description, { debtPrice: debtPrice() })}
           />
           <View style={styles.popupButtonWrapper}>
             <Button

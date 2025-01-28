@@ -20,6 +20,7 @@ import {
   SafeAreaView,
   SignOutPopup,
   sizes,
+  SubscriptionHelpPopup,
   Text,
   UploadPhotoIcon,
 } from 'shuttlex-integration';
@@ -37,6 +38,7 @@ import {
   changeAccountContactData,
   requestAccountSettingsChangeDataVerificationCode,
 } from '../../../core/menu/redux/accountSettings/thunks';
+import { subscriptionStatusSelector } from '../../../core/menu/redux/subscription/selectors';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { RootStackParamList } from '../../../Navigate/props';
 import Menu from '../../ride/Menu';
@@ -48,19 +50,21 @@ const AccountSettings = (): JSX.Element => {
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'AccountSettings'>>();
   const { t } = useTranslation();
-
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
-
   const dispatch = useAppDispatch();
+
   const contractorInfo = useSelector(contractorInfoSelector);
   const verifiedStatus = useSelector(accountSettingsVerifyStatusSelector);
   const changeDataError = useSelector(accountSettingsChangeDataErrorSelector);
+  const subscriptionStatus = useSelector(subscriptionStatusSelector);
+
   const isChangeDataLoading = useSelector(isAccountSettingsChangeDataLoadingSelector);
   const [errorField, setErrorField] = useState<string>('');
 
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isSignOutPopupVisible, setIsSignOutPopupVisible] = useState(false);
   const [isDeleteAccountPopupVisible, setIsDeleteAccountPopupVisible] = useState(false);
   const [isConfirmDeleteAccountPopupVisible, setIsConfirmDeleteAccountPopupVisible] = useState(false);
+  const [isSubscriptionHelpPopupVisible, setIsSubscriptionHelpPopupVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -142,6 +146,8 @@ const AccountSettings = (): JSX.Element => {
         </MenuHeader>
 
         <AccountSettingsScreen
+          subscriptionStatus={subscriptionStatus?.type}
+          setIsSubscriptionHelpPopupVisible={setIsSubscriptionHelpPopupVisible}
           ref={accountSettingsRef}
           setIsSignOutPopupVisible={setIsSignOutPopupVisible}
           setIsDeleteAccountPopupVisible={setIsDeleteAccountPopupVisible}
@@ -161,6 +167,7 @@ const AccountSettings = (): JSX.Element => {
           // barBlock={<BarBlock onUpdateDocument={() => navigation.navigate('Docs')} />}
         />
       </SafeAreaView>
+      {isSubscriptionHelpPopupVisible && <SubscriptionHelpPopup setIsVisible={setIsSubscriptionHelpPopupVisible} />}
       {isSignOutPopupVisible && (
         <SignOutPopup setIsSignOutPopupVisible={setIsSignOutPopupVisible} onSignOut={() => dispatch(signOut())} />
       )}

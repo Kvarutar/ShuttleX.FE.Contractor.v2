@@ -12,6 +12,12 @@ import {
   getOrUpdateZone,
   updateProfileLanguage,
 } from '../core/contractor/redux/thunks';
+import { subscriptionStatusSelector } from '../core/menu/redux/subscription/selectors';
+import {
+  getAvailableSubscriptionStatus,
+  getDebtSubscriptionStatus,
+  getSubscriptions,
+} from '../core/menu/redux/subscription/thunks';
 import { useAppDispatch } from '../core/redux/hooks';
 import { signalRThunks, updateSignalRAccessToken } from '../core/redux/signalr';
 import { geolocationCoordinatesSelector } from '../core/ride/redux/geolocation/selectors';
@@ -31,6 +37,7 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   const defaultLocation = useSelector(geolocationCoordinatesSelector);
   const contractorZone = useSelector(contractorZoneSelector);
   const contractor = useSelector(contractorInfoSelector);
+  const subscriptionStatus = useSelector(subscriptionStatusSelector);
 
   const [isLocationLoaded, setIsLocationLoaded] = useState(false);
   const [isServerErrorModalVisible, setIsServerErrorModalVisible] = useState(false);
@@ -59,6 +66,29 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
       }
     })();
   }, [dispatch, isLoggedIn]);
+
+  useEffect(() => {
+    let subscriptionStatusTimer: NodeJS.Timeout | undefined;
+
+    if (isLoggedIn) {
+      dispatch(getSubscriptions());
+      dispatch(getAvailableSubscriptionStatus());
+      dispatch(getDebtSubscriptionStatus());
+
+      if (subscriptionStatus?.endDate) {
+        const timeLeft = new Date(subscriptionStatus.endDate).getTime() - Date.now();
+
+        if (timeLeft > 0) {
+          subscriptionStatusTimer = setTimeout(() => {
+            dispatch(getAvailableSubscriptionStatus());
+            dispatch(getDebtSubscriptionStatus());
+          }, timeLeft);
+        }
+      }
+    }
+
+    return () => clearTimeout(subscriptionStatusTimer);
+  }, [dispatch, isLoggedIn, subscriptionStatus?.endDate]);
 
   useEffect(() => {
     (async () => {
