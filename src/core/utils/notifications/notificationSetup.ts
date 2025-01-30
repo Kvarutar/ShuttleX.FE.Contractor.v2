@@ -15,6 +15,8 @@ export const setupNotifications = async () => {
   await createChannels();
   subscribeToMessages();
   setupFirebaseRefreshToken();
+  checkInitialNotification();
+  checkNotificationWhenAppIsInBackground();
 };
 
 //channels
@@ -57,9 +59,8 @@ const setupFirebaseRefreshToken = async () => {
 };
 
 // if app was killed and user tap on notif
-export const checkInitialNotification = async () => {
+const checkInitialNotification = async () => {
   const initialNotification = await messaging().getInitialNotification();
-
   const isSSEAndNotificationsEventType = (key: any): key is SSEAndNotificationsEventType => {
     return typeof key === 'string' && key in notificationHandlers;
   };
@@ -73,4 +74,20 @@ export const checkInitialNotification = async () => {
       notificationHandlers[key](payloadData);
     }
   }
+};
+
+const checkNotificationWhenAppIsInBackground = async () => {
+  messaging().onNotificationOpenedApp(remoteMessage => {
+    const key = remoteMessage.data?.key;
+    const payload = remoteMessage.data?.payload;
+
+    const isSSEAndNotificationsEventType = (keyInit: any): keyInit is SSEAndNotificationsEventType => {
+      return typeof keyInit === 'string' && keyInit in notificationHandlers;
+    };
+
+    if (key && payload && isSSEAndNotificationsEventType(key) && typeof payload === 'string') {
+      const payloadData = JSON.parse(payload);
+      notificationHandlers[key](payloadData);
+    }
+  });
 };
