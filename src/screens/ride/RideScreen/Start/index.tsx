@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import {
   BottomWindowWithGesture,
   Button,
-  isIncorrectFieldsError,
   SquareButtonModes,
   SwipeButtonModes,
   UnsupportedCityPopup,
@@ -17,7 +16,7 @@ import {
   VerifyDataPopUp,
 } from 'shuttlex-integration';
 
-import { isUnVerifyPhoneError } from '../../../../core/contractor/redux/errors';
+import { isContractorBannedError, isUnVerifyPhoneError } from '../../../../core/contractor/redux/errors';
 import {
   contractorGeneralErrorSelector,
   contractorStatusSelector,
@@ -166,7 +165,7 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
   // }, [dispatch]);
 
   useEffect(() => {
-    if (generalError && isIncorrectFieldsError(generalError)) {
+    if (generalError && isContractorBannedError(generalError)) {
       dispatch(setIsCanceledTripsPopupVisible(true));
     }
   }, [generalError, dispatch]);
@@ -200,23 +199,22 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
     let unclosablePopupMode = null;
     let bottomAdditionalContent = null;
 
-    //TODO: Rewrite with the correct typeGuard function
-    if ((generalError && !isIncorrectFieldsError(generalError)) || !generalError) {
-      unclosablePopupMode = UnclosablePopupModes.Warning;
-      bottomAdditionalContent = (
-        <Button
-          style={styles.unclosablePopupConfirmButton}
-          text={t('ride_Ride_UnclosablePopup_confirmButton')}
-          onPress={onPressConfirmButton}
-        />
-      );
-    } else {
+    if (generalError && isContractorBannedError(generalError)) {
       unclosablePopupMode = UnclosablePopupModes.Banned;
       bottomAdditionalContent = (
         <Button
           style={styles.unclosablePopupContactSupportButton}
           text={t('ride_Ride_UnclosablePopup_contactSupportButton')}
           onPress={onPressContactSupportButton}
+        />
+      );
+    } else {
+      unclosablePopupMode = UnclosablePopupModes.Warning;
+      bottomAdditionalContent = (
+        <Button
+          style={styles.unclosablePopupConfirmButton}
+          text={t('ride_Ride_UnclosablePopup_confirmButton')}
+          onPress={onPressConfirmButton}
         />
       );
     }
