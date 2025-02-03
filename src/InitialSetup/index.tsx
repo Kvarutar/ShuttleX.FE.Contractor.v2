@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AppState, AppStateStatus } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getTokens, ServerErrorModal, useTheme } from 'shuttlex-integration';
 
@@ -21,7 +22,7 @@ import {
 import { useAppDispatch } from '../core/redux/hooks';
 import { signalRThunks, updateSignalRAccessToken } from '../core/redux/signalr';
 import { geolocationCoordinatesSelector } from '../core/ride/redux/geolocation/selectors';
-import { getCurrentOrder, getFutureOrder } from '../core/ride/redux/trip/thunks';
+import { getCurrentOrder, getFutureOrder, getNewOffer } from '../core/ride/redux/trip/thunks';
 import { initializeSSEConnection } from '../core/sse';
 import { getFirebaseDeviceToken, setupNotifications } from '../core/utils/notifications/notificationSetup';
 import { InitialSetupProps } from './types';
@@ -32,6 +33,8 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   const { setThemeMode } = useTheme();
   const { i18n } = useTranslation();
   const { isErrorAvailable } = useServerErrorHandler();
+
+  const appState = useRef<AppStateStatus>(AppState.currentState);
 
   const isLoggedIn = useSelector(isLoggedInSelector);
   const defaultLocation = useSelector(geolocationCoordinatesSelector);
@@ -142,6 +145,22 @@ const InitialSetup = ({ children }: InitialSetupProps) => {
   useEffect(() => {
     setIsServerErrorModalVisible(isErrorAvailable);
   }, [isErrorAvailable]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+        dispatch(getCurrentOrder());
+        dispatch(getFutureOrder());
+        dispatch(getNewOffer());
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [dispatch]);
 
   return (
     <>

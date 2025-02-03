@@ -21,6 +21,7 @@ import {
   GetFinalCostPayload,
   GetFutureOrderAPIResponse,
   GetFutureOrderThunkResult,
+  GetNewOfferAPIResponse,
   GetPassengerTripInfoPayload,
   GetPassengerTripInfoThunkResult,
   OfferAPIResponse,
@@ -34,6 +35,21 @@ import {
   UpdatePassengerRatingPayload,
   WayPointsRouteType,
 } from './types';
+
+export const getNewOffer = createAppAsyncThunk<void, void>(
+  'trip/getNewOffer',
+  async (_, { rejectWithValue, offersAxios, dispatch }) => {
+    try {
+      const response = await offersAxios.get<GetNewOfferAPIResponse>('/new');
+
+      if (response.data) {
+        dispatch(fetchOfferInfo(response.data.offerId));
+      }
+    } catch (error) {
+      return rejectWithValue(getOfferNetworkErrorInfo(error));
+    }
+  },
+);
 
 export const getFinalCost = createAppAsyncThunk<GetFinalCostAPIResponse, GetFinalCostPayload>(
   'trip/getFinalCost',

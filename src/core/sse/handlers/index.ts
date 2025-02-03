@@ -32,7 +32,7 @@ export const passengerRejectedSSEHandler = async (
         await dispatch(getFinalCost({ orderId: data.orderId }));
         dispatch(setTripStatus(TripStatus.Rating));
       }
-      //Because this status might be changed in notifications also
+      //Because this status might be changed in notifications or redux also
       else if (trip.tripStatus !== TripStatus.Rating) {
         dispatch(endTrip());
         dispatch(resetCurrentRoutes());

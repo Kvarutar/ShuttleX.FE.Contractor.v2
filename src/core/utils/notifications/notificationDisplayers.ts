@@ -38,7 +38,7 @@ export const notificationHandlers: Record<SSEAndNotificationsEventType, (payload
 
         store.dispatch(setTripStatus(TripStatus.Rating));
       }
-      //Because this status might be changed in lonpolling also
+      //Because this status might be changed in sse or redux also
       else if (tripStatus !== TripStatus.Rating) {
         store.dispatch(endTrip());
         store.dispatch(resetCurrentRoutes());

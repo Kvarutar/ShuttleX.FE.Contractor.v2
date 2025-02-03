@@ -20,6 +20,10 @@ export type PassengerInfoType = {
   avatarURL: Nullable<string>;
 };
 
+export type GetNewOfferAPIResponse = {
+  offerId: string;
+};
+
 export type AcceptOrDeclineOfferPayload = {
   offerId: string;
 };

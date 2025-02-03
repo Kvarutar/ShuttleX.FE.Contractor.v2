@@ -244,6 +244,17 @@ const slice = createSlice({
             type: setOrderWithAdditionalInfo.type,
           });
         }
+        //If current order is not received
+        else {
+          if (state.order && (state.tripStatus === TripStatus.Ride || state.tripStatus === TripStatus.Ending)) {
+            state.tripStatus = TripStatus.Rating;
+          }
+          //Because this status might be changed in sse or notification also
+          else if (state.tripStatus !== TripStatus.Rating) {
+            slice.caseReducers.endTrip(state);
+            slice.caseReducers.resetCurrentRoutes(state);
+          }
+        }
         state.loading.makeOfferDecision = false;
         state.error.general = null;
       })
@@ -273,6 +284,11 @@ const slice = createSlice({
             },
             type: setOrderWithAdditionalInfo.type,
           });
+        }
+        //If future order is not received
+        else if (state.secondOrder) {
+          state.secondOrder = null;
+          slice.caseReducers.resetFutureRoutes(state);
         }
         state.loading.makeOfferDecision = false;
         state.error.general = null;
