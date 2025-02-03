@@ -1,5 +1,7 @@
 import os from 'os';
 import fs from 'fs';
+import fsExtra from 'fs-extra';
+import path from 'path';
 import child_process from 'child_process';
 import { ExecArgs, FormattedCommand } from './types';
 
@@ -43,7 +45,15 @@ const exec = ({ unixCommand, winCommand, options }: ExecArgs) => {
     shell: true,
   });
 
-  command.on('close', code => code !== 0 && process.stdout.write(`child process exited with code ${code}`));
+  return new Promise<void>((resolve, reject) => {
+    command.on('close', code => {
+      if (code !== 0) {
+        process.stdout.write(`child process exited with code ${code}`);
+        reject();
+      }
+      resolve();
+    });
+  });
 };
 
 switch (process.env.npm_lifecycle_event) {
@@ -123,6 +133,53 @@ switch (process.env.npm_lifecycle_event) {
       options: { dontParseArgs: true },
     });
     break;
+  case 'integration-local': {
+    const args = process.argv.slice(2);
+    const integrationPath = 'node_modules/shuttlex-integration';
+    if (args.includes('--git-version')) {
+      fsExtra.removeSync(integrationPath);
+      exec({
+        unixCommand: 'yarn',
+        winCommand: 'yarn',
+        options: { dontParseArgs: true },
+      });
+      break;
+    }
+    (async () => {
+      const integrationPath = args[0];
+      const yarnGlobalCache = path.join(os.homedir(), isWin ? 'AppData/Local/Yarn/Berry/cache' : '.yarn/berry/cache');
+      fsExtra.readdirSync(yarnGlobalCache).forEach(item => {
+        const str = item.match(/shuttlex-integration-file.*/g);
+        if (str != null) {
+          fsExtra.removeSync(`${yarnGlobalCache}/${str}`);
+        }
+      });
+      await Promise.allSettled([
+        exec({
+          unixCommand: `cd ${integrationPath} && yarn run pack`,
+          winCommand: `cd ${integrationPath} & yarn run pack`,
+          options: { dontParseArgs: true },
+        }),
+        exec({
+          unixCommand: 'yarn remove shuttlex-integration',
+          winCommand: 'yarn remove shuttlex-integration',
+          options: { dontParseArgs: true },
+        }),
+      ]);
+      const tgzName = fsExtra.readdirSync(integrationPath).find(item => /shuttlex-integration.*\.tgz/.test(item));
+      if (tgzName === undefined) {
+        print('error', 'Packed .tgz not found!');
+        return;
+      }
+      const tgzPath = `yarn add ${integrationPath.replaceAll('\\', '/')}/${tgzName}`;
+      exec({
+        unixCommand: tgzPath,
+        winCommand: tgzPath,
+        options: { dontParseArgs: true },
+      });
+    })();
+    break;
+  }
   case 'cache-annihilator':
     print('info', 'Started clearing...');
     if (!isWin) {
