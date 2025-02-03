@@ -1,4 +1,4 @@
-import Geolocation from 'react-native-geolocation-service';
+import { GeolocationError } from '@react-native-community/geolocation';
 import { LatLng } from 'react-native-maps';
 import { LocationAccuracy } from 'react-native-permissions';
 
@@ -13,5 +13,5 @@ export type GeolocationState = {
     previous: number;
     delta: number;
   };
-  error?: Geolocation.GeoError;
+  error?: GeolocationError;
 };

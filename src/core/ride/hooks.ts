@@ -33,6 +33,7 @@ export const useGeolocationStartWatch = () => {
       );
     },
     onError: error => dispatch(setGeolocationError(error)),
+    withAndroidTrackingInBackground: true,
   });
 };
 

@@ -39,12 +39,14 @@
 		<key>PreciseLocation</key>
 		<string>We need precise access to your location temporarily to improve the accuracy of order matching and route calculation.</string>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We use your location to find orders and calculate routes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photo library access is needed to upload documents or your profile picture.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We use your location to find orders and calculate routes.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We use your location in the background to find orders and calculate routes.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Your location is required to enable features that operate in the background, ensuring the app delivers its full capabilities.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter Black.ttf</string>
@@ -60,6 +62,8 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>location</string>
+		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
