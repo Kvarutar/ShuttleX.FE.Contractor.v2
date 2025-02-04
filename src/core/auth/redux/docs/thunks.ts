@@ -117,12 +117,8 @@ export const saveDocPaymentData = createAppAsyncThunk<PaymentDataForm, PaymentDa
   'docs/paymentData',
   async (payload, { rejectWithValue, profileAxios }) => {
     try {
-      await profileAxios.post('/profile/first-names', { type: 0, value: payload.firstName.trim() });
-      await profileAxios.post('/profile/last-names', { type: 0, value: payload.surname.trim() });
-      await profileAxios.post('/profile/patronic-names', {
-        type: 0,
-        value: payload.patronymic,
-      });
+      await profileAxios.post('/profile/first-names', { type: 0, value: payload.firstName });
+      await profileAxios.post('/profile/last-names', { type: 0, value: payload.surname });
       await profileAxios.patch('/profile', { socialSecurityNumber: payload.taxNumber });
 
       return payload;

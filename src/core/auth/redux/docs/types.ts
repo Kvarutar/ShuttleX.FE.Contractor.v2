@@ -72,6 +72,5 @@ export type DocsTemplatesAPIResponse = {
 export type PaymentDataForm = {
   firstName: string;
   surname: string;
-  patronymic: string;
   taxNumber: string;
 };

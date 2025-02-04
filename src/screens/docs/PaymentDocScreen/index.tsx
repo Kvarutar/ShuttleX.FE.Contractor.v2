@@ -25,6 +25,7 @@ import { RootStackParamList } from '../../../Navigate/props';
 const onlyDigits = (str: string) => str.replace(/[^0-9]/g, '');
 const onlyLettersAndSpaces = (str: string) => str.replace(/[^\p{L}\s]/gu, '');
 
+//TODO: add logic for send card
 const PaymentDocScreen = (): JSX.Element => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Verification'>>();
   const { t } = useTranslation();
@@ -33,24 +34,22 @@ const PaymentDocScreen = (): JSX.Element => {
   const [paymentDataForm, setPaymentDataForm] = useState<PaymentDataForm>({
     firstName: '',
     surname: '',
-    patronymic: '',
     taxNumber: '',
   });
 
   const [errors, setErrors] = useState<PaymentDataForm>({
     firstName: '',
     surname: '',
-    patronymic: '',
     taxNumber: '',
   });
 
+  const [isCardSuccessfullyAdded, setIsCardSuccessfullyAdded] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validateField = (field: keyof PaymentDataForm, value: string): string => {
     switch (field) {
       case 'firstName':
       case 'surname':
-      case 'patronymic':
         if (value.length < 2) {
           return t('docs_PaymentDoc_errorMinCharacters', { min: 2 });
         }
@@ -71,13 +70,17 @@ const PaymentDocScreen = (): JSX.Element => {
     setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
+  const handleAddCard = () => {
+    //TODO: add logic for add card
+    setIsCardSuccessfullyAdded(true);
+  };
+
   const handleSubmit = () => {
     setIsSubmitted(true);
 
-    const newErrors = {
+    const newErrors: PaymentDataForm = {
       firstName: validateField('firstName', paymentDataForm.firstName),
       surname: validateField('surname', paymentDataForm.surname),
-      patronymic: validateField('patronymic', paymentDataForm.patronymic),
       taxNumber: validateField('taxNumber', paymentDataForm.taxNumber),
     };
 
@@ -90,7 +93,22 @@ const PaymentDocScreen = (): JSX.Element => {
   };
 
   const hasError = Object.values(errors).some(Boolean);
-  const isEmptyField = Object.values(paymentDataForm).some(value => value.trim() === '');
+  const isSomeFieldEmpty = Object.values(paymentDataForm).some(value => value.trim() === '');
+
+  const isSaveButtonDisabled = hasError || isSomeFieldEmpty;
+
+  const addCardButtonMode = (): SquareButtonModes => {
+    const isError = isSubmitted && !isCardSuccessfullyAdded;
+
+    if (isError) {
+      return SquareButtonModes.Mode4;
+    }
+    if (isCardSuccessfullyAdded) {
+      return SquareButtonModes.Mode1;
+    }
+
+    return SquareButtonModes.Mode5;
+  };
 
   return (
     <CustomKeyboardAvoidingView>
@@ -126,12 +144,6 @@ const PaymentDocScreen = (): JSX.Element => {
               error={{ isError: isSubmitted && errors.surname !== '', message: errors.surname }}
             />
             <TextInput
-              placeholder={t('docs_PaymentDoc_patronymicPlaceholder')}
-              value={paymentDataForm.patronymic}
-              onChangeText={value => handleChange('patronymic', value)}
-              error={{ isError: isSubmitted && errors.patronymic !== '', message: errors.patronymic }}
-            />
-            <TextInput
               placeholder={t('docs_PaymentDoc_taxPlaceholder')}
               value={paymentDataForm.taxNumber}
               onChangeText={value => handleChange('taxNumber', value)}
@@ -139,14 +151,20 @@ const PaymentDocScreen = (): JSX.Element => {
               maxLength={10}
               onlyDigits
             />
+            <Button
+              text={t('docs_PaymentDoc_addCard')}
+              mode={addCardButtonMode()}
+              textStyle={styles.buttonText}
+              onPress={handleAddCard}
+            />
           </View>
         </ScrollViewWithCustomScroll>
 
         <Button
-          disabled={hasError || isEmptyField}
+          disabled={isSaveButtonDisabled}
           text={t('docs_PaymentDoc_saveButton')}
           style={styles.nextButton}
-          mode={hasError || isEmptyField ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
+          mode={isSaveButtonDisabled ? SquareButtonModes.Mode5 : SquareButtonModes.Mode1}
           textStyle={styles.buttonText}
           onPress={handleSubmit}
         />
