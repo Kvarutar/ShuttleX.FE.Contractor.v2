@@ -64,6 +64,7 @@ const initialState: ContractorState = {
   },
   ui: {
     isLoadingStubVisible: true,
+    activeBottomWindowYCoordinate: null,
   },
 };
 
@@ -76,6 +77,12 @@ const slice = createSlice({
     },
     setIsLoadingStubVisible(state, action: PayloadAction<boolean>) {
       state.ui.isLoadingStubVisible = action.payload;
+    },
+    setActiveBottomWindowYCoordinate(
+      state,
+      action: PayloadAction<ContractorState['ui']['activeBottomWindowYCoordinate']>,
+    ) {
+      state.ui.activeBottomWindowYCoordinate = action.payload;
     },
     setTariffs(state, action: PayloadAction<TariffInfoFromAPI[]>) {
       state.tariffs = action.payload;
@@ -391,6 +398,7 @@ export const {
   setSubscriptionStatus,
   setIsLoadingStubVisible,
   clearOrdersHistory,
+  setActiveBottomWindowYCoordinate,
 } = slice.actions;
 
 export default slice.reducer;

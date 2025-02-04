@@ -159,6 +159,7 @@ export type ContractorState = {
   };
   ui: {
     isLoadingStubVisible: boolean;
+    activeBottomWindowYCoordinate: number | null;
   };
 };
 

@@ -54,3 +54,5 @@ export const isOrdersHistoryLoadingSelector = (state: AppState) => state.contrac
 
 //UI
 export const isLoadingStubVisibleSelector = (state: AppState) => state.contractor.ui.isLoadingStubVisible;
+export const activeBottomWindowYCoordinateSelector = (state: AppState) =>
+  state.contractor.ui.activeBottomWindowYCoordinate;

@@ -57,15 +57,17 @@ const exec = ({ unixCommand, winCommand, options }: ExecArgs) => {
 };
 
 switch (process.env.npm_lifecycle_event) {
-  case 'ios:dev':
+  case 'ios:dev': {
     prepareGoogleServices('dev');
     exec({ unixCommand: "yarn react-native run-ios --scheme 'ShuttleX_Contractor_dev'", winCommand: '' });
     break;
-  case 'ios:prod':
+  }
+  case 'ios:prod': {
     prepareGoogleServices('prod');
     exec({ unixCommand: "yarn react-native run-ios --scheme 'ShuttleX_Contractor'", winCommand: '' });
     break;
-  case 'android:dev':
+  }
+  case 'android:dev': {
     prepareGoogleServices('dev');
     exec({
       unixCommand:
@@ -74,49 +76,56 @@ switch (process.env.npm_lifecycle_event) {
         'cmd /c "yarn react-native run-android --mode=devdebug & adb shell am start -n com.shuttlexinc.contractor.dev/com.shuttlexinc.contractor.MainActivity"',
     });
     break;
-  case 'android:prod':
+  }
+  case 'android:prod': {
     prepareGoogleServices('prod');
     exec({
       unixCommand: 'yarn react-native run-android --mode=proddebug',
       winCommand: 'yarn react-native run-android --mode=proddebug',
     });
     break;
-  case 'build:android:assemble:dev:debug':
+  }
+  case 'build:android:assemble:dev:debug': {
     prepareGoogleServices('dev');
     exec({
       unixCommand: 'cd android && ./gradlew assembleDevDebug',
       winCommand: 'cd android & .\\gradlew assembleDevDebug',
     });
     break;
-  case 'build:android:assemble:dev:release':
+  }
+  case 'build:android:assemble:dev:release': {
     prepareGoogleServices('dev');
     exec({
       unixCommand: 'cd android && ./gradlew assembleDevRelease',
       winCommand: 'cd android & .\\gradlew assembleDevRelease',
     });
     break;
-  case 'build:android:assemble:prod:debug':
+  }
+  case 'build:android:assemble:prod:debug': {
     prepareGoogleServices('prod');
     exec({
       unixCommand: 'cd android && ./gradlew assembleProdDebug',
       winCommand: 'cd android & .\\gradlew assembleProdDebug',
     });
     break;
-  case 'build:android:assemble:prod:release':
+  }
+  case 'build:android:assemble:prod:release': {
     prepareGoogleServices('prod');
     exec({
       unixCommand: 'cd android && ./gradlew assembleProdRelease',
       winCommand: 'cd android & .\\gradlew assembleProdRelease',
     });
     break;
-  case 'build:android:bundle:prod:release':
+  }
+  case 'build:android:bundle:prod:release': {
     prepareGoogleServices('prod');
     exec({
       unixCommand: 'cd android && ./gradlew bundleProdRelease',
       winCommand: 'cd android & .\\gradlew bundleProdRelease',
     });
     break;
-  case 'integration-update':
+  }
+  case 'integration-update': {
     const baseCommand = 'yarn up shuttlex-integration@ssh://git@github.com/DevShuttleXInc/ShuttleX.FE.Integration.v1';
     const args = process.argv.slice(2);
     if (args.length > 0) {
@@ -133,18 +142,9 @@ switch (process.env.npm_lifecycle_event) {
       options: { dontParseArgs: true },
     });
     break;
+  }
   case 'integration-local': {
     const args = process.argv.slice(2);
-    const integrationPath = 'node_modules/shuttlex-integration';
-    if (args.includes('--git-version')) {
-      fsExtra.removeSync(integrationPath);
-      exec({
-        unixCommand: 'yarn',
-        winCommand: 'yarn',
-        options: { dontParseArgs: true },
-      });
-      break;
-    }
     (async () => {
       const integrationPath = args[0];
       const yarnGlobalCache = path.join(os.homedir(), isWin ? 'AppData/Local/Yarn/Berry/cache' : '.yarn/berry/cache');
@@ -180,20 +180,22 @@ switch (process.env.npm_lifecycle_event) {
     })();
     break;
   }
-  case 'cache-annihilator':
+  case 'cache-annihilator': {
     print('info', 'Started clearing...');
     if (!isWin) {
-      fs.rmSync(`${os.homedir()}/Library/Developer/Xcode/DerivedData`, { recursive: true, force: true });
+      fsExtra.removeSync(`${os.homedir()}/Library/Developer/Xcode/DerivedData`);
     }
-    fs.rmSync(`ios/build`, { recursive: true, force: true });
-    fs.rmSync(`android/build`, { recursive: true, force: true });
-    fs.rmSync(`android/app/build`, { recursive: true, force: true });
+    fsExtra.removeSync(`ios/build`);
+    fsExtra.removeSync(`android/build`);
+    fsExtra.removeSync(`android/app/build`);
     print('info', 'All caches and build files cleared!');
     exec({
       unixCommand: 'yarn react-native clean',
       winCommand: 'yarn react-native clean',
     });
     break;
-  default:
+  }
+  default: {
     print('error', 'unknown command');
+  }
 }

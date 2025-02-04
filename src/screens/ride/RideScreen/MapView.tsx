@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { LatLng } from 'react-native-maps';
+import { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
   calculateNewMapRoute,
@@ -13,6 +14,7 @@ import {
   secToMilSec,
 } from 'shuttlex-integration';
 
+import { activeBottomWindowYCoordinateSelector } from '../../../core/contractor/redux/selectors';
 import { useAppDispatch } from '../../../core/redux/hooks';
 import { updateContractorGeo } from '../../../core/redux/signalr';
 import {
@@ -33,6 +35,9 @@ import { OfferWayPointsDataAPIResponse, TripStatus } from '../../../core/ride/re
 const finalStopPointUpdateIntervalInSec = 30;
 const updateContractorGeoInterval = 1000;
 const polylineClearPointDistanceMtr = 25;
+const mapResizeAnimationDuration = 200;
+
+const screenHeight = Dimensions.get('screen').height;
 
 const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationComplete: () => void }): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -46,6 +51,7 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
   const dropOffRoute = useSelector(tripDropOffRouteSelector);
   const futureOrderPickUpRoute = useSelector(tripFutureOrderPickUpRouteSelector);
   const order = useSelector(orderSelector);
+  const activeBottomWindowYCoordinate = useSelector(activeBottomWindowYCoordinateSelector);
 
   const [polylines, setPolylines] = useState<MapPolyline[]>([]);
   const [routePolylinePointsCount, setRoutePolylinePointsCount] = useState<number>(0);
@@ -100,7 +106,7 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
       const coordinates = decodeGooglePolyline(route.geometry);
       setRoutePolylinePointsCount(coordinates.length);
       setCurrentOrderPolylinesCoordinates(coordinates);
-      setFinalStopPointCoordinates(coordinates[coordinates.length - 1]);
+      setFinalStopPointCoordinates(route.waypoints[route.waypoints.length - 1].geo);
       setFinalStopPointTimeInSec(route.totalDurationSec);
     } else {
       setCurrentOrderPolylinesCoordinates([]);
@@ -194,9 +200,16 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
     });
   }
 
+  const mapAnimatedStyle = useAnimatedStyle(() => ({
+    bottom: withTiming(activeBottomWindowYCoordinate ? screenHeight - activeBottomWindowYCoordinate - 32 : 0, {
+      duration: mapResizeAnimationDuration,
+      easing: Easing.linear,
+    }),
+  }));
+
   return (
     <MapViewIntegration
-      style={StyleSheet.absoluteFill}
+      style={[styles.map, mapAnimatedStyle]}
       geolocationCoordinates={geolocationCoordinates ?? undefined}
       geolocationCalculatedHeading={geolocationCalculatedHeading}
       onFirstCameraAnimationComplete={onFirstCameraAnimationComplete}
@@ -208,5 +221,14 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
     />
   );
 };
+
+const styles = StyleSheet.create({
+  map: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+  },
+});
 
 export default MapView;

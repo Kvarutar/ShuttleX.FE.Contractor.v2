@@ -16,6 +16,7 @@ import {
   VerifyDataPopUp,
 } from 'shuttlex-integration';
 
+import { setActiveBottomWindowYCoordinate } from '../../../../core/contractor/redux';
 import { isContractorBannedError, isUnVerifyPhoneError } from '../../../../core/contractor/redux/errors';
 import {
   contractorGeneralErrorSelector,
@@ -233,6 +234,17 @@ const Start = ({ bottomWindowRef, achievementsBottomWindowRef, preferencesBottom
   return (
     <>
       <BottomWindowWithGesture
+        onAnimationEnd={values => dispatch(setActiveBottomWindowYCoordinate(values.pageY))}
+        onGestureStart={event => {
+          if (event.velocityY > 0) {
+            dispatch(setActiveBottomWindowYCoordinate(null));
+          }
+        }}
+        onHiddenOrVisibleHeightChange={values => {
+          if (!values.isWindowAnimating) {
+            dispatch(setActiveBottomWindowYCoordinate(values.pageY));
+          }
+        }}
         maxHeight={0.7}
         withHiddenPartScroll={false}
         bottomWindowStyle={styles.bottomWindowStyle}

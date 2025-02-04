@@ -14,6 +14,8 @@ import {
   useTheme,
 } from 'shuttlex-integration';
 
+import { setActiveBottomWindowYCoordinate } from '../../../../core/contractor/redux';
+import { useAppDispatch } from '../../../../core/redux/hooks';
 import { twoHighestPriorityAlertsSelector } from '../../../../core/ride/redux/alerts/selectors';
 import { orderSelector, tripStatusSelector } from '../../../../core/ride/redux/trip/selectors';
 import { TripStatus } from '../../../../core/ride/redux/trip/types';
@@ -27,6 +29,7 @@ const animationDuration = 200;
 
 const Order = () => {
   const { colors } = useTheme();
+  const dispatch = useAppDispatch();
 
   const bottomWindowRef = useRef<BottomWindowWithGestureRef>(null);
 
@@ -101,6 +104,17 @@ const Order = () => {
   return (
     <>
       <BottomWindowWithGesture
+        onAnimationEnd={values => dispatch(setActiveBottomWindowYCoordinate(values.pageY))}
+        onGestureStart={event => {
+          if (event.velocityY > 0) {
+            dispatch(setActiveBottomWindowYCoordinate(null));
+          }
+        }}
+        onHiddenOrVisibleHeightChange={values => {
+          if (!values.isWindowAnimating) {
+            dispatch(setActiveBottomWindowYCoordinate(values.pageY));
+          }
+        }}
         withAllPartsScroll
         withHiddenPartScroll={false}
         visiblePartStyle={styles.bottomWindowVisiblePartStyle}
