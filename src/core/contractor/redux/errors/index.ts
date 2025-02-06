@@ -1,18 +1,16 @@
 import { isAxiosError } from 'axios';
 import { getNetworkErrorInfo, NetworkErrorDetailsWithBody, NetworkErrorsStatuses } from 'shuttlex-integration';
 
-import { ContractorBannedErrorBody, UnVerifyPhoneErrorBody } from './types';
-
 //TODO: Add code field to all error in Integration
 export const isUnVerifyPhoneError = (
-  errorResponse: NetworkErrorDetailsWithBody<UnVerifyPhoneErrorBody>,
-): errorResponse is NetworkErrorDetailsWithBody<UnVerifyPhoneErrorBody> => {
+  errorResponse: NetworkErrorDetailsWithBody,
+): errorResponse is NetworkErrorDetailsWithBody => {
   return errorResponse.status === NetworkErrorsStatuses.IncorrectFields && errorResponse.body?.code === 20008;
 };
 
 export const isContractorBannedError = (
-  errorResponse: NetworkErrorDetailsWithBody<ContractorBannedErrorBody>,
-): errorResponse is NetworkErrorDetailsWithBody<ContractorBannedErrorBody> => {
+  errorResponse: NetworkErrorDetailsWithBody,
+): errorResponse is NetworkErrorDetailsWithBody => {
   return errorResponse.status === NetworkErrorsStatuses.IncorrectFields && errorResponse.body?.code === 20000;
 };
 

@@ -1,12 +1,10 @@
 import { isAxiosError } from 'axios';
 import { getNetworkErrorInfo, NetworkErrorDetailsWithBody, NetworkErrorsStatuses } from 'shuttlex-integration';
 
-import { SubscriptionLocalErrorBody } from './types';
-
 //TODO: Add code field to all error in Integration
 export const isContractorNeverBeforeHaveSubscription = (
-  errorResponse: NetworkErrorDetailsWithBody<SubscriptionLocalErrorBody>,
-): errorResponse is NetworkErrorDetailsWithBody<SubscriptionLocalErrorBody> => {
+  errorResponse: NetworkErrorDetailsWithBody,
+): errorResponse is NetworkErrorDetailsWithBody => {
   return errorResponse.status === NetworkErrorsStatuses.NoExistings && errorResponse.body?.code === 10006;
 };
 
