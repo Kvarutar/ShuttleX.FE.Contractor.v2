@@ -10738,14 +10738,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-background-actions@npm:3.0.1":
-  version: 3.0.1
-  resolution: "react-native-background-actions@npm:3.0.1"
+"react-native-background-actions@npm:4.0.1":
+  version: 4.0.1
+  resolution: "react-native-background-actions@npm:4.0.1"
   dependencies:
     eventemitter3: ^4.0.7
   peerDependencies:
     react-native: ">=0.47.0"
-  checksum: 78c08d69766ba7903fdfc5693eca87349c048a16f4ecb31c750fb9a19854ff7e2e07a9c8474125f4c03d3912df44046d58b87af45a462d5a73f893ec74f5013e
+  checksum: 101cf491a3d0f40abb1189238d6911f544a69cc14b13734dac485600a1cd013d2c452a75d13579a66104ad43e4998bb8b927b982d7ff5c6e0074329e2eae1738
   languageName: node
   linkType: hard
 
@@ -11879,7 +11879,7 @@ react-native-slide-to-unlock@DevShuttleXInc/react-native-slide-to-unlock:
 
 "shuttlex-integration@ssh://git@github.com/DevShuttleXInc/ShuttleX.FE.Integration.v1#dev":
   version: 1.0.0
-  resolution: "shuttlex-integration@ssh://git@github.com/DevShuttleXInc/ShuttleX.FE.Integration.v1#commit=77068956eab44d5a50c4a3a55152a5096fdcd76d"
+  resolution: "shuttlex-integration@ssh://git@github.com/DevShuttleXInc/ShuttleX.FE.Integration.v1#commit=ffbec5b6df49405b5baf01d7d9e71bd4883d6f2a"
   dependencies:
     "@googlemaps/polyline-codec": ^1.0.28
     "@react-native/eslint-config": 0.73.2
@@ -11890,7 +11890,7 @@ react-native-slide-to-unlock@DevShuttleXInc/react-native-slide-to-unlock:
     eslint-plugin-import: ^2.29.0
     eslint-plugin-react: ^7.34.3
     eslint-plugin-simple-import-sort: ^10.0.0
-    react-native-background-actions: 3.0.1
+    react-native-background-actions: 4.0.1
     react-native-confetti-cannon: ^1.5.2
     react-native-document-picker: 9.1.1
     react-native-image-crop-picker: ^0.41.4
@@ -11928,7 +11928,7 @@ react-native-slide-to-unlock@DevShuttleXInc/react-native-slide-to-unlock:
     react-native-svg-transformer: "*"
     react-redux: "*"
     uuid: "*"
-  checksum: 2b4e6f36198f40a1605ac3d90abff9e81db290da01f90098ec25ea274175d651a866195c23a87344094b410d1527ac3ea98d9d32415d4b6175d6942c158601bb
+  checksum: de0c821bf4a2939097368561b39bbe1c10cb61b737b4bdfa239e5fbcfa05c706d3613271ea4b519aad9bf73e02ead28c2513518608a556032b103f297287ca98
   languageName: node
   linkType: hard
 
