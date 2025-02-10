@@ -4440,6 +4440,7 @@ __metadata:
     react-native-linear-gradient: ^2.8.3
     react-native-localize: ^3.0.2
     react-native-maps: 1.14.0
+    react-native-mmkv: 2.12.2
     react-native-permissions: 5.2.3
     react-native-reanimated: 3.16.7
     react-native-reanimated-carousel: 4.0.0-canary.22
@@ -4456,6 +4457,7 @@ __metadata:
     react-test-renderer: 18.2.0
     reactotron-react-native: ^5.1.7
     reactotron-redux: ^3.1.9
+    redux-persist: ^6.0.0
     shuttlex-integration: "ssh://git@github.com/DevShuttleXInc/ShuttleX.FE.Integration.v1#dev"
     tsx: ^4.19.2
     typescript: 5.2.2
@@ -10905,6 +10907,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-mmkv@npm:2.12.2":
+  version: 2.12.2
+  resolution: "react-native-mmkv@npm:2.12.2"
+  peerDependencies:
+    react: "*"
+    react-native: ">=0.71.0"
+  checksum: 8c79504a89fefd7f9c290a4a6bb24f1f9ef9e2a69d20d0f7d882b89f3943556e9c919c9d46583e44ab698f25213489277fccb6d4c856cce310267c5f907388f1
+  languageName: node
+  linkType: hard
+
 "react-native-otp-entry@npm:^1.8.2":
   version: 1.8.2
   resolution: "react-native-otp-entry@npm:1.8.2"
@@ -11291,6 +11303,15 @@ react-native-slide-to-unlock@DevShuttleXInc/react-native-slide-to-unlock:
     source-map: ~0.6.1
     tslib: ^2.0.1
   checksum: 03cc7f57562238ba258d468be67bf7446ce7a707bc87a087891dad15afead46c36e9aaeedf2130e2ab5a465244a9c62bfd4127849761cf8f4085abe2f3e5f485
+  languageName: node
+  linkType: hard
+
+"redux-persist@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "redux-persist@npm:6.0.0"
+  peerDependencies:
+    redux: ">4.0.0"
+  checksum: edaf10dbf17351ce8058d0802357adae8665b3a1ff39371834e37838ddbe1a79cccbc717b8ba54acb5307651ccf51d0f7dc1cbc8dbae0726ff952d11ef61c6b8
   languageName: node
   linkType: hard
 
