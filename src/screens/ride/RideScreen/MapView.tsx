@@ -5,7 +5,7 @@ import { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
   calculateNewMapRoute,
-  decodeGooglePolyline,
+  decodeGooglePolylineArr,
   getTimeWithAbbreviation,
   MapMarker,
   MapPolyline,
@@ -103,7 +103,7 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
   // Section: polylines
   const setPolylineAndFinalPoint = useCallback((route: Nullable<OfferWayPointsDataAPIResponse>) => {
     if (route) {
-      const coordinates = decodeGooglePolyline(route.geometry);
+      const coordinates = decodeGooglePolylineArr(route.legs.map(leg => leg.geometry));
       setRoutePolylinePointsCount(coordinates.length);
       setCurrentOrderPolylinesCoordinates(coordinates);
       setFinalStopPointCoordinates(route.waypoints[route.waypoints.length - 1].geo);
@@ -123,7 +123,9 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
       case TripStatus.Ride:
         setPolylineAndFinalPoint(dropOffRoute);
         if (dropOffRoute) {
-          dispatch(setMapRouteTraffic(dropOffRoute.accurateGeometries));
+          const joinedAccurateGeometries: OfferWayPointsDataAPIResponse['legs'][0]['accurateGeometries'] = [];
+          dropOffRoute.legs.forEach(leg => joinedAccurateGeometries.push(...leg.accurateGeometries));
+          dispatch(setMapRouteTraffic(joinedAccurateGeometries));
         }
         break;
       default:
@@ -165,7 +167,7 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
       newPolylines.push({ type: 'straight', options: { coordinates: currentOrderPolylinesCoordinates } });
     }
     if (futureOrderPickUpRoute) {
-      const coordinates = decodeGooglePolyline(futureOrderPickUpRoute.geometry);
+      const coordinates = decodeGooglePolylineArr(futureOrderPickUpRoute.legs.map(leg => leg.geometry));
       newPolylines.push({
         type: 'straight',
         options: { coordinates: coordinates, color: '#00000066' },

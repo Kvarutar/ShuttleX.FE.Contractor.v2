@@ -109,13 +109,18 @@ export type OfferWayPointsDataAPIResponse = {
     geo: LatLng;
     index: number;
   }[];
-  accurateGeometries: {
-    polylineStartIndex: number;
-    polylineEndIndex: number;
-    trafficLoad: TrafficLoadFromAPI;
+  legs: {
+    accurateGeometries: {
+      polylineStartIndex: number;
+      polylineEndIndex: number;
+      trafficLoad: TrafficLoadFromAPI;
+    }[];
+    durationSec: number;
+    distanceMtr: number;
+    geometry: string;
+    trafficLoad: string;
+    index: number;
   }[];
-  geometry: string;
-  trafficLoad: string;
 };
 
 export type OfferPickUpAPIResponse = OfferWayPointsDataAPIResponse;

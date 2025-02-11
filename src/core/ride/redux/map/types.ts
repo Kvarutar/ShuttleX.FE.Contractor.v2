@@ -7,5 +7,5 @@ export type MapState = {
   cameraMode: MapCameraMode;
   stopPoints: LatLng[];
   ridePercentFromPolylines: string;
-  routeTraffic: OfferWayPointsDataAPIResponse['accurateGeometries'] | null;
+  routeTraffic: OfferWayPointsDataAPIResponse['legs'][0]['accurateGeometries'] | null;
 };
