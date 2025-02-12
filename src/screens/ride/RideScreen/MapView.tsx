@@ -172,7 +172,7 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
         type: 'straight',
         options: { coordinates: coordinates, color: '#00000066' },
       });
-      setFutureOrderMarker(coordinates[coordinates.length - 1]);
+      setFutureOrderMarker(futureOrderPickUpRoute.waypoints[futureOrderPickUpRoute.waypoints.length - 1].geo);
     } else {
       setFutureOrderMarker(null);
     }
