@@ -25,6 +25,10 @@
     </service>
     <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask"
       android:foregroundServiceType="location" />
+    <service
+      android:name=".LocationService"
+      android:foregroundServiceType="location"
+      android:exported="false" />
     <activity
       android:name=".MainActivity"
       android:label="@string/app_name"
