@@ -25,7 +25,7 @@ const AddressWithExtendedPassengerInfo = ({
     },
   });
 
-  const isPickUp = tripPoints.length === order.stopPointAddresses.length + 1;
+  const isPickUp = tripPoints.length === order.stopPoints.length + 1;
 
   return (
     <View style={styles.passangerInfoWrapper}>

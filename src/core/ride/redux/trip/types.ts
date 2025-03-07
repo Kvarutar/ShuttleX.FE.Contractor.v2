@@ -156,7 +156,7 @@ export type GetCurrentOrderFromAPI = {
   id: string;
   state: OrderStateFromAPI;
   pickUpAddress: string;
-  stopPointAddresses: string[];
+  stopPoints: string[];
   dropOffAddress: string;
   timeToPickUp: string;
   timeToDropOff: string;
@@ -192,7 +192,7 @@ export type GetFutureOrderThunkResult = GetCurrentOrderThunkResult;
 export type OrderType = {
   id: string;
   pickUpAddress: string;
-  stopPointAddresses: string[];
+  stopPoints: string[];
   passenger: PassengerInfoType;
   tariffId: string;
   price: number;

@@ -77,7 +77,7 @@ const slice = createSlice({
       if (action.payload.dataForOrder) {
         const {
           pickUpAddress,
-          stopPointAddresses,
+          stopPoints,
           timeToPickUp,
           timeToDropOff,
           price,
@@ -118,7 +118,7 @@ const slice = createSlice({
           timeToDropOff: dropOffTime.getTime(),
           timeToDropOffFromNow: dropOffTimeFromNow,
           travelTimeInMilSec: Date.parse(timeToDropOff) - Date.parse(createdDate),
-          stopPointAddresses,
+          stopPoints,
           id: orderId,
           passenger: {
             id: passengerInfo.id,
@@ -143,9 +143,9 @@ const slice = createSlice({
         } else {
           state.order = order;
           if (orderState !== 'MoveToPickUp' && orderState !== 'InPickUp') {
-            state.tripPoints = stopPointAddresses;
+            state.tripPoints = stopPoints;
           } else {
-            state.tripPoints = [order.pickUpAddress, ...stopPointAddresses];
+            state.tripPoints = [order.pickUpAddress, ...stopPoints];
           }
         }
       }
@@ -182,7 +182,7 @@ const slice = createSlice({
     },
     endTrip(state) {
       if (state.secondOrder) {
-        state.tripPoints = [state.secondOrder.pickUpAddress, ...state.secondOrder.stopPointAddresses];
+        state.tripPoints = [state.secondOrder.pickUpAddress, ...state.secondOrder.stopPoints];
         state.order = state.secondOrder;
         state.secondOrder = null;
       } else {
@@ -221,7 +221,7 @@ const slice = createSlice({
         if (action.payload) {
           const { tariffs, order, passenger } = action.payload;
 
-          const stopPointAddresses = [...order.stopPointAddresses, order.dropOffAddress];
+          const stopPointAddresses = [...order.stopPoints, order.dropOffAddress];
 
           if (order.state !== 'None' && order.state !== 'InPreviousOrder') {
             slice.caseReducers.setTripStatus(state, {
@@ -237,7 +237,7 @@ const slice = createSlice({
               passengerAvatarURL: passenger.avatarURL,
               dataForOrder: {
                 ...order,
-                stopPointAddresses,
+                stopPoints: stopPointAddresses,
               },
               dataForOrderType: 'current',
             },
@@ -278,7 +278,7 @@ const slice = createSlice({
               passengerAvatarURL: passenger.avatarURL,
               dataForOrder: {
                 ...order,
-                stopPointAddresses: [...order.stopPointAddresses, order.dropOffAddress],
+                stopPoints: [...order.stopPoints, order.dropOffAddress],
               },
               dataForOrderType: 'future',
             },

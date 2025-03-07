@@ -70,7 +70,7 @@ const VisiblePart = ({ timeToDropOff }: { timeToDropOff: number }) => {
         tripPoints.length !== 0
       ) {
         //TODO: Refactor trip status change logic, add a new field "currentPoint" (pickUp, stopPoint[numberOfStopPoint]), etc..
-        const isPickUp = tripPoints.length === order.stopPointAddresses.length + 1;
+        const isPickUp = tripPoints.length === order.stopPoints.length + 1;
         const isLastPoint = tripPoints.length <= 1;
 
         if (isPickUp && pickUpRoute && checkIsNearPoint(geolocationCoordinatesRef.current, pickUpRoute)) {
