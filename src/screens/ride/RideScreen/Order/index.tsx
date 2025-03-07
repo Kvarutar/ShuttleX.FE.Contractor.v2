@@ -117,7 +117,7 @@ const Order = () => {
         }}
         withAllPartsScroll
         withHiddenPartScroll={false}
-        visiblePartStyle={styles.bottomWindowVisiblePartStyle}
+        visiblePartWrapperStyle={styles.bottomWindowVisiblePartStyle}
         hiddenPartContainerStyle={styles.bottomWindowHiddenContainer}
         headerWrapperStyle={computedStyles.headerWrapperStyle}
         ref={bottomWindowRef}
