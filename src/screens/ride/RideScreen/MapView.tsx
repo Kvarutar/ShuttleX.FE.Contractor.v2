@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import { LatLng } from 'react-native-maps';
-import { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
   calculateNewMapRoute,
@@ -35,7 +34,6 @@ import { OfferWayPointsDataAPIResponse, TripStatus } from '../../../core/ride/re
 const finalStopPointUpdateIntervalInSec = 30;
 const updateContractorGeoInterval = 1000;
 const polylineClearPointDistanceMtr = 25;
-const mapResizeAnimationDuration = 200;
 
 const screenHeight = Dimensions.get('screen').height;
 
@@ -202,16 +200,10 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
     });
   }
 
-  const mapAnimatedStyle = useAnimatedStyle(() => ({
-    bottom: withTiming(activeBottomWindowYCoordinate ? screenHeight - activeBottomWindowYCoordinate - 32 : 0, {
-      duration: mapResizeAnimationDuration,
-      easing: Easing.linear,
-    }),
-  }));
-
   return (
     <MapViewIntegration
-      style={[styles.map, mapAnimatedStyle]}
+      style={StyleSheet.absoluteFill}
+      mapPadding={{ bottom: activeBottomWindowYCoordinate ? screenHeight - activeBottomWindowYCoordinate : 0 }}
       geolocationCoordinates={geolocationCoordinates ?? undefined}
       geolocationCalculatedHeading={geolocationCalculatedHeading}
       onFirstCameraAnimationComplete={onFirstCameraAnimationComplete}
@@ -223,14 +215,5 @@ const MapView = ({ onFirstCameraAnimationComplete }: { onFirstCameraAnimationCom
     />
   );
 };
-
-const styles = StyleSheet.create({
-  map: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-  },
-});
 
 export default MapView;
