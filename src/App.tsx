@@ -9,7 +9,6 @@ import {
   getDefaultDevSentryConfig,
   getDefaultProdSentryConfig,
   ThemeProvider,
-  ThemeProviderV1,
 } from 'shuttlex-integration';
 
 import { persistor, store } from './core/redux/store';
@@ -29,19 +28,17 @@ export const logger = createLogger({ sentryConfig });
 
 const App = (): JSX.Element => (
   <Sentry.ErrorBoundary>
-    <ThemeProviderV1>
-      <ThemeProvider>
-        <Provider store={store}>
-          <PersistGate persistor={persistor}>
-            <GestureHandlerRootView style={styles.gestureHandlerRootView}>
-              <InitialSetup>
-                <Navigate />
-              </InitialSetup>
-            </GestureHandlerRootView>
-          </PersistGate>
-        </Provider>
-      </ThemeProvider>
-    </ThemeProviderV1>
+    <ThemeProvider>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <GestureHandlerRootView style={styles.gestureHandlerRootView}>
+            <InitialSetup>
+              <Navigate />
+            </InitialSetup>
+          </GestureHandlerRootView>
+        </PersistGate>
+      </Provider>
+    </ThemeProvider>
   </Sentry.ErrorBoundary>
 );
 

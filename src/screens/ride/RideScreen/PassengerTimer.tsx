@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { TimerV1, TimerV1Modes, useThemeV1 } from 'shuttlex-integration';
+import { TimerV1, TimerV1Modes, useTheme } from 'shuttlex-integration';
 
 const timerAnimationDuration = 300;
 
@@ -12,7 +12,7 @@ const PassengerTimer = ({
   isPassengerLate: boolean;
   setIsPassengerLate: () => void;
 }) => {
-  const { colors } = useThemeV1();
+  const { colors } = useTheme();
   const [currentTime, setCurrentTime] = useState<number>(0);
 
   useEffect(() => {

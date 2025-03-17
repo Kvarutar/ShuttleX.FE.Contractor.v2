@@ -1,10 +1,10 @@
 import { StyleSheet } from 'react-native';
-import { Popup, SwipeButton, Text, useThemeV1 } from 'shuttlex-integration';
+import { Popup, SwipeButton, Text, useTheme } from 'shuttlex-integration';
 
 import { ConfirmationPopupProps } from './props';
 
 const ConfirmationPopup = ({ onClose, onSwipeEnd, swipeMode, popupTitle }: ConfirmationPopupProps) => {
-  const { colors } = useThemeV1();
+  const { colors } = useTheme();
 
   const computedStyles = StyleSheet.create({
     title: {
