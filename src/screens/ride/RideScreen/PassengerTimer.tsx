@@ -1,23 +1,24 @@
-import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { TimerV1, TimerV1Modes, useTheme } from 'shuttlex-integration';
 
 const timerAnimationDuration = 300;
 
 const PassengerTimer = ({
   isPassengerLate,
-  setIsPassengerLate,
+  // Removed on Task-remove-timer-v1
+  // setIsPassengerLate,
 }: {
   isPassengerLate: boolean;
   setIsPassengerLate: () => void;
 }) => {
-  const { colors } = useTheme();
-  const [currentTime, setCurrentTime] = useState<number>(0);
+  // Removed on Task-remove-timer-v1
+  // const { colors } = useTheme();
+  // const [currentTime, setCurrentTime] = useState<number>(0);
 
-  useEffect(() => {
-    setCurrentTime(new Date().getTime() + 180000);
-  }, []);
+  // Removed on Task-remove-timer-v1
+  // useEffect(() => {
+  //   setCurrentTime(new Date().getTime() + 180000);
+  // }, []);
 
   if (isPassengerLate) {
     return (
@@ -26,12 +27,15 @@ const PassengerTimer = ({
         entering={FadeIn.duration(timerAnimationDuration)}
         style={styles.additionalHeaderButtons}
       >
-        <TimerV1
+        {/* Removed on Task-remove-timer-v1 */}
+        {/* Here was a TimerV1, but this component (PassengerTimer) is not in use for now.
+        TODO: Check if this component is needed or remove it */}
+        {/* <TimerV1
           initialDate={new Date()}
           startColor={colors.secondaryGradientStartColor}
           endColor={colors.secondaryGradientEndColor}
           mode={TimerV1Modes.Mini}
-        />
+        /> */}
       </Animated.View>
     );
   } else {
@@ -41,13 +45,16 @@ const PassengerTimer = ({
         entering={FadeIn.duration(timerAnimationDuration)}
         style={styles.additionalHeaderButtons}
       >
-        <TimerV1
+        {/* Removed on Task-remove-timer-v1 */}
+        {/* Here was a TimerV1, but this component (PassengerTimer) is not in use for now.
+        TODO: Check if this component is needed or remove it */}
+        {/* <TimerV1
           initialDate={new Date(currentTime)} //20000 - for test
           onAfterCountdownEnds={setIsPassengerLate}
           startColor={colors.primaryGradientStartColor}
           endColor={colors.primaryColor}
           mode={TimerV1Modes.Mini}
-        />
+        /> */}
       </Animated.View>
     );
   }
