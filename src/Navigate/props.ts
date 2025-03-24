@@ -9,7 +9,6 @@ export type RootStackParamList = {
   Ride: undefined;
   SignInCode: { verificationType: 'phone' | 'email'; data: string };
   Notifications: undefined;
-  Rating: undefined;
   Zone: undefined;
   BackgroundCheck: undefined;
   ProfilePhoto: undefined;

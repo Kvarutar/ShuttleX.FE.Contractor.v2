@@ -20,7 +20,6 @@ import OrderHistory from '../screens/menu/OrderHistory';
 import SubscriptionScreen from '../screens/menu/SubscriptionScreen';
 import WalletScreen from '../screens/menu/wallet/WalletScreen';
 import WithdrawScreen from '../screens/menu/wallet/WithdrawScreen';
-import RatingScreen from '../screens/ride/RatingScreen';
 import RideScreen from '../screens/ride/RideScreen';
 import VerifyPhoneCodeScreen from '../screens/ride/VerifyPhoneCodeScreen';
 import VerificationScreen from '../screens/verification/VerificationScreen';
@@ -53,7 +52,6 @@ const Navigate = (): JSX.Element => {
               }}
             />
             <Stack.Screen name="Notifications" component={NotificationScreen} />
-            <Stack.Screen name="Rating" component={RatingScreen} />
             <Stack.Screen name="Zone" component={ZoneScreen} />
             <Stack.Screen name="ProfilePhoto" component={ProfilePhotoScreen} />
             <Stack.Screen name="Docs" component={DocsScreen} />
