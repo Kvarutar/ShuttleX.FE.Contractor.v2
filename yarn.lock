@@ -66,8 +66,8 @@ __metadata:
   linkType: hard
 
 "@babel/eslint-parser@npm:^7.20.0":
-  version: 7.26.10
-  resolution: "@babel/eslint-parser@npm:7.26.10"
+  version: 7.27.0
+  resolution: "@babel/eslint-parser@npm:7.27.0"
   dependencies:
     "@nicolo-ribaudo/eslint-scope-5-internals": 5.1.1-v1
     eslint-visitor-keys: ^2.1.0
@@ -75,7 +75,7 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.11.0
     eslint: ^7.5.0 || ^8.0.0 || ^9.0.0
-  checksum: 979f0e86d3bcb596f0ffd159265a32adfb09a7b6765cd66588130fd8db58ebdcbfb2ecf3456bfc081ace4500d36f16a8b497aaaf4830bc3c10b99856c7ea3ce5
+  checksum: 87f37138b6e49a118b4ba41074b68ed573d5326c8c2e0b9cef460c3522788b2e774aacf3700cb284249424694f8daa1e72a20182dd39849beb9de422e559fefe
   languageName: node
   linkType: hard
 
@@ -11215,12 +11215,12 @@ __metadata:
   linkType: hard
 
 "react-native-otp-entry@npm:^1.8.2":
-  version: 1.8.3
-  resolution: "react-native-otp-entry@npm:1.8.3"
+  version: 1.8.4
+  resolution: "react-native-otp-entry@npm:1.8.4"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 5c2948a828354f5b72220359381240910eb1f7a8096b2fc95878dcfebc479a11e21c4de3896da3922178920ae3d8f11ae6e99cba30532846d30564f2daf3ebf4
+  checksum: d19cbc66f9429a9eb733f97189201cfbcbf73196028be65c57c50c8d30fa3b0526a34c4246a8bdb4f9d1d5a973ab9b36570a414e4d3ce50791ffe05886499aca
   languageName: node
   linkType: hard
 
@@ -11341,15 +11341,6 @@ __metadata:
     react-native: "*"
     react-native-svg: ">=12.1.0"
   checksum: 3855eff4b28ef239f0c63cae5d7459f5597524853f02ddd6388504ad9e407215c78919a732aa25d888f3cd5f9c15f55d5b2184652e499cf387c9361c2f4f5f53
-  languageName: node
-  linkType: hard
-
-react-native-slide-to-unlock@DevShuttleXInc/react-native-slide-to-unlock:
-  version: 0.1.6
-  resolution: "react-native-slide-to-unlock@https://github.com/DevShuttleXInc/react-native-slide-to-unlock.git#commit=cb240ecc52d8079598193199671690cad46f8885"
-  dependencies:
-    prop-types: ^15.7.2
-  checksum: 3d262209d8806d078611b3a8ba8af1a5f020caf97503a6c01a2db7a2226bcd17dde106794cd31b1d587a6462ba50e66c087206dfe508a3caf209db1fa11162f6
   languageName: node
   linkType: hard
 
@@ -12225,7 +12216,7 @@ react-native-slide-to-unlock@DevShuttleXInc/react-native-slide-to-unlock:
 
 "shuttlex-integration@ssh://git@github.com/DevShuttleXInc/ShuttleX.FE.Integration.v1#dev":
   version: 1.0.0
-  resolution: "shuttlex-integration@ssh://git@github.com/DevShuttleXInc/ShuttleX.FE.Integration.v1#commit=0c426e73c4813bc423b33a9aee88d812ed4546e2"
+  resolution: "shuttlex-integration@ssh://git@github.com/DevShuttleXInc/ShuttleX.FE.Integration.v1#commit=aaa02989d6954be15923dcfe473595e9721ec084"
   dependencies:
     "@googlemaps/polyline-codec": ^1.0.28
     "@react-native-masked-view/masked-view": ^0.3.2
@@ -12251,7 +12242,6 @@ react-native-slide-to-unlock@DevShuttleXInc/react-native-slide-to-unlock:
     react-native-marked: ^6.0.7
     react-native-otp-entry: ^1.8.2
     react-native-reanimated-skeleton: ^1.5.1
-    react-native-slide-to-unlock: DevShuttleXInc/react-native-slide-to-unlock
   peerDependencies:
     "@microsoft/signalr": "*"
     "@react-native-community/blur": "*"
@@ -12282,7 +12272,7 @@ react-native-slide-to-unlock@DevShuttleXInc/react-native-slide-to-unlock:
     react-native-svg-transformer: "*"
     react-redux: "*"
     uuid: "*"
-  checksum: 75a3cde43d05951f9d252d91e32058f7e1e9afa9247ccff39a95df37e94d04680849c2a1938b852e1cf97f850377ff69ea2558b23a8ee9ef9f0d649f1501db6c
+  checksum: e3d04325a374d8ec84b5d2d212b448cf5760f09cfd36f4d7fa95b56199ea2102467efba0b5f8ea47ac666092c5fc78a261ea9e12bbc233e3fd179bb5ed271e45
   languageName: node
   linkType: hard
 

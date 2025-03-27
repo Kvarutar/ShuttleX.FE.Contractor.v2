@@ -1,9 +1,4 @@
-import {
-  FreeTimeAlertProps,
-  PaidTimeAlertProps,
-  PlannedTripAlertProps,
-  RideHasFinishedAlertProps,
-} from 'shuttlex-integration';
+import { PaidTimeAlertProps, PlannedTripAlertProps, RideHasFinishedAlertProps } from 'shuttlex-integration';
 
 export enum AlertPriority {
   Low = 0,
@@ -16,7 +11,6 @@ export type AlertData = {
   priority: AlertPriority;
 };
 
-export type FreeTimeAlertOptions = FreeTimeAlertProps;
 export type PaidTimeAlertOptions = PaidTimeAlertProps;
 export type RideHasFinishedAlertOptions = RideHasFinishedAlertProps;
 export type PlannedTripAlertOptions = Omit<PlannedTripAlertProps, 'date' | 'locale' | 'onCancelPress'> & {
@@ -24,7 +18,6 @@ export type PlannedTripAlertOptions = Omit<PlannedTripAlertProps, 'date' | 'loca
 };
 
 type AlertTypes =
-  | { type: 'free_time_ends'; options: FreeTimeAlertOptions }
   | { type: 'paid_time_starts'; options: PaidTimeAlertOptions }
   | { type: 'ride_has_finished'; options: RideHasFinishedAlertOptions }
   | { type: 'second_ride' }
