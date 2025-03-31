@@ -8,7 +8,6 @@ import docsReducer from '../auth/redux/docs';
 import contractorReducer from '../contractor/redux';
 import { MMKVStorage } from '../localStorage';
 import accountSettingsReducer from '../menu/redux/accountSettings';
-import notificationsReducer from '../menu/redux/notifications';
 import subscriptionReducer from '../menu/redux/subscription';
 import walletReducer from '../menu/redux/wallet';
 import alertsReducer from '../ride/redux/alerts';
@@ -28,7 +27,6 @@ const tripPersistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   docs: docsReducer,
-  notifications: notificationsReducer,
   wallet: walletReducer,
   alerts: alertsReducer,
   geolocation: geolocationReducer,

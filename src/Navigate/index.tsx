@@ -15,7 +15,6 @@ import PaymentDocScreen from '../screens/docs/PaymentDocScreen';
 import ProfilePhotoScreen from '../screens/docs/ProfilePhotoScreen';
 import AccountSettings from '../screens/menu/AccountSettings';
 import AccountVerificateCodeScreen from '../screens/menu/AccountVerificateCodeScreen';
-import NotificationScreen from '../screens/menu/NotificationsScreen';
 import OrderHistory from '../screens/menu/OrderHistory';
 import SubscriptionScreen from '../screens/menu/SubscriptionScreen';
 import WalletScreen from '../screens/menu/wallet/WalletScreen';
@@ -51,7 +50,6 @@ const Navigate = (): JSX.Element => {
                 statusBarColor: 'transparent',
               }}
             />
-            <Stack.Screen name="Notifications" component={NotificationScreen} />
             <Stack.Screen name="Zone" component={ZoneScreen} />
             <Stack.Screen name="ProfilePhoto" component={ProfilePhotoScreen} />
             <Stack.Screen name="Docs" component={DocsScreen} />

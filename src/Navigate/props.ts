@@ -8,7 +8,6 @@ export type RootStackParamList = {
   Auth: { state: 'SignIn' | 'SignUp' };
   Ride: undefined;
   SignInCode: { verificationType: 'phone' | 'email'; data: string };
-  Notifications: undefined;
   Zone: undefined;
   BackgroundCheck: undefined;
   ProfilePhoto: undefined;
