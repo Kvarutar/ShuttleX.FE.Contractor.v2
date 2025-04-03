@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { Linking, Platform, StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   BigHeader,
@@ -9,6 +9,8 @@ import {
   Button,
   ButtonShapes,
   getCurrencySign,
+  IS_ANDROID,
+  IS_IOS,
   SquareButtonModes,
 } from 'shuttlex-integration';
 import { CurrencyType } from 'shuttlex-integration/lib/typescript/src/utils/currency/types';
@@ -18,7 +20,7 @@ import { subscriptionsSelector } from '../../../../../core/menu/redux/subscripti
 import { RootStackParamList } from '../../../../../Navigate/props';
 import { AccountIsNotActivePopupModes, AccountIsNotActivePopupProps } from './types';
 
-const osMode = Platform.OS === 'ios' ? 'Ios' : 'Android';
+const osMode = IS_IOS ? 'Ios' : 'Android';
 
 const textModeData = {
   firstUse: {
@@ -57,7 +59,7 @@ const AccountIsNotActivePopup = ({
     if (mode === 'afterUse') {
       Linking.openURL('https://t.me/ShuttleX_Support').catch(logger.error);
     } else {
-      if (Platform.OS === 'ios') {
+      if (IS_IOS) {
         navigation.navigate('Subscription');
       } else {
         Linking.openURL('https://www.shuttlex.com/contractor.html').catch(logger.error);
@@ -70,7 +72,7 @@ const AccountIsNotActivePopup = ({
     if (mode === 'firstUse') {
       onPressLaterHandler?.();
     }
-    if (mode === 'afterUse' && Platform.OS === 'android') {
+    if (mode === 'afterUse' && IS_ANDROID) {
       Linking.openURL('https://www.shuttlex.com/contractor.html').catch(logger.error);
     }
     setIsAccountIsNotActivePopupVisible(false);

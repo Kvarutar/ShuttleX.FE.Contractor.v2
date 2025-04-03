@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
@@ -13,6 +13,7 @@ import {
   getPaymentIcon,
   GroupedButtons,
   GroupedButtonsMode,
+  IS_ANDROID,
   MenuHeader,
   SafeAreaView,
   ScrollViewWithCustomScroll,
@@ -149,7 +150,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
       backgroundColor: colors.primaryColor,
     },
     safeAreaContainer: {
-      paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : undefined,
+      paddingTop: IS_ANDROID ? sizes.paddingVertical : undefined,
     },
     balanceTotal: {
       color: colors.textPrimaryColor,

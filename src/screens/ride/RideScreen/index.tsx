@@ -2,7 +2,7 @@
 import { useNavigationState } from '@react-navigation/native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert as AlertNative, Platform, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
+import { Alert as AlertNative, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
@@ -12,6 +12,8 @@ import {
   Button,
   ButtonShapes,
   IntegrationModule,
+  IS_ANDROID,
+  IS_IOS,
   isIncorrectFieldsError,
   LoadingBrandIconModes,
   LoadingStub,
@@ -99,7 +101,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
 
   const computedStyles = StyleSheet.create({
     topButtonsContainer: {
-      paddingTop: Platform.OS === 'android' ? sizes.paddingVertical : iosPaddingVertical,
+      paddingTop: IS_ANDROID ? sizes.paddingVertical : iosPaddingVertical,
     },
     unreadNotificationsMarker: {
       backgroundColor: colors.errorColor,
@@ -108,7 +110,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
       color: colors.backgroundPrimaryColor,
     },
     menuHeader: {
-      paddingTop: Platform.OS === 'android' ? androidPaddingTop : 8,
+      paddingTop: IS_ANDROID ? androidPaddingTop : 8,
     },
   });
 
@@ -204,7 +206,7 @@ const RideScreen = ({ navigation }: RideScreenProps): JSX.Element => {
     locationUnavailableProps = {
       reason: 'location_disabled',
       onButtonPress: () => {
-        if (Platform.OS === 'ios') {
+        if (IS_IOS) {
           openSettings();
         } else {
           IntegrationModule.navigateToLocationSettings();

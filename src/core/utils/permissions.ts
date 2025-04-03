@@ -1,5 +1,5 @@
 import notifee, { AuthorizationStatus } from '@notifee/react-native';
-import { Alert, Linking, Platform } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import {
   check,
   checkLocationAccuracy,
@@ -8,9 +8,10 @@ import {
   request,
   RESULTS,
 } from 'react-native-permissions';
+import { IS_IOS } from 'shuttlex-integration';
 
 export const requestGeolocationPermission = async (): Promise<void> => {
-  if (Platform.OS === 'ios') {
+  if (IS_IOS) {
     await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
   } else {
     await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
@@ -21,7 +22,7 @@ export const checkGeolocationPermissionAndAccuracy = async (): Promise<{
   isGranted: boolean;
   accuracy: LocationAccuracy;
 }> => {
-  if (Platform.OS === 'ios') {
+  if (IS_IOS) {
     const result = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
     const accuracy: LocationAccuracy = result === RESULTS.GRANTED ? await checkLocationAccuracy() : 'reduced';
     return { isGranted: result === RESULTS.GRANTED, accuracy };
@@ -39,7 +40,7 @@ export const checkGeolocationPermissionAndAccuracy = async (): Promise<{
 };
 
 export const requestCameraUsagePermission = async (): Promise<void> => {
-  if (Platform.OS === 'ios') {
+  if (IS_IOS) {
     await request(PERMISSIONS.IOS.CAMERA);
   } else {
     await request(PERMISSIONS.ANDROID.CAMERA);
@@ -47,7 +48,7 @@ export const requestCameraUsagePermission = async (): Promise<void> => {
 };
 
 export const checkCameraUsagePermission = async (): Promise<boolean> => {
-  if (Platform.OS === 'ios') {
+  if (IS_IOS) {
     return (await check(PERMISSIONS.IOS.CAMERA)) === RESULTS.GRANTED;
   } else {
     return (await check(PERMISSIONS.ANDROID.CAMERA)) === RESULTS.GRANTED;
@@ -55,7 +56,7 @@ export const checkCameraUsagePermission = async (): Promise<boolean> => {
 };
 
 export const requestGalleryUsagePermission = async (): Promise<void> => {
-  if (Platform.OS === 'ios') {
+  if (IS_IOS) {
     await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
   } else {
     await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES);
@@ -63,7 +64,7 @@ export const requestGalleryUsagePermission = async (): Promise<void> => {
 };
 
 export const checkGalleryUsagePermission = async (): Promise<boolean> => {
-  if (Platform.OS === 'ios') {
+  if (IS_IOS) {
     const result = await check(PERMISSIONS.IOS.PHOTO_LIBRARY);
     return result === RESULTS.GRANTED || result === RESULTS.LIMITED;
   } else {

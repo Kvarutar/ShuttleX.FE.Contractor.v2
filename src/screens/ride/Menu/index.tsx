@@ -1,12 +1,14 @@
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { Linking, Platform, StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   Bar,
   BarModes,
   formatCurrency,
+  IS_ANDROID,
+  IS_IOS,
   MenuBase,
   MenuNavigation,
   Skeleton,
@@ -42,11 +44,11 @@ const Menu = ({ onClose, isStatusBarTranslucent }: MenuProps) => {
   const isContractorInfoLoading = useSelector(isContractorInfoLoadingSelector);
 
   const subscriptionMenuSection =
-    subscriptionStatus === null || Platform.OS === 'android'
+    subscriptionStatus === null || IS_ANDROID
       ? {
           subscription: {
             navFunc: () => {
-              if (Platform.OS === 'ios') {
+              if (IS_IOS) {
                 navigation.navigate('Subscription');
               } else {
                 Linking.openURL('https://www.shuttlex.com/contractor.html').catch(logger.error);
