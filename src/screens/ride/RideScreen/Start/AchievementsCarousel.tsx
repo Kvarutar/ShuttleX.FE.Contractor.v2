@@ -1,14 +1,12 @@
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { useSelector } from 'react-redux';
-import { RoundCheckIcon3, sizes, Text, useTheme } from 'shuttlex-integration';
+import { RoundCheckIcon3, sizes, Text, useTheme, WINDOW_WIDTH } from 'shuttlex-integration';
 
 import { achievementsSelector } from '../../../../core/contractor/redux/selectors';
 import { useAchievement } from '../../../../shared/Achievements';
 import { AchievementsCarouselProps, AchievementsSliderItemProps } from './types';
-
-const windowWidth = Dimensions.get('window').width;
 
 const carouselAnimationDurations = {
   scroll: 500,
@@ -20,7 +18,7 @@ const AchievementsCarousel = ({ setIsAchievementsPopupVisible }: AchievementsCar
 
   const computedStyles = StyleSheet.create({
     carousel: {
-      width: windowWidth,
+      width: WINDOW_WIDTH,
       marginBottom: 8,
       marginLeft: sizes.paddingHorizontal,
     },

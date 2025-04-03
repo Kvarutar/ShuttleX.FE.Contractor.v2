@@ -1,16 +1,14 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
-import { Dimensions, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useTheme } from 'shuttlex-integration';
+import { useTheme, WINDOW_HEIGHT } from 'shuttlex-integration';
 
 const animationDuration = 3000;
 
-const windowHeight = Dimensions.get('window').height;
+const isSmallDevice = WINDOW_HEIGHT < 800;
 
-const isSmallDevice = windowHeight < 800;
-
-const maxStatisticBlockHeight = isSmallDevice ? windowHeight * 0.17 : windowHeight * 0.2;
+const maxStatisticBlockHeight = isSmallDevice ? WINDOW_HEIGHT * 0.17 : WINDOW_HEIGHT * 0.2;
 const minStatisticBlockHeight = 12;
 const zeroStatisticBlockHeight = 10;
 

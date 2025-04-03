@@ -1,8 +1,8 @@
 import { useRef } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Carousel, { CarouselRenderItem, ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSelector } from 'react-redux';
-import { sizes, Skeleton, TariffIconData, Text, useTariffsIcons, useTheme } from 'shuttlex-integration';
+import { sizes, Skeleton, TariffIconData, Text, useTariffsIcons, useTheme, WINDOW_WIDTH } from 'shuttlex-integration';
 
 import {
   availableTariffsSelector,
@@ -12,10 +12,8 @@ import {
 } from '../../../core/contractor/redux/selectors';
 import { TariffInfoFromAPI } from '../../../core/contractor/redux/types';
 
-const windowWidth = Dimensions.get('window').width;
-
 const sliderItemParams = {
-  width: windowWidth - sizes.paddingHorizontal * 2,
+  width: WINDOW_WIDTH - sizes.paddingHorizontal * 2,
   height: 186,
 };
 
@@ -36,8 +34,11 @@ const TariffsCarousel = () => {
   const tariffsForRender = contractorStatus === 'offline' ? availableTariffs : selectedTariffs;
 
   const computedStyles = StyleSheet.create({
+    skeleton: {
+      width: WINDOW_WIDTH - sizes.paddingHorizontal * 2 - 8,
+    },
     carousel: {
-      width: windowWidth,
+      width: WINDOW_WIDTH,
       marginLeft: sizes.paddingHorizontal,
     },
   });
@@ -59,7 +60,7 @@ const TariffsCarousel = () => {
 
   if (isTariffsInfoLoading || tariffsForRender.length === 0) {
     return renderCarousel(Array.from({ length: 6 }), ({ index }) => (
-      <Skeleton key={index} skeletonContainerStyle={styles.skeleton} />
+      <Skeleton key={index} skeletonContainerStyle={[styles.skeleton, computedStyles.skeleton]} />
     ));
   }
 
@@ -100,7 +101,6 @@ const styles = StyleSheet.create({
   skeleton: {
     flex: 1,
     borderRadius: 12,
-    width: windowWidth - sizes.paddingHorizontal * 2 - 8,
   },
   carouselItemWrapper: {
     flex: 1,

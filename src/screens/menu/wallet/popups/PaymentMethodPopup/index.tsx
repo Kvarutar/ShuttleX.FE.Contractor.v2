@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   BottomWindowWithGesture,
   BottomWindowWithGestureRef,
   Button,
   ScrollViewWithCustomScroll,
+  WINDOW_HEIGHT,
 } from 'shuttlex-integration';
 
 import {
@@ -18,8 +19,6 @@ import { PaymentMethodWithoutExpiresAt } from '../../../../../core/menu/redux/wa
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import PaymentMethodContent from './PaymentMethod';
 import { PaymentMethodPopupProps } from './props';
-
-const windowHeight = Dimensions.get('window').height;
 
 const PaymentMethodPopup = ({ setIsPaymentsVariantsVisible, onOpenAddCardPopup }: PaymentMethodPopupProps) => {
   const { t } = useTranslation();
@@ -59,7 +58,7 @@ const PaymentMethodPopup = ({ setIsPaymentsVariantsVisible, onOpenAddCardPopup }
 
   const computedStyles = StyleSheet.create({
     hiddenPartContentWrapper: {
-      height: windowHeight * 0.46,
+      height: WINDOW_HEIGHT * 0.46,
     },
   });
 
@@ -92,7 +91,6 @@ const styles = StyleSheet.create({
   hiddenPartContentWrapper: {
     paddingTop: 12,
     justifyContent: 'space-between',
-    height: windowHeight * 0.46,
   },
   paymentMethodsContentWrapper: {
     gap: 8,

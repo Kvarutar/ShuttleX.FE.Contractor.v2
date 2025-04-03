@@ -1,17 +1,23 @@
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Image, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
-import { getCurrencySign, HeaderWithTwoTitles, ScrollViewWithCustomScroll, Text, useTheme } from 'shuttlex-integration';
+import {
+  getCurrencySign,
+  HeaderWithTwoTitles,
+  ScrollViewWithCustomScroll,
+  Text,
+  useTheme,
+  WINDOW_WIDTH,
+} from 'shuttlex-integration';
 
 import { DailyCarImage, DebtCarImage, MonthlyCarImage } from '../../../../../assets/images/subscriptionCars';
 import { subscriptionsSelector } from '../../../../core/menu/redux/subscription/selectors';
 import { GetSubscriptionsAPIResponse } from '../../../../core/menu/redux/subscription/types';
 
-const windowWidth = Dimensions.get('window').width;
 const itemHeight = 455;
 
 const subscriptionImageData = {
@@ -93,7 +99,7 @@ const SubscriptionSlider = () => {
       <View style={styles.carouselContainer}>
         <Carousel
           ref={sliderRef}
-          width={windowWidth}
+          width={WINDOW_WIDTH}
           height={itemHeight}
           loop={false}
           onSnapToItem={setCurrentIndex}

@@ -1,14 +1,17 @@
-import { Dimensions, StyleSheet } from 'react-native';
-import { Popup } from 'shuttlex-integration';
+import { StyleSheet } from 'react-native';
+import { Popup, WINDOW_HEIGHT } from 'shuttlex-integration';
 
 import Offer from '../../Offer';
 import { OfferPopupProps } from './props';
 
-const windowHeight = Dimensions.get('window').height;
-
 const OfferPopup = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllBottomWindows }: OfferPopupProps) => {
+  const computedStyles = StyleSheet.create({
+    popup: {
+      maxHeight: WINDOW_HEIGHT * 0.7,
+    },
+  });
   return (
-    <Popup bottomWindowStyle={styles.popup} isWithBlur={false}>
+    <Popup bottomWindowStyle={computedStyles.popup} isWithBlur={false}>
       <Offer
         offer={offer}
         onOfferAccept={onOfferAccept}
@@ -19,11 +22,5 @@ const OfferPopup = ({ offer, onOfferAccept, onOfferDecline, onClose, onCloseAllB
     </Popup>
   );
 };
-
-const styles = StyleSheet.create({
-  popup: {
-    maxHeight: windowHeight * 0.7,
-  },
-});
 
 export default OfferPopup;

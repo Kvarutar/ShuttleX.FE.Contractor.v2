@@ -1,13 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, StyleSheet } from 'react-native';
-import { AddCardScreen, BottomWindowWithGesture, BottomWindowWithGestureRef, Card } from 'shuttlex-integration';
+import { StyleSheet } from 'react-native';
+import {
+  AddCardScreen,
+  BottomWindowWithGesture,
+  BottomWindowWithGestureRef,
+  Card,
+  WINDOW_HEIGHT,
+} from 'shuttlex-integration';
 
 import { addAvailablePaymentMethod } from '../../../../../core/menu/redux/wallet/thunks';
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { AddCardPopupProps } from './types';
-
-const windowHeight = Dimensions.get('window').height;
 
 const AddCardPopup = ({ setIsAddCardPopupVisible, setIsPaymentsVariantsVisible }: AddCardPopupProps): JSX.Element => {
   const { t } = useTranslation();
@@ -29,7 +33,7 @@ const AddCardPopup = ({ setIsAddCardPopupVisible, setIsPaymentsVariantsVisible }
 
   const computedStyles = StyleSheet.create({
     hiddenPartContainerStyle: {
-      height: windowHeight * 0.8,
+      height: WINDOW_HEIGHT * 0.8,
     },
   });
 

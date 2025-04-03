@@ -1,14 +1,12 @@
 import { useTranslation } from 'react-i18next';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Button, FlatListWithCustomScroll, Skeleton, Text, useTheme } from 'shuttlex-integration';
+import { Button, FlatListWithCustomScroll, Skeleton, Text, useTheme, WINDOW_HEIGHT } from 'shuttlex-integration';
 
 import { contractorInfoSelector, isTariffsInfoLoadingSelector } from '../../../../../core/contractor/redux/selectors';
 import { sendSelectedTariffs } from '../../../../../core/contractor/redux/thunks';
 import { useAppDispatch } from '../../../../../core/redux/hooks';
 import { HiddenPartProps } from './props';
-
-const windowHeight = Dimensions.get('window').height;
 
 const HiddenPart = ({ onClose, renderTariffs, localTariffsSorted }: HiddenPartProps) => {
   const { colors } = useTheme();
@@ -41,14 +39,18 @@ const HiddenPart = ({ onClose, renderTariffs, localTariffsSorted }: HiddenPartPr
     },
     preferencesContainer: {
       backgroundColor: colors.backgroundPrimaryColor,
+      maxHeight: WINDOW_HEIGHT * 0.2,
     },
     preferencesTitle: {
       color: colors.textSecondaryColor,
     },
+    hiddenPartContainerStyle: {
+      height: WINDOW_HEIGHT * 0.9,
+    },
   });
 
   return (
-    <View style={styles.hiddenPartContainerStyle}>
+    <View style={[styles.hiddenPartContainerStyle, computedStyles.hiddenPartContainerStyle]}>
       <Text style={[styles.filterText, computedStyles.filterText]}>{t('ride_Ride_PreferencesPopup_filter')}</Text>
       <Text style={styles.firstTitleText}>{t('ride_Ride_PreferencesPopup_firstTitle')}</Text>
       <Text style={[styles.secondTitleText, computedStyles.secondTitleText]}>
@@ -102,7 +104,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   hiddenPartContainerStyle: {
-    height: windowHeight * 0.9,
     paddingBottom: 34,
   },
   filterText: {
@@ -132,7 +133,6 @@ const styles = StyleSheet.create({
   // These styles for preferences
   preferencesContainer: {
     paddingTop: 22,
-    maxHeight: windowHeight * 0.2,
   },
   preferencesTitle: {
     fontFamily: 'Inter Medium',

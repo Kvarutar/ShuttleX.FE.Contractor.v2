@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { t } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Dimensions, Linking, StyleSheet, View } from 'react-native';
+import { Alert, Linking, StyleSheet, View } from 'react-native';
 import Animated, {
   KeyboardState,
   useAnimatedKeyboard,
@@ -22,6 +22,7 @@ import {
   TextInput,
   TextInputInputMode,
   useTheme,
+  WINDOW_WIDTH,
 } from 'shuttlex-integration';
 
 import { logger } from '../../../../App';
@@ -35,8 +36,6 @@ import { fetchWithdraw } from '../../../../core/menu/redux/wallet/thunks';
 import { useAppDispatch } from '../../../../core/redux/hooks';
 import SliderAmount from './SliderAmount';
 import { WithdrawScreenProps } from './types';
-
-const windowWidth = Dimensions.get('window').width;
 
 const animationDuration = 150;
 
@@ -135,7 +134,7 @@ const WithdrawScreen = ({ navigation }: WithdrawScreenProps): JSX.Element => {
     },
     input: {
       color: colors.textPrimaryColor,
-      fontSize: windowWidth < 410 ? 50 : 60,
+      fontSize: WINDOW_WIDTH < 410 ? 50 : 60,
     },
     buttonText: {
       color: isError || !isAddedOutputMethod ? colors.textSecondaryColor : colors.textTertiaryColor,

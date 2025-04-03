@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Dimensions, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Shadow } from 'react-native-shadow-2';
 import { useSelector } from 'react-redux';
@@ -20,6 +20,7 @@ import {
   SquareButtonModes,
   Text,
   useTheme,
+  WINDOW_WIDTH,
 } from 'shuttlex-integration';
 
 import { setSelectedPaymentMethod } from '../../../../core/menu/redux/wallet';
@@ -49,8 +50,6 @@ import BalancePerDayBlock from './BalancePerDayBlock';
 import BalancePerDayText from './BalancePerDayText';
 import { WalletScreenProps, СurrentBalanceInfo } from './types';
 import WithdrawalHistoryItem from './WithdrawalHistoryItem';
-
-const windowWidth = Dimensions.get('window').width;
 
 const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
   const { colors } = useTheme();
@@ -287,7 +286,7 @@ const WalletScreen = ({ navigation }: WalletScreenProps): JSX.Element => {
           <GroupedButtons
             setIsFirstButtonSelected={setIsSelectedCash}
             isFirstButtonSelected={isSelectedCash}
-            width={windowWidth * 0.65}
+            width={WINDOW_WIDTH * 0.65}
             firstButtonText={t('menu_Wallet_groupedButtonsFirstText')}
             secondButtonText={t('menu_Wallet_groupedButtonsSecondText')}
             mode={GroupedButtonsMode.Dark}
